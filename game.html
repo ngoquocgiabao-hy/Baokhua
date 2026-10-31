@@ -39,12 +39,12 @@ const STAGES = [
 const FORM_UTM_GAME = 'utm_source=game&utm_campaign=lop_0211';
 const INVITE_BLURB = '99k cho 3 tháng, 299k cho 1 năm, học Zoom thứ Hai, Tư, Sáu lúc 20:00';
 const INVITE_SHARE_LINE = 'Thẻ 99k/299k · Zoom 20:00 T2 T4 T6 · buổi đầu 04/11';
-const OFFER_HOLD = '⏰ Giữ chỗ đến 18:00 ngày 01/11';
-const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 18:00 ngày 01/11 → bạn được cộng thêm 7 ngày.';
+const OFFER_HOLD = '⏰ Giữ chỗ đến 20:00 thứ Ba 03/11';
+const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 20:00 thứ Ba 03/11 → bạn được cộng thêm 7 ngày.';
 const OFFER_MINIGAME = '🎯 Mini game Zalo đoán nghĩa → giảm đến 20k';
 function holdSeatExpired() {
-  // 18:00 01/11/2026 Asia/Saigon = 11:00 UTC
-  return Date.now() >= Date.parse('2026-11-01T11:00:00Z');
+  // 20:00 03/11/2026 Asia/Saigon = 13:00 UTC
+  return Date.now() >= Date.parse('2026-11-03T13:00:00Z');
 }
 function applyHoldSeatVisibility() {
   const exp = holdSeatExpired();
@@ -390,8 +390,8 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
    <p class="price" id="invitePrice"></p>
    <p id="inviteShareLine" style="font-size:13px;margin:0 0 10px;opacity:.85"></p>
    <div class="offers" id="inviteOffers">
-    <p data-offer-hold>⏰ Giữ chỗ đến 18:00 ngày 01/11.</p>
-    <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 18:00 ngày 01/11 → bạn được cộng thêm 7 ngày.</p>
+    <p data-offer-hold>⏰ Giữ chỗ đến 20:00 thứ Ba 03/11.</p>
+    <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 20:00 thứ Ba 03/11 → bạn được cộng thêm 7 ngày.</p>
     <p>🎯 Mini game đoán nghĩa trong nhóm Zalo: đoán đúng → giảm đến 20k khi mua thẻ.</p>
    </div>
    <div class="row-btns">
