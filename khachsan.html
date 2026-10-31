@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Khách sạn Bảo Khựa 阿宝 – Xây khách sạn, học tiếng Trung</title>
+<meta name="description" content="Phục vụ khách Trung Quốc ở quầy lễ tân Bãi Cháy: trả lời đúng tiếng Trung để có xu, xây khách sạn từ 1 sao lên 5 sao. Phố sống động ngày đêm, chạm vào mọi thứ để học từ.">
+<meta name="theme-color" content="#0b3d5c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bảo Khựa 阿宝">
+<meta property="og:title" content="Khách sạn Bảo Khựa 阿宝 – xây khách sạn 5 sao bằng tiếng Trung">
+<meta property="og:description" content="Phục vụ khách Trung Quốc, kiếm xu, xây tầng, gym, bể bơi, vòng quay. Phố Bãi Cháy sống động ngày đêm, chạm vào mọi thứ để học từ.">
+<meta property="og:url" content="https://ngoquocgiabao-hy.github.io/Baokhua/khachsan.html">
+<meta property="og:image" content="https://ngoquocgiabao-hy.github.io/Baokhua/v4/og-hotel.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#0b3d5c;color:#fff;display:flex;justify-content:center;overscroll-behavior-y:none}
+#app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column;gap:8px;padding:8px 8px 28px}
+.hud{display:flex;gap:6px;align-items:stretch;position:sticky;top:0;z-index:30;padding-top:2px;background:linear-gradient(#0b3d5c 70%,rgba(11,61,92,0))}
+.pill{display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:6px 10px;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.coin{color:#FFD91F;min-width:0}
+@media (max-width:400px){.hud .pill{padding:6px 7px;font-size:14px}#starTxt{font-size:12px!important;letter-spacing:0!important}.lock10{font-size:9px;padding:1px 3px}.btn-ico{width:36px}#starNext{font-size:10.5px}}
+.pill.coin.bump{animation:bump .35s ease-out}
+@keyframes bump{40%{transform:scale(1.18)}}
+.pill.star{flex:1;min-width:0;flex-direction:column;align-items:stretch;gap:3px;padding:5px 10px;cursor:pointer}
+.pill.star .top{white-space:nowrap;overflow:hidden}
+.lock10{font-size:10px;background:#16171B;color:#FFD91F;border-radius:6px;padding:1px 5px;margin-left:4px;letter-spacing:0}
+.perks{list-style:none;text-align:left;margin:8px 0;display:flex;flex-direction:column;gap:6px}
+.perks li{background:rgba(255,255,255,.1);border-radius:10px;padding:7px 9px;font-size:13px;line-height:1.35}
+.price-tag{font-size:26px;font-weight:900;color:#FFD91F;margin:6px 0 0}
+.price-sub{font-size:12px;opacity:.85;margin-bottom:6px}
+.ov-card .btn+.btn{margin-top:8px}
+.item.vip{background:linear-gradient(135deg,rgba(255,217,31,.14),rgba(255,255,255,.05));border-color:rgba(255,217,31,.35)}
+.item.vip .buy{background:#16171B;color:#FFD91F;box-shadow:0 3px 0 #000}
+.member-card{background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B}
+.member-card .perks li{background:rgba(22,23,27,.07)}
+.pill.star .top{display:flex;justify-content:space-between;font-size:12px}
+#starTxt{color:#FFD91F;letter-spacing:1px;font-size:14px}
+.mini{height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden}
+.mini i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2ec4b6,#FFD91F);transition:width .6s ease-out}
+.btn-ico{border:1px solid rgba(255,255,255,.16);color:#fff;font-size:17px;width:42px;justify-content:center;cursor:pointer}
+.scene-wrap{position:relative;border-radius:18px;overflow:hidden;border:2px solid rgba(255,217,31,.55);box-shadow:0 6px 0 rgba(0,0,0,.28);aspect-ratio:360/320;background:#0b1433}
+#scene{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+.scene-tip{position:absolute;left:8px;top:8px;font-size:11px;font-weight:700;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px;pointer-events:none;transition:opacity .6s}
+.zoom{position:absolute;right:8px;bottom:8px;border:0;font-size:18px;width:40px;height:40px;border-radius:12px;background:rgba(0,0,0,.5);color:#fff;cursor:pointer}
+.zoom.on{background:#FFD91F}
+.clock{position:absolute;right:8px;top:8px;border:0;font:800 13px/1 system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.5);padding:6px 9px;border-radius:999px;font-variant-numeric:tabular-nums;cursor:pointer}
+.wbub{position:absolute;transform:translate(-50%,-100%);background:#fff;color:#16171B;border-radius:12px;padding:6px 10px;font-size:12px;line-height:1.3;text-align:center;white-space:nowrap;box-shadow:0 3px 0 rgba(0,0,0,.25);pointer-events:none;animation:wIn .25s cubic-bezier(.2,1.5,.4,1)}
+.wbub b{font-size:17px;display:block}
+.wbub i{color:#1e5aa8;font-style:italic}
+.wbub .new{display:block;font-size:10.5px;font-weight:800;color:#0a8a4a}
+.wbub:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:#fff}
+@keyframes wIn{from{transform:translate(-50%,-80%) scale(.6);opacity:0}}
+.serve-btn{border:0;border-radius:16px;padding:14px;font-size:18px;font-weight:900;background:linear-gradient(180deg,#FFE97A,#FFD91F);color:#3a2600;box-shadow:0 5px 0 #b8901c;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.serve-btn small{font-size:12px;font-weight:700;opacity:.8}
+.serve-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #b8901c}
+.serve-btn.pulse{animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.025)}}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;border:0;border-radius:12px;padding:10px 4px;font-weight:800;font-size:13px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+.tabs button.on{background:#fff;color:#0b3d5c}
+.panel{display:none;flex-direction:column;gap:8px}.panel.on{display:flex}
+.item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.08);border-radius:14px;padding:10px;border:1px solid rgba(255,255,255,.1)}
+.item .ic{font-size:30px;width:42px;text-align:center;flex:none}
+.item .t{flex:1;min-width:0}
+.item .zh{font-size:18px;font-weight:800;line-height:1.2}
+.item .py{font-size:12px;color:#ffe9a8;font-style:italic}
+.item .vi{font-size:12px;opacity:.88;line-height:1.35}
+.item .eff{font-size:11px;color:#9eecff;margin-top:2px}
+.item .buy{border:0;border-radius:12px;padding:10px 6px;min-width:84px;font-weight:900;font-size:14px;background:#FFD91F;color:#3a2600;box-shadow:0 3px 0 #b8901c;cursor:pointer}
+.item .buy:disabled{background:#4d5f6c;color:#c7d2da;box-shadow:none;cursor:default}
+.item.lock{opacity:.5}
+.item.maxed .buy{background:#2ec4b6;color:#033}
+.item.can{border-color:rgba(255,217,31,.6);box-shadow:inset 0 0 0 1px rgba(255,217,31,.25)}
+.section-lab{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.7;margin:4px 2px 0}
+.card{background:rgba(0,0,0,.28);border-radius:14px;padding:12px}
+.note{font-size:12px;opacity:.85;line-height:1.45}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stats div{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 4px;text-align:center;font-size:11px}
+.stats b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.btn{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:800;background:#FFD91F;color:#3a2600;box-shadow:0 4px 0 #b8901c;text-align:center;text-decoration:none;display:block;cursor:pointer}
+.btn.ghost{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.btn.zalo{background:#0068ff;color:#fff;box-shadow:0 4px 0 #0040a0}
+.btn.dark{background:#16171B;color:#FFD91F;box-shadow:0 4px 0 #000}
+.row-btns{display:flex;gap:8px}.row-btns .btn{flex:1}
+.rv-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.12)}
+.rv-item:first-child{border-top:0}
+.rv-item .t{flex:1;min-width:0}
+.rv-item .zh{font-size:18px;font-weight:800}
+.rv-item .py{font-size:12px;color:#ffe9a8;font-style:italic}
+.rv-item .vi{font-size:12px;opacity:.88}
+.rv-item button{border:0;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;font-size:18px;width:42px;height:42px;flex:none}
+.found-grid{display:flex;flex-wrap:wrap;gap:6px}
+.found-grid span{background:rgba(255,255,255,.12);border-radius:10px;padding:5px 8px;font-size:13px;font-weight:700}
+.found-grid span.no{opacity:.35}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.toggle input{width:22px;height:22px}
+/* sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,10,20,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
+.sheet-bg.on{display:flex}
+.sheet{width:100%;max-width:480px;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#174f6f,#0d2a3d);border-top:3px solid #FFD91F;border-radius:22px 22px 0 0;padding:12px 12px 22px;animation:slideUp .28s ease-out}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sh-head{display:flex;gap:10px;align-items:center}
+.sh-head .av{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:28px;flex:none;overflow:hidden}
+.sh-head .nm{flex:1;min-width:0}
+.sh-head .nm b{display:block;font-size:15px}
+.sh-head .nm small{font-size:12px;opacity:.8}
+.sh-close{border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:12px;width:38px;height:38px;font-size:16px;flex:none}
+.combo-tag{font-weight:900;color:#FFD91F;font-size:13px;white-space:nowrap}
+.tipbar{height:5px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden;margin:10px 0 2px}
+.tipbar i{display:block;height:100%;width:100%;background:#FFD91F;transform-origin:left center}
+.tiplab{font-size:11px;opacity:.75}
+.qcard{background:rgba(0,0,0,.25);border-radius:14px;padding:12px;margin-top:8px}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#ffd34d;color:#3a2600;margin-right:4px}
+.tag.listen{background:#2ec4b6;color:#042}.tag.order{background:#a78bfa;color:#1a0a3a}.tag.fill{background:#fb923c;color:#3a1600}.tag.situ{background:#60a5fa;color:#0a1a3a}.tag.buy{background:#3dff8a;color:#043}
+.q{font-size:17px;font-weight:700;line-height:1.35;margin-top:6px}
+.qzh{font-size:24px;font-weight:800;margin-top:6px}
+.qpy{color:#ffe9a8;font-style:italic;font-size:14px;margin-top:2px}
+.qvi{opacity:.9;font-size:14px;margin-top:2px}
+.opts{display:grid;gap:7px;margin-top:10px}
+.opt{text-align:left;font-size:15px;padding:12px;border-radius:12px;border:2px solid transparent;background:#fff;color:#123;font-weight:700;cursor:pointer}
+.opt:active{transform:scale(.98)}
+.opt .py,.opt .vi-ans{display:none;font-size:12px;font-weight:500;margin-top:2px}
+.opt .py{font-style:italic;color:#1e5aa8}
+.opts.revealed .opt .py,.opts.revealed .opt .vi-ans{display:block}
+.opt.ok{background:#3dd17a;color:#fff;animation:okPop .32s ease-out}
+.opt.no{background:#ff5a5a;color:#fff;animation:noShake .3s}
+.opt.ok .py,.opt.no .py{color:#fff}
+@keyframes okPop{40%{transform:scale(1.04)}}
+@keyframes noShake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:0;border-radius:999px;padding:8px 12px;font-weight:800;font-size:15px;background:#fff;color:#123;cursor:pointer}
+.chip.used{opacity:.3}
+.chip .py{display:block;font-size:10px;font-weight:500;opacity:.75;font-style:italic}
+.order-slot{min-height:46px;border:2px dashed rgba(255,255,255,.35);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.order-slot .chip{background:#ffd34d;color:#3a2600}
+.order-hint{font-size:12px;opacity:.75;margin-top:4px}
+.explain{margin-top:10px;padding:12px;border-radius:14px;background:linear-gradient(180deg,rgba(255,90,90,.18),rgba(0,0,0,.3));border:2px solid rgba(255,120,120,.55);animation:slideUp .25s ease-out}
+.explain .lab{font-size:12px;font-weight:800;color:#ffb4a8;text-transform:uppercase}
+.explain .qzh{font-size:22px}
+.explain .row-btns{margin-top:10px}
+/* overlays */
+.overlay{position:fixed;inset:0;background:rgba(0,10,20,.72);display:none;align-items:center;justify-content:center;z-index:70;padding:16px;backdrop-filter:blur(3px)}
+.overlay.on{display:flex}
+.ov-card{background:radial-gradient(circle at 50% 0%,#2a6d93,#0d2a3d 72%);border:3px solid #FFD91F;border-radius:22px;padding:18px 14px 14px;width:100%;max-width:400px;text-align:center;animation:clearIn .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes clearIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.ov-card h3{font-size:26px;font-weight:900;color:#FFD91F;text-shadow:0 3px 0 #16171B}
+.ov-card .big{font-size:56px;margin:6px 0;animation:spinIn .8s cubic-bezier(.2,1.5,.4,1)}
+@keyframes spinIn{from{transform:scale(.2) rotate(-200deg)}to{transform:none}}
+.ov-card p{font-size:14px;opacity:.92;line-height:1.45;margin:6px 0}
+.ov-card .btn{margin-top:10px}
+.unlock-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+.unlock-list span{background:rgba(255,255,255,.12);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700}
+.fx-layer{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
+.fx-dot{position:absolute;left:0;top:0;width:9px;height:9px;border-radius:50%;will-change:transform,opacity}
+.fx-txt{position:absolute;left:0;top:0;font-weight:900;font-size:20px;color:#FFD91F;text-shadow:0 2px 0 #16171B;white-space:nowrap;will-change:transform,opacity}
+.fx-coin{position:absolute;left:0;top:0;font-size:20px;will-change:transform,opacity}
+.toast{position:absolute;left:50%;bottom:10px;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.72);padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;transition:.25s;white-space:nowrap;pointer-events:none;max-width:94%;overflow:hidden;text-overflow:ellipsis}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){.pill.coin.bump,.serve-btn.pulse,.ov-card,.sheet,.wbub{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+ <header class="hud">
+  <div class="pill coin" id="coinPill"><span>🪙</span><b id="coinTxt">0</b></div>
+  <div class="pill star"><div class="top"><span id="starTxt">★</span><span id="starNext" style="opacity:.8"></span></div><div class="mini"><i id="starBar"></i></div></div>
+  <div class="pill" id="streakPill" title="Chuỗi ngày học">🔥 0</div>
+  <button class="pill btn-ico" id="muteBtn" type="button" aria-label="Tắt/bật tiếng">🔊</button>
+ </header>
+ <div class="scene-wrap" id="sceneWrap">
+  <canvas id="scene" aria-label="Phố Bãi Cháy và khách sạn Bảo Khựa"></canvas>
+  <div class="scene-tip" id="sceneTip">↔ Kéo xem phố · chạm để học từ</div>
+  <button class="zoom" id="zoomBtn" type="button" title="Phóng to / thu nhỏ">🔍</button>
+  <button class="clock" id="clockBtn" type="button" title="Đổi tốc độ thời gian">🕘 00:00</button>
+  <div class="toast" id="toast"></div>
+ </div>
+ <button class="serve-btn pulse" id="serveBtn" type="button">🛎️ Phục vụ khách <small id="queueTxt"></small></button>
+ <nav class="tabs">
+  <button type="button" data-tab="build" class="on">🏗️ Xây dựng</button>
+  <button type="button" data-tab="review">📒 Sổ ôn</button>
+  <button type="button" data-tab="me">🏆 Thành tích</button>
+ </nav>
+ <section class="panel on" id="tab-build"></section>
+ <section class="panel" id="tab-review"></section>
+ <section class="panel" id="tab-me"></section>
+</div>
+
+<div class="sheet-bg" id="sheet" role="dialog" aria-modal="true">
+ <div class="sheet">
+  <div class="sh-head">
+   <div class="av" id="shAv"></div>
+   <div class="nm"><b id="shName"></b><small id="shSub"></small></div>
+   <span class="combo-tag" id="shCombo"></span>
+   <button class="sh-close" id="shClose" type="button" aria-label="Đóng">✕</button>
+  </div>
+  <div id="tipWrap"><div class="tipbar"><i id="tipBar"></i></div><div class="tiplab">⚡ Trả lời trong 5 giây → khách boa thêm 50%</div></div>
+  <div class="qcard">
+   <div id="qTags"></div>
+   <div class="q" id="qText"></div>
+   <div class="qzh" id="qZh"></div>
+   <div class="qpy" id="qPy"></div>
+   <div class="qvi" id="qVi"></div>
+   <div id="qExtra"></div>
+  </div>
+  <div class="opts" id="opts"></div>
+  <div id="explainSlot"></div>
+ </div>
+</div>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true">
+ <div class="ov-card">
+  <div class="big" id="ovBig">⭐</div>
+  <h3 id="ovTitle"></h3>
+  <div id="ovBody"></div>
+  <button class="btn" type="button" id="ovBtn">Tiếp tục</button>
+ </div>
+</div>
+<div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+
+<script>
+(() => {
+'use strict';
+/* ===== CẤU HÌNH ===== */
+const GAME_URL = 'https://ngoquocgiabao-hy.github.io/Baokhua/khachsan.html';
+const ZALO_LINK = 'https://zalo.me/g/16yx8ptwane8ggwrnyxl';
+const GOOGLE_FORM_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform';
+const FORM_UTM = 'utm_source=game_khachsan&utm_campaign=lop_0211';
+const SAVE_KEY = 'baokhua_hotel_v1';
+const FAST_SECONDS = 5;
+const STAR_PTS = [0, 50, 160, 400, 750, 1200, 1800, 2600, 3600, 5000];   // thang 10 sao
+const FREE_MAX_STAR = 5;                          // bản hiện tại: tối đa 5★, 6★–10★ khoá
+const MEMBER_PRICE = '299.000đ', MEMBER_3M = '99.000đ', SVIP_PRICE = '5.000.000đ';
+const FORM_UTM_MEMBER = 'utm_source=game_khachsan&utm_campaign=hoivien_nam';
+const PITCH_AFTER_SERVES = 12;                    // mỗi ngày nhắc hội viên 1 lần sau 12 khách
+const IDLE_EVERY_MS = 15000;
+const OFFLINE_CAP_MIN = 60;
+const GAME_DAY_MS = 12 * 60 * 1000;          // chế độ nhanh: 1 ngày game = 12 phút thật
+
+/* ===== NGÂN HÀNG CÂU HỎI (dùng chung với game Đánh Boss) ===== */
+/** Schema bắt buộc (9 field) → runtime. Field phụ: type/topic/zh/optionPy/optionVi/words/... */
+function normalizeQ(raw) {
+  if (!raw) return raw;
+  if (raw.cau_hoi == null && (raw.q != null || raw.options != null)) return raw;
+  const type = raw.type || 'mc';
+  const topic = raw.topic || (String(raw.chang||'').includes('Cẩm') ? 'factory' : 'hotel');
+  const answer = (type === 'order' && raw.answerOrder) ? raw.answerOrder : (raw.dung != null ? raw.dung : 0);
+  const q = {
+    id: raw.id, chang: raw.chang, ngon_ngu: raw.ngon_ngu || 'zh', do_kho: raw.do_kho || 1,
+    type, topic,
+    q: raw.cau_hoi,
+    options: raw.dap_an || [],
+    answer,
+    py: raw.pinyin || '',
+    vi: raw.giai_thich || '',
+    zh: raw.zh || '',
+    optionPy: raw.optionPy, optionVi: raw.optionVi,
+    words: raw.words, wordPy: raw.wordPy, wordVi: raw.wordVi,
+    speak: raw.speak, blankHint: raw.blankHint, stage: raw.stage
+  };
+  if (!q.zh) {
+    if (type === 'order' && q.options[0]) q.zh = q.options[0];
+    else if (typeof answer === 'number' && q.options[answer]) q.zh = q.options[answer];
+  }
+  return q;
+}
+function normalizeQuestions(arr) { return (arr || []).map(normalizeQ); }
+
+const QUESTIONS_RAW = [
+  {id:"bc-01",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách đến quầy lễ tân — câu nào hỏi số người trong đoàn?",dap_an:["请问您几位？","请问您住几天？","请问您贵姓？","请问您有预订吗？"],dung:0,pinyin:"Qǐngwèn nín jǐ wèi?",giai_thich:"Xin hỏi quý khách có mấy vị?",type:"situ",topic:"hotel",zh:"请问您几位？",optionPy:["Qǐngwèn nín jǐ wèi?","Qǐngwèn nín zhù jǐ tiān?","Qǐngwèn nín guìxìng?","Qǐngwèn nín yǒu yùdìng ma?"],optionVi:["Xin hỏi mấy vị?","Quý khách ở mấy ngày?","Quý khách họ gì?","Quý khách đặt phòng trước chưa?"]},
+  {id:"bc-02",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách muốn làm gì?",dap_an:["Nhận phòng","Trả phòng","Gọi taxi","Đặt bàn"],dung:0,pinyin:"Wǒ xiǎng bànlǐ rùzhù.",giai_thich:"Tôi muốn làm thủ tục nhận phòng.",type:"mc",topic:"hotel",zh:"我想办理入住。"},
+  {id:"bc-03",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Trả phòng” tiếng Trung là gì?",dap_an:["入住","退房","早餐","护照"],dung:1,pinyin:"tuìfáng",giai_thich:"Trả phòng / check-out",type:"mc",topic:"hotel",zh:"退房",optionPy:["rùzhù","tuìfáng","zǎocān","hùzhào"],optionVi:["Nhận phòng","Trả phòng","Bữa sáng","Hộ chiếu"]},
+  {id:"bc-04",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Lễ tân đang yêu cầu gì?",dap_an:["Xin số điện thoại","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"],dung:1,pinyin:"Qǐng chūshì nín de hùzhào.",giai_thich:"Xin xuất trình hộ chiếu của anh/chị.",type:"mc",topic:"hotel",zh:"请出示您的护照。"},
+  {id:"bc-05",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi gì?",dap_an:["Mấy giờ ăn sáng","Phòng giá bao nhiêu","Wifi mật khẩu gì","Bể bơi ở đâu"],dung:0,pinyin:"Zǎocān jǐ diǎn kāishǐ?",giai_thich:"Bữa sáng bắt đầu lúc mấy giờ?",type:"mc",topic:"hotel",zh:"早餐几点开始？"},
+  {id:"bc-06",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Phòng khách ở đâu?",dap_an:["Tầng 1","Tầng 6","Tầng 8","Tầng 10"],dung:2,pinyin:"Nín de fángjiān zài bā lóu.",giai_thich:"Phòng của anh/chị ở tầng tám.",type:"mc",topic:"hotel",zh:"您的房间在八楼。"},
+  {id:"bc-07",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Giờ trả phòng là mấy giờ?",dap_an:["10 giờ sáng","12 giờ trưa","2 giờ chiều","6 giờ tối"],dung:1,pinyin:"Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.",giai_thich:"Giờ trả phòng là 12 giờ trưa.",type:"mc",topic:"hotel",zh:"退房时间是中午十二点。"},
+  {id:"bc-08",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Thang máy ở bên kia","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"],dung:0,pinyin:"Diàntī zài nàbiān.",giai_thich:"Thang máy ở bên kia.",type:"listen",topic:"hotel",zh:"电梯在那边。",speak:"电梯在那边。"},
+  {id:"bc-09",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe câu khách nói — họ cần gì?",dap_an:["Giờ trả phòng","Mật khẩu WiFi","Giá phòng","Số tầng"],dung:1,pinyin:"WiFi mìmǎ shì duōshǎo?",giai_thich:"Mật khẩu WiFi là bao nhiêu?",type:"listen",topic:"hotel",zh:"WiFi密码是多少？",speak:"WiFi密码是多少？"},
+  {id:"cp-01",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe — công nhân hỏi gì?",dap_an:["洗手间在哪里？","几点下班？","机器坏了。","今天加班。"],dung:0,pinyin:"Xǐshǒujiān zài nǎlǐ?",giai_thich:"Nhà vệ sinh ở đâu?",type:"listen",topic:"factory",zh:"洗手间在哪里？",optionPy:["Xǐshǒujiān zài nǎlǐ?","Jǐ diǎn xiàbān?","Jīqì huài le.","Jīntiān jiābān."],optionVi:["Nhà vệ sinh ở đâu?","Mấy giờ tan ca?","Máy hỏng rồi","Hôm nay làm thêm"],speak:"洗手间在哪里？"},
+  {id:"bc-10",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa.",dap_an:["Đi xe buýt đi làm","Đi bộ về nhà","Ăn cơm trưa","Học tiếng Trung"],dung:0,pinyin:"Wǒ měitiān zuò gōngjiāochē qù shàngbān.",giai_thich:"Tôi mỗi ngày đi xe buýt đi làm.",type:"listen",topic:"hsk",zh:"我每天坐公交车去上班。",speak:"我每天坐公交车去上班。"},
+  {id:"bc-11",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp thành câu khi đưa thẻ phòng.",dap_an:["这是您的房卡。","请出示护照。","我要退房。","电梯在那边。"],dung:0,pinyin:"Zhè shì nín de fángkǎ.",giai_thich:"Đây là thẻ phòng của anh/chị.",type:"order",topic:"hotel",zh:"这是您的房卡。",words:["这是","您的","房卡"],wordPy:["Zhè shì","nín de","fángkǎ"],wordVi:["Đây là","của quý khách","thẻ phòng"],answerOrder:["这是","您的","房卡"]},
+  {id:"bc-12",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp lời đáp khi khách cảm ơn.",dap_an:["不客气。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Bú kèqi.",giai_thich:"Không có gì.",type:"order",topic:"hotel",zh:"不客气。",words:["不","客气"],wordPy:["Bú","kèqi"],wordVi:["không","khách sáo"],answerOrder:["不","客气"]},
+  {id:"cp-02",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp: “Xin đeo kính bảo hộ.”",dap_an:["请戴护目镜。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Qǐng dài hùmùjìng.",giai_thich:"Xin hãy đeo kính bảo hộ.",type:"order",topic:"factory",zh:"请戴护目镜。",words:["请","戴","护目镜"],wordPy:["Qǐng","dài","hùmùjìng"],wordVi:["xin","đeo","kính bảo hộ"],answerOrder:["请","戴","护目镜"]},
+  {id:"bc-13",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp câu (HSK 1 · luyện tập, không phải đề chính thức): Tôi muốn học tiếng Trung.",dap_an:["我想学汉语。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Wǒ xiǎng xué Hànyǔ.",giai_thich:"Tôi muốn học tiếng Trung.",type:"order",topic:"hsk",zh:"我想学汉语。",words:["我","想","学","汉语"],wordPy:["Wǒ","xiǎng","xué","Hànyǔ"],wordVi:["tôi","muốn","học","tiếng Hán"],answerOrder:["我","想","学","汉语"]},
+  {id:"bc-14",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền từ: Thang máy tiếng Trung là ____.",dap_an:["电梯","房间","前台","海边"],dung:0,pinyin:"diàntī",giai_thich:"Thang máy",type:"fill",topic:"hotel",zh:"____",optionPy:["diàntī","fángjiān","qiántái","hǎibiān"],optionVi:["Thang máy","Phòng","Quầy lễ tân","Bờ biển"],blankHint:"thang máy"},
+  {id:"bc-15",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống.",dap_an:["八","六","七","九"],dung:0,pinyin:"Nín de fángjiān zài ____ lóu.",giai_thich:"Phòng anh/chị ở tầng …",type:"fill",topic:"hotel",zh:"您的房间在____楼。",optionPy:["bā","liù","qī","jiǔ"],optionVi:["Tám","Sáu","Bảy","Chín"],blankHint:"số tầng"},
+  {id:"cp-03",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền: Chúng tôi tan ca lúc ____ giờ.",dap_an:["五","三","九","零"],dung:0,pinyin:"Wǒmen ____ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc … giờ.",type:"fill",topic:"factory",zh:"我们____点下班。",optionPy:["wǔ","sān","jiǔ","líng"],optionVi:["Năm","Ba","Chín","Không"],blankHint:"giờ"},
+  {id:"bc-16",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["坐公交车","睡觉","游泳","唱歌"],dung:0,pinyin:"Wǒ ____ qù shàngbān.",giai_thich:"Tôi đi … đi làm.",type:"fill",topic:"hsk",zh:"我____去上班。",optionPy:["zuò gōngjiāochē","shuìjiào","yóuyǒng","chànggē"],optionVi:["Đi xe buýt","Ngủ","Bơi","Hát"],blankHint:"phương tiện"},
+  {id:"bc-17",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách cảm ơn sau khi nhận phòng. Bạn đáp?",dap_an:["不用谢。","对不起。","再见。","没有。"],dung:0,pinyin:"Bú yòng xiè.",giai_thich:"Không cần cảm ơn.",type:"situ",topic:"hotel",zh:"不用谢。",optionPy:["Bú yòng xiè.","Duìbuqǐ.","Zàijiàn.","Méiyǒu."],optionVi:["Không cần cảm ơn","Xin lỗi","Tạm biệt","Không có"]},
+  {id:"bc-18",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi đường ra biển. Câu nào tự nhiên?",dap_an:["往海边走。","请出示护照。","电梯在那边。","前台在这里。"],dung:0,pinyin:"Wǎng hǎibiān zǒu.",giai_thich:"Đi về phía biển.",type:"situ",topic:"hotel",zh:"往海边走。",optionPy:["Wǎng hǎibiān zǒu.","Qǐng chūshì hùzhào.","Diàntī zài nàbiān.","Qiántái zài zhèlǐ."],optionVi:["Đi về phía biển","Xin hộ chiếu","Thang máy bên kia","Quầy lễ tân ở đây"]},
+  {id:"cp-04",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Công nhân hỏi giờ tan ca. Bạn đáp?",dap_an:["我们五点下班。","我们五点上班。","今天加班。","请去打卡。"],dung:0,pinyin:"Wǒmen wǔ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc 5 giờ.",type:"situ",topic:"factory",zh:"我们五点下班。",optionPy:["Wǒmen wǔ diǎn xiàbān.","Wǒmen wǔ diǎn shàngbān.","Jīntiān jiābān.","Qǐng qù dǎkǎ."],optionVi:["Tan ca lúc 5 giờ","Đi làm lúc 5 giờ","Hôm nay làm thêm","Xin đi chấm công"]},
+  {id:"cp-05",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nhắc an toàn trước khi vào xưởng — câu nào đúng?",dap_an:["请戴安全帽。","请去打卡。","这是次品。","仓库在那边。"],dung:0,pinyin:"Qǐng dài ānquánmào.",giai_thich:"Xin hãy đội mũ bảo hộ.",type:"situ",topic:"factory",zh:"请戴安全帽。",optionPy:["Qǐng dài ānquánmào.","Qǐng qù dǎkǎ.","Zhè shì cìpǐn.","Cāngkù zài nàbiān."],optionVi:["Xin đội mũ bảo hộ","Xin đi chấm công","Đây là hàng kém","Kho ở bên kia"]},
+  {id:"cp-06",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Máy dừng — bạn báo tổ trưởng thế nào?",dap_an:["机器坏了。","机器在仓库。","我要加班。","质量有问题。"],dung:0,pinyin:"Jīqì huài le.",giai_thich:"Máy hỏng rồi.",type:"situ",topic:"factory",zh:"机器坏了。",optionPy:["Jīqì huài le.","Jīqì zài cāngkù.","Wǒ yào jiābān.","Zhìliàng yǒu wèntí."],optionVi:["Máy hỏng rồi","Máy ở trong kho","Tôi muốn làm thêm","Chất lượng có vấn đề"]},
+  {id:"bc-19",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bạn tự giới thiệu trong lớp (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["我叫宝，我是越南人。","我要办理入住。","请戴安全帽。","退房时间是十二点。"],dung:0,pinyin:"Wǒ jiào Bǎo, wǒ shì Yuènán rén.",giai_thich:"Tôi tên Bảo, tôi là người Việt Nam.",type:"situ",topic:"hsk",zh:"我叫宝，我是越南人。",optionPy:["Wǒ jiào Bǎo, wǒ shì Yuènán rén.","Wǒ yào bànlǐ rùzhù.","Qǐng dài ānquánmào.","Tuìfáng shíjiān shì shí'èr diǎn."],optionVi:["Tôi tên Bảo, người Việt","Tôi muốn nhận phòng","Đội mũ bảo hộ","Trả phòng 12h"]},
+  {id:"bc-20",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi giá món ăn ở quán — câu nào đúng?",dap_an:["这个多少钱？","洗手间在哪里？","请出示护照。","机器坏了。"],dung:0,pinyin:"Zhège duōshǎo qián?",giai_thich:"Cái này bao nhiêu tiền?",type:"situ",topic:"hsk",zh:"这个多少钱？",optionPy:["Zhège duōshǎo qián?","Xǐshǒujiān zài nǎlǐ?","Qǐng chūshì hùzhào.","Jīqì huài le."],optionVi:["Bao nhiêu tiền?","WC ở đâu?","Xin hộ chiếu","Máy hỏng"]},
+  {id:"bc-21",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Chọn nghĩa đúng của 学习",dap_an:["Học tập","Ngủ","Chạy","Ăn"],dung:0,pinyin:"xuéxí",giai_thich:"Học / học tập",type:"mc",topic:"hsk",zh:"学习"},
+  {id:"cp-07",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Tan ca” tiếng Trung là?",dap_an:["上班","下班","加班","仓库"],dung:1,pinyin:"xiàbān",giai_thich:"Tan ca / hết giờ làm",type:"mc",topic:"factory",zh:"下班",optionPy:["shàngbān","xiàbān","jiābān","cāngkù"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Kho hàng"]},
+  {id:"cp-08",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Mũ bảo hộ” tiếng Trung là?",dap_an:["安全帽","次品","打卡","加班"],dung:0,pinyin:"ānquánmào",giai_thich:"Mũ bảo hộ",type:"mc",topic:"factory",zh:"安全帽",optionPy:["ānquánmào","cìpǐn","dǎkǎ","jiābān"],optionVi:["Mũ bảo hộ","Hàng kém / phế phẩm","Chấm công","Làm thêm giờ"],stage:2},
+  {id:"cp-09",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Công nhân hỏi phân xưởng. Câu nào đúng?",dap_an:["车间在哪里？","仓库在哪里？","今天加班吗？","机器坏了吗？"],dung:0,pinyin:"Chējiān zài nǎlǐ?",giai_thich:"Phân xưởng ở đâu?",type:"mc",topic:"factory",zh:"车间在哪里？",optionPy:["Chējiān zài nǎlǐ?","Cāngkù zài nǎlǐ?","Jīntiān jiābān ma?","Jīqì huài le ma?"],optionVi:["Phân xưởng ở đâu?","Kho ở đâu?","Hôm nay tăng ca không?","Máy hỏng rồi phải không?"],stage:2},
+  {id:"cp-10",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nghe — QC nói gì về sản phẩm?",dap_an:["这个有质量问题。","请戴安全帽。","今天加班。","机器坏了。"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"listen",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Qǐng dài ānquánmào.","Jīntiān jiābān.","Jīqì huài le."],optionVi:["Cái này có vấn đề chất lượng","Xin đội mũ bảo hộ","Hôm nay làm thêm","Máy hỏng rồi"],speak:"这个有质量问题。",stage:2},
+  {id:"cp-11",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Sắp xếp: Cần sửa chữa.",dap_an:["需要维修。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Xūyào wéixiū.",giai_thich:"Cần sửa chữa.",type:"order",topic:"factory",zh:"需要维修。",words:["需要","维修"],wordPy:["Xūyào","wéixiū"],wordVi:["cần","sửa chữa"],answerOrder:["需要","维修"],stage:2},
+  {id:"cp-12",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Điền: Xin ____ mũ bảo hộ.",dap_an:["戴","吃","看","睡"],dung:0,pinyin:"Qǐng ____ ānquánmào.",giai_thich:"Xin … mũ bảo hộ.",type:"fill",topic:"factory",zh:"请____安全帽。",optionPy:["dài","chī","kàn","shuì"],optionVi:["Đội/mang","Ăn","Nhìn","Ngủ"],blankHint:"động từ",stage:2},
+  {id:"cp-13",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"QC kiểm hàng — câu nào đúng?",dap_an:["这个有质量问题。","请去打卡。","请去仓库。","今天打卡了吗？"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"situ",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Qǐng qù dǎkǎ.","Qǐng qù cāngkù.","Jīntiān dǎkǎ le ma?"],optionVi:["Cái này có vấn đề chất lượng","Xin đi chấm công","Xin đến kho","Hôm nay đã chấm công chưa?"],stage:2},
+  {id:"cp-14",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Đi làm / vào ca” là?",dap_an:["上班","下班","加班","打卡"],dung:0,pinyin:"shàngbān",giai_thich:"Đi làm / vào ca",type:"mc",topic:"factory",zh:"上班",optionPy:["shàngbān","xiàbān","jiābān","dǎkǎ"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Chấm công"],stage:2},
+  {id:"cp-15",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Báo hàng lỗi cho QC — câu nào đúng?",dap_an:["这是不良品。","这是合格品。","请去打卡。","仓库在那边。"],dung:0,pinyin:"Zhè shì bùliángpǐn.",giai_thich:"Đây là hàng lỗi.",type:"situ",topic:"factory",zh:"这是不良品。",optionPy:["Zhè shì bùliángpǐn.","Zhè shì hégépǐn.","Qǐng qù dǎkǎ.","Cāngkù zài nàbiān."],optionVi:["Đây là hàng lỗi","Đây là hàng đạt chuẩn","Xin đi chấm công","Kho ở bên kia"],stage:2},
+  {id:"cp-16",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Trước khi vào xưởng, nhắc công nhân 'Xin đeo kính bảo hộ' nói thế nào?",dap_an:["请戴护目镜","请戴安全帽","请穿工作服","请去打卡"],dung:0,pinyin:"Qǐng dài hùmùjìng",giai_thich:"护目镜 (hùmùjìng) = kính bảo hộ; 安全帽 (ānquánmào) = mũ bảo hộ.",type:"situ",topic:"factory",zh:"请戴护目镜",optionPy:["Qǐng dài hùmùjìng","Qǐng dài ānquánmào","Qǐng chuān gōngzuòfú","Qǐng qù dǎkǎ"],optionVi:["Xin đeo kính bảo hộ","Xin đội mũ bảo hộ","Xin mặc đồ bảo hộ","Xin đi chấm công"]},
+  {id:"cp-17",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bảo công nhân đi chấm công đầu ca nói thế nào?",dap_an:["请去仓库","请去下班","请去打卡","请去加班"],dung:2,pinyin:"Qǐng qù dǎkǎ",giai_thich:"打卡 (dǎkǎ) = chấm công.",type:"situ",topic:"factory",zh:"请去打卡",optionPy:["Qǐng qù cāngkù","Qǐng qù xiàbān","Qǐng qù dǎkǎ","Qǐng qù jiābān"],optionVi:["Xin đến kho","Xin đi tan ca","Xin đi chấm công","Xin đi tăng ca"]},
+  {id:"cp-18",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi đồng nghiệp 'Hôm nay có tăng ca không?' nói thế nào?",dap_an:["今天上班吗？","今天加班吗？","今天下班吗？","今天打卡了吗？"],dung:1,pinyin:"Jīntiān jiābān ma?",giai_thich:"加班 (jiābān) = làm thêm, tăng ca.",type:"situ",topic:"factory",zh:"今天加班吗？",optionPy:["Jīntiān shàngbān ma?","Jīntiān jiābān ma?","Jīntiān xiàbān ma?","Jīntiān dǎkǎ le ma?"],optionVi:["Hôm nay đi làm không?","Hôm nay tăng ca không?","Hôm nay tan ca không?","Hôm nay đã chấm công chưa?"]},
+  {id:"cp-19",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Chỉ đường cho khách: 'Kho hàng ở bên kia' nói thế nào?",dap_an:["车间在那边","办公室在那边","仓库在那边","洗手间在那边"],dung:2,pinyin:"Cāngkù zài nàbiān",giai_thich:"仓库 (cāngkù) = kho; 车间 (chējiān) = phân xưởng.",type:"situ",topic:"factory",zh:"仓库在那边",stage:2,optionPy:["Chējiān zài nàbiān","Bàngōngshì zài nàbiān","Cāngkù zài nàbiān","Xǐshǒujiān zài nàbiān"],optionVi:["Phân xưởng bên kia","Văn phòng bên kia","Kho bên kia","WC bên kia"]},
+  {id:"cp-20",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"QC lấy hàng để đối chiếu, nói 'Đây là hàng mẫu' thế nào?",dap_an:["这是次品","这是样品","这是成品","这是原料"],dung:1,pinyin:"Zhè shì yàngpǐn",giai_thich:"样品 (yàngpǐn) = hàng mẫu; 成品 (chéngpǐn) = thành phẩm; 原料 (yuánliào) = nguyên liệu.",type:"situ",topic:"factory",zh:"这是样品",stage:2,optionPy:["Zhè shì cìpǐn","Zhè shì yàngpǐn","Zhè shì chéngpǐn","Zhè shì yuánliào"],optionVi:["Đây là hàng kém","Đây là hàng mẫu","Đây là thành phẩm","Đây là nguyên liệu"]},
+  {id:"cp-21",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nói với đoàn kiểm tra: 'Xin đợi một chút, giám đốc đến ngay' thế nào?",dap_an:["请稍等，工人马上到","请稍等，机器马上修好","请稍等，仓库马上开门","请稍等，老板马上到"],dung:3,pinyin:"Qǐng shāo děng, lǎobǎn mǎshàng dào",giai_thich:"老板 (lǎobǎn) = sếp, giám đốc; 马上 (mǎshàng) = ngay.",type:"situ",topic:"factory",zh:"请稍等，老板马上到",stage:2,optionPy:["Qǐng shāo děng, gōngrén mǎshàng dào","Qǐng shāo děng, jīqì mǎshàng xiū hǎo","Qǐng shāo děng, cāngkù mǎshàng kāimén","Qǐng shāo děng, lǎobǎn mǎshàng dào"],optionVi:["Xin đợi, công nhân đến ngay","Xin đợi, máy sửa xong ngay","Xin đợi, kho mở ngay","Xin đợi, giám đốc đến ngay"]},
+  {id:"cp-22",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Đoàn PCCC sắp vào. Nhắc tổ trưởng 'Hãy chuẩn bị bình chữa cháy' nói thế nào?",dap_an:["请准备安全帽","请准备灭火器","请准备打卡机","请准备样品"],dung:1,pinyin:"Qǐng zhǔnbèi mièhuǒqì",giai_thich:"灭火器 (mièhuǒqì) = bình chữa cháy.",type:"situ",topic:"factory",zh:"请准备灭火器",stage:2,optionPy:["Qǐng zhǔnbèi ānquánmào","Qǐng zhǔnbèi mièhuǒqì","Qǐng zhǔnbèi dǎkǎjī","Qǐng zhǔnbèi yàngpǐn"],optionVi:["Xin chuẩn bị mũ bảo hộ","Xin chuẩn bị bình chữa cháy","Xin chuẩn bị máy chấm công","Xin chuẩn bị hàng mẫu"]},
+  {id:"cp-23",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Báo sếp Trung Quốc: 'Lô hàng này đã đạt kiểm tra chất lượng' nói thế nào?",dap_an:["这批货有质量问题","这批货是次品","这批货已通过质检","这批货还没生产"],dung:2,pinyin:"Zhè pī huò yǐ tōngguò zhìjiǎn",giai_thich:"这批货 (zhè pī huò) = lô hàng này; 通过 (tōngguò) = đạt; 质检 (zhìjiǎn) = kiểm tra chất lượng.",type:"situ",topic:"factory",zh:"这批货已通过质检",stage:2,optionPy:["Zhè pī huò yǒu zhìliàng wèntí","Zhè pī huò shì cìpǐn","Zhè pī huò yǐ tōngguò zhìjiǎn","Zhè pī huò hái méi shēngchǎn"],optionVi:["Lô này có vấn đề chất lượng","Lô này là hàng kém","Lô này đã đạt QC","Lô này chưa sản xuất"]},
+  {id:"cp-24",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Dẫn đoàn kiểm tra: 'Mời đi theo tôi vào phân xưởng' nói thế nào?",dap_an:["请跟我来车间","请跟我去办公室","请在门口等一下","请先去打卡"],dung:0,pinyin:"Qǐng gēn wǒ lái chējiān",giai_thich:"跟我来 (gēn wǒ lái) = đi theo tôi; 车间 (chējiān) = phân xưởng.",type:"situ",topic:"factory",zh:"请跟我来车间",stage:2,optionPy:["Qǐng gēn wǒ lái chējiān","Qǐng gēn wǒ qù bàngōngshì","Qǐng zài ménkǒu děng yīxià","Qǐng xiān qù dǎkǎ"],optionVi:["Mời theo tôi vào phân xưởng","Mời theo tôi đến văn phòng","Xin đợi ở cửa","Xin chấm công trước"]},
+  {id:"cp-25",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Khi diễn tập PCCC, hô 'Mọi người ra điểm tập kết khẩn cấp!' nói thế nào?",dap_an:["大家去食堂集合！","大家去紧急集合点！","大家回车间加班！","大家去仓库盘点！"],dung:1,pinyin:"Dàjiā qù jǐnjí jíhé diǎn!",giai_thich:"紧急集合点 (jǐnjí jíhé diǎn) = điểm tập kết khẩn cấp.",type:"situ",topic:"factory",zh:"大家去紧急集合点！",stage:2,optionPy:["Dàjiā qù shítáng jíhé!","Dàjiā qù jǐnjí jíhé diǎn!","Dàjiā huí chējiān jiābān!","Dàjiā qù cāngkù pándiǎn!"],optionVi:["Mọi người tập hợp ở nhà ăn!","Mọi người ra điểm tập kết khẩn cấp!","Mọi người về xưởng tăng ca!","Mọi người đến kho kiểm kê!"]}
+];
+const QUESTIONS = normalizeQuestions(QUESTIONS_RAW);
+
+/* ===== CÔNG TRÌNH – mỗi món là 1 từ vựng ===== */
+const ITEMS = [
+  { id:'floor',      zh:'楼层',     py:'lóucéng',        vi:'Tầng lầu',        ico:'🏢', prices:[0,60,160,320,600], max:5, pts:40, star:1, fare:3, eff:'Thêm 1 tầng = 3 phòng · khách ở lại qua đêm' },
+  { id:'desk',       zh:'前台',     py:'qiántái',        vi:'Quầy lễ tân',     ico:'🛎️', price:25,  pts:15, star:1, fare:2, eff:'Quầy viền vàng, sảnh sang hơn · +2 xu mỗi khách' },
+  { id:'palm',       zh:'椰子树',   py:'yēzishù',        vi:'Cây dừa',         ico:'🌴', price:20,  pts:10, star:1, fare:1, eff:'Hàng dừa dọc bờ biển · +1 xu' },
+  { id:'umbrella',   zh:'遮阳伞',   py:'zhēyángsǎn',     vi:'Ô che nắng',      ico:'⛱️', price:35,  pts:15, star:1, fare:1, eff:'Ô và ghế trên bãi cát, có người tắm nắng · +1 xu' },
+  { id:'lights',     zh:'彩灯',     py:'cǎidēng',        vi:'Đèn trang trí',   ico:'✨', price:45,  pts:18, star:1, fare:2, eff:'Dây đèn nhiều màu quanh toà nhà từ 18:00 · +2 xu' },
+  { id:'sign',       zh:'招牌',     py:'zhāopai',        vi:'Biển hiệu',       ico:'🪧', price:60,  pts:30, star:2, fare:3, eff:'Biển neon 宝 HOTEL trên mái · +3 xu' },
+  { id:'lantern',    zh:'灯笼',     py:'dēnglong',       vi:'Đèn lồng',        ico:'🏮', price:50,  pts:25, star:2, fare:2, eff:'Đèn lồng đỏ trước sảnh · +2 xu' },
+  { id:'staff',      zh:'员工',     py:'yuángōng',       vi:'Nhân viên',       ico:'🧑‍💼', prices:[80,200,450], max:3, pts:30, star:2, fare:0, eff:'Đứng đón khách ở cửa · +1 xu mỗi 15 giây, kể cả khi vắng' },
+  { id:'lift',       zh:'电梯',     py:'diàntī',         vi:'Thang máy',       ico:'🛗', price:120, pts:50, star:2, fare:2, eff:'Thang kính chở khách lên phòng · cần cho tầng 3 trở lên' },
+  { id:'gym',        zh:'健身房',   py:'jiànshēnfáng',   vi:'Phòng gym',       ico:'🏋️', price:150, pts:60, star:2, fare:3, need:'floor', eff:'Đổi 1 phòng tầng 1 thành gym, khách tập 6:00–22:00 · +3 xu' },
+  { id:'pool',       zh:'游泳池',   py:'yóuyǒngchí',     vi:'Bể bơi',          ico:'🏊', price:200, pts:80, star:3, fare:5, eff:'Bể bơi trên mái, ban ngày có khách bơi · +5 xu' },
+  { id:'restaurant', zh:'餐厅',     py:'cāntīng',        vi:'Nhà hàng',        ico:'🍜', price:240, pts:90, star:3, fare:4, unlock:'hsk', eff:'Mở nhà hàng tầng trệt · có khách hỏi câu HSK · +4 xu' },
+  { id:'meeting',    zh:'会议室',   py:'huìyìshì',       vi:'Phòng họp',       ico:'🏭', price:260, pts:100, star:3, fare:4, unlock:'factory', need:'floor2', eff:'Đón đoàn kỹ sư nhà máy Cẩm Phả · +4 xu' },
+  { id:'garden',     zh:'屋顶花园', py:'wūdǐng huāyuán', vi:'Vườn trên mái',   ico:'🪴', price:380, pts:130, star:4, fare:5, eff:'Vườn cây và đèn dây trên sân thượng · +5 xu' },
+  { id:'boat',       zh:'游船',     py:'yóuchuán',       vi:'Du thuyền',       ico:'🛥️', price:420, pts:150, star:4, fare:6, eff:'Du thuyền riêng neo ở cầu tàu · +6 xu' },
+  { id:'wheel',      zh:'摩天轮',   py:'mótiānlún',      vi:'Vòng quay',       ico:'🎡', price:650, pts:220, star:4, fare:6, eff:'Vòng quay trên đồi, đổi màu ban đêm · +6 xu' },
+  { id:'fireworks',  zh:'烟花',     py:'yānhuā',         vi:'Pháo hoa',        ico:'🎆', price:900, pts:300, star:5, fare:8, eff:'Pháo hoa trên vịnh 20:00–21:30 mỗi tối · +8 xu' }
+];
+const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+/* 6★–10★: hiện để người chơi thấy trước (và học từ), chưa mua được */
+const VIP_ITEMS = [
+  { star:6,  zh:'水疗中心',     py:'shuǐliáo zhōngxīn',     vi:'Trung tâm spa',            ico:'💆' },
+  { star:6,  zh:'酒吧',         py:'jiǔbā',                 vi:'Quầy bar',                 ico:'🍸' },
+  { star:7,  zh:'高层客房',     py:'gāocéng kèfáng',        vi:'Phòng tầng cao (tầng 6–10)', ico:'🏙️' },
+  { star:7,  zh:'宴会厅',       py:'yànhuìtīng',            vi:'Sảnh tiệc cưới',           ico:'💒' },
+  { star:8,  zh:'无边泳池',     py:'wúbiān yǒngchí',        vi:'Bể bơi vô cực',            ico:'🌊' },
+  { star:8,  zh:'直升机停机坪', py:'zhíshēngjī tíngjīpíng', vi:'Bãi đáp trực thăng',       ico:'🚁' },
+  { star:9,  zh:'私人海滩',     py:'sīrén hǎitān',          vi:'Bãi biển riêng',           ico:'🏝️' },
+  { star:9,  zh:'游艇码头',     py:'yóutǐng mǎtóu',         vi:'Bến du thuyền hạng sang',  ico:'🛳️' },
+  { star:10, zh:'总统套房',     py:'zǒngtǒng tàofáng',      vi:'Phòng tổng thống',         ico:'👑' },
+  { star:10, zh:'机器人管家',   py:'jīqìrén guǎnjiā',       vi:'Robot quản gia',           ico:'🤖' }
+];
+
+/* Từ vựng khi chạm vào phố */
+const WORDS = {
+  sleep:['睡觉','shuìjiào','Đang ngủ'], tv:['看电视','kàn diànshì','Xem TV'], work:['工作','gōngzuò','Làm việc'], read:['看书','kàn shū','Đọc sách'],
+  phone:['打电话','dǎ diànhuà','Gọi điện thoại'], view:['看风景','kàn fēngjǐng','Ngắm cảnh'], empty:['空房','kōngfáng','Phòng trống'],
+  gym:['健身','jiànshēn','Tập gym'], swim:['游泳','yóuyǒng','Bơi'], eat:['吃饭','chī fàn','Ăn cơm'], meeting:['开会','kāihuì','Họp'],
+  desk:['前台','qiántái','Lễ tân'], lift:['电梯','diàntī','Thang máy'], hotel:['酒店','jiǔdiàn','Khách sạn'], rent:['招租','zhāozū','Cho thuê'],
+  cafe:['咖啡馆','kāfēiguǎn','Quán cà phê'], seafood:['海鲜','hǎixiān','Hải sản'], mart:['便利店','biànlìdiàn','Cửa hàng tiện lợi'], ktv:['卡拉OK','kǎlā OK','Karaoke'],
+  moto:['摩托车','mótuōchē','Xe máy'], car:['汽车','qìchē','Ô tô'], taxi:['出租车','chūzūchē','Taxi'], bus:['公交车','gōngjiāochē','Xe buýt'], bike:['自行车','zìxíngchē','Xe đạp'],
+  walk:['散步','sànbù','Đi dạo'], jog:['跑步','pǎobù','Chạy bộ'], vendor:['小贩','xiǎofàn','Người bán hàng rong'], selfie:['自拍','zìpāi','Chụp ảnh tự sướng'],
+  junk:['帆船','fānchuán','Thuyền buồm'], cruise:['游船','yóuchuán','Du thuyền'], sun:['太阳','tàiyáng','Mặt trời'], moon:['月亮','yuèliang','Mặt trăng'],
+  bay:['下龙湾','Xiàlóng Wān','Vịnh Hạ Long'], beach:['沙滩','shātān','Bãi cát'], palm:['椰子树','yēzishù','Cây dừa'], lamp:['路灯','lùdēng','Đèn đường'],
+  road:['马路','mǎlù','Đường phố'], wheel:['摩天轮','mótiānlún','Vòng quay'], firework:['烟花','yānhuā','Pháo hoa'], pool:['游泳池','yóuyǒngchí','Bể bơi'],
+  garden:['花园','huāyuán','Vườn hoa'], staff:['服务员','fúwùyuán','Nhân viên phục vụ'], guest:['客人','kèrén','Khách']
+};
+
+const GUEST_TYPES = {
+  hotel:   [{ n:'Khách du lịch Quảng Tây', a:'🧳' }, { n:'Cặp đôi Nam Ninh', a:'💑' }, { n:'Gia đình Thượng Hải', a:'👨‍👩‍👧' }, { n:'Anh Lý – doanh nhân', a:'💼' }, { n:'Chị Vương – blogger du lịch', a:'📸' }],
+  hsk:     [{ n:'Thực khách nhà hàng', a:'🍜' }, { n:'Bạn sinh viên học tiếng Trung', a:'📚' }],
+  factory: [{ n:'Kỹ sư nhà máy Cẩm Phả', a:'👷' }, { n:'Đoàn kiểm tra QC', a:'🔍' }, { n:'Tổ trưởng xưởng', a:'🏭' }]
+};
+const TOPIC_LABEL = { hotel:'Khách sạn', factory:'Nhà máy', hsk:'Nhà hàng · HSK' };
+const TYPE_LABEL = { mc:'Trắc nghiệm', listen:'Nghe', order:'Sắp xếp', fill:'Điền từ', situ:'Tình huống' };
+
+/* ===== tiện ích ===== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const hasHan = s => /[一-鿿]/.test(String(s || ''));
+const pick = a => a[(Math.random() * a.length) | 0];
+const rnd = (a, b) => a + Math.random() * (b - a);
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function vib(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+function localDay(off = 0) { const d = new Date(Date.now() + off * 86400000); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function withUtm(u, qs) { return u + (u.includes('?') ? '&' : '?') + qs; }
+
+/* ===== lưu tiến độ ===== */
+const DEFAULT = { coins: 30, pts: 0, own: { floor: 1 }, mem: {}, found: {}, streak: { last: '', n: 0 }, served: 0, correct: 0, bestCombo: 0, lastSeen: 0, intro: false, vipDay: '', star: 1, muted: false, clock: 'fast', lowPower: false, checkouts: 0 };
+let S;
+try { S = Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { S = Object.assign({}, DEFAULT); }
+['own', 'mem', 'found', 'streak'].forEach(k => { if (!S[k] || typeof S[k] !== 'object') S[k] = JSON.parse(JSON.stringify(DEFAULT[k])); });
+if (!S.own.floor) S.own.floor = 1;   // khách sạn 1★ luôn có sẵn 1 tầng = 3 phòng
+function save() { S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+
+const owned = id => S.own[id] || 0;
+function starOf(pts) { let s = 0; STAR_PTS.forEach(t => { if (pts >= t) s++; }); return Math.max(1, Math.min(S.vip ? 10 : FREE_MAX_STAR, s)); }
+const star = () => starOf(S.pts);
+const floors = () => owned('floor');
+function fare() { let f = 8 + 2 * star(); ITEMS.forEach(it => { f += (it.fare || 0) * owned(it.id); }); return f; }
+const queueCap = () => Math.min(4, 2 + floors());
+function topics() { const t = ['hotel']; if (owned('restaurant')) t.push('hsk'); if (owned('meeting')) t.push('factory'); return t; }
+function priceOf(it) { return it.prices ? it.prices[Math.min(owned(it.id), it.prices.length - 1)] : it.price; }
+const maxOf = it => it.max || 1;
+function needOf(it) {
+  if (it.id === 'floor' && floors() >= 2 && !owned('lift')) return 'Cần 电梯';
+  if (it.need === 'floor' && floors() < 1) return 'Cần 1 tầng';
+  if (it.need === 'floor2' && floors() < 2) return 'Cần 2 tầng';
+  return null;
+}
+
+/* ===== ĐỒNG HỒ GAME ===== */
+function nowHour() { const d = new Date(); return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600; }
+let clk = { real: Date.now(), hour: nowHour() };
+function gameHour() { if (S.clock === 'real') return nowHour(); return ((clk.hour + (Date.now() - clk.real) / GAME_DAY_MS * 24) % 24 + 24) % 24; }
+function setHour(h) { clk = { real: Date.now(), hour: ((h % 24) + 24) % 24 }; }
+const inHours = (h, a, b) => a <= b ? (h >= a && h < b) : (h >= a || h < b);
+const smooth = t => { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); };
+function darkness(h) {
+  if (h >= 7.2 && h < 16.8) return 0;
+  if (h >= 16.8 && h < 19.6) return smooth((h - 16.8) / 2.8) * .62;
+  if (h >= 4.6 && h < 7.2) return (1 - smooth((h - 4.6) / 2.6)) * .62;
+  return .62;
+}
+const SKY_KEYS = [[0,'#060c22','#17254f'],[4.4,'#0b1435','#26305e'],[5.5,'#2a3270','#a06f8c'],[6.3,'#5a86c8','#ffc58a'],[7.5,'#5fb6ee','#cdeeff'],[12,'#47acef','#d9f3ff'],[16.3,'#58a6e0','#f6dcae'],[17.6,'#4a5294','#ff9e6a'],[18.6,'#252c66','#b25e74'],[19.6,'#0e173e','#2a346c'],[24,'#060c22','#17254f']];
+const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const SKY_RGB = SKY_KEYS.map(k => [k[0], hexRgb(k[1]), hexRgb(k[2])]);
+function mix(a, b, t) { return `rgb(${Math.round(a[0] + (b[0] - a[0]) * t)},${Math.round(a[1] + (b[1] - a[1]) * t)},${Math.round(a[2] + (b[2] - a[2]) * t)})`; }
+function skyAt(h) {
+  for (let i = 0; i < SKY_RGB.length - 1; i++) {
+    const a = SKY_RGB[i], b = SKY_RGB[i + 1];
+    if (h >= a[0] && h <= b[0]) { const t = (h - a[0]) / (b[0] - a[0] || 1); return [mix(a[1], b[1], t), mix(a[2], b[2], t)]; }
+  }
+  return ['#060c22', '#17254f'];
+}
+function shade(hex, d) { const n = parseInt(hex.slice(1), 16); const c = v => Math.max(0, Math.min(255, v + d)); return '#' + ((c(n >> 16) << 16) | (c((n >> 8) & 255) << 8) | c(n & 255)).toString(16).padStart(6, '0'); }
+
+/* ===== âm thanh (Web Audio, không CDN) ===== */
+const Snd = (() => {
+  let ctx = null, master = null, loading = null, bgm = null;
+  const buf = {};
+  const FILES = { hit:'hit.ogg', ui:'ui.ogg', win:'win.ogg', hurt:'hurt.ogg', bgm:'bgm_loop.ogg' };
+  const VOL = { hit:.45, ui:.35, win:.6, hurt:.45, bgm:.14 };
+  const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+  function ens() {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+    try { ctx = new AC(); master = ctx.createGain(); master.gain.value = S.muted ? 0 : 1; master.connect(ctx.destination); } catch (e) { ctx = null; }
+    return ctx;
+  }
+  function decode(ab) { return new Promise((res, rej) => { try { const p = ctx.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); } catch (e) { rej(e); } }); }
+  function load() {
+    if (loading || !ens()) return loading;
+    loading = Promise.all(Object.keys(FILES).map(async k => { try { const r = await fetch('v4/audio/' + FILES[k]); buf[k] = await decode(await r.arrayBuffer()); } catch (e) { buf[k] = null; } })).then(() => startBgm());
+    return loading;
+  }
+  function tone(type, f0, f1, dur, vol, when = 0) {
+    const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t);
+    if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
+  }
+  const SYN = {
+    hit: r => tone('square', 520 * r, 200 * r, .09, .14),
+    ui: r => tone('sine', 880 * r, 880 * r, .06, .1),
+    win: r => [523, 659, 784, 1047].forEach((f, i) => tone('triangle', f * r, f * r, .16, .18, i * .09)),
+    hurt: r => tone('sawtooth', 240 * r, 80 * r, .2, .16)
+  };
+  function ok() { if (S.muted || !ens()) return false; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } return true; }
+  function play(n, rate = 1) {
+    if (!ok()) return;
+    try {
+      if (buf[n]) { const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = buf[n]; s.playbackRate.value = rate; g.gain.value = VOL[n] || .4; s.connect(g); g.connect(master); s.start(); }
+      else if (SYN[n]) SYN[n](rate);
+    } catch (e) {}
+  }
+  function coin(n = 1) { if (!ok()) return; try { const semi = PENTA[Math.min(PENTA.length - 1, Math.max(0, n - 1))]; const f = 988 * Math.pow(2, semi / 12); tone('triangle', f, f, .09, .13); tone('triangle', f * 1.335, f * 1.335, .2, .12, .07); } catch (e) {} }
+  function build() { if (!ok()) return; try { tone('square', 140, 90, .12, .14); tone('square', 160, 100, .12, .12, .14); [659, 784, 988, 1319].forEach((f, i) => tone('triangle', f, f, .14, .14, .3 + i * .08)); } catch (e) {} }
+  function starUp() { if (!ok()) return; try { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone('triangle', f, f * 1.01, .22, .16, i * .1)); } catch (e) {} }
+  function discover() { if (!ok()) return; try { [1047, 1319, 1568].forEach((f, i) => tone('sine', f, f, .12, .1, i * .06)); } catch (e) {} }
+  function click() { if (!ok()) return; try { tone('square', 1800, 1200, .03, .05); } catch (e) {} }
+  function boom() { if (!ok()) return; try { tone('sine', 120, 40, .5, .18); } catch (e) {} }
+  function startBgm() { if (S.muted || !ctx || bgm || !buf.bgm) return; try { const g = ctx.createGain(); g.gain.value = VOL.bgm; bgm = ctx.createBufferSource(); bgm.buffer = buf.bgm; bgm.loop = true; bgm.connect(g); g.connect(master); bgm.start(); } catch (e) { bgm = null; } }
+  function setMuted(m) { if (master && ctx) { try { master.gain.setTargetAtTime(m ? 0 : 1, ctx.currentTime, .02); } catch (e) { master.gain.value = m ? 0 : 1; } } if (!m) startBgm(); }
+  function unlock() { if (!ens()) return; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } load(); }
+  function suspend() { if (ctx && ctx.state === 'running') try { ctx.suspend(); } catch (e) {} }
+  function resume() { if (ctx && ctx.state === 'suspended') try { ctx.resume(); } catch (e) {} }
+  return { play, coin, build, starUp, discover, click, boom, unlock, setMuted, suspend, resume };
+})();
+function speak(text, force) {
+  if ((!force && S.muted) || !text || !window.speechSynthesis) return false;
+  try {
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = .85;
+    const v = speechSynthesis.getVoices().find(v => /zh(-|_)?CN|Chinese/i.test(v.lang + v.name)); if (v) u.voice = v;
+    speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
+  } catch (e) { return false; }
+}
+
+/* ===== hiệu ứng DOM ===== */
+const FX_COLORS = ['#FFD91F', '#2ec4b6', '#ff9a3d', '#60a5fa', '#a78bfa', '#3dff8a', '#ff6b9a'];
+function rectOf(el) { try { return el.getBoundingClientRect(); } catch (e) { return null; } }
+function burstAt(x, y, n = 14, spread = 90, colors = FX_COLORS) {
+  const L = $('fxLayer'); if (!L || REDUCED) return;
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('span'); d.className = 'fx-dot'; d.style.background = pick(colors);
+    if (i % 3 === 0) d.style.borderRadius = '2px';
+    L.appendChild(d);
+    const a = Math.random() * Math.PI * 2, r = spread * (.4 + Math.random() * .8);
+    const an = d.animate([{ transform: `translate(${x}px,${y}px) scale(1)`, opacity: 1 }, { transform: `translate(${x + Math.cos(a) * r}px,${y + Math.sin(a) * r + 30}px) scale(.3) rotate(200deg)`, opacity: 0 }], { duration: 550 + Math.random() * 300, easing: 'cubic-bezier(.15,.7,.3,1)' });
+    an.onfinish = () => d.remove();
+  }
+}
+function floatText(x, y, txt, color) {
+  const L = $('fxLayer'); if (!L) return;
+  const d = document.createElement('span'); d.className = 'fx-txt'; d.textContent = txt; if (color) d.style.color = color;
+  L.appendChild(d);
+  const an = d.animate([{ transform: `translate(${x - 20}px,${y}px) scale(.6)`, opacity: 0 }, { transform: `translate(${x - 20}px,${y - 18}px) scale(1.2)`, opacity: 1, offset: .2 }, { transform: `translate(${x - 20}px,${y - 70}px) scale(1)`, opacity: 0 }], { duration: REDUCED ? 600 : 1100, easing: 'ease-out' });
+  an.onfinish = () => d.remove();
+}
+function coinFly(x, y, amount, onDone) {
+  const L = $('fxLayer'), tr = rectOf($('coinPill'));
+  const n = Math.max(3, Math.min(10, Math.round(amount / 6)));
+  if (!L || !tr || REDUCED) { onDone && onDone(); return; }
+  const tx = tr.left + 18, ty = tr.top + tr.height / 2 - 10;
+  let left = n;
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('span'); c.className = 'fx-coin'; c.textContent = '🪙'; L.appendChild(c);
+    const sx = x + (Math.random() - .5) * 40, sy = y + (Math.random() - .5) * 20;
+    const mx = (sx + tx) / 2 + (Math.random() - .5) * 80, my = Math.min(sy, ty) - 40 - Math.random() * 60;
+    const an = c.animate([
+      { transform: `translate(${sx}px,${sy}px) scale(.4)`, opacity: 0 },
+      { transform: `translate(${sx}px,${sy - 14}px) scale(1.1)`, opacity: 1, offset: .15 },
+      { transform: `translate(${mx}px,${my}px) scale(1)`, opacity: 1, offset: .55 },
+      { transform: `translate(${tx}px,${ty}px) scale(.6)`, opacity: .9 }
+    ], { duration: 650 + i * 55, easing: 'cubic-bezier(.4,0,.6,1)' });
+    an.onfinish = () => { c.remove(); left--; if (i === 0) Snd.coin(1); if (left === 0 && onDone) onDone(); };
+  }
+}
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2400); }
+
+/* ===== HUD ===== */
+let shownCoins = S.coins;
+function countTo(to) {
+  const el = $('coinTxt'), from = shownCoins; shownCoins = to;
+  if (REDUCED || from === to) { el.textContent = to; return; }
+  const t0 = performance.now(), ms = 450;
+  (function st(now) { const k = Math.min(1, (now - t0) / ms); el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(st); })(t0);
+  const p = $('coinPill'); p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump');
+}
+function streakAlive() { const s = S.streak; return s.n > 0 && (s.last === localDay(0) || s.last === localDay(-1)) ? s.n : 0; }
+function markToday() { const t = localDay(0), s = S.streak; if (s.last === t) return; s.n = s.last === localDay(-1) ? (s.n || 0) + 1 : 1; s.last = t; }
+function renderHud() {
+  countTo(S.coins);
+  const st = star();
+  $('starTxt').innerHTML = '★'.repeat(st) + `<span style="opacity:.28">${'★'.repeat(5 - st)}</span><span class="lock10">🔒10</span>`;
+  if (st >= FREE_MAX_STAR) { $('starBar').style.width = '100%'; $('starNext').textContent = '👑 6★'; }
+  else { const a = STAR_PTS[st - 1], b = STAR_PTS[st]; $('starBar').style.width = Math.round((S.pts - a) / (b - a) * 100) + '%'; $('starNext').textContent = `${S.pts}/${b}`; }
+  $('streakPill').textContent = '🔥 ' + streakAlive();
+  $('muteBtn').textContent = S.muted ? '🔇' : '🔊';
+  const q = Scene.queue.length;
+  $('queueTxt').textContent = q ? `(${q} khách đang chờ)` : '(khách đang tới…)';
+  $('serveBtn').classList.toggle('pulse', q > 0);
+}
+
+/* =====================================================================
+   CẢNH PHỐ BÃI CHÁY – Canvas 2.5D
+   Lớp tĩnh (nền, toà nhà, nội thất) vẽ sẵn ra canvas phụ; mỗi khung hình
+   chỉ vẽ người, xe, đèn, hiệu ứng → mượt trên điện thoại yếu.
+   ===================================================================== */
+const WW = 640, WH = 320, VW = 360;
+const BASE = 255, SW_Y = 262, LANE_FAR = 274, LANE_NEAR = 284, SAND_Y = 293, SEA_Y = 304;
+const HX = 190, HW = 168, LOBBY_H = 40, FLOOR_H = 30, LOBBY_W = 110;
+const DOOR_X = HX + 62;
+const FAC = ['#e9dcc3', '#efe1c2', '#eef1f4', '#f6efe2', '#fbf7ef'];
+const TRIM = ['#8a6d4b', '#2a5d9f', '#2a5d9f', '#b8902a', '#c9a227'];
+const WALL = ['#efe1c6', '#f1e3c4', '#e7edf3', '#f4ece0', '#fbf5ea'];
+const CURTAIN = ['#b85c4a', '#2a5d9f', '#2a5d9f', '#7a2e3e', '#c9a227'];
+const BLANKET = ['#e76f51', '#2a9d8f', '#8e7dbe', '#3a86ff', '#f4a261'];
+const UNIFORM = ['#5a6b78', '#1e5aa8', '#1e5aa8', '#16171B', '#f4f1e8'];
+const SKIN = ['#f1c9a5', '#e7bb92', '#d29b72', '#f6d8c0', '#c58c62'];
+const SHIRT = ['#e63946', '#2a9d8f', '#e9c46a', '#8e7dbe', '#f4a261', '#3a86ff', '#ff006e', '#06d6a0', '#ffffff', '#264653', '#ffb4a2'];
+const PANTS = ['#2b2d42', '#3d405b', '#6d597a', '#1d3557', '#495057', '#e9edc9'];
+const HAIR = ['#1b1b1b', '#3b2a1f', '#5a3d22', '#111827', '#7b4b2a'];
+const SHOPS = [
+  { id:'cafe', x:4, w:84, h:58, gh:30, open:[6,22], wall:'#c98b5a', aw:['#2a9d8f','#fff'], sign:'CAFÉ 咖啡', sc:'#fff', word:'cafe' },
+  { id:'seafood', x:94, w:90, h:76, gh:34, open:[10,23.5], wall:'#e9d8b5', aw:['#e63946','#fff'], sign:'海鲜 HẢI SẢN', sc:'#ffd34d', word:'seafood' },
+  { id:'mart', x:380, w:60, h:52, gh:30, open:[0,24], wall:'#f2f2f2', aw:['#3a86ff','#fff'], sign:'24h 便利店', sc:'#fff', word:'mart' },
+  { id:'ktv', x:446, w:70, h:66, gh:30, open:[18,2], wall:'#3b2a5a', aw:['#ff4fd8','#3b2a5a'], sign:'KTV 卡拉OK', sc:'#ff8ee6', word:'ktv' }
+];
+const TOWER = { x:522, w:114, h:178 };
+const LAMPS = [91, 187, 377, 443, 519, 600];
+
+function mkPerson(o = {}) {
+  return Object.assign({ skin: pick(SKIN), shirt: pick(SHIRT), pants: pick(PANTS), hair: pick(HAIR), hs: (Math.random() * 3) | 0, hat: Math.random() < .25 ? pick(['#f4f1de', '#e63946', '#16171B', '#2a9fd0']) : null, ph: Math.random() * 6 }, o);
+}
+
+const Scene = (() => {
+  const cv = $('scene'), wrap = $('sceneWrap');
+  const ctx = cv.getContext('2d');
+  let S_ = 2, Sb = 2, css = 1, cw = 2, ch = 2, dpr = 1, Z = 1;
+  let camX = HX + HW / 2 - VW / 2, camY = 0, camV = 0, camGoal = null;
+  const vw = () => VW / Z, vh = () => WH / Z;
+  function clampCam() { camX = Math.max(0, Math.min(WW - vw(), camX)); camY = Math.max(0, Math.min(WH - vh(), camY)); }
+  const L = { far: null, near: null, city: null, cityN: null, lit: null, fg: null, fgN: null };
+  function nightCopy(src) { const n = document.createElement('canvas'); n.width = src.width; n.height = src.height; const g = n.getContext('2d'); g.drawImage(src, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(6,12,40,.62)'; g.fillRect(0, 0, n.width, n.height); return n; }
+  let low = !!S.lowPower, fpsCap = low ? 30 : 60, active = true, sheetOpen = false;
+  let raf = 0, lastF = 0, perfAcc = 0, perfN = 0, perfBad = 0;
+  let rooms = [], towerWins = [], shopWins = [];
+  const queue = [], peds = [], cars = [], boats = [], parts = [], fw = [], walkers = [];
+  const LIFT_G = BASE - 13;
+  const lift = { y: LIFT_G, jobs: [], job: null, phase: 0, wait: 0, rider: null };
+  /** Một chuyến thang: stops = [điểm đón, điểm trả]; người hiện trong cabin sau điểm đón */
+  function liftJob(stops, rider, done) { lift.jobs.push({ stops, rider, done }); }
+  const roomLiftY = r => r.top + FLOOR_H - 13;
+  let stars = [], clouds = [];
+  const glowCache = {};
+  let lastSpawnCheck = 0, nextJunk = 0, nextFw = 0, lastRoomTick = 0;
+  let hour = gameHour(), dark = darkness(hour);
+
+  /* ---------- tiện ích vẽ ---------- */
+  function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+  function box(c, x, y, w, h, col) { c.fillStyle = col; c.fillRect(x, y, w, h); }
+  function rbox(c, x, y, w, h, r, col) { c.fillStyle = col; rr(c, x, y, w, h, r); c.fill(); }
+  function dot(c, x, y, r, col) { c.fillStyle = col; c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill(); }
+  function layer(w, h, sc = S_) { const c = document.createElement('canvas'); c.width = Math.ceil(w * sc); c.height = Math.ceil(h * sc); const g = c.getContext('2d'); g.scale(sc, sc); return c; }
+  function glow(col) {
+    if (glowCache[col]) return glowCache[col];
+    const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+    const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, col); gr.addColorStop(.35, col.replace('rgb(', 'rgba(').replace(')', ',.45)')); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64); glowCache[col] = c; return c;
+  }
+  const GLOW = { warm:'rgb(255,214,130)', white:'rgb(255,246,214)', red:'rgb(255,70,60)', pink:'rgb(255,110,220)', cyan:'rgb(90,230,255)', blue:'rgb(120,170,255)', gold:'rgb(255,217,31)', green:'rgb(80,255,160)' };
+  function gl(c, x, y, r, key, a = 1) { if (low && r < 6) return; c.globalAlpha = a; c.drawImage(glow(GLOW[key] || key), x - r, y - r, r * 2, r * 2); c.globalAlpha = 1; }
+  function text(c, s, x, y, size, col, align = 'center', weight = 800) { c.font = `${weight} ${size}px system-ui,-apple-system,"PingFang SC","Noto Sans SC",sans-serif`; c.textAlign = align; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(s, x, y); }
+
+  /* ---------- màu ban đêm: người, xe vẽ sau lớp đèn nên tự pha tối theo giờ ---------- */
+  let NK = 0; const ncCache = new Map();
+  function nc(col) {
+    if (NK <= .001 || typeof col !== 'string' || col[0] !== '#') return col;
+    const q = Math.round(NK * 40), key = col + q; let v = ncCache.get(key);
+    if (!v) {
+      let h = col.slice(1); if (h.length === 3) h = h.split('').map(x => x + x).join('');
+      const n = parseInt(h, 16), t = q / 40, r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+      v = `rgb(${Math.round(r + (6 - r) * t)},${Math.round(g + (12 - g) * t)},${Math.round(b + (40 - b) * t)})`; ncCache.set(key, v);
+    }
+    return v;
+  }
+  /* ---------- người ---------- */
+  function limb(c, x, y, ang, len, w, col) { c.save(); c.translate(x, y); c.rotate(ang); c.fillStyle = col; rr(c, -w / 2, 0, w, len, w / 2); c.fill(); c.restore(); }
+  /** Vẽ người, chân tại (x,y), cao ~18 đơn vị. pose: stand|walk|run|sit|wave|phone|lift|type|read|eat|point */
+  function person(c, p, x, y, pose, t, face = 1, s = 1) {
+    c.save(); c.translate(x, y); if (s !== 1) c.scale(s, s); if (face < 0) c.scale(-1, 1);
+    const P = { skin: nc(p.skin), shirt: nc(p.shirt), pants: nc(p.pants), hair: nc(p.hair) }, K = nc('#222'), Kd = nc('#1b1b1b');
+    const sw = Math.sin(t * (pose === 'run' ? 14 : 8) + p.ph);
+    const sit = pose === 'sit' || pose === 'type' || pose === 'read' || pose === 'eat';
+    const hipY = sit ? -5.5 : -7.6;
+    // chân
+    if (sit) {
+      limb(c, -1.2, hipY, -1.57, 5, 2.3, P.pants); limb(c, 3.4, hipY + .2, 0, 5.3, 2.1, P.pants);
+      box(c, 2.4, -.8, 3, 1, K);
+    } else {
+      const a = pose === 'walk' ? sw * .5 : pose === 'run' ? sw * .95 : 0;
+      limb(c, -1.4, hipY, a, 7.6, 2.3, P.pants); limb(c, 1.4, hipY, -a, 7.6, 2.3, P.pants);
+      box(c, -2.6 + Math.sin(a) * 7, -.9, 2.8, 1, K); box(c, .2 - Math.sin(a) * 7, -.9, 2.8, 1, K);
+    }
+    // thân
+    const by = hipY - 7.2;
+    rbox(c, -3.5, by, 7, 7.8, 2.3, P.shirt);
+    c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(1.2, by + 1, 2.2, 6.5);
+    // tay
+    const arm = nc(p.shirt === '#ffffff' ? '#e9e9e9' : shade(p.shirt, -18));
+    let la = .15, ra = -.15;
+    if (pose === 'walk') { la = -sw * .45; ra = sw * .45; }
+    else if (pose === 'run') { la = -sw * .9 - .3; ra = sw * .9 - .3; }
+    else if (pose === 'wave') { ra = -2.6 + Math.sin(t * 6 + p.ph) * .35; }
+    else if (pose === 'phone') { ra = -2.5; }
+    else if (pose === 'lift') { const k = (Math.sin(t * 3 + p.ph) + 1) / 2; la = -1.2 - k * 1.7; ra = 1.2 + k * 1.7; }
+    else if (pose === 'type' || pose === 'read') { la = ra = -1.35; }
+    else if (pose === 'eat') { ra = -1.9 + Math.sin(t * 4 + p.ph) * .5; la = -1.2; }
+    else if (pose === 'point') { ra = -1.7; }
+    limb(c, -3.4, by + 1, la, 6, 1.8, arm); limb(c, 3.4, by + 1, ra, 6, 1.8, arm);
+    if (pose === 'lift') { const k = (Math.sin(t * 3 + p.ph) + 1) / 2; const yy = by + 1 - (4 + k * 3.5); box(c, -7.5, yy, 3, 1.8, nc('#333')); box(c, 4.5, yy, 3, 1.8, nc('#333')); }
+    if (pose === 'phone') box(c, 4.2, by - 5.5, 1.4, 2.4, K);
+    if (pose === 'read') box(c, -2.5, by + 3.3, 5.5, 3.5, nc('#e63946'));
+    // đầu
+    const hy = by - 3.4;
+    c.fillStyle = P.skin; c.beginPath(); c.arc(0, hy, 3.3, 0, 6.2832); c.fill();
+    c.fillStyle = P.hair; c.beginPath(); c.arc(0, hy - .4, 3.4, 3.3, 6.12); c.fill();
+    if (p.hs === 1) { box(c, -3.4, hy - .8, 1.6, 5, P.hair); box(c, 1.8, hy - .8, 1.6, 5, P.hair); }
+    else if (p.hs === 2) dot(c, 0, hy - 3.6, 1.5, P.hair);
+    dot(c, 1.2, hy, .45, Kd); dot(c, -1.1, hy, .45, Kd);
+    if (p.hat === 'helmet') { c.fillStyle = nc(p.helm || '#e63946'); c.beginPath(); c.arc(0, hy - .2, 3.9, 3.1, 6.3); c.fill(); }
+    else if (p.hat === 'non') { c.fillStyle = nc('#e8d3a0'); c.beginPath(); c.moveTo(-6.5, hy - .5); c.lineTo(0, hy - 6.5); c.lineTo(6.5, hy - .5); c.closePath(); c.fill(); }
+    else if (p.hat) { c.fillStyle = nc(p.hat); c.fillRect(-4.8, hy - 3.2, 9.6, 1.4); rr(c, -3, hy - 6, 6, 3.4, 1.5); c.fill(); }
+    c.restore();
+  }
+  function suitcase(c, x, y, col) { rbox(c, x, y - 7.5, 5, 7, 1.2, nc(col)); box(c, x + 1.6, y - 10, .8, 2.6, nc('#333')); box(c, x + 2.6, y - 10, .8, 2.6, nc('#333')); dot(c, x + 1, y - .2, .7, nc('#222')); dot(c, x + 4, y - .2, .7, nc('#222')); }
+  function shadow(c, x, y, w = 5) { c.fillStyle = 'rgba(0,0,0,.18)'; c.beginPath(); c.ellipse(x, y + .3, w, 1.2, 0, 0, 6.2832); c.fill(); }
+
+  /* ---------- phòng ---------- */
+  function roomBox(k, j) { const top = BASE - LOBBY_H - k * FLOOR_H; return { x: HX + 4 + j * 54, y: top + 3, w: 52, h: FLOOR_H - 7, k, j, top }; }
+  function buildRooms() {
+    const old = {}; rooms.forEach(r => { old[r.k + '-' + r.j] = r; });
+    rooms = [];
+    for (let k = 1; k <= floors(); k++) for (let j = 0; j < 3; j++) {
+      const r = roomBox(k, j);
+      r.kind = (owned('gym') && k === 1 && j === 0) ? 'gym' : (owned('meeting') && k === 2 && j === 2) ? 'meeting' : 'room';
+      const o = old[k + '-' + j];
+      r.guest = o && r.kind === 'room' ? o.guest : null; r.res = o && r.kind === 'room' ? o.res : null;
+      r.flick = 0; r.idx = k * 3 + j;
+      rooms.push(r);
+    }
+  }
+  function roomInterior(g, r, lit) {
+    const { x, y, w, h } = r, st = star() - 1;
+    if (r.kind === 'gym') {
+      box(g, x, y, w, h, lit ? '#f4fbff' : '#cfdbe4'); box(g, x, y + h - 3, w, 3, '#2b2d42');
+      box(g, x + 2, y + 2, w - 4, 8, lit ? '#d8f1ff' : '#9fc3d6');
+      box(g, x + 4, y + h - 7, 14, 3, '#333'); box(g, x + 15, y + h - 13, 2, 8, '#555'); box(g, x + 13, y + h - 14, 5, 2, '#555');
+      box(g, x + w - 14, y + h - 12, 2, 9, '#666'); box(g, x + w - 5, y + h - 12, 2, 9, '#666'); box(g, x + w - 15, y + h - 11, 13, 1.2, '#888');
+      text(g, 'GYM', x + w / 2, y + 5.5, 5, '#e63946');
+    } else if (r.kind === 'meeting') {
+      box(g, x, y, w, h, lit ? '#fff4dc' : '#e8e2d6'); box(g, x, y + h - 3, w, 3, '#6b4423');
+      box(g, x + 4, y + 3, 18, 10, '#fff'); box(g, x + 6, y + 9, 3, 3, '#3a86ff'); box(g, x + 10, y + 7, 3, 5, '#e63946'); box(g, x + 14, y + 5, 3, 7, '#2a9d8f');
+      box(g, x + 18, y + h - 9, 30, 2.5, '#7a5230');
+      text(g, '会议室', x + 36, y + 5, 4.5, '#1e5aa8');
+    } else {
+      box(g, x, y, w, h, lit ? '#ffe3ad' : WALL[st]);
+      box(g, x, y + h - 3, w, 3, lit ? '#c98a4b' : '#a8784a');
+      box(g, x + 18, y + 3.5, 10, 6.5, '#7a5230'); box(g, x + 19, y + 4.5, 8, 4.5, lit ? '#8fd6ff' : '#5fb0d6'); box(g, x + 19, y + 7.2, 8, 1.8, '#5f8f86');
+      box(g, x + 3, y + 5, 11, 7, '#1b1b1b'); box(g, x + 8, y + 12, 1.2, 2, '#333');
+      box(g, x + 14, y + h - 9, 12, 1.6, '#6b4423'); box(g, x + 15, y + h - 7.5, 1.2, 4.5, '#6b4423'); box(g, x + 24, y + h - 7.5, 1.2, 4.5, '#6b4423');
+      box(g, x + w - 23, y + h - 8, 20, 5, '#7a5230'); box(g, x + w - 23, y + h - 10, 20, 2.6, '#ffffff');
+      box(g, x + w - 4, y + h - 15, 2.5, 12, '#6b4423');
+      rbox(g, x + w - 9, y + h - 12.3, 5, 2.4, 1, '#f5f5f5');
+      box(g, x + w - 27, y + h - 8, 4, 5, '#6b4423'); box(g, x + w - 26.4, y + h - 12, 2.8, 4, lit ? '#fff3c4' : '#e9d8a6');
+      if (lit) { const gr = g.createRadialGradient(x + w - 25, y + h - 11, 0, x + w - 25, y + h - 11, 16); gr.addColorStop(0, 'rgba(255,240,190,.55)'); gr.addColorStop(1, 'rgba(255,240,190,0)'); g.fillStyle = gr; g.fillRect(x, y, w, h); }
+    }
+    g.fillStyle = CURTAIN[st]; g.fillRect(x, y, 3.2, h - 3); g.fillRect(x + w - 3.2, y, 3.2, h - 3);
+  }
+
+  /* ---------- lớp nền xa / gần ---------- */
+  function buildFar() {
+    const c = layer(WW, WH, Sb), g = c.getContext('2d');
+    g.fillStyle = '#9ec5d8';
+    g.beginPath(); g.moveTo(0, 230);
+    [[0, 150], [30, 120], [55, 165], [85, 110], [120, 158], [150, 128], [185, 170], [220, 118], [260, 150], [300, 112], [340, 160], [380, 126], [420, 165], [460, 118], [500, 152], [540, 122], [580, 160], [620, 130], [640, 150]].forEach(([x, y], i) => i ? g.quadraticCurveTo(x - 15, y - 25, x, y) : g.lineTo(x, y));
+    g.lineTo(640, 230); g.closePath(); g.fill();
+    const wg = g.createLinearGradient(0, 200, 0, 262); wg.addColorStop(0, '#5fb3d9'); wg.addColorStop(1, '#3b8fb6');
+    g.fillStyle = wg; g.fillRect(0, 205, WW, 60);
+    g.fillStyle = 'rgba(255,255,255,.35)'; for (let x = 0; x < WW; x += 23) g.fillRect(x, 214 + (x % 3) * 6, 9, .8);
+    return c;
+  }
+  function buildNear() {
+    const c = layer(WW, WH, Sb), g = c.getContext('2d');
+    g.fillStyle = '#5f8f7e';
+    [[20, 210, 30, 130], [70, 214, 26, 150], [110, 210, 36, 120], [250, 214, 30, 140], [300, 212, 40, 128], [430, 214, 30, 150], [500, 210, 34, 132], [580, 214, 30, 148]].forEach(([x, by, w, ty]) => {
+      g.beginPath(); g.moveTo(x - w, by); g.bezierCurveTo(x - w, ty + 20, x - w * .4, ty, x, ty); g.bezierCurveTo(x + w * .4, ty, x + w, ty + 20, x + w, by); g.closePath(); g.fill();
+    });
+    g.fillStyle = '#4f7d6c'; for (let i = 0; i < 40; i++) dot(g, rnd(0, WW), rnd(150, 210), rnd(1.5, 3.5), '#4f7d6c');
+    return c;
+  }
+
+  /* ---------- lớp phố (toà nhà, nội thất ban ngày) ---------- */
+  function buildCity(lit) {
+    const c = layer(WW, WH), g = c.getContext('2d'), st = star() - 1, f = floors();
+    const roofY = BASE - LOBBY_H - f * FLOOR_H;
+    if (!lit) {
+      // vỉa hè, đường, vạch qua đường
+      box(g, 0, BASE, WW, 8, '#d7cbb4'); for (let x = 0; x < WW; x += 8) box(g, x, BASE, .6, 8, '#c4b79e');
+      box(g, 0, SW_Y + 1, WW, 1.6, '#9a8f7c');
+      box(g, 0, SW_Y + 2.6, WW, 22, '#4b4f57');
+      for (let x = 4; x < WW; x += 18) box(g, x, (LANE_FAR + LANE_NEAR) / 2 - 3.6, 9, 1, '#e9e3c9');
+      for (let i = 0; i < 6; i++) box(g, DOOR_X - 12 + i * 4.4, SW_Y + 3.5, 2.6, 20, 'rgba(255,255,255,.75)');
+      box(g, 0, SW_Y + 24.6, WW, 1.4, '#cfcabd');
+    }
+    // cửa hàng
+    SHOPS.forEach(s => drawShop(g, s, lit));
+    drawTower(g, lit);
+    // ===== khách sạn =====
+    const fac = FAC[st], trim = TRIM[st];
+    if (!lit) {
+      g.fillStyle = shade(fac, -40); g.beginPath(); g.moveTo(HX + HW, roofY); g.lineTo(HX + HW + 9, roofY - 6); g.lineTo(HX + HW + 9, BASE - 4); g.lineTo(HX + HW, BASE); g.closePath(); g.fill();
+      for (let k = 1; k <= f; k++) { const y = BASE - LOBBY_H - k * FLOOR_H + 12; box(g, HX + HW + 2, y, 6, 5, '#d9d9d9'); box(g, HX + HW + 3, y + 1, 4, 3, '#bdbdbd'); }
+      const gr = g.createLinearGradient(HX, 0, HX + HW, 0); gr.addColorStop(0, shade(fac, 8)); gr.addColorStop(1, shade(fac, -12));
+      g.fillStyle = gr; g.fillRect(HX, roofY, HW, BASE - roofY);
+    }
+    buildRooms();
+    rooms.forEach(r => {
+      roomInterior(g, r, lit);
+      if (!lit) {
+        g.strokeStyle = trim; g.lineWidth = 1.2; g.strokeRect(r.x, r.y, r.w, r.h);
+        g.fillStyle = 'rgba(255,255,255,.12)'; g.beginPath(); g.moveTo(r.x + r.w * .55, r.y); g.lineTo(r.x + r.w * .72, r.y); g.lineTo(r.x + r.w * .42, r.y + r.h); g.lineTo(r.x + r.w * .25, r.y + r.h); g.closePath(); g.fill();
+        box(g, r.x - 1.5, r.y + r.h + .5, r.w + 3, 1.3, trim);
+        for (let bx = r.x; bx <= r.x + r.w; bx += 4) box(g, bx, r.y + r.h + 1.8, .7, 2.6, shade(trim, -20));
+        box(g, r.x - 1.5, r.y + r.h + 4.2, r.w + 3, 1, trim);
+        if (owned('palm') && r.j === 1) { dot(g, r.x + 4, r.y + r.h + 1, 2, '#2fa36b'); }
+      }
+    });
+    if (!lit) for (let k = 1; k <= f; k++) { const top = BASE - LOBBY_H - k * FLOOR_H; box(g, HX - 2, top + FLOOR_H - 1.2, HW + 4, 1.6, shade(trim, 10)); }
+    // sảnh
+    const ly = BASE - LOBBY_H;
+    if (!lit) {
+      box(g, HX - 2, ly, HW + 4, 6, trim);
+      text(g, '宝 HOTEL', HX + 55, ly + 3.2, 4.6, '#FFD91F');
+    }
+    box(g, HX, ly + 6, LOBBY_W, 34, lit ? '#ffe6b5' : '#dcc6a2');
+    for (let x = HX + 4; x < HX + LOBBY_W; x += 8) box(g, x, ly + 6, .6, 30, lit ? 'rgba(160,110,60,.25)' : 'rgba(120,80,40,.2)');
+    box(g, HX, BASE - 4, LOBBY_W, 4, lit ? '#fff6e6' : '#ebe4d6');
+    box(g, HX + 13, ly + 10, 28, 6, '#16171B'); text(g, '前台 RECEPTION', HX + 27, ly + 13, 2.8, '#FFD91F');
+    // quầy (vẽ lại phía trước người ở lớp động)
+    box(g, HX + 9, BASE - 13, 36, 9, owned('desk') ? '#6b4423' : '#8a6a48'); box(g, HX + 8, BASE - 14, 38, 2, owned('desk') ? '#FFD91F' : '#a07850');
+    box(g, HX + 47, BASE - 9, 4, 5, '#8a5a2b'); dot(g, HX + 49, BASE - 12, 3.4, '#2fa36b'); dot(g, HX + 47.5, BASE - 14, 2.3, '#3fbf7f');
+    rbox(g, HX + 80, BASE - 11, 24, 7, 2, '#1e5aa8'); box(g, HX + 82, BASE - 13, 9, 3, '#3a86ff'); box(g, HX + 93, BASE - 13, 9, 3, '#3a86ff');
+    if (st >= 2) { box(g, HX + 91.6, ly + 6, .8, 4, '#b8902a'); dot(g, HX + 92, ly + 11.5, 3, lit ? '#fff3c4' : '#d9b85c'); }
+    // cửa kính + khung
+    if (!lit) {
+      box(g, HX + 52, ly + 9, 20, 31, 'rgba(190,230,255,.35)');
+      g.strokeStyle = trim; g.lineWidth = 1.4; g.strokeRect(HX + .7, ly + 6.7, LOBBY_W - 1.4, 33); g.strokeRect(HX + 52, ly + 9, 20, 31);
+      box(g, HX + 61.6, ly + 9, .9, 31, trim);
+      box(g, HX + 59, ly + 22, .8, 5, owned('desk') ? '#FFD91F' : '#555'); box(g, HX + 64.2, ly + 22, .8, 5, owned('desk') ? '#FFD91F' : '#555');
+      g.fillStyle = 'rgba(255,255,255,.12)'; g.beginPath(); g.moveTo(HX + 20, ly + 7); g.lineTo(HX + 34, ly + 7); g.lineTo(HX + 16, BASE); g.lineTo(HX + 2, BASE); g.closePath(); g.fill();
+      if (owned('lantern')) [HX + 6, HX + 26, HX + 46, HX + 78, HX + 100].forEach(x => { box(g, x, ly + 6, .5, 2.5, '#7a5230'); g.fillStyle = '#e63946'; g.beginPath(); g.ellipse(x + .25, ly + 11, 2.6, 3.3, 0, 0, 6.2832); g.fill(); box(g, x - 1, ly + 14, 2.5, .9, '#FFD91F'); });
+    }
+    // nhà hàng / chỗ cho thuê
+    const rx = HX + LOBBY_W;
+    if (owned('restaurant')) {
+      box(g, rx, ly + 6, HW - LOBBY_W, 34, lit ? '#ffd9a0' : '#f3d9b0');
+      box(g, rx + 4, ly + 9, HW - LOBBY_W - 8, 6, '#8a3b2b'); text(g, '厨房', rx + 29, ly + 12, 3.4, '#ffd34d');
+      [rx + 10, rx + 30, rx + 48].forEach((x, i) => { box(g, x - 5, BASE - 10, 10, 2, '#c0392b'); box(g, x - .6, BASE - 8, 1.2, 4, '#5a3d22'); if (lit) dot(g, x, ly + 20, 2.2, '#ff8a5c'); });
+      if (!lit) {
+        for (let i = 0; i < 8; i++) box(g, rx + i * 7.25, ly, 3.6, 6, i % 2 ? '#fff' : '#e63946');
+        text(g, '餐厅', rx + 29, ly - 3.5, 4.6, '#e63946');
+        box(g, rx, ly + 6, .9, 34, trim);
+      }
+    } else if (!lit) {
+      box(g, rx, ly + 6, HW - LOBBY_W, 34, '#9aa3ab');
+      for (let y = ly + 8; y < BASE; y += 2.4) box(g, rx, y, HW - LOBBY_W, .6, '#7d868e');
+      rbox(g, rx + 12, ly + 14, 34, 11, 2, '#fff'); text(g, '招租', rx + 29, ly + 17.5, 4.6, '#e63946'); text(g, 'CHO THUÊ', rx + 29, ly + 22.2, 3, '#333');
+    }
+    if (!lit) {
+      // mái
+      box(g, HX - 3, roofY - 3, HW + 6, 3.4, trim);
+      if (!owned('pool') && !owned('garden')) { rbox(g, HX + 128, roofY - 15, 14, 12, 3, '#c9d1d8'); box(g, HX + 130, roofY - 6, 2, 3, '#888'); box(g, HX + 138, roofY - 6, 2, 3, '#888'); box(g, HX + 20, roofY - 20, .8, 17, '#777'); }
+      if (owned('pool')) {
+        rbox(g, HX + 6, roofY - 11, 74, 8, 2, '#f4f4f4');
+        const pg = g.createLinearGradient(0, roofY - 10, 0, roofY - 4); pg.addColorStop(0, '#6fe0ff'); pg.addColorStop(1, '#1fa5d6'); g.fillStyle = pg; g.fillRect(HX + 8, roofY - 9.5, 70, 6);
+        [HX + 86, HX + 98].forEach(x => { box(g, x, roofY - 6, 9, 1.5, '#fff'); box(g, x + 7, roofY - 9, 1.5, 3.5, '#fff'); });
+      }
+      if (owned('garden')) {
+        box(g, HX + 108, roofY - 12, 1.2, 9, '#7a5230'); box(g, HX + 158, roofY - 12, 1.2, 9, '#7a5230'); box(g, HX + 108, roofY - 12.6, 51, 1.1, '#7a5230');
+        for (let x = HX + 110; x < HX + 158; x += 9) { box(g, x, roofY - 6, 7, 3, '#8a5a2b'); dot(g, x + 3.5, roofY - 7.5, 3.4, x % 2 ? '#2fa36b' : '#3fbf7f'); dot(g, x + 1.5, roofY - 9, 1.2, '#ff6b9a'); }
+      }
+      if (owned('sign')) {
+        box(g, HX + 50, roofY - 18, 1.6, 15, '#555'); box(g, HX + 116, roofY - 18, 1.6, 15, '#555');
+        rbox(g, HX + 38, roofY - 33, 92, 17, 4, '#16171B'); g.strokeStyle = '#FFD91F'; g.lineWidth = 1.2; rr(g, HX + 38, roofY - 33, 92, 17, 4); g.stroke();
+        text(g, '宝 HOTEL ' + '★'.repeat(star()), HX + 84, roofY - 24.5, 8, '#FFD91F');
+      }
+      if (owned('lift')) {
+        box(g, HX + HW, roofY - 4, 11, BASE - roofY + 4, 'rgba(180,225,255,.4)');
+        g.strokeStyle = trim; g.lineWidth = .9; g.strokeRect(HX + HW, roofY - 4, 11, BASE - roofY + 4);
+        for (let y = roofY + 6; y < BASE; y += 10) box(g, HX + HW, y, 11, .6, trim);
+      }
+      if (star() >= FREE_MAX_STAR) {
+        // cần cẩu chờ xây tầng 6–10 (chạm để xem hội viên năm)
+        const mx = HX + 6, top = Math.max(4, roofY - 58);
+        g.strokeStyle = '#e9a400'; g.lineWidth = 1.2;
+        g.strokeRect(mx, top, 6, roofY - top);
+        for (let y = top; y < roofY - 6; y += 6) { g.beginPath(); g.moveTo(mx, y); g.lineTo(mx + 6, y + 6); g.stroke(); }
+        box(g, mx - 4, top - 3, 92, 3, '#e9a400'); box(g, mx - 12, top - 3, 8, 6, '#555');
+        box(g, mx + 70, top, .6, 12, '#333');
+        rbox(g, mx + 46, top + 12, 50, 13, 2, '#16171B'); g.strokeStyle = '#FFD91F'; g.lineWidth = .8; rr(g, mx + 46, top + 12, 50, 13, 2); g.stroke();
+        text(g, '6★–10★ SẮP MỞ', mx + 71, top + 18.5, 4.6, '#FFD91F');
+      }
+      if (owned('lights')) for (let y = roofY; y < BASE - 6; y += 6) { dot(g, HX + 1, y, .9, FX_COLORS[(y / 6 | 0) % 7]); dot(g, HX + HW - 1, y + 3, .9, FX_COLORS[(y / 6 + 3 | 0) % 7]); }
+      // cột đèn đường
+      LAMPS.forEach(x => { box(g, x, SW_Y - 31, 1.3, 31, '#3d405b'); box(g, x, SW_Y - 31, 6, 1.2, '#3d405b'); rbox(g, x + 4, SW_Y - 31, 4, 2.4, 1, '#d9d9d9'); });
+    }
+    return c;
+  }
+  function drawShop(g, s, lit) {
+    const top = BASE - s.h, gy = BASE - s.gh;
+    if (!lit) {
+      box(g, s.x, top, s.w, s.h - s.gh, s.wall);
+      g.fillStyle = 'rgba(0,0,0,.1)'; g.fillRect(s.x + s.w - 6, top, 6, s.h);
+      box(g, s.x - 1, top - 2, s.w + 2, 2.4, shade(s.wall, -30));
+      if (s.id === 'cafe' || s.id === 'mart') { rbox(g, s.x + s.w - 18, top - 10, 12, 8, 2, '#c9d1d8'); }
+    }
+    // cửa sổ tầng trên
+    const nW = Math.max(2, Math.floor(s.w / 26)), wy = top + 6;
+    const rows = Math.max(1, Math.floor((s.h - s.gh - 14) / 18) + 1);
+    for (let r = 0; r < rows; r++) for (let i = 0; i < nW; i++) {
+      const wx = s.x + 7 + i * ((s.w - 14) / nW), ww = (s.w - 14) / nW - 6, yy = wy + r * 18;
+      if (yy + 10 > gy - 6) continue;
+      box(g, wx, yy, ww, 10, lit ? (s.id === 'ktv' ? pick(['#ff6bd6', '#7f7bff', '#5be7ff']) : '#ffd98a') : '#5d7f95');
+      if (!lit) { box(g, wx, yy + 10, ww, 1, '#fff'); g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(wx + 1, yy + 1, ww * .3, 8); }
+    }
+    // biển hiệu
+    if (!lit) {
+      rbox(g, s.x + 6, gy - 9, s.w - 12, 8, 1.6, s.id === 'ktv' ? '#1b1030' : s.id === 'mart' ? '#3a86ff' : s.id === 'seafood' ? '#b5221b' : '#4a2c1a');
+      text(g, s.sign, s.x + s.w / 2, gy - 5, 4.6, s.sc);
+    }
+    // tầng trệt
+    box(g, s.x, gy, s.w, s.gh, lit ? (s.id === 'ktv' ? '#5b2a86' : '#ffe9b8') : (s.id === 'ktv' ? '#2a1d40' : '#e9dcc2'));
+    if (s.id === 'ktv') { for (let i = 0; i < 5; i++) dot(g, s.x + 8 + i * 13, gy + 8, 2, lit ? ['#ff6bd6', '#5be7ff', '#FFD91F', '#7f7bff', '#3dff8a'][i] : '#4a3a66'); box(g, s.x + 26, gy + 12, 20, 11, lit ? '#1b1030' : '#1b1030'); box(g, s.x + 28, gy + 14, 16, 7, lit ? '#5be7ff' : '#334'); }
+    if (s.id === 'mart') for (let y = gy + 5; y < BASE - 4; y += 6) for (let x = s.x + 4; x < s.x + s.w - 4; x += 5) box(g, x, y, 3.4, 3, FX_COLORS[((x + y) / 5 | 0) % 7]);
+    if (s.id === 'seafood') { box(g, s.x + 5, gy + 6, 22, 12, lit ? '#8fe3ff' : '#5fb0d6'); dot(g, s.x + 12, gy + 12, 1.6, '#ff8a5c'); dot(g, s.x + 19, gy + 10, 1.4, '#ffd34d'); }
+    if (s.id === 'cafe') { box(g, s.x + 6, gy + 14, 20, 6, '#6b4423'); dot(g, s.x + 10, gy + 12, 1.6, '#fff'); }
+    if (!lit) {
+      // mái hiên sọc
+      const aw = 5; for (let i = 0; i * aw < s.w + 4; i++) box(g, s.x - 2 + i * aw, gy - 1, aw, 4, s.aw[i % 2]);
+      g.strokeStyle = shade(s.wall, -40); g.lineWidth = .8; g.strokeRect(s.x + .4, gy + 3, s.w - .8, s.gh - 3);
+      g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(s.x + 8, gy + 4, 8, s.gh - 5);
+    }
+  }
+  function drawTower(g, lit) {
+    const { x, w, h } = TOWER, top = BASE - h;
+    if (!lit) {
+      const gr = g.createLinearGradient(x, 0, x + w, 0); gr.addColorStop(0, '#9fb3c4'); gr.addColorStop(1, '#7b8fa1'); g.fillStyle = gr; g.fillRect(x, top, w, h);
+      box(g, x - 2, top - 3, w + 4, 3, '#5d6f80'); text(g, 'OCEAN HOTEL', x + w / 2, top - 9, 6, '#e9eef5');
+      rbox(g, x + 10, top - 14, 12, 10, 2, '#c9d1d8');
+    }
+    towerWins.forEach(o => { box(g, o.x, o.y, o.w, o.h, lit ? o.col : '#3f5d75'); if (!lit) { g.fillStyle = 'rgba(255,255,255,.16)'; g.fillRect(o.x + 1, o.y + 1, 2, o.h - 2); } });
+    box(g, x + 30, BASE - 18, 54, 18, lit ? '#ffe9b8' : '#cfd8df'); if (!lit) { g.strokeStyle = '#5d6f80'; g.strokeRect(x + 30, BASE - 18, 54, 18); }
+  }
+  function initTower() {
+    towerWins = [];
+    const { x, w, h } = TOWER, top = BASE - h;
+    for (let r = 0; r < 7; r++) for (let i = 0; i < 4; i++) {
+      towerWins.push({ x: x + 8 + i * 26, y: top + 8 + r * 21, w: 20, h: 13, off: rnd(22, 25.6) % 24, on: rnd(5.2, 6.6), allNight: Math.random() < .08, never: Math.random() < .12, col: Math.random() < .2 ? '#cfe6ff' : '#ffd98a' });
+    }
+  }
+  function buildFg() {
+    const c = layer(WW, WH), g = c.getContext('2d');
+    // bờ kè + lối đi
+    box(g, 0, SW_Y + 26, WW, 5, '#e3c99a'); for (let x = 0; x < WW; x += 6) box(g, x, SW_Y + 26, 3, 1.2, '#f4f1e8');
+    const sg = g.createLinearGradient(0, SAND_Y, 0, SEA_Y); sg.addColorStop(0, '#f0dcab'); sg.addColorStop(1, '#e4c98f'); g.fillStyle = sg; g.fillRect(0, SAND_Y, WW, SEA_Y - SAND_Y + 2);
+    for (let i = 0; i < 60; i++) dot(g, rnd(0, WW), rnd(SAND_Y + 2, SEA_Y), .5, 'rgba(160,120,60,.35)');
+    if (owned('palm')) [58, 172, 372, 470, 560].forEach((x, i) => palm(g, x, SAND_Y - 1, i));
+    if (owned('umbrella')) [216, 268, 320].forEach((x, i) => {
+      box(g, x, SAND_Y - 14, .9, 15, '#7a5230');
+      g.fillStyle = ['#e63946', '#2a9fd0', '#FFD91F'][i]; g.beginPath(); g.moveTo(x - 10, SAND_Y - 13); g.quadraticCurveTo(x, SAND_Y - 23, x + 10, SAND_Y - 13); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.8)'; g.beginPath(); g.moveTo(x - 4, SAND_Y - 13); g.quadraticCurveTo(x, SAND_Y - 21, x + 4, SAND_Y - 13); g.closePath(); g.fill();
+      box(g, x + 3, SAND_Y + 3, 12, 1.6, '#fff'); box(g, x + 13, SAND_Y, 1.4, 3.6, '#fff');
+    });
+    if (owned('boat')) { box(g, 296, SAND_Y + 4, 10, 16, '#8a5a2b'); for (let y = SAND_Y + 6; y < SEA_Y + 12; y += 3) box(g, 296, y, 10, .6, '#5a3d22'); }
+    return c;
+  }
+  function palm(g, x, by, i) {
+    g.strokeStyle = '#8b5a2b'; g.lineWidth = 2.6; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(x, by); g.quadraticCurveTo(x + (i % 2 ? 6 : -6), by - 24, x + (i % 2 ? 2 : -2), by - 46); g.stroke();
+    const cx = x + (i % 2 ? 2 : -2), cy = by - 46;
+    g.fillStyle = '#2fa36b';
+    [[-16, 6], [16, 5], [-11, -6], [11, -7], [0, -10], [-18, 1]].forEach(([dx, dy]) => { g.beginPath(); g.moveTo(cx, cy); g.quadraticCurveTo(cx + dx * .5, cy + dy - 6, cx + dx, cy + dy); g.quadraticCurveTo(cx + dx * .5, cy + dy - 2, cx, cy); g.fill(); });
+    dot(g, cx, cy + 1.5, 2, '#6b4a1f');
+  }
+
+  /* ---------- dựng lại khi mua đồ / đổi kích thước ---------- */
+  function rebuild(newKey) {
+    if (!towerWins.length) initTower();
+    L.far = buildFar(); L.near = buildNear(); L.city = buildCity(false); L.lit = buildCity(true); L.fg = buildFg();
+    L.fgN = nightCopy(L.fg); L.cityN = nightCopy(L.city);
+    if (newKey) {
+      const p = keyPos(newKey);
+      camGoal = Math.max(0, Math.min(WW - vw(), p.x - vw() / 2));
+      if (Z > 1) camY = Math.max(0, Math.min(WH - vh(), p.y - vh() / 2));
+      for (let i = 0; i < 26; i++) parts.push({ x: p.x + rnd(-14, 14), y: p.y + rnd(-6, 6), vx: rnd(-30, 30), vy: rnd(-40, -5), life: rnd(.6, 1.1), col: pick(['#d6c3a3', '#FFD91F', '#ffffff', '#c9a227']), r: rnd(.8, 1.8), g: 60 });
+      flashBox = { ...p, t: .8 };
+    }
+  }
+  let flashBox = null;
+  function keyPos(k) {
+    const roofY = BASE - LOBBY_H - floors() * FLOOR_H;
+    const m = { floor: { x: HX + HW / 2, y: roofY + 15, w: HW, h: 30 }, sign: { x: HX + 84, y: roofY - 25, w: 92, h: 18 }, pool: { x: HX + 43, y: roofY - 7, w: 74, h: 10 }, garden: { x: HX + 134, y: roofY - 8, w: 52, h: 12 },
+      lift: { x: HX + HW + 5, y: (roofY + BASE) / 2, w: 11, h: BASE - roofY }, restaurant: { x: HX + 139, y: BASE - 20, w: 58, h: 40 }, desk: { x: HX + 27, y: BASE - 10, w: 38, h: 12 },
+      lantern: { x: HX + 55, y: BASE - 30, w: 100, h: 8 }, lights: { x: HX + HW / 2, y: (roofY + BASE) / 2, w: HW, h: BASE - roofY }, staff: { x: DOOR_X - 16, y: SW_Y - 9, w: 30, h: 18 },
+      palm: { x: 172, y: SAND_Y - 30, w: 30, h: 50 }, umbrella: { x: 268, y: SAND_Y - 10, w: 120, h: 20 }, boat: { x: 290, y: SEA_Y + 4, w: 80, h: 20 }, wheel: { x: 120, y: 150, w: 90, h: 90 },
+      fireworks: { x: 300, y: 70, w: 120, h: 80 }, gym: { x: HX + 30, y: BASE - LOBBY_H - 15, w: 52, h: 24 }, meeting: { x: HX + 138, y: BASE - LOBBY_H - 45, w: 52, h: 24 } };
+    return m[k] || m.floor;
+  }
+
+  /* ---------- kích thước ---------- */
+  function resize() {
+    const r = wrap.getBoundingClientRect();
+    const w = Math.max(200, r.width || 360);
+    dpr = Math.min(window.devicePixelRatio || 1, low ? 1 : 2);
+    css = w / VW; cw = Math.round(w * dpr); ch = Math.round(w * WH / VW * dpr);
+    cv.width = cw; cv.height = ch;
+    Sb = css * dpr; S_ = Math.min(css * dpr * Z, low ? 1.8 : 3);
+    rebuild(); clampCam();
+  }
+
+  /* ---------- khách trong phòng ---------- */
+  function newStay(g, mins) {
+    g.bed = rnd(22.3, 24.6) % 24; g.wake = rnd(6, 8.4); g.owl = Math.random() < .12;
+    g.act = 'view'; g.actUntil = performance.now() + rnd(8000, 20000);
+    g.out = performance.now() + (mins != null ? mins : rnd(2.5, 5)) * 60000;
+  }
+  function sleeping(g) { return !g.owl && inHours(hour, g.bed, g.wake); }
+  function pickAct(g) {
+    if (inHours(hour, 5.5, 9)) return pick(['view', 'phone', 'work']);
+    if (inHours(hour, 19, 24) || inHours(hour, 0, 2)) return pick(['tv', 'tv', 'read', 'phone', 'work']);
+    return pick(['view', 'work', 'read', 'phone', 'tv']);
+  }
+  function roomTick(now) {
+    rooms.forEach(r => {
+      const g = r.guest; if (!g) return;
+      if (sleeping(g)) { g.act = 'sleep'; return; }
+      if (g.act === 'sleep') { g.act = 'view'; g.actUntil = now + rnd(6000, 14000); return; }
+      if (now > g.actUntil) { g.act = g.owl && (hour >= 23 || hour < 5) ? 'tv' : pickAct(g); g.actUntil = now + rnd(12000, 30000); }
+      if (now > g.out) checkout(r);
+    });
+  }
+  function freeRooms() { return rooms.filter(r => r.kind === 'room' && !r.guest && !r.res); }
+  function checkout(r) {
+    const g = r.guest; r.guest = null; r.flick = -0.5;
+    const go = () => {
+      const p = { ...g, x: DOOR_X, y: SW_Y, dir: -1, sp: 13, pose: 'walk', bag: true, state: 'out', bub: '再见!', bubT: 1.8 };
+      walkers.push(p);
+      const tip = 2 + star() + ((Math.random() * 4) | 0);
+      S.coins += tip; S.checkouts = (S.checkouts || 0) + 1; save();
+      const sp = toScreen(DOOR_X, SW_Y - 26);
+      if (sp.vis) floatText(sp.x, sp.y, `+${tip} 谢谢!`, '#9eecff');
+      renderHud(); renderBuild();
+    };
+    if (owned('lift')) liftJob([roomLiftY(r), LIFT_G], g, go);
+    else setTimeout(go, 1800);
+  }
+
+  /* ---------- hàng khách ở quầy ---------- */
+  const SLOT0 = DOOR_X + 18;
+  function makeGuest() {
+    const tp = pick(topics()), ty = pick(GUEST_TYPES[tp]);
+    return mkPerson({ id: Math.random(), topic: tp, name: ty.n, av: ty.a, bagC: pick(['#ff9a3d', '#3a86ff', '#6d597a', '#e63946', '#2a9d8f']), x: Math.min(WW + 10, camX + vw() + 16), y: SW_Y, dir: -1, state: 'arrive', bub: '' });
+  }
+  let spawning = 0;
+  function refill() {
+    const need = queueCap() - queue.length - spawning;
+    for (let i = 0; i < need; i++) { spawning++; setTimeout(() => { spawning--; if (queue.length < queueCap()) { const g = makeGuest(); queue.push(g); renderHud(); } }, 500 + i * 1500 + Math.random() * 500); }
+  }
+  function served(g, ok) {
+    const i = queue.indexOf(g); if (i >= 0) queue.splice(i, 1);
+    walkers.push(g);
+    if (ok) {
+      g.state = 'enter'; g.bub = pick(['谢谢!', '很好!', '😊']); g.bubT = 1.5;
+      const fr = freeRooms();
+      if (fr.length) { g.room = pick(fr); g.room.res = g; }
+      else { g.noRoom = true; setTimeout(() => toast('Hết phòng trống! Xây thêm tầng để khách ở lại qua đêm'), 1200); }
+    } else { g.state = 'angry'; g.bub = '😠'; g.bubT = 2.5; g.dir = -1; }
+    setTimeout(() => { refill(); renderHud(); }, 400);
+  }
+  function arriveRoom(g) {
+    const r = g.room; if (!r) return;
+    r.res = null; r.guest = g; g.bub = ''; newStay(g); r.flick = .7;
+    for (let i = 0; i < 10; i++) parts.push({ x: r.x + r.w / 2 + rnd(-12, 12), y: r.y + r.h / 2 + rnd(-6, 6), vx: rnd(-10, 10), vy: rnd(-20, -5), life: rnd(.4, .9), col: '#fff3b0', r: rnd(.6, 1.2), g: 0, em: true });
+  }
+
+  /* ---------- người đi đường, xe, thuyền ---------- */
+  function trafficRate(h) { if (inHours(h, 7, 9) || inHours(h, 17, 19.5)) return 1.4; if (inHours(h, 9, 17)) return .9; if (inHours(h, 19.5, 23)) return .7; if (inHours(h, 23, 1.5)) return .3; return .1; }
+  function pedRate(h) { if (inHours(h, 5, 8)) return .8; if (inHours(h, 8, 17)) return .9; if (inHours(h, 17, 22.5)) return 1.1; if (inHours(h, 22.5, 1)) return .35; return .08; }
+  function spawnStuff(now, dt) {
+    const capP = low ? 4 : 7, capC = low ? 3 : 6;
+    if (peds.length < capP && Math.random() < pedRate(hour) * dt * .45) {
+      const dir = Math.random() < .5 ? 1 : -1, x = dir > 0 ? -12 : WW + 12;
+      let kind = 'walk';
+      const r = Math.random();
+      if (inHours(hour, 5, 8) && r < .45) kind = 'jog';
+      else if (inHours(hour, 6, 18) && r < .12) kind = 'vendor';
+      else if (inHours(hour, 8, 18) && r < .3) kind = 'selfie';
+      else if (inHours(hour, 17, 23) && r < .4) kind = 'couple';
+      const p = mkPerson({ x, y: SW_Y - 3 + rnd(-1.5, 1), dir, kind, sp: kind === 'jog' ? rnd(26, 32) : rnd(9, 14) });
+      if (kind === 'vendor') { p.hat = 'non'; p.shirt = pick(['#7a5230', '#2a9d8f', '#3d405b']); }
+      if (kind === 'couple') p.mate = mkPerson();
+      peds.push(p);
+    }
+    if (cars.length < capC && Math.random() < trafficRate(hour) * dt * .5) {
+      const dir = Math.random() < .5 ? -1 : 1, r = Math.random();
+      const type = r < .55 ? 'moto' : r < .8 ? 'car' : r < .92 ? 'taxi' : r < .97 ? 'bus' : 'bike';
+      const sp = { moto: rnd(40, 58), car: rnd(46, 62), taxi: rnd(46, 60), bus: 34, bike: 16 }[type];
+      cars.push({ type, dir, x: dir > 0 ? -30 : WW + 30, y: dir > 0 ? LANE_NEAR : LANE_FAR, sp, col: pick(['#e63946', '#f4f1e8', '#2a2d34', '#3a86ff', '#9aa3ab', '#e9c46a', '#2a9d8f']), rider: mkPerson({ hat: 'helmet', helm: pick(['#e63946', '#FFD91F', '#3a86ff', '#fff', '#2a9d8f']) }), pass: Math.random() < .3 ? mkPerson({ hat: 'helmet', helm: pick(['#ff6b9a', '#fff']) }) : null });
+    }
+    if (now > nextJunk && boats.length < 2) {
+      nextJunk = now + rnd(25000, 50000);
+      const dir = Math.random() < .5 ? 1 : -1;
+      boats.push({ x: dir > 0 ? -60 : WW + 60, dir, sp: rnd(6, 9), ph: Math.random() * 6 });
+    }
+  }
+  function update(dt, now) {
+    hour = gameHour(); dark = darkness(hour);
+    // camera
+    if (camGoal != null) { camX += (camGoal - camX) * Math.min(1, dt * 3); if (Math.abs(camGoal - camX) < .5) camGoal = null; }
+    else if (!drag && Math.abs(camV) > 1) { camX -= camV * dt; camV *= Math.pow(.04, dt); }
+    clampCam();
+    spawnStuff(now, dt);
+    if (now - lastRoomTick > 500) { lastRoomTick = now; roomTick(now); }
+    // hàng khách
+    queue.forEach((g, i) => { const tx = SLOT0 + i * 13; moveTo(g, tx, dt, 16); g.bub = i === 0 ? (g.bub && g.bubT > 0 ? g.bub : '你好') : ''; });
+    // khách được phục vụ / bỏ đi
+    for (let i = walkers.length - 1; i >= 0; i--) {
+      const w = walkers[i];
+      if (w.bubT > 0) w.bubT -= dt; else w.bub = '';
+      if (w.state === 'enter') {
+        if (moveTo(w, DOOR_X, dt, 18)) {
+          walkers.splice(i, 1);
+          if (w.room) {
+            if (owned('lift')) liftJob([LIFT_G, roomLiftY(w.room)], w, () => arriveRoom(w));
+            else setTimeout(() => arriveRoom(w), 1600);
+          }
+          continue;
+        }
+      } else {
+        w.x += w.dir * (w.sp || 16) * dt;
+        if (w.x < -20 || w.x > WW + 20) { walkers.splice(i, 1); continue; }
+      }
+    }
+    // thang máy
+    if (owned('lift')) {
+      if (!lift.job && lift.jobs.length) { lift.job = lift.jobs.shift(); lift.phase = 0; lift.wait = 0; lift.rider = null; }
+      const j = lift.job;
+      const goal = j ? j.stops[lift.phase] : (lift.y < LIFT_G - 1 && Math.random() < dt * .1 ? LIFT_G : null);
+      if (goal != null) {
+        const d = goal - lift.y;
+        if (Math.abs(d) > .4) lift.y += Math.sign(d) * Math.min(Math.abs(d), 42 * dt);
+        else if (j) {
+          lift.wait += dt;
+          if (lift.wait > .45) {
+            lift.wait = 0;
+            if (lift.phase === 0) lift.rider = j.rider;
+            lift.phase++;
+            if (lift.phase >= j.stops.length) { lift.rider = null; lift.job = null; try { j.done(); } catch (e) {} }
+          }
+        }
+      }
+    } else if (lift.jobs.length) { lift.jobs.splice(0).forEach(j => { try { j.done(); } catch (e) {} }); lift.job = null; }
+    for (let i = peds.length - 1; i >= 0; i--) { const p = peds[i]; p.x += p.dir * p.sp * dt; if (p.x < -30 || p.x > WW + 30) peds.splice(i, 1); }
+    for (let i = cars.length - 1; i >= 0; i--) { const c = cars[i]; c.x += c.dir * c.sp * dt; if (c.x < -60 || c.x > WW + 60) cars.splice(i, 1); }
+    for (let i = boats.length - 1; i >= 0; i--) { const b = boats[i]; b.x += b.dir * b.sp * dt; if (b.x < -90 || b.x > WW + 90) boats.splice(i, 1); }
+    for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.g || 0) * dt; if (p.life <= 0) parts.splice(i, 1); }
+    rooms.forEach(r => { if (r.flick > 0) r.flick = Math.max(0, r.flick - dt); else if (r.flick < 0) r.flick = Math.min(0, r.flick + dt); });
+    if (flashBox) { flashBox.t -= dt; if (flashBox.t <= 0) flashBox = null; }
+    // Zzz
+    if (!low && Math.random() < dt * 1.2) rooms.forEach(r => { if (r.guest && r.guest.act === 'sleep' && Math.random() < .35) parts.push({ x: r.x + r.w - 8, y: r.y + r.h - 12, vx: rnd(2, 5), vy: -6, life: 1.6, z: true, g: 0 }); });
+    // pháo hoa
+    if (owned('fireworks') && inHours(hour, 20, 21.5) && now > nextFw) {
+      nextFw = now + rnd(900, 1700);
+      const fx = camX + rnd(.15, .85) * vw(), fy = rnd(40, 100), col = pick(['pink', 'gold', 'cyan', 'green', 'red', 'white']), n = low ? 18 : 34;
+      for (let i = 0; i < n; i++) { const a = i / n * 6.2832, v = rnd(30, 44); fw.push({ x: fx, y: fy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: rnd(1.1, 1.6), col }); }
+      if (!sheetOpen) Snd.boom();
+    }
+    for (let i = fw.length - 1; i >= 0; i--) { const p = fw[i]; p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 22 * dt; p.vx *= .985; if (p.life <= 0) fw.splice(i, 1); }
+  }
+  function moveTo(o, tx, dt, sp) { const d = tx - o.x; if (Math.abs(d) < .6) { o.x = tx; o.moving = false; return true; } o.x += Math.sign(d) * Math.min(Math.abs(d), sp * dt); o.dir = Math.sign(d); o.moving = true; return false; }
+
+  /* ---------- vẽ một khung hình ----------
+     Thứ tự: trời → núi → phố + người TRONG nhà → màn đêm → đèn trong nhà
+             → người/xe NGOÀI đường (tự pha tối) → đèn đường, đèn xe → bờ biển, biển, thuyền → hiệu ứng */
+  function wt(c, par = 1) { const k = css * dpr * Z; c.setTransform(k, 0, 0, k, -camX * par * k, -camY * k); }
+  function blitLayer(c, img, sc, par) { c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(img, camX * par * sc, camY * sc, vw() * sc, vh() * sc, 0, 0, cw, ch); }
+  let sunPos = null, moonPos = null;
+  function draw(t) {
+    const c = ctx;
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    const [top, bot] = skyAt(hour);
+    const sg = c.createLinearGradient(0, 0, 0, ch * .7); sg.addColorStop(0, top); sg.addColorStop(1, bot);
+    c.fillStyle = sg; c.fillRect(0, 0, cw, ch);
+    c.setTransform(css * dpr, 0, 0, css * dpr, 0, 0);
+    if (dark > .2) { c.fillStyle = '#fff'; stars.forEach((s, i) => { c.globalAlpha = Math.min(1, (dark - .2) * 2.4) * (.5 + .5 * Math.sin(t * 1.5 + i)); c.fillRect(s[0], s[1], s[2], s[2]); }); c.globalAlpha = 1; }
+    const sky0 = 160 / Math.sqrt(Z);
+    if (hour >= 5.8 && hour <= 18.4) { const k = (hour - 5.8) / 12.6, sx = 20 + k * 320, sy = sky0 - Math.sin(k * Math.PI) * 135; const warm = hour < 7 || hour > 17; gl(c, sx, sy, 26, warm ? 'rgb(255,170,90)' : 'white', .8); dot(c, sx, sy, 8, warm ? '#ffb36b' : '#fff6c9'); sunPos = [sx, sy]; } else sunPos = null;
+    if (hour >= 18.6 || hour < 6) { const k = ((hour - 18.6 + 24) % 24) / 11.4, mx = 20 + k * 320, my = sky0 - 10 - Math.sin(k * Math.PI) * 115; gl(c, mx, my, 18, 'white', .35); dot(c, mx, my, 6, '#f6f1cf'); dot(c, mx + 2.6, my - 1.8, 5.2, top); moonPos = [mx, my]; } else moonPos = null;
+    c.fillStyle = dark > .3 ? 'rgba(160,170,200,.35)' : hour > 16.5 && hour < 19 ? 'rgba(255,214,190,.85)' : 'rgba(255,255,255,.88)';
+    clouds.forEach(k => { const x = ((k.x + t * k.v - camX * .1) % 460 + 460) % 460 - 50; c.beginPath(); c.ellipse(x, k.y, k.w, k.w * .32, 0, 0, 6.2832); c.ellipse(x + k.w * .5, k.y - k.w * .18, k.w * .55, k.w * .3, 0, 0, 6.2832); c.fill(); });
+    blitLayer(c, L.far, Sb, .3);
+    blitLayer(c, L.near, Sb, .55);
+    const night = dark > .12;
+    if (dark > 0) { c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = `rgba(6,12,40,${dark})`; c.fillRect(0, 0, cw, ch); }
+    if (owned('wheel')) { wt(c, .55); NK = dark; drawWheel(c, t, false); NK = 0; if (night && (inHours(hour, 17.8, 24) || inHours(hour, 0, 1))) drawWheel(c, t, true); }
+    // phố: bản ngày + bản đêm pha theo độ tối (không phủ đen lần 2 lên trời)
+    blitLayer(c, L.city, S_, 1);
+    if (dark > 0) { c.globalAlpha = Math.min(1, dark / .62); blitLayer(c, L.cityN, S_, 1); c.globalAlpha = 1; }
+    wt(c); NK = dark;
+    drawInterior(c, t);
+    NK = 0;
+    if (night) emissiveInterior(c, t); else drawEmissiveDay(c, t);
+    NK = dark; drawStreet(c, t); NK = 0;
+    if (night || inHours(hour, 18, 6)) streetLights(c, t, night);
+    blitLayer(c, L.fg, S_, 1);
+    if (dark > 0) { c.globalAlpha = Math.min(1, dark / .62); blitLayer(c, L.fgN, S_, 1); c.globalAlpha = 1; }
+    wt(c);
+    NK = dark; drawBeach(c, t); drawSea(c, t); NK = 0;
+    if (night) seaLights(c, t);
+    fw.forEach(p => { if (night) gl(c, p.x, p.y, 3.2, p.col, Math.min(1, p.life)); else { c.globalAlpha = Math.min(1, p.life); dot(c, p.x, p.y, 1.2, '#fff'); c.globalAlpha = 1; } });
+    parts.forEach(p => {
+      if (p.z) { c.globalAlpha = Math.min(1, p.life); text(c, 'z', p.x, p.y, 5 + (1.6 - p.life) * 2, '#ffffff'); c.globalAlpha = 1; return; }
+      c.globalAlpha = Math.min(1, p.life * 1.6); if (p.em) gl(c, p.x, p.y, 4, 'warm', .8); dot(c, p.x, p.y, p.r, p.col); c.globalAlpha = 1;
+    });
+    if (flashBox) { c.globalAlpha = Math.max(0, flashBox.t) * .6; c.fillStyle = '#fff6c9'; c.fillRect(flashBox.x - flashBox.w / 2, flashBox.y - flashBox.h / 2, flashBox.w, flashBox.h); c.globalAlpha = 1; }
+    queue.concat(walkers).forEach(g => { if (g.bub) bubble(c, g.x, g.y - 24, g.bub); });
+  }
+  function bubble(c, x, y, s) {
+    c.font = '800 7px system-ui,sans-serif'; const w = Math.max(16, c.measureText(s).width + 8);
+    rbox(c, x - w / 2, y - 11, w, 10, 4, '#ffffff'); c.strokeStyle = '#16171B'; c.lineWidth = .5; rr(c, x - w / 2, y - 11, w, 10, 4); c.stroke();
+    c.fillStyle = '#fff'; c.beginPath(); c.moveTo(x - 2, y - 1.2); c.lineTo(x, y + 2); c.lineTo(x + 2, y - 1.2); c.fill();
+    text(c, s, x, y - 6, 7, '#16171B');
+  }
+  function drawWheel(c, t, em) {
+    const cx = 120, cy = 150, R = 44, a0 = t * .12;
+    if (!em) { c.strokeStyle = nc('#e9eef5'); c.lineWidth = 2.4; c.beginPath(); c.moveTo(cx, cy); c.lineTo(cx - 24, 214); c.moveTo(cx, cy); c.lineTo(cx + 24, 214); c.stroke(); }
+    c.strokeStyle = em ? `hsl(${(t * 40) % 360},90%,70%)` : nc('#ffffff'); c.lineWidth = em ? 1.6 : 2;
+    c.beginPath(); c.arc(cx, cy, R, 0, 6.2832); c.stroke();
+    if (!em) { c.lineWidth = .6; c.beginPath(); for (let i = 0; i < 12; i++) { const a = a0 + i * .5236; c.moveTo(cx, cy); c.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); } c.stroke(); }
+    for (let i = 0; i < 12; i++) { const a = a0 + i * .5236, x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R; if (em) gl(c, x, y, 5, ['pink', 'gold', 'cyan'][i % 3], .9); else rbox(c, x - 2.6, y - 2, 5.2, 5, 1.2, nc(['#e63946', '#FFD91F', '#2a9fd0'][i % 3])); }
+    if (!em) dot(c, cx, cy, 3.5, nc('#FFD91F'));
+  }
+  function shopOpen(s) { return inHours(hour, s.open[0], s.open[1]); }
+  function shopPeople(c, s, t) {
+    if (s.id === 'cafe') { person(c, s.mA || (s.mA = mkPerson()), s.x + 34, BASE - 2, 'sit', t, -1, .85); person(c, s.mB || (s.mB = mkPerson()), s.x + 54, BASE - 2, 'eat', t, 1, .85); box(c, s.x + 40, BASE - 8, 9, 1.4, nc('#f4f1e8')); }
+    else if (s.id === 'seafood') { person(c, s.mA || (s.mA = mkPerson()), s.x + 44, BASE - 2, 'eat', t, 1, .85); person(c, s.mB || (s.mB = mkPerson()), s.x + 64, BASE - 2, 'eat', t, -1, .85); box(c, s.x + 48, BASE - 8, 12, 1.4, nc('#c0392b')); person(c, s.mC || (s.mC = mkPerson({ shirt: '#ffffff', hat: '#ffffff' })), s.x + 78, BASE - 2, 'stand', t, -1, .85); }
+    else if (s.id === 'mart') { person(c, s.mA || (s.mA = mkPerson({ shirt: '#3a86ff' })), s.x + 46, BASE - 2, 'stand', t, -1, .8); }
+    else if (s.id === 'ktv') { person(c, s.mA || (s.mA = mkPerson({ shirt: '#ff6bd6' })), s.x + 30, BASE - 2, 'wave', t, 1, .8); person(c, s.mB || (s.mB = mkPerson()), s.x + 44, BASE - 2, 'phone', t, -1, .8); }
+  }
+  let baoP = null, diners = null, swim = null, gardenP = null, staffP = null, sun2 = null, gymP = null, meetP = null;
+  function drawBao(c, t) {
+    const st = star() - 1, bao = baoP || (baoP = mkPerson({ skin: '#f0c9a0', hair: '#16171B', hs: 0, shirt: UNIFORM[st], pants: '#16171B' }));
+    bao.shirt = UNIFORM[st];
+    const nap = inHours(hour, 2, 5);
+    person(c, bao, HX + 27, BASE - 5, nap ? 'stand' : (queue.length ? 'wave' : 'stand'), nap ? 0 : t, 1, .95);
+    box(c, HX + 25, BASE - 26.5, 4, 1, nc('#FFD91F'));
+    box(c, HX + 9, BASE - 13, 36, 9, nc(owned('desk') ? '#6b4423' : '#8a6a48')); box(c, HX + 8, BASE - 14, 38, 2, nc(owned('desk') ? '#FFD91F' : '#a07850'));
+    if (owned('desk')) dot(c, HX + 14, BASE - 15.2, 1.4, nc('#FFD91F'));
+  }
+  function drawDiners(c, t) {
+    const rx = HX + LOBBY_W; diners = diners || [mkPerson(), mkPerson(), mkPerson(), mkPerson({ shirt: '#ffffff', pants: '#16171B' })];
+    person(c, diners[0], rx + 6, BASE - 3, 'eat', t, 1, .8); person(c, diners[1], rx + 26, BASE - 3, 'eat', t, -1, .8); person(c, diners[2], rx + 44, BASE - 3, 'eat', t, 1, .8);
+    person(c, diners[3], rx + 14 + Math.sin(t * .4) * 18, BASE - 3, 'walk', t, Math.cos(t * .4) > 0 ? 1 : -1, .8);
+  }
+  /** Người và đồ vật TRONG nhà (bị màn đêm phủ, rồi phòng nào sáng đèn sẽ được vẽ lại) */
+  function drawInterior(c, t) {
+    SHOPS.forEach(s => {
+      const gy = BASE - s.gh;
+      if (!shopOpen(s)) { box(c, s.x + 1, gy + 3, s.w - 2, s.gh - 3, nc('#8d959c')); for (let y = gy + 5; y < BASE; y += 2.2) box(c, s.x + 1, y, s.w - 2, .5, nc('#6f777e')); text(c, 'ĐÓNG CỬA', s.x + s.w / 2, gy + s.gh / 2 + 1, 3.6, nc('#e9eef5')); }
+      else shopPeople(c, s, t);
+    });
+    drawBao(c, t);
+    if (inHours(hour, 2, 5) && Math.random() < .02) parts.push({ x: HX + 31, y: BASE - 28, vx: 3, vy: -5, life: 1.4, z: true, g: 0 });
+    rooms.forEach(r => drawOccupant(c, r, t));
+    if (owned('restaurant') && inHours(hour, 7, 22.5)) drawDiners(c, t);
+    const roofY = BASE - LOBBY_H - floors() * FLOOR_H;
+    if (owned('pool') && inHours(hour, 7, 19)) { swim = swim || [mkPerson(), mkPerson()]; [0, 1].forEach(i => { const x = HX + 14 + ((t * (6 + i * 3) + i * 30) % 60); dot(c, x, roofY - 7, 1.8, nc(swim[i].skin)); dot(c, x, roofY - 7.8, 1.9, nc(swim[i].hair)); box(c, x - 4 + Math.sin(t * 5 + i) * 1.5, roofY - 6.5, 2.2, .8, nc(swim[i].skin)); }); person(c, swim[0], HX + 92, roofY - 5, 'sit', t, 1, .7); }
+    if (owned('garden') && inHours(hour, 6, 23)) { gardenP = gardenP || mkPerson(); person(c, gardenP, HX + 130 + Math.sin(t * .3) * 14, roofY - 3, 'walk', t, Math.cos(t * .3) > 0 ? 1 : -1, .75); }
+    if (owned('lift')) { rbox(c, HX + HW + 1.4, lift.y, 8.2, 11, 1.4, nc('#FFD91F')); box(c, HX + HW + 2.4, lift.y + 1.4, 6.2, 6.4, nc('#bfe6ff')); if (lift.rider) { dot(c, HX + HW + 5.5, lift.y + 4.2, 1.6, nc(lift.rider.skin)); box(c, HX + HW + 4, lift.y + 5.6, 3, 2.4, nc(lift.rider.shirt)); } }
+  }
+  function drawOccupant(c, r, t) {
+    const g = r.guest;
+    if (r.kind === 'gym') { if (inHours(hour, 6, 22)) { gymP = gymP || [mkPerson({ shirt: '#e63946' }), mkPerson({ shirt: '#06d6a0' })]; person(c, gymP[0], r.x + 13, r.y + r.h - 5, 'run', t, 1, .8); person(c, gymP[1], r.x + r.w - 9, r.y + r.h - 3, 'lift', t, -1, .8); } return; }
+    if (r.kind === 'meeting') { if (inHours(hour, 8, 18)) { meetP = meetP || [mkPerson({ hat: '#FFD91F' }), mkPerson(), mkPerson()]; person(c, meetP[0], r.x + 24, r.y + r.h - 3, 'point', t, -1, .8); person(c, meetP[1], r.x + 34, r.y + r.h - 3, 'sit', t, 1, .75); person(c, meetP[2], r.x + 44, r.y + r.h - 3, 'type', t, -1, .75); } return; }
+    if (!g) return;
+    const fy = r.y + r.h - 3;
+    if (g.act === 'sleep') {
+      dot(c, r.x + r.w - 7, r.y + r.h - 12, 2.4, nc(g.skin)); c.fillStyle = nc(g.hair); c.beginPath(); c.arc(r.x + r.w - 6.4, r.y + r.h - 12.3, 2.5, -1.6, 1.6); c.fill();
+      rbox(c, r.x + r.w - 22, r.y + r.h - 12.6, 14, 3.6, 1.6, nc(BLANKET[r.idx % 5]));
+      c.fillStyle = nc(CURTAIN[star() - 1]); c.globalAlpha = .9; c.fillRect(r.x, r.y, 12, r.h - 3); c.fillRect(r.x + r.w - 12, r.y, 12, r.h - 15); c.globalAlpha = 1;
+      return;
+    }
+    if (g.act === 'tv') { person(c, g, r.x + r.w - 18, fy - 6, 'sit', t, -1, .82); c.fillStyle = nc(Math.sin(t * 9) > 0 ? '#5aa0ff' : '#9fd0ff'); c.fillRect(r.x + 4, r.y + 6, 9, 5); }
+    else if (g.act === 'work') { person(c, g, r.x + 21, fy, 'type', t, -1, .82); box(c, r.x + 14.5, r.y + r.h - 12, 6, 3.4, nc('#cfd8df')); }
+    else if (g.act === 'read') { person(c, g, r.x + r.w - 18, fy - 6, 'read', t, -1, .82); }
+    else if (g.act === 'phone') { person(c, g, r.x + 16 + Math.sin(t * .5 + g.ph) * 6, fy, 'phone', t * .6, 1, .82); }
+    else { person(c, g, r.x + r.w / 2 + Math.sin(t * .3 + g.ph) * 8, fy, 'stand', 0, 1, .82); }
+  }
+  /** Người, xe NGOÀI đường – vẽ sau lớp đèn trong nhà nên không bị che; màu tự tối theo giờ (NK) */
+  function drawStreet(c, t) {
+    staffP = staffP || [mkPerson({ shirt: '#1e5aa8', pants: '#16171B', hat: '#16171B' }), mkPerson({ shirt: '#1e5aa8', pants: '#16171B' }), mkPerson({ shirt: '#c0392b', pants: '#16171B', hat: '#c0392b' })];
+    for (let i = 0; i < owned('staff'); i++) {
+      const x = [DOOR_X - 13, DOOR_X - 26, HX + 6][i]; shadow(c, x, SW_Y - 1);
+      person(c, staffP[i], x, SW_Y - 1, queue.length && i === 0 ? 'wave' : 'stand', t, 1, .92);
+      if (i === 2) { box(c, x + 4, SW_Y - 7, 7, 1, nc('#b8902a')); box(c, x + 5, SW_Y - 14, 1, 7, nc('#b8902a')); suitcase(c, x + 6, SW_Y - 7.5, '#6d597a'); }
+    }
+    peds.forEach(p => {
+      const pose = p.kind === 'jog' ? 'run' : p.kind === 'selfie' ? 'phone' : 'walk';
+      shadow(c, p.x, p.y);
+      if (p.kind === 'couple') person(c, p.mate, p.x - p.dir * 5, p.y - .6, 'walk', t + .3, p.dir, .95);
+      person(c, p, p.x, p.y, pose, t, p.dir, .95);
+      if (p.kind === 'vendor') {
+        const sw = Math.sin(t * 8 + p.ph) * .6; c.strokeStyle = nc('#7a5230'); c.lineWidth = .7;
+        c.beginPath(); c.moveTo(p.x - 9, p.y - 15 + sw); c.lineTo(p.x + 9, p.y - 15 - sw); c.stroke();
+        [-9, 9].forEach((dx, k) => { c.beginPath(); c.moveTo(p.x + dx, p.y - 15 + (k ? -sw : sw)); c.lineTo(p.x + dx, p.y - 8); c.stroke(); c.fillStyle = nc('#c99a4b'); c.beginPath(); c.arc(p.x + dx, p.y - 7, 3, 0, 3.1416); c.fill(); dot(c, p.x + dx - 1, p.y - 8, 1, nc('#ffb703')); dot(c, p.x + dx + 1.2, p.y - 8.2, 1, nc('#e63946')); });
+      }
+      if (p.kind === 'selfie') { c.strokeStyle = nc('#333333'); c.lineWidth = .6; c.beginPath(); c.moveTo(p.x + p.dir * 4, p.y - 20); c.lineTo(p.x + p.dir * 9, p.y - 28); c.stroke(); box(c, p.x + p.dir * 9 - 1, p.y - 30, 2, 3, nc('#222222')); }
+    });
+    queue.concat(walkers).forEach(g => {
+      const mv = g.moving || (g.state && g.state !== 'arrive');
+      shadow(c, g.x, g.y);
+      person(c, g, g.x, g.y, mv ? 'walk' : 'stand', mv ? t : 0, g.dir || -1, 1);
+      if (g.bagC || g.bag) suitcase(c, g.x + (g.dir > 0 ? -9 : 4), g.y, g.bagC || '#6d597a');
+    });
+    cars.filter(v => v.y === LANE_FAR).forEach(v => vehicle(c, v, t));
+    cars.filter(v => v.y === LANE_NEAR).forEach(v => vehicle(c, v, t));
+  }
+  function drawBeach(c, t) {
+    if (owned('umbrella') && inHours(hour, 8, 17.5)) { sun2 = sun2 || [mkPerson(), mkPerson()]; [[224, 0], [276, 1]].forEach(([x, i]) => { c.save(); c.translate(x, SAND_Y + 2.4); c.rotate(-1.45); person(c, sun2[i], 0, 0, 'stand', 0, 1, .8); c.restore(); }); }
+  }
+  function vehicle(c, v, t) {
+    const N = nc;
+    c.save(); c.translate(v.x, v.y); if (v.dir < 0) c.scale(-1, 1);
+    c.fillStyle = 'rgba(0,0,0,.2)'; c.beginPath(); c.ellipse(0, .2, v.type === 'bus' ? 25 : v.type === 'moto' || v.type === 'bike' ? 7 : 14, 1.5, 0, 0, 6.2832); c.fill();
+    if (v.type === 'moto' || v.type === 'bike') {
+      c.strokeStyle = N('#222222'); c.lineWidth = v.type === 'bike' ? .7 : 1.6;
+      c.beginPath(); c.arc(-5, -2.4, 2.3, 0, 6.2832); c.stroke(); c.beginPath(); c.arc(5, -2.4, 2.3, 0, 6.2832); c.stroke();
+      if (v.type === 'moto') { rbox(c, -5.5, -6.5, 10, 3.4, 1.4, N(v.col)); box(c, -4, -7.4, 5, 1.4, N('#222222')); box(c, 4, -8.5, 1, 4, N('#555555')); }
+      else { c.beginPath(); c.moveTo(-5, -2.4); c.lineTo(0, -7); c.lineTo(5, -2.4); c.moveTo(0, -7); c.lineTo(3.5, -9); c.stroke(); }
+      if (v.pass) person(c, v.pass, -4, -4.4, 'sit', 0, 1, .78);
+      person(c, v.rider, -1, -4.4, 'sit', 0, 1, .82);
+    } else if (v.type === 'bus') {
+      rbox(c, -24, -16, 48, 13.5, 2.5, N(v.col === '#f4f1e8' ? '#2a9fd0' : '#e63946'));
+      for (let i = 0; i < 6; i++) box(c, -21 + i * 7, -13.5, 5.5, 4.5, N('#bfe6ff'));
+      box(c, 18, -13.5, 4, 8, N('#bfe6ff')); box(c, -24, -6, 48, 1, N('#ffffff'));
+      c.fillStyle = N('#ffffff'); c.font = '800 3px system-ui'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('BÃI CHÁY', 0, -3.5);
+      dot(c, -15, -2, 2.6, N('#222222')); dot(c, 15, -2, 2.6, N('#222222'));
+    } else {
+      const col = v.type === 'taxi' ? '#f4f1e8' : v.col;
+      rbox(c, -13, -8.5, 26, 6.6, 2.2, N(col)); rbox(c, -8, -13, 15, 5.4, 2.2, N(shade(col, -10)));
+      box(c, -6.6, -12, 5.6, 3.6, N('#bfe6ff')); box(c, .2, -12, 5.6, 3.6, N('#bfe6ff'));
+      if (v.type === 'taxi') { box(c, -13, -5.8, 26, 1.4, N('#1a9a4a')); rbox(c, -3, -15, 6, 2, .8, N('#1a9a4a')); }
+      dot(c, -8, -2, 2.4, N('#222222')); dot(c, 8, -2, 2.4, N('#222222')); dot(c, -8, -2, 1, N('#888888')); dot(c, 8, -2, 1, N('#888888'));
+    }
+    c.restore();
+  }
+  function drawSea(c, t) {
+    const x0 = camX - 2, w = vw() + 4;
+    const g = c.createLinearGradient(0, SEA_Y, 0, WH); g.addColorStop(0, nc('#3aa6cf')); g.addColorStop(1, nc('#1d6f93'));
+    c.fillStyle = g; c.fillRect(x0, SEA_Y, w, WH - SEA_Y);
+    c.fillStyle = dark > .3 ? 'rgba(200,220,255,.25)' : 'rgba(255,255,255,.55)';
+    for (let i = 0; i < 16; i++) { const x = camX + ((i * 37 + t * 8) % (vw() + 40)) - 20, y = SEA_Y + 2 + (i * 5) % 14; c.fillRect(x, y, 7 + (i % 3) * 3, .7); }
+    c.fillStyle = dark > .3 ? 'rgba(200,220,255,.35)' : 'rgba(255,255,255,.8)'; c.fillRect(x0, SEA_Y - .4, w, .8);
+    boats.forEach(b => {
+      const by = SEA_Y + 9 + Math.sin(t * 1.4 + b.ph) * .8;
+      c.save(); c.translate(b.x, by); c.scale(b.dir, 1);
+      c.fillStyle = nc('#7a4a24'); c.beginPath(); c.moveTo(-26, -4); c.lineTo(26, -6); c.lineTo(20, 3); c.lineTo(-22, 3); c.closePath(); c.fill();
+      box(c, -14, -9, 24, 5, nc('#a0682f'));
+      [[-16, 22], [-3, 27], [10, 20]].forEach(([sx, h]) => { c.fillStyle = nc('#c9542f'); c.beginPath(); c.moveTo(sx, -9); c.quadraticCurveTo(sx + 7, -9 - h / 2, sx + 1, -9 - h); c.lineTo(sx + 10, -9 - h + 2); c.quadraticCurveTo(sx + 13, -9 - h / 2, sx + 9, -9); c.closePath(); c.fill(); c.strokeStyle = 'rgba(80,30,10,.6)'; c.lineWidth = .4; for (let k = 4; k < h; k += 4) { c.beginPath(); c.moveTo(sx + 1, -9 - k); c.lineTo(sx + 10, -9 - k); c.stroke(); } });
+      c.restore();
+    });
+    if (owned('boat')) {
+      const by = SEA_Y + 10 + Math.sin(t * 1.2) * .7;
+      c.save(); c.translate(262, by);
+      c.fillStyle = nc('#ffffff'); c.beginPath(); c.moveTo(-34, -6); c.lineTo(36, -6); c.lineTo(28, 4); c.lineTo(-28, 4); c.closePath(); c.fill();
+      box(c, -34, -2, 70, 1.4, nc('#1e5aa8'));
+      rbox(c, -22, -15, 40, 9, 2, nc('#1e5aa8')); rbox(c, -14, -22, 24, 7, 2, nc('#f4f1e8'));
+      for (let i = 0; i < 5; i++) box(c, -19 + i * 7.4, -12.5, 5, 3.6, dark > .12 ? '#ffd98a' : '#bfe6ff');
+      box(c, 0, -32, .8, 10, nc('#7a5230')); c.fillStyle = nc('#FFD91F'); c.beginPath(); c.moveTo(.8, -32); c.lineTo(9, -29.5); c.lineTo(.8, -27); c.fill(); text(c, '宝', 4, -29.5, 3, nc('#c0392b'));
+      c.restore();
+    }
+  }
+  /** Đèn trong nhà ban đêm: phòng có khách thức thì sáng, ngủ thì tắt, cú đêm xem TV ánh xanh */
+  function emissiveInterior(c, t) {
+    const S2 = S_;
+    const blit = (x, y, w, h, a = 1) => { c.globalAlpha = a; c.drawImage(L.lit, x * S2, y * S2, w * S2, h * S2, x, y, w, h); c.globalAlpha = 1; };
+    SHOPS.forEach(s => {
+      const top = BASE - s.h, gy = BASE - s.gh;
+      if (shopOpen(s)) { blit(s.x, gy + 3, s.w, s.gh - 3, .95); shopPeople(c, s, t); gl(c, s.x + s.w / 2, gy - 5, 20, s.id === 'ktv' ? 'pink' : 'warm', .45); text(c, s.sign, s.x + s.w / 2, gy - 5, 4.6, s.sc); }
+      const lit = s.id === 'ktv' ? shopOpen(s) : inHours(hour, 17.6, s.id === 'mart' ? 23.6 : s.id === 'cafe' ? 22.8 : 0.8);
+      if (lit) blit(s.x + 4, top + 4, s.w - 8, s.h - s.gh - 12, .9);
+    });
+    towerWins.forEach(o => { if (!o.never && (o.allNight || inHours(hour, 17.4 + (o.x % 7) * .1, o.off) || inHours(hour, o.on, o.on + 1.2))) blit(o.x, o.y, o.w, o.h, .95); });
+    blit(TOWER.x + 30, BASE - 18, 54, 18, .9);
+    blit(HX, BASE - LOBBY_H + 6, LOBBY_W, 34, 1);
+    gl(c, HX + 55, BASE - 20, 40, 'warm', .35);
+    drawBao(c, t);
+    if (star() >= 3) gl(c, HX + 92, BASE - 28.5, 9, 'gold', .9);
+    if (owned('restaurant') && inHours(hour, 7, 22.5)) { blit(HX + LOBBY_W, BASE - 34, HW - LOBBY_W, 34, .95); drawDiners(c, t); }
+    rooms.forEach(r => {
+      let a = 0;
+      if (r.kind === 'gym') a = inHours(hour, 6, 22) ? 1 : 0;
+      else if (r.kind === 'meeting') a = inHours(hour, 8, 18) ? 1 : 0;
+      else if (r.guest) a = r.guest.act === 'sleep' ? 0 : 1;
+      if (r.flick > 0) a = (Math.sin(r.flick * 40) > 0) ? 1 : .2;
+      if (a <= 0) return;
+      const owlTv = r.guest && r.guest.act === 'tv' && (hour >= 23 || hour < 5);
+      if (owlTv) { blit(r.x, r.y, r.w, r.h, .35); c.fillStyle = Math.sin(t * 9 + r.idx) > 0 ? 'rgba(90,150,255,.28)' : 'rgba(150,200,255,.18)'; c.fillRect(r.x, r.y, r.w, r.h); }
+      else blit(r.x, r.y, r.w, r.h, a);
+      drawOccupant(c, r, t);
+      if (r.guest && r.guest.act === 'tv') gl(c, r.x + 8, r.y + 9, 9, 'blue', .5);
+      if (r.guest && r.guest.act === 'work') gl(c, r.x + 17, r.y + r.h - 11, 5, 'cyan', .6);
+    });
+    const deco = inHours(hour, 17.8, 24);
+    const roofY = BASE - LOBBY_H - floors() * FLOOR_H;
+    if (owned('lift')) { gl(c, HX + HW + 5.5, lift.y + 5, 8, 'gold', .6); rbox(c, HX + HW + 1.4, lift.y, 8.2, 11, 1.4, '#FFD91F'); if (lift.rider) { dot(c, HX + HW + 5.5, lift.y + 4.2, 1.6, lift.rider.skin); box(c, HX + HW + 4, lift.y + 5.6, 3, 2.4, lift.rider.shirt); } }
+    if (owned('sign') && deco) { gl(c, HX + 84, roofY - 24.5, 46, 'pink', .35); text(c, '宝 HOTEL ' + '★'.repeat(star()), HX + 84, roofY - 24.5, 8, '#ff9ee8'); }
+    if (owned('lights') && deco) for (let y = roofY; y < BASE - 6; y += 6) { const k = (y / 6 | 0); gl(c, HX + 1, y, 3.5, ['pink', 'gold', 'cyan', 'green'][(k + (t * 3 | 0)) % 4], .9); gl(c, HX + HW - 1, y + 3, 3.5, ['gold', 'cyan', 'green', 'pink'][(k + (t * 3 | 0)) % 4], .9); }
+    if (owned('lantern') && deco) [HX + 6, HX + 26, HX + 46, HX + 78, HX + 100].forEach((x, i) => gl(c, x, BASE - LOBBY_H + 11, 7, 'red', .7 + Math.sin(t * 2 + i) * .15));
+    if (owned('pool') && inHours(hour, 18, 23.5)) gl(c, HX + 43, roofY - 6.5, 30, 'cyan', .35);
+    if (owned('garden') && deco) for (let x = HX + 110; x < HX + 158; x += 5) gl(c, x, roofY - 12.6 + Math.sin(x) * .6, 2.5, 'gold', .9);
+  }
+  function streetLights(c, t, night) {
+    LAMPS.forEach(x => { gl(c, x + 6, SW_Y - 29, 16, 'warm', .55 + dark * .4); dot(c, x + 6, SW_Y - 29.5, 1.3, '#fff6d0'); c.globalAlpha = .1 + dark * .2; c.fillStyle = '#ffd98a'; c.beginPath(); c.moveTo(x + 4, SW_Y - 28.5); c.lineTo(x - 6, SW_Y + 2); c.lineTo(x + 18, SW_Y + 2); c.lineTo(x + 8, SW_Y - 28.5); c.fill(); c.globalAlpha = 1; });
+    if (!night) return;
+    cars.forEach(v => {
+      const half = v.type === 'bus' ? 24 : v.type === 'moto' || v.type === 'bike' ? 6 : 13, fx = v.x + v.dir * half, y = v.y - (v.type === 'bus' ? 6 : 5);
+      c.globalAlpha = .22; c.fillStyle = '#fff3c4'; c.beginPath(); c.moveTo(fx, y - 1); c.lineTo(fx + v.dir * 34, y - 4); c.lineTo(fx + v.dir * 34, y + 5); c.lineTo(fx, y + 1); c.fill(); c.globalAlpha = 1;
+      gl(c, fx, y, 5, 'white', .9);
+      if (v.type !== 'bike') gl(c, v.x - v.dir * half, y, 3, 'red', .9);
+    });
+  }
+  function seaLights(c, t) {
+    // vệt đèn phản chiếu trên mặt biển
+    const refl = [[HX + 50, 'warm'], [HX + 120, 'warm'], [TOWER.x + 50, 'warm'], [SHOPS[1].x + 40, 'warm']];
+    if (owned('sign') && inHours(hour, 17.8, 24)) refl.push([HX + 84, 'pink']);
+    refl.forEach(([x, col], i) => { for (let k = 0; k < 4; k++) { const yy = SEA_Y + 3 + k * 3.6, ww = 10 - k * 1.5; c.globalAlpha = .35 - k * .06; c.fillStyle = col === 'pink' ? '#ff9ee8' : '#ffd98a'; c.fillRect(x - ww / 2 + Math.sin(t * 2 + k + i) * 2, yy, ww, .8); } });
+    c.globalAlpha = 1;
+    if (owned('boat')) { for (let i = 0; i < 5; i++) gl(c, 262 - 16.5 + i * 7.4, SEA_Y + 10 - 10.7, 3.5, 'warm', .9); gl(c, 262, SEA_Y + 10 - 33, 3, 'red', .9); }
+    boats.forEach(b => gl(c, b.x + b.dir * 6, SEA_Y + 4, 4, 'warm', .9));
+  }
+  function drawEmissiveDay(c, t) {
+    rooms.forEach(r => { if (r.flick > 0) { c.globalAlpha = (Math.sin(r.flick * 40) > 0 ? .35 : 0); c.fillStyle = '#fff3b0'; c.fillRect(r.x, r.y, r.w, r.h); c.globalAlpha = 1; } });
+  }
+
+  /* ---------- vòng lặp ---------- */
+  function loop(now) {
+    raf = 0;
+    if (!active) return;
+    raf = requestAnimationFrame(loop);
+    const minDt = 1000 / (sheetOpen ? 12 : fpsCap);
+    if (lastF && now - lastF < minDt - 2) return;
+    const dt = Math.min(.06, lastF ? (now - lastF) / 1000 : .016); lastF = now;
+    // tự hạ chất lượng nếu máy yếu
+    perfAcc += dt; perfN++;
+    if (perfN >= 90) { const avg = perfAcc / perfN; perfAcc = 0; perfN = 0; if (!low && !sheetOpen && avg > .03) { perfBad++; if (perfBad >= 2) setLow(true, true); } else perfBad = 0; }
+    update(dt, now);
+    draw(now / 1000);
+    clockTick();
+  }
+  function setLow(v, auto) { low = v; fpsCap = v ? 30 : 60; S.lowPower = v; save(); resize(); if (auto) toast('Đã bật chế độ mượt cho máy này'); }
+  let lastClockTxt = '';
+  function clockTick() {
+    const h = Math.floor(hour), m = Math.floor((hour - h) * 60);
+    const s = `${dark > .3 ? '🌙' : '☀️'} ${String(h).padStart(2, '0')}:${String(m - m % (S.clock === 'real' ? 1 : 5)).padStart(2, '0')}${S.clock === 'real' ? '' : ' ⏩'}`;
+    if (s !== lastClockTxt) { lastClockTxt = s; $('clockBtn').textContent = s; }
+  }
+  function setActive(v) { active = v; if (v && !raf) { lastF = 0; raf = requestAnimationFrame(loop); } }
+
+  /* ---------- chạm & kéo ---------- */
+  let drag = false, downX = 0, downY = 0, lastX = 0, lastY = 0, lastT = 0, moved = 0, pid = null;
+  function toWorld(cx, cy) { const r = cv.getBoundingClientRect(); return { x: camX + (cx - r.left) / (css * Z), y: camY + (cy - r.top) / (css * Z), sx: (cx - r.left) / css, sy: (cy - r.top) / css }; }
+  function toScreen(wx, wy) { const r = cv.getBoundingClientRect(); const x = r.left + (wx - camX) * css * Z, y = r.top + (wy - camY) * css * Z; return { x, y, vis: x > r.left && x < r.right && y > r.top && y < r.bottom }; }
+  cv.addEventListener('pointerdown', e => { pid = e.pointerId; drag = false; moved = 0; downX = lastX = e.clientX; downY = lastY = e.clientY; lastT = performance.now(); camV = 0; camGoal = null; });
+  cv.addEventListener('pointermove', e => {
+    if (pid !== e.pointerId) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY; moved += Math.abs(dx) + (Z > 1 ? Math.abs(dy) : 0);
+    const ax = Math.abs(e.clientX - downX), ay = Math.abs(e.clientY - downY);
+    if (!drag && (ax > 8 && ax > ay || (Z > 1 && ay > 8))) { drag = true; try { cv.setPointerCapture(pid); } catch (er) {} hideTip(); }
+    if (drag) { const now = performance.now(), k = css * Z; camX -= dx / k; if (Z > 1) camY -= dy / k; clampCam(); camV = dx / k / Math.max(.008, (now - lastT) / 1000); lastT = now; }
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  const up = e => { if (pid !== e.pointerId) return; pid = null; if (!drag && moved < 10) tap(e.clientX, e.clientY); drag = false; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', () => { pid = null; drag = false; });
+  function hideTip() { const t = $('sceneTip'); if (t) t.style.opacity = '0'; }
+  function hit(x, y, bx, by, bw, bh) { return x >= bx && x <= bx + bw && y >= by && y <= by + bh; }
+  function tap(cx, cy) {
+    Snd.unlock();
+    const w = toWorld(cx, cy), x = w.x, y = w.y, sx = w.sx, sy = w.sy;
+    // khách đầu hàng
+    if (queue[0] && hit(x, y, queue[0].x - 7, queue[0].y - 24, 16, 26)) { openServe(); return; }
+    if (star() >= FREE_MAX_STAR) { const roofY = BASE - LOBBY_H - floors() * FLOOR_H, top = Math.max(4, roofY - 58); if (hit(x, y, HX - 6, top - 4, 110, roofY - top + 4)) { memberPitch('crane'); return; } }
+    for (const g of queue) if (hit(x, y, g.x - 7, g.y - 24, 14, 26)) return word('guest', cx, cy);
+    if (sunPos && Math.hypot(sx - sunPos[0], sy - sunPos[1]) < 14) return word('sun', cx, cy);
+    if (moonPos && Math.hypot(sx - moonPos[0], sy - moonPos[1]) < 12) return word('moon', cx, cy);
+    for (const v of cars) if (hit(x, y, v.x - 16, v.y - 18, 32, 20)) return word(v.type === 'bus' ? 'bus' : v.type === 'taxi' ? 'taxi' : v.type === 'car' ? 'car' : v.type === 'bike' ? 'bike' : 'moto', cx, cy);
+    for (const p of peds) if (hit(x, y, p.x - 7, p.y - 22, 14, 24)) return word(p.kind === 'jog' ? 'jog' : p.kind === 'vendor' ? 'vendor' : p.kind === 'selfie' ? 'selfie' : 'walk', cx, cy);
+    for (const r of rooms) if (hit(x, y, r.x, r.y, r.w, r.h)) return word(r.kind === 'gym' ? 'gym' : r.kind === 'meeting' ? 'meeting' : r.guest ? r.guest.act === 'tv' ? 'tv' : r.guest.act : 'empty', cx, cy);
+    const roofY = BASE - LOBBY_H - floors() * FLOOR_H;
+    if (owned('pool') && hit(x, y, HX + 6, roofY - 12, 74, 10)) return word(inHours(hour, 7, 19) ? 'swim' : 'pool', cx, cy);
+    if (owned('garden') && hit(x, y, HX + 106, roofY - 14, 54, 12)) return word('garden', cx, cy);
+    if (owned('lift') && hit(x, y, HX + HW - 2, roofY - 4, 14, BASE - roofY)) return word('lift', cx, cy);
+    if (hit(x, y, HX, BASE - LOBBY_H, LOBBY_W, LOBBY_H)) return word('desk', cx, cy);
+    if (hit(x, y, HX + LOBBY_W, BASE - LOBBY_H, HW - LOBBY_W, LOBBY_H)) return word(owned('restaurant') ? 'eat' : 'rent', cx, cy);
+    if (hit(x, y, HX, roofY - 34, HW, BASE - roofY + 34)) return word('hotel', cx, cy);
+    for (const s of SHOPS) if (hit(x, y, s.x, BASE - s.h, s.w, s.h)) return word(s.word, cx, cy);
+    if (hit(x, y, TOWER.x, BASE - TOWER.h, TOWER.w, TOWER.h)) return word('hotel', cx, cy);
+    for (const lx of LAMPS) if (hit(x, y, lx - 3, SW_Y - 34, 12, 34)) return word('lamp', cx, cy);
+    if (owned('staff') && hit(x, y, DOOR_X - 32, SW_Y - 22, 30, 22)) return word('staff', cx, cy);
+    if (owned('boat') && hit(x, y, 226, SEA_Y - 26, 74, 34)) return word('cruise', cx, cy);
+    for (const b of boats) if (hit(x, y, b.x - 28, SEA_Y - 30, 56, 40)) return word('junk', cx, cy);
+    if (owned('wheel') && Math.hypot(camX * .55 + sx / Z - 120, y - 150) < 50) return word('wheel', cx, cy);
+    if (fw.length && y < 120) return word('firework', cx, cy);
+    if (owned('palm') && y > 240 && y < SAND_Y) for (const px of [58, 172, 372, 470, 560]) if (Math.abs(x - px) < 12) return word('palm', cx, cy);
+    if (y >= SEA_Y) return word('bay', cx, cy);
+    if (y >= SAND_Y - 4) return word('beach', cx, cy);
+    if (y >= SW_Y + 2 && y < SW_Y + 25) return word('road', cx, cy);
+  }
+  let bubEl = null;
+  function word(key, cx, cy) {
+    const w = WORDS[key]; if (!w) return;
+    const r = wrap.getBoundingClientRect();
+    if (bubEl) bubEl.remove();
+    const fresh = !S.found[key];
+    bubEl = document.createElement('div'); bubEl.className = 'wbub';
+    bubEl.innerHTML = `<b>${esc(w[0])}</b><i>${esc(w[1])}</i> · ${esc(w[2])}${fresh ? '<span class="new">+2 🪙 · từ mới!</span>' : ''}`;
+    bubEl.style.left = Math.max(60, Math.min(r.width - 60, cx - r.left)) + 'px'; bubEl.style.top = Math.max(50, cy - r.top - 6) + 'px';
+    wrap.appendChild(bubEl);
+    const me = bubEl; setTimeout(() => { if (bubEl === me) { me.remove(); bubEl = null; } }, 2600);
+    speak(w[0]); Snd.click();
+    if (fresh) { S.found[key] = 1; S.coins += 2; save(); Snd.discover(); burstAt(cx, cy, 10, 50); renderHud(); renderBuild(); if (document.querySelector('.tabs [data-tab=review]').classList.contains('on')) renderReview(); }
+  }
+
+  /* ---------- khởi động ---------- */
+  function init() {
+    stars = Array.from({ length: 46 }, () => [rnd(0, VW), rnd(0, 150), Math.random() < .2 ? 1.2 : .7]);
+    clouds = Array.from({ length: 4 }, (_, i) => ({ x: i * 120 + rnd(0, 60), y: rnd(25, 85), w: rnd(16, 28), v: rnd(2, 5) }));
+    resize();
+    // lấp sẵn khoảng nửa số phòng để khách sạn trông có người ở
+    freeRooms().forEach(r => { if (Math.random() < .55) { const g = mkPerson(); r.guest = g; newStay(g, rnd(1, 6)); } });
+    for (let i = 0; i < 4; i++) spawnStuff(performance.now(), 3);
+    peds.forEach(p => p.x = rnd(0, WW)); cars.forEach(v => v.x = rnd(0, WW));
+    nextJunk = performance.now() + 4000; boats.push({ x: rnd(80, 560), dir: Math.random() < .5 ? 1 : -1, sp: rnd(6, 9), ph: 1 });
+    refill();
+    let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(resize, 200); });
+    setActive(true);
+  }
+  return {
+    init, rebuild: k => { rebuild(k); }, queue, served, refill, setActive, toScreen,
+    set sheet(v) { sheetOpen = v; }, get low() { return low; }, setLow,
+    focusHotel() { camGoal = HX + HW / 2 - vw() / 2; },
+    get zoom() { return Z; },
+    setZoom(z) {
+      const cx = camX + vw() / 2, cy = camY + vh() / 2;
+      Z = z; resize();
+      camX = cx - vw() / 2;
+      const roofY = BASE - LOBBY_H - floors() * FLOOR_H;
+      camY = Z > 1 ? Math.min(cy - vh() / 2, (roofY + SW_Y) / 2 - vh() / 2 + 20) : 0;
+      if (Z > 1) camY = Math.max(camY, (roofY + SW_Y) / 2 - vh() / 2);
+      clampCam(); cv.style.touchAction = Z > 1 ? 'none' : 'pan-y';
+    },
+    debug: () => ({ camX, rooms: rooms.map(r => ({ k: r.k, j: r.j, kind: r.kind, act: r.guest && r.guest.act })), peds: peds.length, cars: cars.length, boats: boats.length, hour, dark, low, fps: fpsCap }),
+    pan(x, y) { camGoal = null; camX = x; if (y != null) camY = y; clampCam(); }
+  };
+})();
+
+/* ===== CHỌN CÂU HỎI (Sổ ôn: ưu tiên câu từng sai) ===== */
+let recent = [];
+function pickQuestion(topic) {
+  let pool = QUESTIONS.filter(q => q.topic === topic);
+  if (!pool.length) pool = QUESTIONS.filter(q => topics().includes(q.topic));
+  const fresh = pool.filter(q => !recent.includes(q.id));
+  if (fresh.length) pool = fresh;
+  const weak = pool.filter(q => S.mem[q.id] != null && S.mem[q.id] <= 1);
+  const unseen = pool.filter(q => S.mem[q.id] == null);
+  let q;
+  if (weak.length && Math.random() < .4) q = pick(weak);
+  else if (unseen.length && Math.random() < .7) q = pick(unseen);
+  else {
+    const w = pool.map(x => 5 - Math.min(4, S.mem[x.id] || 0));
+    let r = Math.random() * w.reduce((a, b) => a + b, 0); q = pool[0];
+    for (let i = 0; i < pool.length; i++) { r -= w[i]; if (r <= 0) { q = pool[i]; break; } }
+  }
+  recent.push(q.id); if (recent.length > 6) recent.shift();
+  return q;
+}
+function itemQuestion(it) {
+  const others = shuffle(ITEMS.filter(x => x.id !== it.id)).slice(0, 3);
+  const all = shuffle([it].concat(others));
+  const ans = all.indexOf(it);
+  if (Math.random() < .5) return { id: 'it-' + it.id, type: 'mc', topic: 'buy', q: `“${it.vi}” tiếng Trung là gì?`, options: all.map(x => x.zh), answer: ans, optionPy: all.map(x => x.py), optionVi: all.map(x => x.vi), zh: it.zh, py: it.py, vi: it.vi };
+  return { id: 'it-' + it.id, type: 'mc', topic: 'buy', q: `${it.zh} nghĩa là gì?`, options: all.map(x => x.vi), answer: ans, zh: it.zh, py: it.py, vi: it.vi };
+}
+
+/* ===== BẢNG HỎI–ĐÁP ===== */
+let Q = null, combo = 0, orderPicked = [], sessionServed = 0;
+function correctText(q) { if (q.type === 'order') return (q.answer || []).join(''); return typeof q.answer === 'number' ? (q.options[q.answer] || '') : ''; }
+function fullZh(q) { const a = correctText(q); let z = q.zh || ''; if (!z && hasHan(a)) z = a; return z.includes('____') ? z.replace('____', a) : z; }
+function fullPy(q) { let p = q.py || ''; if (p.includes('____') && q.optionPy && typeof q.answer === 'number') p = p.replace('____', q.optionPy[q.answer] || '…'); return p; }
+function openSheet() { $('sheet').classList.add('on'); Scene.sheet = true; }
+function closeSheet() { $('sheet').classList.remove('on'); Scene.sheet = false; Q = null; if (window.speechSynthesis) try { speechSynthesis.cancel(); } catch (e) {} }
+
+function openServe() {
+  if (Q) return;
+  const g = Scene.queue[0];
+  if (!g) { toast('Khách đang tới…'); return; }
+  Snd.unlock();
+  const q = pickQuestion(g.topic);
+  Q = { kind: 'serve', q, g, t0: Date.now(), locked: false };
+  $('shAv').textContent = g.av;
+  $('shName').textContent = g.name;
+  $('shSub').textContent = `${TOPIC_LABEL[g.topic]} · trả phòng ${fare()} 🪙`;
+  $('tipWrap').hidden = false;
+  renderQuestion(q); openSheet(); startTipBar();
+}
+function openBuy(it) {
+  if (Q) return;
+  Snd.unlock();
+  const q = itemQuestion(it);
+  Q = { kind: 'buy', q, it, t0: Date.now(), locked: false };
+  $('shAv').textContent = it.ico;
+  $('shName').textContent = `Mua: ${it.vi} – ${priceOf(it)} 🪙`;
+  $('shSub').textContent = 'Trả lời đúng tên món để chốt đơn';
+  $('tipWrap').hidden = true;
+  renderQuestion(q); openSheet();
+}
+function startTipBar() { const i = $('tipBar'); i.style.transition = 'none'; i.style.transform = 'scaleX(1)'; void i.offsetWidth; i.style.transition = `transform ${FAST_SECONDS}s linear`; i.style.transform = 'scaleX(0)'; }
+function renderQuestion(q) {
+  orderPicked = [];
+  $('shCombo').textContent = combo >= 2 ? `🔥 x${(1 + .1 * Math.min(10, combo)).toFixed(1)}` : '';
+  $('qTags').innerHTML = q.topic === 'buy' ? '<span class="tag buy">Mua đồ</span>' : `<span class="tag ${q.type}">${TYPE_LABEL[q.type] || q.type}</span>`;
+  $('qText').textContent = q.q || '';
+  let zh = '', py = '', vi = '';
+  if (q.type === 'situ') vi = 'Chọn câu phù hợp — mỗi đáp án có pinyin + nghĩa Việt.';
+  else if (q.type === 'order') { py = q.py ? 'Gợi ý pinyin: ' + q.py : ''; vi = q.vi ? 'Nghĩa: ' + q.vi : ''; }
+  else if (q.type === 'listen') vi = 'Bấm 🔊 Nghe, rồi chọn đáp án đúng.';
+  else if (q.type === 'mc' && hasHan(correctText(q))) { /* hỏi Việt → Trung: không lộ chữ Hán */ }
+  else if (q.type === 'mc') { zh = q.zh || ''; py = q.py || ''; }
+  else if (q.type === 'fill') { zh = q.zh && q.zh !== '____' ? q.zh : ''; py = (q.py && q.py.includes('____')) ? q.py : ''; vi = q.vi || ''; }
+  else { zh = q.zh || ''; py = q.py || ''; vi = q.vi || ''; }
+  $('qZh').textContent = zh; $('qPy').textContent = py; $('qVi').textContent = vi;
+  $('qExtra').innerHTML = ''; $('explainSlot').innerHTML = '';
+  const o = $('opts'); o.innerHTML = ''; o.classList.remove('revealed');
+  if (q.type === 'listen') {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost'; b.style.marginTop = '8px'; b.textContent = '🔊 Nghe';
+    b.onclick = () => { if (!speak(q.speak || q.zh, true)) { $('qZh').textContent = q.zh; $('qPy').textContent = q.py; } };
+    $('qExtra').appendChild(b);
+    if (!speak(q.speak || q.zh, true)) { $('qZh').textContent = q.zh; $('qPy').textContent = q.py; $('qVi').textContent = 'Máy không có giọng đọc tiếng Trung — đọc theo chữ.'; }
+  }
+  if (q.type === 'order') renderOrder(q, o); else renderOptions(q, o);
+}
+function renderOptions(q, o) {
+  shuffle([...Array(q.options.length).keys()]).forEach(k => {
+    const t = q.options[k], b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.dataset.orig = k;
+    let h = `<span>${esc(t)}</span>`;
+    if (hasHan(t)) { if (q.optionPy && q.optionPy[k]) h += `<span class="py">${esc(q.optionPy[k])}</span>`; if (q.optionVi && q.optionVi[k]) h += `<span class="vi-ans">${esc(q.optionVi[k])}</span>`; }
+    b.innerHTML = h; b.onclick = () => choose(k, b); o.appendChild(b);
+  });
+}
+function renderOrder(q, o) {
+  const slot = document.createElement('div'); slot.className = 'order-slot'; slot.id = 'orderSlot';
+  const hint = document.createElement('p'); hint.className = 'order-hint'; hint.textContent = 'Chạm từ theo đúng thứ tự · chạm từ ở ô trên để bỏ · đủ từ là tự kiểm tra';
+  const chips = document.createElement('div'); chips.className = 'chips'; chips.id = 'orderChips';
+  const total = q.words.length;
+  shuffle(q.words).forEach(w => {
+    const idx = q.words.indexOf(w), py = q.wordPy ? q.wordPy[idx] : '', vi = q.wordVi ? q.wordVi[idx] : '';
+    const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.w = w;
+    c.innerHTML = esc(w) + (py || vi ? `<span class="py">${esc([py, vi].filter(Boolean).join(' · '))}</span>` : '');
+    c.onclick = () => {
+      if (c.classList.contains('used') || !Q || Q.locked) return;
+      c.classList.add('used'); orderPicked.push(w); Snd.play('ui', 1 + orderPicked.length * .1);
+      const p = document.createElement('button'); p.type = 'button'; p.className = 'chip'; p.textContent = w;
+      p.onclick = () => { if (!Q || Q.locked) return; const i = [...slot.children].indexOf(p); if (i >= 0) orderPicked.splice(i, 1); p.remove(); c.classList.remove('used'); };
+      slot.appendChild(p);
+      if (orderPicked.length === total) setTimeout(() => {
+        if (!Q || Q.locked || orderPicked.length !== total) return;
+        const ok = orderPicked.every((x, i) => x === q.answer[i]);
+        slot.style.borderStyle = 'solid'; slot.style.borderColor = ok ? '#3dd17a' : '#ff5a5a';
+        resolve(ok, slot);
+      }, 200);
+    };
+    chips.appendChild(c);
+  });
+  const reset = document.createElement('button'); reset.type = 'button'; reset.className = 'btn ghost'; reset.style.marginTop = '8px'; reset.textContent = '↺ Xóa hết';
+  reset.onclick = () => { if (!Q || Q.locked) return; orderPicked = []; slot.innerHTML = ''; chips.querySelectorAll('.chip').forEach(c => c.classList.remove('used')); };
+  o.append(slot, hint, chips, reset);
+}
+function choose(k, btn) {
+  if (!Q || Q.locked) return;
+  const q = Q.q, ok = k === q.answer;
+  const btns = [...$('opts').querySelectorAll('.opt')];
+  const good = btns.find(b => +b.dataset.orig === q.answer); if (good) good.classList.add('ok');
+  if (!ok) btn.classList.add('no');
+  $('opts').classList.add('revealed');
+  resolve(ok, ok ? btn : good);
+}
+function remember(id, ok) { S.mem[id] = ok ? Math.min(4, (S.mem[id] || 0) + 1) : 0; }
+function resolve(ok, el) {
+  if (!Q || Q.locked) return;
+  Q.locked = true;
+  const q = Q.q, secs = (Date.now() - Q.t0) / 1000;
+  $('qZh').textContent = fullZh(q); $('qPy').textContent = fullPy(q); $('qVi').textContent = q.vi || '';
+  const ti = $('tipBar'); const m = getComputedStyle(ti).transform; ti.style.transition = 'none'; ti.style.transform = m === 'none' ? 'scaleX(0)' : m;
+  remember(q.id, ok);
+  const r = rectOf(el) || rectOf($('opts'));
+  const cx = r ? r.left + r.width / 2 : innerWidth / 2, cy = r ? r.top + r.height / 2 : innerHeight / 2;
+  if (Q.kind === 'serve') {
+    const g = Q.g; S.served++; sessionServed++;
+    if (sessionServed >= PITCH_AFTER_SERVES && S.pitchDay !== localDay(0) && star() >= 2) { S.pitchDay = localDay(0); setTimeout(() => { if (!Q && !$('ov').classList.contains('on')) memberPitch('daily'); }, 2600); }
+    if (ok) {
+      combo++; S.correct++; S.bestCombo = Math.max(S.bestCombo, combo);
+      const fast = secs <= FAST_SECONDS, vip = S.vipDay !== localDay(0);
+      const earn = Math.round(fare() * (1 + .1 * Math.min(10, combo - 1)) * (fast ? 1.5 : 1) * (vip ? 3 : 1));
+      if (vip) S.vipDay = localDay(0);
+      markToday();
+      vib(25); Snd.coin(combo); Snd.play('hit', Math.min(1.5, 1 + combo * .05));
+      burstAt(cx, cy, combo >= 5 ? 24 : 14, combo >= 5 ? 130 : 90);
+      floatText(cx, cy - 10, `+${earn}${fast ? ' ⚡' : ''}${vip ? ' 👑VIP' : ''}`);
+      if (q.type !== 'listen') speak(fullZh(q));
+      S.coins += earn; save();
+      coinFly(cx, cy, earn, () => { renderHud(); renderBuild(); });
+      setTimeout(() => { closeSheet(); Scene.served(g, true); }, 900);
+      if (combo === 5 || combo === 10) setTimeout(() => toast(`🔥 Combo ${combo}! Xu nhân x${(1 + .1 * Math.min(10, combo - 1)).toFixed(1)}`), 950);
+    } else {
+      combo = 0; markToday();
+      S.coins += 2; save();
+      Snd.play('hurt'); vib(120);
+      floatText(cx, cy - 10, '+2', '#ffb4a8');
+      explain(q, () => { closeSheet(); Scene.served(g, false); renderHud(); renderBuild(); });
+    }
+  } else {
+    const it = Q.it;
+    if (ok) {
+      const price = priceOf(it);
+      if (S.coins < price) { closeSheet(); toast('Không đủ xu'); return; }
+      S.coins -= price; S.own[it.id] = owned(it.id) + 1; S.pts += it.pts;
+      const before = S.star || 1, after = star(); S.star = after;
+      save();
+      Snd.coin(3); vib([20, 30, 20]); burstAt(cx, cy, 16, 90); speak(it.zh);
+      setTimeout(() => {
+        closeSheet();
+        Scene.rebuild(it.id); Snd.build();
+        toast(`Đã xây ${it.zh} (${it.py}) – ${it.vi}`);
+        renderHud(); renderBuild(); Scene.refill();
+        if (after > before) setTimeout(() => starUp(after), 1200);
+      }, 650);
+    } else {
+      Snd.play('hurt'); save();
+      explain(q, () => { closeSheet(); toast('Chưa trừ xu – ôn từ này rồi mua lại nhé'); renderReview(); });
+    }
+  }
+  renderReview();
+}
+function explain(q, onNext) {
+  const ans = correctText(q), zh = fullZh(q), py = fullPy(q);
+  $('explainSlot').innerHTML = `<div class="explain"><div class="lab">✗ Đáp án đúng</div>
+    ${ans && !hasHan(ans) ? `<div style="font-weight:800;margin-top:4px">${esc(ans)}</div>` : ''}
+    ${zh ? `<div class="qzh">${esc(zh)}</div>` : ''}${py ? `<div class="qpy">${esc(py)}</div>` : ''}${q.vi ? `<div class="qvi">${esc(q.vi)}</div>` : ''}
+    <div class="row-btns">${zh ? '<button type="button" class="btn ghost" id="exSpeak">🔊 Nghe</button>' : ''}<button type="button" class="btn" id="exNext">Tiếp ▶</button></div></div>`;
+  if ($('exSpeak')) $('exSpeak').onclick = () => speak(zh, true);
+  let done = false;
+  $('exNext').onclick = () => { if (done) return; done = true; Snd.play('ui'); onNext(); };
+  try { $('explainSlot').scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' }); } catch (e) {}
+  if (zh) speak(zh);
+}
+
+/* ===== LÊN SAO ===== */
+function starUp(s) {
+  Snd.starUp(); vib([30, 40, 30, 40, 80]);
+  if (s >= FREE_MAX_STAR) {
+    // chạm trần bản hiện tại → giới thiệu hội viên năm
+    S.pitchDay = localDay(0); save();
+    showOv('⭐⭐⭐⭐⭐', 'Khách sạn đạt 5 sao!', `<p>Bạn vừa chạm mức cao nhất của <b>bản hiện tại</b>. Khách sạn còn 5 hạng sao nữa đang được Bảo hoàn thiện:</p>${perksHtml(true)}`, 'Để sau', null);
+    const r = rectOf($('ovBig')); if (r) setTimeout(() => burstAt(r.left + r.width / 2, r.top + r.height / 2, 34, 160), 300);
+    return;
+  }
+  const un = ITEMS.filter(i => i.star === s);
+  showOv('⭐'.repeat(Math.min(s, 5)), `Khách sạn đạt ${s} sao!`,
+    `<p>Lễ tân Bảo được đồng phục mới, mặt tiền đổi màu, giá phòng tăng. Mở khoá:</p>
+     <div class="unlock-list">${un.map(i => `<span>${i.ico} ${esc(i.zh)} · ${esc(i.vi)}</span>`).join('') || '<span>Toàn bộ công trình!</span>'}</div>
+     ${s >= 3 ? `<p>Bạn đã phục vụ được khách thật rồi đấy. Muốn nói trôi chảy ở quầy lễ tân thật?</p><a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo học cùng Bảo</a><button type="button" class="btn dark" id="ovPerks">👑 Xem đặc quyền hội viên năm</button>` : `<p class="note">Lên ${s + 1}★ để mở thêm công trình. Đích đến: 10★ 👑</p>`}`, 'Tiếp tục xây');
+  if ($('ovPerks')) $('ovPerks').onclick = () => memberPitch('star' + s);
+  const r = rectOf($('ovBig')); if (r) setTimeout(() => burstAt(r.left + r.width / 2, r.top + r.height / 2, 30, 150), 300);
+}
+/* ===== HỘI VIÊN NĂM (câu dẫn) ===== */
+function perksHtml(withCta) {
+  return `<ul class="perks">
+      <li>🏙️ <b>Mở khoá 6★ → 10★</b> ngay khi ra mắt: tầng 6–10, spa, bar, sảnh tiệc, bể bơi vô cực, bãi đáp trực thăng, phòng tổng thống… mỗi công trình là một từ mới</li>
+      <li>🔄 <b>Cải tiến liên tục cả năm</b>: thêm khách, thêm câu hỏi, thêm phố</li>
+      <li>📘 <b>Giáo trình học cá nhân</b> theo mục tiêu của bạn</li>
+    </ul>
+    <div class="price-tag">${MEMBER_PRICE} / năm</div>
+    <div class="price-sub">Chưa tới 1.000đ mỗi ngày · rẻ hơn 97.000đ so với mua 4 lần thẻ 3 tháng (${MEMBER_3M})</div>
+    ${withCta ? `<a class="btn dark" href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM_MEMBER)}" target="_blank" rel="noopener">👑 Đăng ký hội viên năm</a>
+    <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo – được báo ngày mở khoá</a>` : ''}`;
+}
+function memberPitch(src) {
+  S.pitchN = (S.pitchN || 0) + 1; S.pitchSrc = src; save();
+  showOv('👑', 'Hội viên năm Bảo Khựa', `<p>Bản hiện tại chơi được tới <b>5★</b>. Hạng <b>6★ → 10★</b> đang được Bảo hoàn thiện, hội viên năm được mở đầu tiên.</p>${perksHtml(true)}`, 'Để sau', null);
+}
+function showOv(big, title, body, btn, onClose) {
+  $('ovBig').textContent = big; $('ovBig').style.fontSize = [...big].length > 3 ? '36px' : ''; $('ovTitle').textContent = title; $('ovBody').innerHTML = body; $('ovBtn').textContent = btn || 'Tiếp tục';
+  $('ov').classList.add('on');
+  $('ovBtn').onclick = () => { $('ov').classList.remove('on'); Snd.unlock(); Snd.play('ui'); onClose && onClose(); };
+}
+
+/* ===== TAB ===== */
+function renderBuild() {
+  const st = star();
+  const rows = ITEMS.map(it => {
+    const n = owned(it.id), mx = maxOf(it), maxed = n >= mx, lock = st < it.star, need = needOf(it), price = priceOf(it);
+    const can = !maxed && !lock && !need && S.coins >= price;
+    let btn;
+    if (maxed) btn = `<button class="buy" disabled>✓ Đã xây</button>`;
+    else if (lock) btn = `<button class="buy" disabled>🔒 ${it.star}★</button>`;
+    else if (need) btn = `<button class="buy" disabled>${esc(need)}</button>`;
+    else btn = `<button class="buy" data-buy="${it.id}" ${S.coins >= price ? '' : 'disabled'}>${price} 🪙</button>`;
+    return { it, html: `<div class="item ${lock ? 'lock' : ''} ${maxed ? 'maxed' : ''} ${can ? 'can' : ''}"><div class="ic">${it.ico}</div>
+      <div class="t"><div class="zh">${esc(it.zh)} ${mx > 1 ? `<small style="font-size:12px;opacity:.75">${n}/${mx}</small>` : ''}</div><div class="py">${esc(it.py)}</div><div class="vi">${esc(it.vi)}</div><div class="eff">${esc(it.eff)}</div></div>${btn}</div>`, order: maxed ? 2 : lock ? 1 : 0 };
+  });
+  rows.sort((a, b) => a.order - b.order || a.it.star - b.it.star || priceOf(a.it) - priceOf(b.it));
+  const vip = VIP_ITEMS.map((v, i) => `<div class="item vip lock" data-vip="${i}"><div class="ic">${v.ico}</div>
+      <div class="t"><div class="zh">${esc(v.zh)}</div><div class="py">${esc(v.py)}</div><div class="vi">${esc(v.vi)}</div><div class="eff">Hạng ${v.star}★ · chạm để nghe từ</div></div><button class="buy" data-pitch="${i}">🔒 ${v.star}★</button></div>`).join('');
+  $('tab-build').innerHTML = `<div class="section-lab">Mua đồ = trả lời đúng tên tiếng Trung của món đó</div>` + rows.map(r => r.html).join('') +
+    `<div class="section-lab" style="margin-top:8px">👑 6★ → 10★ · dành cho hội viên năm (sắp ra mắt)</div>${vip}
+     <button type="button" class="btn dark" id="vipCta">👑 Xem đặc quyền hội viên năm</button>`;
+  $('tab-build').querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { const it = ITEM[b.dataset.buy]; if (S.coins < priceOf(it)) return toast('Chưa đủ xu – phục vụ thêm khách nhé'); openBuy(it); });
+  $('tab-build').querySelectorAll('[data-vip]').forEach(el => el.onclick = e => { if (e.target.closest('[data-pitch]')) return; speak(VIP_ITEMS[+el.dataset.vip].zh, true); });
+  $('tab-build').querySelectorAll('[data-pitch]').forEach(b => b.onclick = () => memberPitch('item'));
+  $('vipCta').onclick = () => memberPitch('build');
+}
+function reviewEntries() {
+  const list = [];
+  Object.keys(S.mem).forEach(id => {
+    if (S.mem[id] > 0) return;
+    if (id.startsWith('it-')) { const it = ITEM[id.slice(3)]; if (it) list.push({ zh: it.zh, py: it.py, vi: it.vi }); }
+    else { const q = QUESTIONS.find(x => x.id === id); if (q) list.push({ zh: fullZh(q), py: fullPy(q), vi: q.vi, ans: hasHan(correctText(q)) ? '' : correctText(q) }); }
+  });
+  return list;
+}
+function renderReview() {
+  const L = reviewEntries();
+  const learned = QUESTIONS.filter(q => (S.mem[q.id] || 0) >= 1).length, mastered = QUESTIONS.filter(q => (S.mem[q.id] || 0) >= 2).length;
+  const keys = Object.keys(WORDS), found = keys.filter(k => S.found[k]).length;
+  $('tab-review').innerHTML = `<div class="card"><b>📚 Đã học ${learned}/${QUESTIONS.length} câu</b> · thuộc chắc ${mastered}
+      <div class="mini" style="margin-top:6px;height:8px"><i style="width:${Math.round(learned / QUESTIONS.length * 100)}%"></i></div>
+      <p class="note" style="margin-top:6px">Câu sai được khách hỏi lại sớm hơn. Trả lời đúng 2 lần là thuộc chắc.</p></div>
+    <div class="card">${L.length ? L.slice(0, 30).map((e, i) => `<div class="rv-item"><div class="t">${e.ans ? `<div class="vi" style="font-weight:700">${esc(e.ans)}</div>` : ''}<div class="zh">${esc(e.zh)}</div><div class="py">${esc(e.py)}</div><div class="vi">${esc(e.vi)}</div></div><button type="button" data-say="${i}" aria-label="Nghe">🔊</button></div>`).join('') : '<p class="note">Chưa có câu sai nào. Giỏi lắm! 🎉</p>'}</div>
+    <div class="card"><b>🔎 Từ khám phá trên phố: ${found}/${keys.length}</b><p class="note" style="margin:4px 0 8px">Chạm vào xe, người, quán, phòng khách… để nghe và học từ. Từ mới +2 🪙.</p>
+      <div class="found-grid">${keys.map(k => S.found[k] ? `<span data-w="${k}">${esc(WORDS[k][0])} · ${esc(WORDS[k][2])}</span>` : '<span class="no">？</span>').join('')}</div></div>`;
+  $('tab-review').querySelectorAll('[data-say]').forEach(b => b.onclick = () => speak(L[+b.dataset.say].zh, true));
+  $('tab-review').querySelectorAll('[data-w]').forEach(b => b.onclick = () => speak(WORDS[b.dataset.w][0], true));
+}
+function renderMe() {
+  const acc = S.served ? Math.round(S.correct / S.served * 100) : 0;
+  const built = ITEMS.reduce((n, i) => n + owned(i.id), 0), total = ITEMS.reduce((n, i) => n + maxOf(i), 0);
+  $('tab-me').innerHTML = `<div class="stats"><div><b>${S.served}</b>khách đã phục vụ</div><div><b>${acc}%</b>trả lời đúng</div><div><b>${S.bestCombo}</b>combo cao nhất</div>
+      <div><b>${built}/${total}</b>công trình</div><div><b>${streakAlive()}</b>ngày liên tiếp</div><div><b>${S.checkouts || 0}</b>lượt trả phòng</div></div>
+    <div class="card member-card">
+      <b style="font-size:17px">👑 Hội viên năm Bảo Khựa 阿宝</b>
+      ${perksHtml(false)}
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><a class="btn dark" href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM_MEMBER)}" target="_blank" rel="noopener">👑 Đăng ký hội viên năm</a>
+      <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a></div>
+      <p style="font-size:12px;margin-top:8px;opacity:.8">Lớp Zoom tiếng Trung thực chiến 20:00 thứ Hai, Tư, Sáu · <a href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM)}" target="_blank" rel="noopener" style="color:#16171B">thẻ 3 tháng ${MEMBER_3M}</a></p></div>
+    <div class="card"><label class="toggle"><span>🔋 Chế độ mượt cho máy yếu (30 khung hình/giây, ít người xe hơn)</span><input type="checkbox" id="lowChk" ${Scene.low ? 'checked' : ''}></label></div>
+    <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button><a class="btn ghost" href="game.html">⚔️ Chế độ Đánh Boss</a></div>`;
+  $('shareBtn').onclick = share;
+  $('lowChk').onchange = e => Scene.setLow(e.target.checked);
+}
+async function share() {
+  const text = `Khách sạn Bảo Khựa của mình đạt ${star()}★, phục vụ ${S.served} khách bằng tiếng Trung! 🏨\nXây khách sạn của bạn: ${GAME_URL}`;
+  try { if (navigator.share) { await navigator.share({ title: 'Khách sạn Bảo Khựa 阿宝', text, url: GAME_URL }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text); toast('Đã copy – dán vào Zalo/Facebook nhé'); } catch (e) { toast(GAME_URL); }
+}
+function switchTab(t) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'tab-' + t));
+  if (t === 'review') renderReview(); if (t === 'me') renderMe(); if (t === 'build') renderBuild();
+  Snd.play('ui');
+}
+
+/* ===== THU NHẬP NHÂN VIÊN ===== */
+function idleTick() {
+  const n = owned('staff'); if (!n || document.hidden) return;
+  S.coins += n; save(); renderHud(); renderBuild();
+}
+function awayEarnings(since) {
+  if (!since || !owned('staff')) return 0;
+  const mins = Math.min(OFFLINE_CAP_MIN, Math.max(0, (Date.now() - since) / 60000));
+  return mins < 1 ? 0 : Math.floor(mins * (60000 / IDLE_EVERY_MS) * owned('staff') * .5);
+}
+let hiddenAt = 0;
+
+/* ===== KHỞI ĐỘNG ===== */
+function init() {
+  const away = awayEarnings(S.lastSeen);
+  S.star = star();
+  Scene.init();
+  renderHud(); renderBuild();
+  $('serveBtn').onclick = openServe;
+  document.querySelector('.pill.star').onclick = () => {
+    const st = star();
+    if (st >= FREE_MAX_STAR) return memberPitch('hud');
+    toast(`Còn ${STAR_PTS[st] - S.pts} điểm nữa lên ${st + 1}★ · đích đến 10★ 👑`);
+  };
+  $('shClose').onclick = () => { if (Q && Q.locked && Q.kind === 'serve') return; closeSheet(); };
+  $('muteBtn').onclick = () => { S.muted = !S.muted; save(); Snd.unlock(); Snd.setMuted(S.muted); renderHud(); if (!S.muted) Snd.play('ui'); };
+  $('zoomBtn').onclick = () => { const z = Scene.zoom > 1 ? 1 : 1.75; Scene.setZoom(z); $('zoomBtn').classList.toggle('on', z > 1); $('zoomBtn').textContent = z > 1 ? '↙' : '🔍'; Snd.play('ui'); if (z > 1) toast('Kéo theo mọi hướng để xem từng phòng'); };
+  setTimeout(() => { const t = $('sceneTip'); if (t) t.style.opacity = '0'; }, 8000);
+  $('clockBtn').onclick = () => {
+    if (S.clock === 'real') { S.clock = 'fast'; setHour(nowHour()); toast('⏩ Thời gian nhanh: 1 ngày = 12 phút'); }
+    else { S.clock = 'real'; toast('🕐 Thời gian thật theo đồng hồ của bạn'); }
+    save(); Snd.play('ui');
+  };
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  document.body.addEventListener('pointerdown', () => Snd.unlock(), { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); save(); Snd.suspend(); Scene.setActive(false); return; }
+    Snd.resume(); Scene.setActive(true);
+    const got = awayEarnings(hiddenAt); hiddenAt = 0;
+    if (got > 0) { S.coins += got; save(); renderHud(); renderBuild(); toast(`🧑‍💼 Nhân viên thu được +${got} 🪙 khi bạn vắng`); }
+  });
+  setInterval(idleTick, IDLE_EVERY_MS);
+  if (window.speechSynthesis) speechSynthesis.getVoices();
+  if (!S.intro) {
+    showOv('🏨', 'Khách sạn Bảo Khựa', `<p>Bạn vừa nhận một khách sạn <b>1★ nhỏ, 3 phòng</b> ở Bãi Cháy. Mục tiêu: <b>10★</b>. Khách Trung Quốc đang xếp hàng ở cửa:</p>
+      <p>🛎️ <b>Trả lời đúng tiếng Trung</b> → khách vui, trả xu, lên phòng bật đèn.</p>
+      <p>🏗️ <b>Dùng xu xây khách sạn</b>: tầng lầu, gym, bể bơi, nhà hàng… mua món nào phải nói đúng tên tiếng Trung món đó.</p>
+      <p>🔎 <b>Chạm vào mọi thứ trên phố</b> (xe máy, quán, khách đang ngủ…) để học từ mới.</p>
+      <p>🌙 Phố chuyển ngày đêm: 1 ngày = 12 phút. Khuya khách đi ngủ, quán đóng cửa, đèn tắt dần.</p>`, 'Mở cửa đón khách', () => { S.intro = true; save(); });
+  } else if (away > 0) {
+    S.coins += away; save();
+    showOv('🧑‍💼', 'Chào mừng trở lại!', `<p>Khi bạn vắng, nhân viên đã thu <b>+${away} 🪙</b>.</p><p>Khách mới đang chờ ở quầy.</p>`, 'Nhận xu', () => renderHud());
+  }
+  save();
+}
+init();
+
+/* hook kiểm thử (không ảnh hưởng chơi) */
+window.__hotel = {
+  get S() { return S; }, get Q() { return Q; }, get queue() { return Scene.queue; }, ITEMS, QUESTIONS, star, fare, Scene, setHour, gameHour,
+  openServe, openBuy: id => openBuy(ITEM[id]),
+  answer(correct) {
+    if (!Q || Q.locked) return false;
+    const q = Q.q;
+    if (q.type === 'order') { const seq = correct ? q.answer : q.answer.slice().reverse(); seq.forEach(w => { const c = document.querySelector(`#orderChips .chip[data-w="${w}"]:not(.used)`); c && c.click(); }); return true; }
+    const btn = [...document.querySelectorAll('#opts .opt')].find(b => correct ? +b.dataset.orig === q.answer : +b.dataset.orig !== q.answer);
+    btn && btn.click(); return true;
+  }
+};
+})();
+</script>
+</body>
+</html>
