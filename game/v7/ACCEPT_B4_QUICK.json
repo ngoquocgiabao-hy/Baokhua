@@ -1,0 +1,77 @@
+{
+  "readyMs": 470,
+  "info": {
+    "glb": true,
+    "cdn": true,
+    "cdnDetail": {
+      "https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/platformer_game_pack/Enemy.glb": true,
+      "https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/modular_men/Worker.glb": true,
+      "https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/ships_pack/Lifeboat.glb": true
+    },
+    "n": 40,
+    "nText": 20,
+    "nAudio": 20,
+    "pinyinTone": 40,
+    "pool3": {
+      "n": 40,
+      "t": 20,
+      "a": 20,
+      "uniq": 40
+    },
+    "beforeAudio": {
+      "zh": "🔊",
+      "py": "",
+      "opts": [
+        "您好，一路平安。",
+        "您好，请慢走。",
+        "您好，欢迎光临。",
+        "您好，欢迎再来。"
+      ],
+      "hint": "Nghe và chọn chữ đúng:",
+      "revealOn": false,
+      "panelText": "🔊\nNghe và chọn chữ đúng:\n您好，一路平安。\n您好，请慢走。\n您好，欢迎光临。\n您好，欢迎再来。"
+    },
+    "hasNghiaBefore": false,
+    "hasGiaiBefore": false,
+    "after": {
+      "revealOn": true,
+      "reveal": "✗ Sai · 您好，欢迎光临。\nNín hǎo, huānyíng guānglín.\nXin chào, hân hạnh đón tiếp.\n欢迎光临 (huānyíng guānglín) = hân hạnh đón tiếp khi khách vào; 欢迎再来 (huānyíng zàilái) = chào mời quay lại; 一路平安 (yílù píng'ān) = chúc thượng lộ bình an; 请慢走 (qǐng màn zǒu) = xin đi chậm/tạm biệt khi khách ra.",
+      "ms": 82.1
+    },
+    "beforeText": {
+      "zh": "我要办理入住。",
+      "py": "Wǒ yào bànlǐ rùzhù.",
+      "hasNghia": false
+    },
+    "hint": "Proto · Three.js MIT · CC0 Quaternius · Không liên kết với kỳ thi HSK chính thức · chưa deploy",
+    "waterOk": true,
+    "qLevel": 1,
+    "avgFps": 48.7,
+    "p5": 21.8
+  },
+  "ui": {
+    "skill": {
+      "w": 64,
+      "h": 64
+    },
+    "talk": {
+      "w": 64,
+      "h": 44
+    },
+    "qual": {
+      "w": 54,
+      "h": 44
+    }
+  },
+  "off": {
+    "ready": true,
+    "fps": 60.240963863533075,
+    "canvas": true,
+    "bg": "rgb(10, 22, 40)",
+    "white": false
+  },
+  "cons": {
+    "err": [],
+    "req404": []
+  }
+}

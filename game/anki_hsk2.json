@@ -1,0 +1,1813 @@
+{
+  "nguon": [
+    "https://raw.githubusercontent.com/plaktos/hsk_csv/master/hsk2.csv",
+    "https://raw.githubusercontent.com/drkameleon/complete-hsk-vocabulary/main/wordlists/exclusive/old/2.json",
+    "https://raw.githubusercontent.com/becky82/mteh/main/sources/HSK2.0/HSK2.0_words_level2.txt",
+    "https://www.chinesetest.cn/userfiles/file/HSK/HSK-2012.xls"
+  ],
+  "phien_ban": "HSK 2.0 cấp 2",
+  "so_tu": 150,
+  "ghi_chu": "150 mục theo plaktos/HSK-2012 (gồm 长/得/还 đọc khác nhau tính riêng). Ví dụ tự viết.",
+  "the": [
+    {
+      "id": "hsk2-001",
+      "hanzi": "吧",
+      "pinyin": "ba",
+      "nghia": "đi chứ; nhé (trợ từ gợi ý)",
+      "chu_de": "Phủ định / tiểu từ",
+      "cau_vi_du": {
+        "zh": "我们走吧。",
+        "pinyin": "Wǒmen zǒu ba.",
+        "nghia": "Chúng ta đi thôi."
+      }
+    },
+    {
+      "id": "hsk2-002",
+      "hanzi": "白",
+      "pinyin": "bái",
+      "nghia": "trắng",
+      "chu_de": "Tính từ / màu sắc",
+      "cau_vi_du": {
+        "zh": "猫是白的。",
+        "pinyin": "Māo shì bái de.",
+        "nghia": "Con mèo màu trắng."
+      }
+    },
+    {
+      "id": "hsk2-003",
+      "hanzi": "百",
+      "pinyin": "bǎi",
+      "nghia": "trăm",
+      "chu_de": "Số đếm",
+      "cau_vi_du": {
+        "zh": "一百个人。",
+        "pinyin": "Yìbǎi gè rén.",
+        "nghia": "Một trăm người."
+      }
+    },
+    {
+      "id": "hsk2-004",
+      "hanzi": "帮助",
+      "pinyin": "bāngzhù",
+      "nghia": "giúp đỡ",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请帮助我。",
+        "pinyin": "Qǐng bāngzhù wǒ.",
+        "nghia": "Xin hãy giúp tôi."
+      }
+    },
+    {
+      "id": "hsk2-005",
+      "hanzi": "报纸",
+      "pinyin": "bàozhǐ",
+      "nghia": "báo",
+      "chu_de": "Đồ vật / truyền thông",
+      "cau_vi_du": {
+        "zh": "他在看报纸。",
+        "pinyin": "Tā zài kàn bàozhǐ.",
+        "nghia": "Anh ấy đang đọc báo."
+      }
+    },
+    {
+      "id": "hsk2-006",
+      "hanzi": "比",
+      "pinyin": "bǐ",
+      "nghia": "so với",
+      "chu_de": "So sánh",
+      "cau_vi_du": {
+        "zh": "今天比昨天热。",
+        "pinyin": "Jīntiān bǐ zuótiān rè.",
+        "nghia": "Hôm nay nóng hơn hôm qua."
+      }
+    },
+    {
+      "id": "hsk2-007",
+      "hanzi": "别",
+      "pinyin": "bié",
+      "nghia": "đừng; khác",
+      "chu_de": "Phủ định / tiểu từ",
+      "cau_vi_du": {
+        "zh": "别说话。",
+        "pinyin": "Bié shuōhuà.",
+        "nghia": "Đừng nói chuyện."
+      }
+    },
+    {
+      "id": "hsk2-008",
+      "hanzi": "长",
+      "pinyin": "cháng",
+      "nghia": "dài",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "时间很长。",
+        "pinyin": "Shíjiān hěn cháng.",
+        "nghia": "Thời gian rất dài."
+      }
+    },
+    {
+      "id": "hsk2-009",
+      "hanzi": "唱歌",
+      "pinyin": "chànggē",
+      "nghia": "hát",
+      "chu_de": "Giải trí",
+      "cau_vi_du": {
+        "zh": "她喜欢唱歌。",
+        "pinyin": "Tā xǐhuan chànggē.",
+        "nghia": "Cô ấy thích hát."
+      }
+    },
+    {
+      "id": "hsk2-010",
+      "hanzi": "出",
+      "pinyin": "chū",
+      "nghia": "ra; đi ra",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请出去。",
+        "pinyin": "Qǐng chū qù.",
+        "nghia": "Xin hãy ra ngoài."
+      }
+    },
+    {
+      "id": "hsk2-011",
+      "hanzi": "穿",
+      "pinyin": "chuān",
+      "nghia": "mặc; đi (giày)",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请穿衣服。",
+        "pinyin": "Qǐng chuān yīfu.",
+        "nghia": "Xin hãy mặc quần áo."
+      }
+    },
+    {
+      "id": "hsk2-012",
+      "hanzi": "船",
+      "pinyin": "chuán",
+      "nghia": "thuyền; tàu",
+      "chu_de": "Giao thông / du lịch",
+      "cau_vi_du": {
+        "zh": "我们坐船去。",
+        "pinyin": "Wǒmen zuò chuán qù.",
+        "nghia": "Chúng tôi đi thuyền."
+      }
+    },
+    {
+      "id": "hsk2-013",
+      "hanzi": "次",
+      "pinyin": "cì",
+      "nghia": "lần",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "我来过两次。",
+        "pinyin": "Wǒ lái guo liǎng cì.",
+        "nghia": "Tôi đã đến hai lần."
+      }
+    },
+    {
+      "id": "hsk2-014",
+      "hanzi": "从",
+      "pinyin": "cóng",
+      "nghia": "từ",
+      "chu_de": "Giới từ",
+      "cau_vi_du": {
+        "zh": "我从北京来。",
+        "pinyin": "Wǒ cóng Běijīng lái.",
+        "nghia": "Tôi đến từ Bắc Kinh."
+      }
+    },
+    {
+      "id": "hsk2-015",
+      "hanzi": "错",
+      "pinyin": "cuò",
+      "nghia": "sai",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "这个字写错了。",
+        "pinyin": "Zhège zì xiě cuò le.",
+        "nghia": "Chữ này viết sai rồi."
+      }
+    },
+    {
+      "id": "hsk2-016",
+      "hanzi": "打篮球",
+      "pinyin": "dǎlánqiú",
+      "nghia": "chơi bóng rổ",
+      "chu_de": "Thể thao",
+      "cau_vi_du": {
+        "zh": "他喜欢打篮球。",
+        "pinyin": "Tā xǐhuan dǎlánqiú.",
+        "nghia": "Anh ấy thích chơi bóng rổ."
+      }
+    },
+    {
+      "id": "hsk2-017",
+      "hanzi": "大家",
+      "pinyin": "dàjiā",
+      "nghia": "mọi người",
+      "chu_de": "Đại từ",
+      "cau_vi_du": {
+        "zh": "大家好！",
+        "pinyin": "Dàjiā hǎo!",
+        "nghia": "Xin chào mọi người!"
+      }
+    },
+    {
+      "id": "hsk2-018",
+      "hanzi": "但是",
+      "pinyin": "dànshì",
+      "nghia": "nhưng",
+      "chu_de": "Liên từ",
+      "cau_vi_du": {
+        "zh": "我想去，但是没有时间。",
+        "pinyin": "Wǒ xiǎng qù, dànshì méiyǒu shíjiān.",
+        "nghia": "Tôi muốn đi nhưng không có thời gian."
+      }
+    },
+    {
+      "id": "hsk2-019",
+      "hanzi": "到",
+      "pinyin": "dào",
+      "nghia": "đến",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我到饭店了。",
+        "pinyin": "Wǒ dào fànguǎn le.",
+        "nghia": "Tôi đã đến nhà hàng."
+      }
+    },
+    {
+      "id": "hsk2-020",
+      "hanzi": "得",
+      "pinyin": "de",
+      "nghia": "được (bổ ngữ mức độ)",
+      "chu_de": "Phủ định / tiểu từ",
+      "cau_vi_du": {
+        "zh": "他说得很好。",
+        "pinyin": "Tā shuō de hěn hǎo.",
+        "nghia": "Anh ấy nói rất hay."
+      }
+    },
+    {
+      "id": "hsk2-021",
+      "hanzi": "得",
+      "pinyin": "děi",
+      "nghia": "phải; cần phải",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我得走了。",
+        "pinyin": "Wǒ děi zǒu le.",
+        "nghia": "Tôi phải đi rồi."
+      }
+    },
+    {
+      "id": "hsk2-022",
+      "hanzi": "弟弟",
+      "pinyin": "dìdi",
+      "nghia": "em trai",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "我弟弟五岁。",
+        "pinyin": "Wǒ dìdi wǔ suì.",
+        "nghia": "Em trai tôi năm tuổi."
+      }
+    },
+    {
+      "id": "hsk2-023",
+      "hanzi": "第一",
+      "pinyin": "dìyī",
+      "nghia": "thứ nhất",
+      "chu_de": "Số đếm",
+      "cau_vi_du": {
+        "zh": "他是第一。",
+        "pinyin": "Tā shì dìyī.",
+        "nghia": "Anh ấy là số một."
+      }
+    },
+    {
+      "id": "hsk2-024",
+      "hanzi": "懂",
+      "pinyin": "dǒng",
+      "nghia": "hiểu",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "你懂吗？",
+        "pinyin": "Nǐ dǒng ma?",
+        "nghia": "Bạn hiểu không?"
+      }
+    },
+    {
+      "id": "hsk2-025",
+      "hanzi": "房间",
+      "pinyin": "fángjiān",
+      "nghia": "phòng",
+      "chu_de": "Khách sạn / nhà ở",
+      "cau_vi_du": {
+        "zh": "房间很大。",
+        "pinyin": "Fángjiān hěn dà.",
+        "nghia": "Phòng rất lớn."
+      }
+    },
+    {
+      "id": "hsk2-026",
+      "hanzi": "非常",
+      "pinyin": "fēicháng",
+      "nghia": "rất; vô cùng",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "我非常高兴。",
+        "pinyin": "Wǒ fēicháng gāoxìng.",
+        "nghia": "Tôi vô cùng vui."
+      }
+    },
+    {
+      "id": "hsk2-027",
+      "hanzi": "服务员",
+      "pinyin": "fúwùyuán",
+      "nghia": "nhân viên phục vụ",
+      "chu_de": "Khách sạn / nhà hàng",
+      "cau_vi_du": {
+        "zh": "服务员很好。",
+        "pinyin": "Fúwùyuán hěn hǎo.",
+        "nghia": "Nhân viên phục vụ rất tốt."
+      }
+    },
+    {
+      "id": "hsk2-028",
+      "hanzi": "高",
+      "pinyin": "gāo",
+      "nghia": "cao",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "他很高。",
+        "pinyin": "Tā hěn gāo.",
+        "nghia": "Anh ấy rất cao."
+      }
+    },
+    {
+      "id": "hsk2-029",
+      "hanzi": "告诉",
+      "pinyin": "gàosu",
+      "nghia": "nói cho biết",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请告诉我。",
+        "pinyin": "Qǐng gàosu wǒ.",
+        "nghia": "Xin hãy nói cho tôi biết."
+      }
+    },
+    {
+      "id": "hsk2-030",
+      "hanzi": "哥哥",
+      "pinyin": "gēge",
+      "nghia": "anh trai",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "我哥哥是医生。",
+        "pinyin": "Wǒ gēge shì yīshēng.",
+        "nghia": "Anh trai tôi là bác sĩ."
+      }
+    },
+    {
+      "id": "hsk2-031",
+      "hanzi": "给",
+      "pinyin": "gěi",
+      "nghia": "cho; đưa",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请给我水。",
+        "pinyin": "Qǐng gěi wǒ shuǐ.",
+        "nghia": "Xin cho tôi nước."
+      }
+    },
+    {
+      "id": "hsk2-032",
+      "hanzi": "公共汽车",
+      "pinyin": "gōnggòngqìchē",
+      "nghia": "xe buýt",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "我坐公共汽车去。",
+        "pinyin": "Wǒ zuò gōnggòngqìchē qù.",
+        "nghia": "Tôi đi xe buýt."
+      }
+    },
+    {
+      "id": "hsk2-033",
+      "hanzi": "公斤",
+      "pinyin": "gōngjīn",
+      "nghia": "kilôgam",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "三公斤苹果。",
+        "pinyin": "Sān gōngjīn píngguǒ.",
+        "nghia": "Ba kg táo."
+      }
+    },
+    {
+      "id": "hsk2-034",
+      "hanzi": "公司",
+      "pinyin": "gōngsī",
+      "nghia": "công ty",
+      "chu_de": "Công việc",
+      "cau_vi_du": {
+        "zh": "他在公司工作。",
+        "pinyin": "Tā zài gōngsī gōngzuò.",
+        "nghia": "Anh ấy làm ở công ty."
+      }
+    },
+    {
+      "id": "hsk2-035",
+      "hanzi": "贵",
+      "pinyin": "guì",
+      "nghia": "đắt",
+      "chu_de": "Mua bán",
+      "cau_vi_du": {
+        "zh": "这个太贵了。",
+        "pinyin": "Zhège tài guì le.",
+        "nghia": "Cái này đắt quá."
+      }
+    },
+    {
+      "id": "hsk2-036",
+      "hanzi": "还",
+      "pinyin": "hái",
+      "nghia": "còn; vẫn",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "我还想喝茶。",
+        "pinyin": "Wǒ hái xiǎng hē chá.",
+        "nghia": "Tôi còn muốn uống trà."
+      }
+    },
+    {
+      "id": "hsk2-037",
+      "hanzi": "孩子",
+      "pinyin": "háizi",
+      "nghia": "con; trẻ em",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "孩子在睡觉。",
+        "pinyin": "Háizi zài shuìjiào.",
+        "nghia": "Đứa trẻ đang ngủ."
+      }
+    },
+    {
+      "id": "hsk2-038",
+      "hanzi": "好吃",
+      "pinyin": "hǎochī",
+      "nghia": "ngon",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "这个菜很好吃。",
+        "pinyin": "Zhège cài hěn hǎochī.",
+        "nghia": "Món này rất ngon."
+      }
+    },
+    {
+      "id": "hsk2-039",
+      "hanzi": "号",
+      "pinyin": "hào",
+      "nghia": "số (ngày/phòng)",
+      "chu_de": "Thời gian / số",
+      "cau_vi_du": {
+        "zh": "今天五号。",
+        "pinyin": "Jīntiān wǔ hào.",
+        "nghia": "Hôm nay mùng 5."
+      }
+    },
+    {
+      "id": "hsk2-040",
+      "hanzi": "黑",
+      "pinyin": "hēi",
+      "nghia": "đen",
+      "chu_de": "Tính từ / màu sắc",
+      "cau_vi_du": {
+        "zh": "猫是黑的。",
+        "pinyin": "Māo shì hēi de.",
+        "nghia": "Con mèo màu đen."
+      }
+    },
+    {
+      "id": "hsk2-041",
+      "hanzi": "红",
+      "pinyin": "hóng",
+      "nghia": "đỏ",
+      "chu_de": "Tính từ / màu sắc",
+      "cau_vi_du": {
+        "zh": "苹果是红的。",
+        "pinyin": "Píngguǒ shì hóng de.",
+        "nghia": "Quả táo màu đỏ."
+      }
+    },
+    {
+      "id": "hsk2-042",
+      "hanzi": "欢迎",
+      "pinyin": "huānyíng",
+      "nghia": "chào đón",
+      "chu_de": "Chào hỏi lịch sự",
+      "cau_vi_du": {
+        "zh": "欢迎来饭店！",
+        "pinyin": "Huānyíng lái fànguǎn!",
+        "nghia": "Hoan nghênh đến nhà hàng!"
+      }
+    },
+    {
+      "id": "hsk2-043",
+      "hanzi": "还",
+      "pinyin": "huán",
+      "nghia": "trả lại",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我还你钱。",
+        "pinyin": "Wǒ huán nǐ qián.",
+        "nghia": "Tôi trả tiền cho bạn."
+      }
+    },
+    {
+      "id": "hsk2-044",
+      "hanzi": "回答",
+      "pinyin": "huídá",
+      "nghia": "trả lời",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "请回答问题。",
+        "pinyin": "Qǐng huídá wèntí.",
+        "nghia": "Xin hãy trả lời câu hỏi."
+      }
+    },
+    {
+      "id": "hsk2-045",
+      "hanzi": "机场",
+      "pinyin": "jīchǎng",
+      "nghia": "sân bay",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "我去机场。",
+        "pinyin": "Wǒ qù jīchǎng.",
+        "nghia": "Tôi đi sân bay."
+      }
+    },
+    {
+      "id": "hsk2-046",
+      "hanzi": "鸡蛋",
+      "pinyin": "jīdàn",
+      "nghia": "trứng gà",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想吃鸡蛋。",
+        "pinyin": "Wǒ xiǎng chī jīdàn.",
+        "nghia": "Tôi muốn ăn trứng."
+      }
+    },
+    {
+      "id": "hsk2-047",
+      "hanzi": "件",
+      "pinyin": "jiàn",
+      "nghia": "cái (áo/việc)",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "一件衣服。",
+        "pinyin": "Yí jiàn yīfu.",
+        "nghia": "Một bộ quần áo."
+      }
+    },
+    {
+      "id": "hsk2-048",
+      "hanzi": "教室",
+      "pinyin": "jiàoshì",
+      "nghia": "phòng học",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "教室里有学生。",
+        "pinyin": "Jiàoshì li yǒu xuésheng.",
+        "nghia": "Trong phòng học có học sinh."
+      }
+    },
+    {
+      "id": "hsk2-049",
+      "hanzi": "姐姐",
+      "pinyin": "jiějie",
+      "nghia": "chị gái",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "我姐姐很漂亮。",
+        "pinyin": "Wǒ jiějie hěn piàoliang.",
+        "nghia": "Chị gái tôi rất đẹp."
+      }
+    },
+    {
+      "id": "hsk2-050",
+      "hanzi": "介绍",
+      "pinyin": "jièshào",
+      "nghia": "giới thiệu",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我介绍一下。",
+        "pinyin": "Wǒ jièshào yíxià.",
+        "nghia": "Tôi giới thiệu một chút."
+      }
+    },
+    {
+      "id": "hsk2-051",
+      "hanzi": "进",
+      "pinyin": "jìn",
+      "nghia": "vào",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请进。",
+        "pinyin": "Qǐng jìn.",
+        "nghia": "Mời vào."
+      }
+    },
+    {
+      "id": "hsk2-052",
+      "hanzi": "近",
+      "pinyin": "jìn",
+      "nghia": "gần",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "学校很近。",
+        "pinyin": "Xuéxiào hěn jìn.",
+        "nghia": "Trường rất gần."
+      }
+    },
+    {
+      "id": "hsk2-053",
+      "hanzi": "就",
+      "pinyin": "jiù",
+      "nghia": "ngay; chính là",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "我现在就去。",
+        "pinyin": "Wǒ xiànzài jiù qù.",
+        "nghia": "Tôi đi ngay bây giờ."
+      }
+    },
+    {
+      "id": "hsk2-054",
+      "hanzi": "觉得",
+      "pinyin": "juéde",
+      "nghia": "cảm thấy; thấy rằng",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我觉得很好。",
+        "pinyin": "Wǒ juéde hěn hǎo.",
+        "nghia": "Tôi thấy rất tốt."
+      }
+    },
+    {
+      "id": "hsk2-055",
+      "hanzi": "咖啡",
+      "pinyin": "kāfēi",
+      "nghia": "cà phê",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想喝咖啡。",
+        "pinyin": "Wǒ xiǎng hē kāfēi.",
+        "nghia": "Tôi muốn uống cà phê."
+      }
+    },
+    {
+      "id": "hsk2-056",
+      "hanzi": "开始",
+      "pinyin": "kāishǐ",
+      "nghia": "bắt đầu",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我们开始吧。",
+        "pinyin": "Wǒmen kāishǐ ba.",
+        "nghia": "Chúng ta bắt đầu đi."
+      }
+    },
+    {
+      "id": "hsk2-057",
+      "hanzi": "考试",
+      "pinyin": "kǎoshì",
+      "nghia": "thi; kỳ thi",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "明天有考试。",
+        "pinyin": "Míngtiān yǒu kǎoshì.",
+        "nghia": "Ngày mai có kỳ thi."
+      }
+    },
+    {
+      "id": "hsk2-058",
+      "hanzi": "可能",
+      "pinyin": "kěnéng",
+      "nghia": "có thể (khả năng)",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "可能下雨。",
+        "pinyin": "Kěnéng xiàyǔ.",
+        "nghia": "Có thể mưa."
+      }
+    },
+    {
+      "id": "hsk2-059",
+      "hanzi": "可以",
+      "pinyin": "kěyǐ",
+      "nghia": "có thể (được phép)",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我可以坐吗？",
+        "pinyin": "Wǒ kěyǐ zuò ma?",
+        "nghia": "Tôi có thể ngồi không?"
+      }
+    },
+    {
+      "id": "hsk2-060",
+      "hanzi": "课",
+      "pinyin": "kè",
+      "nghia": "tiết học; bài",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "下午有课。",
+        "pinyin": "Xiàwǔ yǒu kè.",
+        "nghia": "Buổi chiều có tiết học."
+      }
+    },
+    {
+      "id": "hsk2-061",
+      "hanzi": "快",
+      "pinyin": "kuài",
+      "nghia": "nhanh",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "车很快。",
+        "pinyin": "Chē hěn kuài.",
+        "nghia": "Xe rất nhanh."
+      }
+    },
+    {
+      "id": "hsk2-062",
+      "hanzi": "快乐",
+      "pinyin": "kuàilè",
+      "nghia": "vui vẻ; hạnh phúc",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "生日快乐！",
+        "pinyin": "Shēngrì kuàilè!",
+        "nghia": "Chúc mừng sinh nhật!"
+      }
+    },
+    {
+      "id": "hsk2-063",
+      "hanzi": "累",
+      "pinyin": "lèi",
+      "nghia": "mệt",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "我很累。",
+        "pinyin": "Wǒ hěn lèi.",
+        "nghia": "Tôi rất mệt."
+      }
+    },
+    {
+      "id": "hsk2-064",
+      "hanzi": "离",
+      "pinyin": "lí",
+      "nghia": "cách; rời",
+      "chu_de": "Giới từ",
+      "cau_vi_du": {
+        "zh": "家离学校很近。",
+        "pinyin": "Jiā lí xuéxiào hěn jìn.",
+        "nghia": "Nhà cách trường rất gần."
+      }
+    },
+    {
+      "id": "hsk2-065",
+      "hanzi": "两",
+      "pinyin": "liǎng",
+      "nghia": "hai (với lượng từ)",
+      "chu_de": "Số đếm",
+      "cau_vi_du": {
+        "zh": "两个人。",
+        "pinyin": "Liǎng gè rén.",
+        "nghia": "Hai người."
+      }
+    },
+    {
+      "id": "hsk2-066",
+      "hanzi": "路",
+      "pinyin": "lù",
+      "nghia": "đường",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "问路。",
+        "pinyin": "Wèn lù.",
+        "nghia": "Hỏi đường."
+      }
+    },
+    {
+      "id": "hsk2-067",
+      "hanzi": "旅游",
+      "pinyin": "lǚyóu",
+      "nghia": "du lịch",
+      "chu_de": "Du lịch",
+      "cau_vi_du": {
+        "zh": "我喜欢旅游。",
+        "pinyin": "Wǒ xǐhuan lǚyóu.",
+        "nghia": "Tôi thích du lịch."
+      }
+    },
+    {
+      "id": "hsk2-068",
+      "hanzi": "卖",
+      "pinyin": "mài",
+      "nghia": "bán",
+      "chu_de": "Mua bán",
+      "cau_vi_du": {
+        "zh": "商店卖水果。",
+        "pinyin": "Shāngdiàn mài shuǐguǒ.",
+        "nghia": "Cửa hàng bán hoa quả."
+      }
+    },
+    {
+      "id": "hsk2-069",
+      "hanzi": "慢",
+      "pinyin": "màn",
+      "nghia": "chậm",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请说慢一点。",
+        "pinyin": "Qǐng shuō màn yìdiǎn.",
+        "nghia": "Xin nói chậm một chút."
+      }
+    },
+    {
+      "id": "hsk2-070",
+      "hanzi": "忙",
+      "pinyin": "máng",
+      "nghia": "bận",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "今天很忙。",
+        "pinyin": "Jīntiān hěn máng.",
+        "nghia": "Hôm nay rất bận."
+      }
+    },
+    {
+      "id": "hsk2-071",
+      "hanzi": "每",
+      "pinyin": "měi",
+      "nghia": "mỗi",
+      "chu_de": "Đại từ",
+      "cau_vi_du": {
+        "zh": "每天学习。",
+        "pinyin": "Měi tiān xuéxí.",
+        "nghia": "Mỗi ngày học."
+      }
+    },
+    {
+      "id": "hsk2-072",
+      "hanzi": "妹妹",
+      "pinyin": "mèimei",
+      "nghia": "em gái",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "我妹妹七岁。",
+        "pinyin": "Wǒ mèimei qī suì.",
+        "nghia": "Em gái tôi bảy tuổi."
+      }
+    },
+    {
+      "id": "hsk2-073",
+      "hanzi": "门",
+      "pinyin": "mén",
+      "nghia": "cửa",
+      "chu_de": "Đồ vật",
+      "cau_vi_du": {
+        "zh": "请开门。",
+        "pinyin": "Qǐng kāi mén.",
+        "nghia": "Xin mở cửa."
+      }
+    },
+    {
+      "id": "hsk2-074",
+      "hanzi": "男人",
+      "pinyin": "nánrén",
+      "nghia": "đàn ông",
+      "chu_de": "Đại từ / xưng hô",
+      "cau_vi_du": {
+        "zh": "那个男人是老师。",
+        "pinyin": "Nàge nánrén shì lǎoshī.",
+        "nghia": "Người đàn ông kia là giáo viên."
+      }
+    },
+    {
+      "id": "hsk2-075",
+      "hanzi": "您",
+      "pinyin": "nín",
+      "nghia": "ngài; quý vị",
+      "chu_de": "Đại từ",
+      "cau_vi_du": {
+        "zh": "您好！",
+        "pinyin": "Nín hǎo!",
+        "nghia": "Xin chào quý vị!"
+      }
+    },
+    {
+      "id": "hsk2-076",
+      "hanzi": "牛奶",
+      "pinyin": "niúnǎi",
+      "nghia": "sữa bò",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想喝牛奶。",
+        "pinyin": "Wǒ xiǎng hē niúnǎi.",
+        "nghia": "Tôi muốn uống sữa."
+      }
+    },
+    {
+      "id": "hsk2-077",
+      "hanzi": "女人",
+      "pinyin": "nǚrén",
+      "nghia": "phụ nữ",
+      "chu_de": "Đại từ / xưng hô",
+      "cau_vi_du": {
+        "zh": "那个女人很漂亮。",
+        "pinyin": "Nàge nǚrén hěn piàoliang.",
+        "nghia": "Người phụ nữ kia rất đẹp."
+      }
+    },
+    {
+      "id": "hsk2-078",
+      "hanzi": "旁边",
+      "pinyin": "pángbiān",
+      "nghia": "bên cạnh",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "饭店在学校旁边。",
+        "pinyin": "Fànguǎn zài xuéxiào pángbiān.",
+        "nghia": "Nhà hàng ở cạnh trường."
+      }
+    },
+    {
+      "id": "hsk2-079",
+      "hanzi": "跑步",
+      "pinyin": "pǎobù",
+      "nghia": "chạy bộ",
+      "chu_de": "Thể thao",
+      "cau_vi_du": {
+        "zh": "早上我跑步。",
+        "pinyin": "Zǎoshang wǒ pǎobù.",
+        "nghia": "Buổi sáng tôi chạy bộ."
+      }
+    },
+    {
+      "id": "hsk2-080",
+      "hanzi": "便宜",
+      "pinyin": "piányi",
+      "nghia": "rẻ",
+      "chu_de": "Mua bán",
+      "cau_vi_du": {
+        "zh": "这个很便宜。",
+        "pinyin": "Zhège hěn piányi.",
+        "nghia": "Cái này rất rẻ."
+      }
+    },
+    {
+      "id": "hsk2-081",
+      "hanzi": "票",
+      "pinyin": "piào",
+      "nghia": "vé",
+      "chu_de": "Giao thông / du lịch",
+      "cau_vi_du": {
+        "zh": "我想买票。",
+        "pinyin": "Wǒ xiǎng mǎi piào.",
+        "nghia": "Tôi muốn mua vé."
+      }
+    },
+    {
+      "id": "hsk2-082",
+      "hanzi": "妻子",
+      "pinyin": "qīzi",
+      "nghia": "vợ",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "他的妻子是医生。",
+        "pinyin": "Tā de qīzi shì yīshēng.",
+        "nghia": "Vợ anh ấy là bác sĩ."
+      }
+    },
+    {
+      "id": "hsk2-083",
+      "hanzi": "起床",
+      "pinyin": "qǐchuáng",
+      "nghia": "thức dậy",
+      "chu_de": "Sinh hoạt",
+      "cau_vi_du": {
+        "zh": "我七点起床。",
+        "pinyin": "Wǒ qī diǎn qǐchuáng.",
+        "nghia": "Tôi bảy giờ dậy."
+      }
+    },
+    {
+      "id": "hsk2-084",
+      "hanzi": "千",
+      "pinyin": "qiān",
+      "nghia": "nghìn",
+      "chu_de": "Số đếm",
+      "cau_vi_du": {
+        "zh": "一千块钱。",
+        "pinyin": "Yìqiān kuài qián.",
+        "nghia": "Một nghìn tệ."
+      }
+    },
+    {
+      "id": "hsk2-085",
+      "hanzi": "晴",
+      "pinyin": "qíng",
+      "nghia": "nắng; quang đãng",
+      "chu_de": "Thời tiết",
+      "cau_vi_du": {
+        "zh": "今天很晴。",
+        "pinyin": "Jīntiān hěn qíng.",
+        "nghia": "Hôm nay trời nắng đẹp."
+      }
+    },
+    {
+      "id": "hsk2-086",
+      "hanzi": "去年",
+      "pinyin": "qùnián",
+      "nghia": "năm ngoái",
+      "chu_de": "Thời gian",
+      "cau_vi_du": {
+        "zh": "我去年来中国。",
+        "pinyin": "Wǒ qùnián lái Zhōngguó.",
+        "nghia": "Năm ngoái tôi đến Trung Quốc."
+      }
+    },
+    {
+      "id": "hsk2-087",
+      "hanzi": "让",
+      "pinyin": "ràng",
+      "nghia": "để; nhờ; bảo",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "让我看看。",
+        "pinyin": "Ràng wǒ kànkan.",
+        "nghia": "Để tôi xem nào."
+      }
+    },
+    {
+      "id": "hsk2-088",
+      "hanzi": "上班",
+      "pinyin": "shàngbān",
+      "nghia": "đi làm",
+      "chu_de": "Công việc",
+      "cau_vi_du": {
+        "zh": "爸爸八点上班。",
+        "pinyin": "Bàba bā diǎn shàngbān.",
+        "nghia": "Bố tám giờ đi làm."
+      }
+    },
+    {
+      "id": "hsk2-089",
+      "hanzi": "身体",
+      "pinyin": "shēntǐ",
+      "nghia": "cơ thể; sức khỏe",
+      "chu_de": "Sức khỏe",
+      "cau_vi_du": {
+        "zh": "身体很好。",
+        "pinyin": "Shēntǐ hěn hǎo.",
+        "nghia": "Sức khỏe rất tốt."
+      }
+    },
+    {
+      "id": "hsk2-090",
+      "hanzi": "生病",
+      "pinyin": "shēngbìng",
+      "nghia": "ốm",
+      "chu_de": "Sức khỏe",
+      "cau_vi_du": {
+        "zh": "他生病了。",
+        "pinyin": "Tā shēngbìng le.",
+        "nghia": "Anh ấy bị ốm."
+      }
+    },
+    {
+      "id": "hsk2-091",
+      "hanzi": "生日",
+      "pinyin": "shēngrì",
+      "nghia": "sinh nhật",
+      "chu_de": "Thời gian",
+      "cau_vi_du": {
+        "zh": "今天是我的生日。",
+        "pinyin": "Jīntiān shì wǒ de shēngrì.",
+        "nghia": "Hôm nay là sinh nhật tôi."
+      }
+    },
+    {
+      "id": "hsk2-092",
+      "hanzi": "时间",
+      "pinyin": "shíjiān",
+      "nghia": "thời gian",
+      "chu_de": "Thời gian",
+      "cau_vi_du": {
+        "zh": "没有时间。",
+        "pinyin": "Méiyǒu shíjiān.",
+        "nghia": "Không có thời gian."
+      }
+    },
+    {
+      "id": "hsk2-093",
+      "hanzi": "事情",
+      "pinyin": "shìqing",
+      "nghia": "việc",
+      "chu_de": "Công việc",
+      "cau_vi_du": {
+        "zh": "有一件事情。",
+        "pinyin": "Yǒu yí jiàn shìqing.",
+        "nghia": "Có một việc."
+      }
+    },
+    {
+      "id": "hsk2-094",
+      "hanzi": "手表",
+      "pinyin": "shǒubiǎo",
+      "nghia": "đồng hồ đeo tay",
+      "chu_de": "Đồ vật",
+      "cau_vi_du": {
+        "zh": "这是我的手表。",
+        "pinyin": "Zhè shì wǒ de shǒubiǎo.",
+        "nghia": "Đây là đồng hồ của tôi."
+      }
+    },
+    {
+      "id": "hsk2-095",
+      "hanzi": "手机",
+      "pinyin": "shǒujī",
+      "nghia": "điện thoại di động",
+      "chu_de": "Đồ vật",
+      "cau_vi_du": {
+        "zh": "我的手机很小。",
+        "pinyin": "Wǒ de shǒujī hěn xiǎo.",
+        "nghia": "Điện thoại của tôi rất nhỏ."
+      }
+    },
+    {
+      "id": "hsk2-096",
+      "hanzi": "送",
+      "pinyin": "sòng",
+      "nghia": "tặng; đưa tiễn",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我送你去机场。",
+        "pinyin": "Wǒ sòng nǐ qù jīchǎng.",
+        "nghia": "Tôi tiễn bạn ra sân bay."
+      }
+    },
+    {
+      "id": "hsk2-097",
+      "hanzi": "所以",
+      "pinyin": "suǒyǐ",
+      "nghia": "vì vậy",
+      "chu_de": "Liên từ",
+      "cau_vi_du": {
+        "zh": "下雨了，所以我不去。",
+        "pinyin": "Xiàyǔ le, suǒyǐ wǒ bú qù.",
+        "nghia": "Mưa rồi nên tôi không đi."
+      }
+    },
+    {
+      "id": "hsk2-098",
+      "hanzi": "它",
+      "pinyin": "tā",
+      "nghia": "nó",
+      "chu_de": "Đại từ",
+      "cau_vi_du": {
+        "zh": "它是我的猫。",
+        "pinyin": "Tā shì wǒ de māo.",
+        "nghia": "Nó là con mèo của tôi."
+      }
+    },
+    {
+      "id": "hsk2-099",
+      "hanzi": "踢",
+      "pinyin": "tī",
+      "nghia": "đá",
+      "chu_de": "Thể thao",
+      "cau_vi_du": {
+        "zh": "不要踢门。",
+        "pinyin": "Búyào tī mén.",
+        "nghia": "Đừng đá cửa."
+      }
+    },
+    {
+      "id": "hsk2-100",
+      "hanzi": "题",
+      "pinyin": "tí",
+      "nghia": "câu hỏi; đề",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "有五道题。",
+        "pinyin": "Yǒu wǔ dào tí.",
+        "nghia": "Có năm câu hỏi."
+      }
+    },
+    {
+      "id": "hsk2-101",
+      "hanzi": "跳舞",
+      "pinyin": "tiàowǔ",
+      "nghia": "nhảy múa",
+      "chu_de": "Giải trí",
+      "cau_vi_du": {
+        "zh": "她喜欢跳舞。",
+        "pinyin": "Tā xǐhuan tiàowǔ.",
+        "nghia": "Cô ấy thích nhảy."
+      }
+    },
+    {
+      "id": "hsk2-102",
+      "hanzi": "外",
+      "pinyin": "wài",
+      "nghia": "ngoài",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "我在门外。",
+        "pinyin": "Wǒ zài mén wài.",
+        "nghia": "Tôi ở ngoài cửa."
+      }
+    },
+    {
+      "id": "hsk2-103",
+      "hanzi": "完",
+      "pinyin": "wán",
+      "nghia": "xong",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我做完了。",
+        "pinyin": "Wǒ zuò wán le.",
+        "nghia": "Tôi làm xong rồi."
+      }
+    },
+    {
+      "id": "hsk2-104",
+      "hanzi": "玩",
+      "pinyin": "wán",
+      "nghia": "chơi",
+      "chu_de": "Giải trí",
+      "cau_vi_du": {
+        "zh": "孩子们在玩。",
+        "pinyin": "Háizimen zài wán.",
+        "nghia": "Bọn trẻ đang chơi."
+      }
+    },
+    {
+      "id": "hsk2-105",
+      "hanzi": "晚上",
+      "pinyin": "wǎnshang",
+      "nghia": "buổi tối",
+      "chu_de": "Thời gian",
+      "cau_vi_du": {
+        "zh": "晚上很冷。",
+        "pinyin": "Wǎnshang hěn lěng.",
+        "nghia": "Buổi tối rất lạnh."
+      }
+    },
+    {
+      "id": "hsk2-106",
+      "hanzi": "为",
+      "pinyin": "wèi",
+      "nghia": "vì; cho",
+      "chu_de": "Giới từ",
+      "cau_vi_du": {
+        "zh": "我为你高兴。",
+        "pinyin": "Wǒ wèi nǐ gāoxìng.",
+        "nghia": "Tôi vui vì bạn."
+      }
+    },
+    {
+      "id": "hsk2-107",
+      "hanzi": "问",
+      "pinyin": "wèn",
+      "nghia": "hỏi",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想问你。",
+        "pinyin": "Wǒ xiǎng wèn nǐ.",
+        "nghia": "Tôi muốn hỏi bạn."
+      }
+    },
+    {
+      "id": "hsk2-108",
+      "hanzi": "问题",
+      "pinyin": "wèntí",
+      "nghia": "vấn đề; câu hỏi",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "没有问题。",
+        "pinyin": "Méiyǒu wèntí.",
+        "nghia": "Không vấn đề gì."
+      }
+    },
+    {
+      "id": "hsk2-109",
+      "hanzi": "西瓜",
+      "pinyin": "xīguā",
+      "nghia": "dưa hấu",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想吃西瓜。",
+        "pinyin": "Wǒ xiǎng chī xīguā.",
+        "nghia": "Tôi muốn ăn dưa hấu."
+      }
+    },
+    {
+      "id": "hsk2-110",
+      "hanzi": "希望",
+      "pinyin": "xīwàng",
+      "nghia": "hy vọng",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我希望你高兴。",
+        "pinyin": "Wǒ xīwàng nǐ gāoxìng.",
+        "nghia": "Tôi hy vọng bạn vui."
+      }
+    },
+    {
+      "id": "hsk2-111",
+      "hanzi": "洗",
+      "pinyin": "xǐ",
+      "nghia": "rửa; giặt",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我洗衣服。",
+        "pinyin": "Wǒ xǐ yīfu.",
+        "nghia": "Tôi giặt quần áo."
+      }
+    },
+    {
+      "id": "hsk2-112",
+      "hanzi": "向",
+      "pinyin": "xiàng",
+      "nghia": "hướng; về phía",
+      "chu_de": "Giới từ",
+      "cau_vi_du": {
+        "zh": "向左走。",
+        "pinyin": "Xiàng zuǒ zǒu.",
+        "nghia": "Đi về bên trái."
+      }
+    },
+    {
+      "id": "hsk2-113",
+      "hanzi": "小时",
+      "pinyin": "xiǎoshí",
+      "nghia": "giờ (khoảng)",
+      "chu_de": "Thời gian",
+      "cau_vi_du": {
+        "zh": "两个小时。",
+        "pinyin": "Liǎng gè xiǎoshí.",
+        "nghia": "Hai tiếng đồng hồ."
+      }
+    },
+    {
+      "id": "hsk2-114",
+      "hanzi": "笑",
+      "pinyin": "xiào",
+      "nghia": "cười",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "他在笑。",
+        "pinyin": "Tā zài xiào.",
+        "nghia": "Anh ấy đang cười."
+      }
+    },
+    {
+      "id": "hsk2-115",
+      "hanzi": "新",
+      "pinyin": "xīn",
+      "nghia": "mới",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "这是新手机。",
+        "pinyin": "Zhè shì xīn shǒujī.",
+        "nghia": "Đây là điện thoại mới."
+      }
+    },
+    {
+      "id": "hsk2-116",
+      "hanzi": "姓",
+      "pinyin": "xìng",
+      "nghia": "họ",
+      "chu_de": "Đại từ / xưng hô",
+      "cau_vi_du": {
+        "zh": "我姓王。",
+        "pinyin": "Wǒ xìng Wáng.",
+        "nghia": "Tôi họ Vương."
+      }
+    },
+    {
+      "id": "hsk2-117",
+      "hanzi": "休息",
+      "pinyin": "xiūxi",
+      "nghia": "nghỉ ngơi",
+      "chu_de": "Sinh hoạt",
+      "cau_vi_du": {
+        "zh": "我想休息。",
+        "pinyin": "Wǒ xiǎng xiūxi.",
+        "nghia": "Tôi muốn nghỉ."
+      }
+    },
+    {
+      "id": "hsk2-118",
+      "hanzi": "雪",
+      "pinyin": "xuě",
+      "nghia": "tuyết",
+      "chu_de": "Thời tiết",
+      "cau_vi_du": {
+        "zh": "今天下雪了。",
+        "pinyin": "Jīntiān xià xuě le.",
+        "nghia": "Hôm nay tuyết rơi."
+      }
+    },
+    {
+      "id": "hsk2-119",
+      "hanzi": "颜色",
+      "pinyin": "yánsè",
+      "nghia": "màu sắc",
+      "chu_de": "Tính từ / màu sắc",
+      "cau_vi_du": {
+        "zh": "你喜欢什么颜色？",
+        "pinyin": "Nǐ xǐhuan shénme yánsè?",
+        "nghia": "Bạn thích màu gì?"
+      }
+    },
+    {
+      "id": "hsk2-120",
+      "hanzi": "眼睛",
+      "pinyin": "yǎnjing",
+      "nghia": "mắt",
+      "chu_de": "Cơ thể",
+      "cau_vi_du": {
+        "zh": "他的眼睛很大。",
+        "pinyin": "Tā de yǎnjing hěn dà.",
+        "nghia": "Mắt anh ấy rất to."
+      }
+    },
+    {
+      "id": "hsk2-121",
+      "hanzi": "羊肉",
+      "pinyin": "yángròu",
+      "nghia": "thịt cừu",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想吃羊肉。",
+        "pinyin": "Wǒ xiǎng chī yángròu.",
+        "nghia": "Tôi muốn ăn thịt cừu."
+      }
+    },
+    {
+      "id": "hsk2-122",
+      "hanzi": "药",
+      "pinyin": "yào",
+      "nghia": "thuốc",
+      "chu_de": "Sức khỏe",
+      "cau_vi_du": {
+        "zh": "我去买药。",
+        "pinyin": "Wǒ qù mǎi yào.",
+        "nghia": "Tôi đi mua thuốc."
+      }
+    },
+    {
+      "id": "hsk2-123",
+      "hanzi": "要",
+      "pinyin": "yào",
+      "nghia": "muốn; cần",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我要喝茶。",
+        "pinyin": "Wǒ yào hē chá.",
+        "nghia": "Tôi muốn uống trà."
+      }
+    },
+    {
+      "id": "hsk2-124",
+      "hanzi": "也",
+      "pinyin": "yě",
+      "nghia": "cũng",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "我也是学生。",
+        "pinyin": "Wǒ yě shì xuésheng.",
+        "nghia": "Tôi cũng là học sinh."
+      }
+    },
+    {
+      "id": "hsk2-125",
+      "hanzi": "已经",
+      "pinyin": "yǐjīng",
+      "nghia": "đã",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "他已经来了。",
+        "pinyin": "Tā yǐjīng lái le.",
+        "nghia": "Anh ấy đã đến rồi."
+      }
+    },
+    {
+      "id": "hsk2-126",
+      "hanzi": "一起",
+      "pinyin": "yìqǐ",
+      "nghia": "cùng nhau",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "我们一起去。",
+        "pinyin": "Wǒmen yìqǐ qù.",
+        "nghia": "Chúng ta đi cùng nhau."
+      }
+    },
+    {
+      "id": "hsk2-127",
+      "hanzi": "意思",
+      "pinyin": "yìsi",
+      "nghia": "ý nghĩa",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "什么意思？",
+        "pinyin": "Shénme yìsi?",
+        "nghia": "Nghĩa là gì?"
+      }
+    },
+    {
+      "id": "hsk2-128",
+      "hanzi": "阴",
+      "pinyin": "yīn",
+      "nghia": "u ám",
+      "chu_de": "Thời tiết",
+      "cau_vi_du": {
+        "zh": "今天阴天。",
+        "pinyin": "Jīntiān yīn tiān.",
+        "nghia": "Hôm nay trời u ám."
+      }
+    },
+    {
+      "id": "hsk2-129",
+      "hanzi": "因为",
+      "pinyin": "yīnwèi",
+      "nghia": "bởi vì",
+      "chu_de": "Liên từ",
+      "cau_vi_du": {
+        "zh": "因为下雨，所以我不去。",
+        "pinyin": "Yīnwèi xiàyǔ, suǒyǐ wǒ bú qù.",
+        "nghia": "Vì mưa nên tôi không đi."
+      }
+    },
+    {
+      "id": "hsk2-130",
+      "hanzi": "游泳",
+      "pinyin": "yóuyǒng",
+      "nghia": "bơi",
+      "chu_de": "Thể thao",
+      "cau_vi_du": {
+        "zh": "我喜欢游泳。",
+        "pinyin": "Wǒ xǐhuan yóuyǒng.",
+        "nghia": "Tôi thích bơi."
+      }
+    },
+    {
+      "id": "hsk2-131",
+      "hanzi": "右边",
+      "pinyin": "yòubian",
+      "nghia": "bên phải",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "饭店在右边。",
+        "pinyin": "Fànguǎn zài yòubian.",
+        "nghia": "Nhà hàng ở bên phải."
+      }
+    },
+    {
+      "id": "hsk2-132",
+      "hanzi": "鱼",
+      "pinyin": "yú",
+      "nghia": "cá",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想吃鱼。",
+        "pinyin": "Wǒ xiǎng chī yú.",
+        "nghia": "Tôi muốn ăn cá."
+      }
+    },
+    {
+      "id": "hsk2-133",
+      "hanzi": "元",
+      "pinyin": "yuán",
+      "nghia": "nhân dân tệ (đồng)",
+      "chu_de": "Mua bán",
+      "cau_vi_du": {
+        "zh": "八元。",
+        "pinyin": "Bā yuán.",
+        "nghia": "Tám tệ."
+      }
+    },
+    {
+      "id": "hsk2-134",
+      "hanzi": "远",
+      "pinyin": "yuǎn",
+      "nghia": "xa",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "家很远。",
+        "pinyin": "Jiā hěn yuǎn.",
+        "nghia": "Nhà rất xa."
+      }
+    },
+    {
+      "id": "hsk2-135",
+      "hanzi": "运动",
+      "pinyin": "yùndòng",
+      "nghia": "thể thao; vận động",
+      "chu_de": "Thể thao",
+      "cau_vi_du": {
+        "zh": "我喜欢运动。",
+        "pinyin": "Wǒ xǐhuan yùndòng.",
+        "nghia": "Tôi thích thể thao."
+      }
+    },
+    {
+      "id": "hsk2-136",
+      "hanzi": "再",
+      "pinyin": "zài",
+      "nghia": "lại; nữa",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "再见！再来！",
+        "pinyin": "Zàijiàn! Zài lái!",
+        "nghia": "Tạm biệt! Lại đến nhé!"
+      }
+    },
+    {
+      "id": "hsk2-137",
+      "hanzi": "早上",
+      "pinyin": "zǎoshang",
+      "nghia": "buổi sáng sớm",
+      "chu_de": "Thời gian",
+      "cau_vi_du": {
+        "zh": "早上很冷。",
+        "pinyin": "Zǎoshang hěn lěng.",
+        "nghia": "Sáng sớm rất lạnh."
+      }
+    },
+    {
+      "id": "hsk2-138",
+      "hanzi": "张",
+      "pinyin": "zhāng",
+      "nghia": "tờ (lượng từ giấy/bàn)",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "一张票。",
+        "pinyin": "Yì zhāng piào.",
+        "nghia": "Một tờ vé."
+      }
+    },
+    {
+      "id": "hsk2-139",
+      "hanzi": "长",
+      "pinyin": "zhǎng",
+      "nghia": "lớn lên; trưởng",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "孩子长高了。",
+        "pinyin": "Háizi zhǎng gāo le.",
+        "nghia": "Đứa trẻ cao ra rồi."
+      }
+    },
+    {
+      "id": "hsk2-140",
+      "hanzi": "丈夫",
+      "pinyin": "zhàngfu",
+      "nghia": "chồng",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "她的丈夫是老师。",
+        "pinyin": "Tā de zhàngfu shì lǎoshī.",
+        "nghia": "Chồng cô ấy là giáo viên."
+      }
+    },
+    {
+      "id": "hsk2-141",
+      "hanzi": "找",
+      "pinyin": "zhǎo",
+      "nghia": "tìm",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我找手机。",
+        "pinyin": "Wǒ zhǎo shǒujī.",
+        "nghia": "Tôi tìm điện thoại."
+      }
+    },
+    {
+      "id": "hsk2-142",
+      "hanzi": "着",
+      "pinyin": "zhe",
+      "nghia": "đang (trợ từ tiếp diễn)",
+      "chu_de": "Phủ định / tiểu từ",
+      "cau_vi_du": {
+        "zh": "他看着书。",
+        "pinyin": "Tā kàn zhe shū.",
+        "nghia": "Anh ấy đang nhìn/đọc sách."
+      }
+    },
+    {
+      "id": "hsk2-143",
+      "hanzi": "真",
+      "pinyin": "zhēn",
+      "nghia": "thật",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "真好吃！",
+        "pinyin": "Zhēn hǎochī!",
+        "nghia": "Thật ngon!"
+      }
+    },
+    {
+      "id": "hsk2-144",
+      "hanzi": "正在",
+      "pinyin": "zhèngzài",
+      "nghia": "đang",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "我正在学习。",
+        "pinyin": "Wǒ zhèngzài xuéxí.",
+        "nghia": "Tôi đang học."
+      }
+    },
+    {
+      "id": "hsk2-145",
+      "hanzi": "知道",
+      "pinyin": "zhīdào",
+      "nghia": "biết",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我知道。",
+        "pinyin": "Wǒ zhīdào.",
+        "nghia": "Tôi biết."
+      }
+    },
+    {
+      "id": "hsk2-146",
+      "hanzi": "准备",
+      "pinyin": "zhǔnbèi",
+      "nghia": "chuẩn bị",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我准备好了。",
+        "pinyin": "Wǒ zhǔnbèi hǎo le.",
+        "nghia": "Tôi đã chuẩn bị xong."
+      }
+    },
+    {
+      "id": "hsk2-147",
+      "hanzi": "自行车",
+      "pinyin": "zìxíngchē",
+      "nghia": "xe đạp",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "这是我的自行车。",
+        "pinyin": "Zhè shì wǒ de zìxíngchē.",
+        "nghia": "Đây là xe đạp của tôi."
+      }
+    },
+    {
+      "id": "hsk2-148",
+      "hanzi": "走",
+      "pinyin": "zǒu",
+      "nghia": "đi bộ; rời",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我们走吧。",
+        "pinyin": "Wǒmen zǒu ba.",
+        "nghia": "Chúng ta đi thôi."
+      }
+    },
+    {
+      "id": "hsk2-149",
+      "hanzi": "最",
+      "pinyin": "zuì",
+      "nghia": "nhất",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "最好！",
+        "pinyin": "Zuì hǎo!",
+        "nghia": "Tốt nhất!"
+      }
+    },
+    {
+      "id": "hsk2-150",
+      "hanzi": "左边",
+      "pinyin": "zuǒbian",
+      "nghia": "bên trái",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "学校在左边。",
+        "pinyin": "Xuéxiào zài zuǒbian.",
+        "nghia": "Trường ở bên trái."
+      }
+    }
+  ]
+}

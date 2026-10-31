@@ -1,0 +1,13 @@
+# Biên Tập Viên review 1 (apply to question bank v4/v5; local only)
+- Shuffle answers at display time (dung skewed to 0 in 30/36).
+- bc-01 distractors -> 请问您住几天？(Qǐngwèn nín zhù jǐ tiān? – Quý khách ở mấy ngày?), 请问您贵姓？(Qǐngwèn nín guìxìng? – Quý khách họ gì?), 请问您有预订吗？(Qǐngwèn nín yǒu yùdìng ma? – Quý khách đặt phòng trước chưa?)
+- bc-04 dup bc-08 (请出示您的护照): change bc-08 to another reception sentence.
+- bc-12 dup bc-17 (不客气): change one to 不用谢 (Bú yòng xiè – Không cần cảm ơn).
+- bc-10,13,16,19,21 are general HSK content: move to an "HSK (luyện tập)" stage or replace with hotel sentences.
+- bc-11, bc-18 have factory distractors -> replace with reception ones.
+- bc-15 distractors 吃/跑/看 -> floor numbers 六/七/九 (liù/qī/jiǔ – 6/7/9).
+- cp-01 dup cp-09 (洗手间在哪里); cp-02 dup cp-05 -> one becomes 请戴护目镜 (Qǐng dài hùmùjìng – Xin đeo kính bảo hộ); cp-06 dup cp-11 -> 需要维修 (Xūyào wéixiū – Cần sửa chữa); cp-10 dup cp-13.
+- cp-13 has two correct answers -> narrow it or change a distractor.
+- cp-15: change 次品 to 合格品 (hégépǐn – hàng đạt chuẩn).
+- Add new cp-16..cp-25: JSON in the Biên Tập Viên message (copied below by Dev IT).
+- membership refund/privacy wording: DRAFT only, wait for Bảo; do NOT change the text.

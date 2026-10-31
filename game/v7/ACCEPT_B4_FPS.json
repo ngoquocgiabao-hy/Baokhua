@@ -1,0 +1,18 @@
+{
+  "th": {
+    "n": 119,
+    "meanAvg": 59.3,
+    "meanP5": 50,
+    "lastAvg": 61.2,
+    "lastP5": 51.7,
+    "minP5": 20,
+    "endQ": 0,
+    "startQ": 0,
+    "glb": true
+  },
+  "cons": [],
+  "mp4": {
+    "size": 1752040,
+    "ffmpeg": 0
+  }
+}

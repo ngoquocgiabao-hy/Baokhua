@@ -1,0 +1,202 @@
+CREDITS — Proto 3D Hạ Long Ngữ Tiên (Bảo Khựa) · 0đ assets only
+Không liên kết với kỳ thi HSK chính thức.
+No PvP / bot PvP / raids / server — single-player offline HTML only.
+
+================================================================================
+THREE.JS (MIT License) — https://github.com/mrdoob/three.js
+================================================================================
+Copyright © 2010-2024 three.js authors
+License: MIT — https://github.com/mrdoob/three.js/blob/master/LICENSE
+
+Runtime (CDN / raw GitHub, MIT):
+- three.module.js r170
+  https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js
+  Source: https://github.com/mrdoob/three.js/tree/r170
+- Water.js
+  https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/objects/Water.js
+- EffectComposer / RenderPass / UnrealBloomPass / OutputPass
+  https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/
+- GLTFLoader / DRACOLoader
+  https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/
+- Draco decoder wasm/js
+  https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/
+- waternormals.jpg (three.js examples texture, MIT)
+  PRIMARY: https://raw.githubusercontent.com/mrdoob/three.js/r170/examples/textures/waternormals.jpg
+  MIRROR:  https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/textures/waternormals.jpg
+  (Do NOT use npm package path …/examples/textures/ — 404 on jsDelivr npm)
+
+================================================================================
+MODELS — Quaternius (CC0 1.0) — https://quaternius.com
+================================================================================
+License: CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
+Original packs (download from Quaternius; GLB also mirrored for CDN):
+
+1) Hero swordsman (animated Idle/Run/Sword) — KnightCharacter.glb + Sword.glb
+   Pack: Single Knight Pack (Quaternius CC0)
+   Pack page: https://quaternius.com (search Single Knight / Animated Knight)
+   Also: Ultimate Animated Character Pack / Universal Animation Library family
+   CDN: https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/single_knight_pack/KnightCharacter.glb
+        https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/single_knight_pack/Sword.glb
+   Local offline: v7/glb/hero_knight.glb , v7/glb/knight_sword.glb
+   Clips used: Idle_swordRight, Run_swordRight, Run_swordAttack (+ Jump/Roll/Death/…)
+   poly.pizza / quaternius.com originals — credit Quaternius CC0
+
+2) Hero alt (optional) — KnightCharacter.glb
+   Pack: Single Knight
+   Pack page: https://quaternius.com
+   CDN: https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/single_knight_pack/KnightCharacter.glb
+
+3) Boss (animated Idle/Bite/Walk) — Enemy.glb
+   Pack: Ultimate Platformer / Platformer Game Kit
+   Pack page: https://quaternius.com/packs/ultimateplatformer.html
+   CDN: https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/platformer_game_pack/Enemy.glb
+   Local: v7/glb/boss_enemy.glb
+
+4) Boat — Lifeboat.glb
+   Pack: Ships Pack
+   Pack page: https://quaternius.com/packs/ships.html
+   CDN: https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/ships_pack/Lifeboat.glb
+   Local: v7/glb/boat.glb
+
+Showcase mirror repo (models remain Quaternius CC0; repo code MIT):
+https://github.com/trebeljahr/quaternius-showcase
+
+================================================================================
+KENNEY (CC0 1.0) — https://kenney.nl/assets
+================================================================================
+Referenced for rocks/trees/boats per v7_spec §5 (Nature Kit, Pirate Kit).
+Pack index: https://kenney.nl/assets
+License: CC0 1.0 — https://kenney.nl/license
+Current B2–B4 proto uses Quaternius Lifeboat + procedural toon karst/dock;
+Kenney assets may replace procedural rocks/dock in later polish — only CC0 packs.
+
+================================================================================
+POLY HAVEN (CC0) — https://polyhaven.com
+================================================================================
+Referenced per v7_spec §5 for optional HDRI/textures.
+License: CC0 — https://polyhaven.com/license
+Current proto: sky/fog/water color procedural (no HDRI file embedded yet).
+
+================================================================================
+PROCEDURAL (original to this HTML)
+================================================================================
+- Multi-layer karst meshes, sky gradient, shore, dock, particles / skill FX
+- MeshToonMaterial gradient map generated in-file
+- UI chrome / joystick / question panel
+
+================================================================================
+QUESTIONS
+================================================================================
+cau_hoi_v7.json embedded in proto HTML (Biên Tập Viên). Not third-party art.
+
+================================================================================
+DISCLAIMERS
+================================================================================
+- Không liên kết với kỳ thi HSK chính thức.
+- Single-player only: no PvP, no bot PvP, no raids, no multiplayer server.
+- Do not deploy without Bảo approval.
+
+
+================================================================================
+AUDIO (SFX + BGM) — CC0 / tự tạo cho Bảo Khựa
+================================================================================
+Files in v7/audio/ (copied from v6/audio/):
+- bgm_loop.ogg — nhạc nền loop
+- hit.ogg — đòn đánh trúng
+- crit.ogg — dùng làm slash/chiêu
+- hurt.ogg — nhận sát thương
+- ui.ogg — UI click
+- win.ogg — thắng boss
+
+Nguồn: tự tạo cho dự án Bảo Khựa (xem /workspace/game/v6/FREE_RESOURCES.md
+「SFX/BGM tự tạo (v4/audio/*.ogg) · Tự tạo · dùng tự do cho Bảo Khựa」).
+Gợi ý pack CC0 thay thế (nếu thay file sau này):
+- Kenney Impact Sounds — https://www.kenney.nl/assets/impact-sounds (CC0)
+- Kenney UI Audio / Music packs — https://kenney.nl/ (CC0)
+- OpenGameArt — chỉ file ghi rõ CC0 — https://opengameart.org/
+
+================================================================================
+B5 HERO — Quaternius Single Knight (CC0) humanoid swordsman
+================================================================================
+KnightCharacter.glb — Idle_swordRight / Run_swordRight / Run_swordAttack / Walking
+Pack page: https://quaternius.com (Single Knight / related packs)
+CDN: https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/single_knight_pack/KnightCharacter.glb
+Sword.glb (optional prop): …/single_knight_pack/Sword.glb
+Local: v7/glb/hero_knight.glb , v7/glb/knight_sword.glb
+License: CC0 1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+
+
+================================================================================
+B6 GRAPHICS ADDITIONS (CC0 Quaternius)
+================================================================================
+Boss (full-body animated): Enemy_Large.glb
+  Pack: Cyberpunk Game Kit — https://quaternius.com/packs/cyberpunkgamekit.html
+  CDN: https://cdn.jsdelivr.net/gh/trebeljahr/quaternius-showcase@main/public/glb/cyberpunk_pack/Enemy_Large.glb
+  Local: v7/glb/boss_enemy_large.glb
+  Clips: CharacterArmature|Idle, Attack, Attack.001, Walk, Run, Death, …
+
+Hero weapon: Katana.glb (Single Knight Pack)
+  CDN: …/single_knight_pack/Katana.glb
+  Local: v7/glb/knight_katana.glb
+  Attached to Palm.R bone
+
+Post: FXAAShader + UnrealBloomPass + ACESFilmicToneMapping (three.js MIT)
+Shadows: PCFSoftShadowMap (three.js MIT)
+Water normals: three.js examples waternormals.jpg (MIT)
+
+
+================================================================================
+B7 OFFLINE VENDOR + MOBA COMBAT (2026-10-30)
+================================================================================
+Self-hosted under /workspace/game/b7/ (no CDN at runtime), total pack <=3MB:
+- three.module.min.js — three.js r170 MIT
+- addons/ — Water, EffectComposer, UnrealBloomPass, FXAA, OutputPass, GLTFLoader (MIT)
+- textures/waternormals.jpg — three.js examples MIT (resized)
+- glb/hero_knight.glb, knight_katana.glb, boss_enemy_large.glb, boat.glb — Quaternius CC0
+- audio/*.ogg — project SFX loops
+
+Gameplay B7:
+- Liên Quân-style: left joystick, ATK + S1/S2/S3 cooldown rings, ULT
+- Nội năng (mana) under HP; skills cost mana; empty mana → question refill
+- Ultimate requires HARD question (do_kho>=3); Q card animates in/out BEFORE cinematic
+- Boss AI: chase + red ground telegraph dodgeable
+- Longer road riddles (b7-rid-*) with pinyin + Vietnamese
+- localStorage save schema=1 (SAVE_SCHEMA)
+- speechSynthesis zh-CN; if no zh voice → show pinyin instead of audio
+- Perf: pixelRatio<=1.5, default MID mobile, shadow map cut, particle/dmg pools,
+  renderer.compile warm, bloom/FXAA off on LOW, fewer karst draws
+
+================================================================================
+B8 OFFLINE VENDOR + COMPRESSION (2026-10-30 Asia/Saigon)
+================================================================================
+Deliverable: /workspace/game/proto3d_b8.html + /workspace/game/b8/
+B7 untouched. No deploy.
+
+Runtime (local only — no CDN at play time):
+- b8/three.module.min.js (+ .gz for Slow3G bootstrap via DecompressionStream)
+- b8/addons/** (Water, postprocessing, GLTFLoader, FXAA, …) — three.js MIT r170
+- b8/addons/libs/meshopt_decoder.module.js — meshoptimizer / EXT_meshopt_compression
+  (bundled with three.js examples; MIT)
+- b8/glb/*.glb — Quaternius CC0, recompressed with gltf-transform meshopt
+  (tooling: @gltf-transform/cli + meshoptimizer — build-time only, not shipped)
+- b8/textures/waternormals.jpg — three.js examples, MIT
+- b8/app.js — game module (extracted from HTML for gunzip bootstrap)
+
+Compression tools (dev/build, free):
+- gltf-transform (MIT) — https://github.com/donmccurdy/glTF-Transform
+- meshoptimizer / meshopt compression (MIT) — https://github.com/zeux/meshoptimizer
+- Optional Draco path not required for B8 (meshopt used); decoder would be local if added.
+
+Save key: localStorage "halong_proto_b8" schema:1
+
+================================================================================
+B9 OFFLINE VENDOR (2026-10-30 Asia/Saigon)
+================================================================================
+Deliverable: /workspace/game/proto3d_b9.html + /workspace/game/b9/
+From B8 (B8 untouched). Spec: b9_cai_tien.md items 1+2+3 + 10s script + KỸ THUẬT.
+NOT items 4–5 (waves / level-up cards → b10). No deploy.
+
+Same vendor stack as B8 (three.js MIT r170, meshopt, Quaternius CC0 GLBs).
+Controls: floating 1-finger joystick, auto-aim/auto-attack 6m, fixed 45° camera,
+Chiêu+ULT only. Red ring under enemies (not mesh outline). Save: halong_proto_b9 schema:1.
+

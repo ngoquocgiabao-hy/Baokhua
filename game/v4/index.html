@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Bảo Khựa 阿宝 – Đánh Boss v4 (3D · 2 chặng)</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/",
+    "postprocessing": "https://cdn.jsdelivr.net/npm/postprocessing@6.39.5/build/index.js",
+    "@tweenjs/tween.js": "https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@25.0.0/dist/tween.esm.js"
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+<script>
+/* Fallback howler từ unpkg nếu jsDelivr lỗi */
+(function(){
+  if (typeof Howler !== 'undefined') return;
+  var s = document.createElement('script');
+  s.src = 'https://unpkg.com/howler@2.2.4/dist/howler.min.js';
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+/* ===== CẤU HÌNH ===== */
+const ZALO_LINK = "https://zalo.me/g/16yx8ptwane8ggwrnyxl";
+const GOOGLE_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform";
+const FAST_SECONDS = 5;
+const QUESTION_SECONDS = 20;
+const STAGES = [
+  { id:1, key:'hotel', name:'Bãi Cháy – Khách sạn', boss:'Boss Lễ Tân', topics:['hotel','hsk'], badge:'🏅Bãi Cháy' },
+  { id:2, key:'factory', name:'Cẩm Phả – Nhà máy', boss:'Boss Tổ trưởng', topics:['factory'], badge:'🏅Cẩm Phả' }
+];
+
+const FORM_UTM_GAME = 'utm_source=game&utm_campaign=lop_0211';
+const INVITE_BLURB = '99k cho 3 tháng, 299k cho 1 năm, học Zoom thứ Hai, Tư, Sáu lúc 20:00';
+const INVITE_SHARE_LINE = 'Thẻ 99k/299k · Zoom 20:00 T2 T4 T6 · buổi đầu 02/11';
+const OFFER_HOLD = '⏰ Giữ chỗ đến 18:00 ngày 01/11';
+const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 18:00 ngày 01/11 → bạn được cộng thêm 7 ngày.';
+const OFFER_MINIGAME = '🎯 Mini game Zalo đoán nghĩa → giảm đến 20k';
+function holdSeatExpired() {
+  // 18:00 01/11/2026 Asia/Saigon = 11:00 UTC
+  return Date.now() >= Date.parse('2026-11-01T11:00:00Z');
+}
+function applyHoldSeatVisibility() {
+  const exp = holdSeatExpired();
+  document.querySelectorAll('[data-offer-hold],[data-offer-referral]').forEach(el => { el.hidden = exp; });
+}
+function withUtm(url, qs) {
+  if (!url || /THAY_/.test(url)) return url;
+  return url + (url.includes('?') ? '&' : '?') + qs;
+}
+/*
+===== NGÂN HÀNG CÂU HỎI =====
+Xem /workspace/game/v3/QUESTION_FORMAT.md
+type: mc | listen | order | fill | situ
+topic: hotel | factory | hsk
+Mọi câu Trung phải có py + vi.
+*/
+/** Schema bắt buộc (9 field) → runtime. Field phụ: type/topic/zh/optionPy/optionVi/words/... */
+function normalizeQ(raw) {
+  if (!raw) return raw;
+  if (raw.cau_hoi == null && (raw.q != null || raw.options != null)) return raw;
+  const type = raw.type || 'mc';
+  const topic = raw.topic || (String(raw.chang||'').includes('Cẩm') ? 'factory' : 'hotel');
+  const answer = (type === 'order' && raw.answerOrder) ? raw.answerOrder : (raw.dung != null ? raw.dung : 0);
+  const q = {
+    id: raw.id, chang: raw.chang, ngon_ngu: raw.ngon_ngu || 'zh', do_kho: raw.do_kho || 1,
+    type, topic,
+    q: raw.cau_hoi,
+    options: raw.dap_an || [],
+    answer,
+    py: raw.pinyin || '',
+    vi: raw.giai_thich || '',
+    zh: raw.zh || '',
+    optionPy: raw.optionPy, optionVi: raw.optionVi,
+    words: raw.words, wordPy: raw.wordPy, wordVi: raw.wordVi,
+    speak: raw.speak, blankHint: raw.blankHint, stage: raw.stage
+  };
+  if (!q.zh) {
+    if (type === 'order' && q.options[0]) q.zh = q.options[0];
+    else if (typeof answer === 'number' && q.options[answer]) q.zh = q.options[answer];
+  }
+  return q;
+}
+function normalizeQuestions(arr) { return (arr || []).map(normalizeQ); }
+
+const QUESTIONS_RAW = [
+  {id:"bc-01",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách đến quầy lễ tân — câu nào hỏi số người trong đoàn?",dap_an:["请问您几位？","我要退房。","请戴安全帽。","机器坏了。"],dung:0,pinyin:"Qǐngwèn nín jǐ wèi?",giai_thich:"Xin hỏi quý khách có mấy vị?",type:"situ",topic:"hotel",zh:"请问您几位？",optionPy:["Qǐngwèn nín jǐ wèi?","Wǒ yào tuìfáng.","Qǐng dài ānquánmào.","Jīqì huài le."],optionVi:["Xin hỏi mấy vị?","Tôi muốn trả phòng.","Xin đội mũ bảo hộ.","Máy hỏng rồi."]},
+  {id:"bc-02",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách muốn làm gì?",dap_an:["Nhận phòng","Trả phòng","Gọi taxi","Đặt bàn"],dung:0,pinyin:"Wǒ xiǎng bànlǐ rùzhù.",giai_thich:"Tôi muốn làm thủ tục nhận phòng.",type:"mc",topic:"hotel",zh:"我想办理入住。"},
+  {id:"bc-03",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Trả phòng” tiếng Trung là gì?",dap_an:["入住","退房","早餐","护照"],dung:1,pinyin:"tuìfáng",giai_thich:"Trả phòng / check-out",type:"mc",topic:"hotel",zh:"退房",optionPy:["rùzhù","tuìfáng","zǎocān","hùzhào"],optionVi:["Nhận phòng","Trả phòng","Bữa sáng","Hộ chiếu"]},
+  {id:"bc-04",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Lễ tân đang yêu cầu gì?",dap_an:["Xin số điện thoại","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"],dung:1,pinyin:"Qǐng chūshì nín de hùzhào.",giai_thich:"Xin xuất trình hộ chiếu của anh/chị.",type:"mc",topic:"hotel",zh:"请出示您的护照。"},
+  {id:"bc-05",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi gì?",dap_an:["Mấy giờ ăn sáng","Phòng giá bao nhiêu","Wifi mật khẩu gì","Bể bơi ở đâu"],dung:0,pinyin:"Zǎocān jǐ diǎn kāishǐ?",giai_thich:"Bữa sáng bắt đầu lúc mấy giờ?",type:"mc",topic:"hotel",zh:"早餐几点开始？"},
+  {id:"bc-06",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Phòng khách ở đâu?",dap_an:["Tầng 1","Tầng 6","Tầng 8","Tầng 10"],dung:2,pinyin:"Nín de fángjiān zài bā lóu.",giai_thich:"Phòng của anh/chị ở tầng tám.",type:"mc",topic:"hotel",zh:"您的房间在八楼。"},
+  {id:"bc-07",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Giờ trả phòng là mấy giờ?",dap_an:["10 giờ sáng","12 giờ trưa","2 giờ chiều","6 giờ tối"],dung:1,pinyin:"Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.",giai_thich:"Giờ trả phòng là 12 giờ trưa.",type:"mc",topic:"hotel",zh:"退房时间是中午十二点。"},
+  {id:"bc-08",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Xin xem hộ chiếu","Hỏi số phòng","Mời uống trà","Xin số điện thoại"],dung:0,pinyin:"Qǐng chūshì nín de hùzhào.",giai_thich:"Xin xuất trình hộ chiếu của anh/chị.",type:"listen",topic:"hotel",zh:"请出示您的护照。",speak:"请出示您的护照。"},
+  {id:"bc-09",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe câu khách nói — họ cần gì?",dap_an:["Giờ trả phòng","Mật khẩu WiFi","Giá phòng","Số tầng"],dung:1,pinyin:"WiFi mìmǎ shì duōshǎo?",giai_thich:"Mật khẩu WiFi là bao nhiêu?",type:"listen",topic:"hotel",zh:"WiFi密码是多少？",speak:"WiFi密码是多少？"},
+  {id:"cp-01",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe — công nhân hỏi gì?",dap_an:["洗手间在哪里？","几点下班？","机器坏了。","今天加班。"],dung:0,pinyin:"Xǐshǒujiān zài nǎlǐ?",giai_thich:"Nhà vệ sinh ở đâu?",type:"listen",topic:"factory",zh:"洗手间在哪里？",optionPy:["Xǐshǒujiān zài nǎlǐ?","Jǐ diǎn xiàbān?","Jīqì huài le.","Jīntiān jiābān."],optionVi:["Nhà vệ sinh ở đâu?","Mấy giờ tan ca?","Máy hỏng rồi","Hôm nay làm thêm"],speak:"洗手间在哪里？"},
+  {id:"bc-10",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa.",dap_an:["Đi xe buýt đi làm","Đi bộ về nhà","Ăn cơm trưa","Học tiếng Trung"],dung:0,pinyin:"Wǒ měitiān zuò gōngjiāochē qù shàngbān.",giai_thich:"Tôi mỗi ngày đi xe buýt đi làm.",type:"listen",topic:"hsk",zh:"我每天坐公交车去上班。",speak:"我每天坐公交车去上班。"},
+  {id:"bc-11",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp thành câu khi đưa thẻ phòng.",dap_an:["这是您的房卡。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Zhè shì nín de fángkǎ.",giai_thich:"Đây là thẻ phòng của anh/chị.",type:"order",topic:"hotel",zh:"这是您的房卡。",words:["这是","您的","房卡"],wordPy:["Zhè shì","nín de","fángkǎ"],wordVi:["Đây là","của bạn","thẻ phòng"],answerOrder:["这是","您的","房卡"]},
+  {id:"bc-12",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp lời đáp khi khách cảm ơn.",dap_an:["不客气。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Bú kèqi.",giai_thich:"Không có gì.",type:"order",topic:"hotel",zh:"不客气。",words:["不","客气"],wordPy:["Bú","kèqi"],wordVi:["không","khách khí"],answerOrder:["不","客气"]},
+  {id:"cp-02",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp: “Xin đội mũ bảo hộ.”",dap_an:["请戴安全帽。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Qǐng dài ānquánmào.",giai_thich:"Xin hãy đội mũ bảo hộ.",type:"order",topic:"factory",zh:"请戴安全帽。",words:["请","戴","安全帽"],wordPy:["Qǐng","dài","ānquánmào"],wordVi:["xin","đội","mũ bảo hộ"],answerOrder:["请","戴","安全帽"]},
+  {id:"bc-13",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp câu (HSK 1 · luyện tập, không phải đề chính thức): Tôi muốn học tiếng Trung.",dap_an:["我想学汉语。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Wǒ xiǎng xué Hànyǔ.",giai_thich:"Tôi muốn học tiếng Trung.",type:"order",topic:"hsk",zh:"我想学汉语。",words:["我","想","学","汉语"],wordPy:["Wǒ","xiǎng","xué","Hànyǔ"],wordVi:["tôi","muốn","học","tiếng Hán"],answerOrder:["我","想","学","汉语"]},
+  {id:"bc-14",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền từ: Thang máy tiếng Trung là ____.",dap_an:["电梯","房间","前台","海边"],dung:0,pinyin:"diàntī",giai_thich:"Thang máy",type:"fill",topic:"hotel",zh:"____",optionPy:["diàntī","fángjiān","qiántái","hǎibiān"],optionVi:["Thang máy","Phòng","Quầy lễ tân","Bờ biển"],blankHint:"thang máy"},
+  {id:"bc-15",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống.",dap_an:["八","吃","跑","看"],dung:0,pinyin:"Nín de fángjiān zài ____ lóu.",giai_thich:"Phòng anh/chị ở tầng …",type:"fill",topic:"hotel",zh:"您的房间在____楼。",optionPy:["bā","chī","pǎo","kàn"],optionVi:["Tám","Ăn","Chạy","Nhìn"],blankHint:"số tầng"},
+  {id:"cp-03",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền: Chúng tôi tan ca lúc ____ giờ.",dap_an:["五","三","九","零"],dung:0,pinyin:"Wǒmen ____ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc … giờ.",type:"fill",topic:"factory",zh:"我们____点下班。",optionPy:["wǔ","sān","jiǔ","líng"],optionVi:["Năm","Ba","Chín","Không"],blankHint:"giờ"},
+  {id:"bc-16",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["坐公交车","睡觉","游泳","唱歌"],dung:0,pinyin:"Wǒ ____ qù shàngbān.",giai_thich:"Tôi đi … đi làm.",type:"fill",topic:"hsk",zh:"我____去上班。",optionPy:["zuò gōngjiāochē","shuìjiào","yóuyǒng","chànggē"],optionVi:["Đi xe buýt","Ngủ","Bơi","Hát"],blankHint:"phương tiện"},
+  {id:"bc-17",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách cảm ơn sau khi nhận phòng. Bạn đáp?",dap_an:["不客气。","对不起。","再见。","没有。"],dung:0,pinyin:"Bú kèqi.",giai_thich:"Không có gì.",type:"situ",topic:"hotel",zh:"不客气。",optionPy:["Bú kèqi.","Duìbuqǐ.","Zàijiàn.","Méiyǒu."],optionVi:["Không có gì","Xin lỗi","Tạm biệt","Không có"]},
+  {id:"bc-18",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi đường ra biển. Câu nào tự nhiên?",dap_an:["往海边走。","请出示护照。","我们五点下班。","坐公交车。"],dung:0,pinyin:"Wǎng hǎibiān zǒu.",giai_thich:"Đi về phía biển.",type:"situ",topic:"hotel",zh:"往海边走。",optionPy:["Wǎng hǎibiān zǒu.","Qǐng chūshì hùzhào.","Wǒmen wǔ diǎn xiàbān.","Zuò gōngjiāochē."],optionVi:["Đi về phía biển","Xin hộ chiếu","Tan ca 5h","Đi xe buýt"]},
+  {id:"cp-04",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Công nhân hỏi giờ tan ca. Bạn đáp?",dap_an:["我们五点下班。","我们五点上班。","今天加班。","请去打卡。"],dung:0,pinyin:"Wǒmen wǔ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc 5 giờ.",type:"situ",topic:"factory",zh:"我们五点下班。",optionPy:["Wǒmen wǔ diǎn xiàbān.","Wǒmen wǔ diǎn shàngbān.","Jīntiān jiābān.","Qǐng qù dǎkǎ."],optionVi:["Tan ca lúc 5 giờ","Đi làm lúc 5 giờ","Hôm nay làm thêm","Xin đi chấm công"]},
+  {id:"cp-05",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nhắc an toàn trước khi vào xưởng — câu nào đúng?",dap_an:["请戴安全帽。","请去打卡。","这是次品。","仓库在那边。"],dung:0,pinyin:"Qǐng dài ānquánmào.",giai_thich:"Xin hãy đội mũ bảo hộ.",type:"situ",topic:"factory",zh:"请戴安全帽。",optionPy:["Qǐng dài ānquánmào.","Qǐng qù dǎkǎ.","Zhè shì cìpǐn.","Cāngkù zài nàbiān."],optionVi:["Xin đội mũ bảo hộ","Xin đi chấm công","Đây là hàng kém","Kho ở bên kia"]},
+  {id:"cp-06",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Máy dừng — bạn báo tổ trưởng thế nào?",dap_an:["机器坏了。","机器在仓库。","我要加班。","质量有问题。"],dung:0,pinyin:"Jīqì huài le.",giai_thich:"Máy hỏng rồi.",type:"situ",topic:"factory",zh:"机器坏了。",optionPy:["Jīqì huài le.","Jīqì zài cāngkù.","Wǒ yào jiābān.","Zhìliàng yǒu wèntí."],optionVi:["Máy hỏng rồi","Máy ở trong kho","Tôi muốn làm thêm","Chất lượng có vấn đề"]},
+  {id:"bc-19",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bạn tự giới thiệu trong lớp (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["我叫宝，我是越南人。","我要办理入住。","请戴安全帽。","退房时间是十二点。"],dung:0,pinyin:"Wǒ jiào Bǎo, wǒ shì Yuènán rén.",giai_thich:"Tôi tên Bảo, tôi là người Việt Nam.",type:"situ",topic:"hsk",zh:"我叫宝，我是越南人。",optionPy:["Wǒ jiào Bǎo, wǒ shì Yuènán rén.","Wǒ yào bànlǐ rùzhù.","Qǐng dài ānquánmào.","Tuìfáng shíjiān shì shí'èr diǎn."],optionVi:["Tôi tên Bảo, người Việt","Tôi muốn nhận phòng","Đội mũ bảo hộ","Trả phòng 12h"]},
+  {id:"bc-20",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi giá món ăn ở quán — câu nào đúng?",dap_an:["这个多少钱？","洗手间在哪里？","请出示护照。","机器坏了。"],dung:0,pinyin:"Zhège duōshǎo qián?",giai_thich:"Cái này bao nhiêu tiền?",type:"situ",topic:"hsk",zh:"这个多少钱？",optionPy:["Zhège duōshǎo qián?","Xǐshǒujiān zài nǎlǐ?","Qǐng chūshì hùzhào.","Jīqì huài le."],optionVi:["Bao nhiêu tiền?","WC ở đâu?","Xin hộ chiếu","Máy hỏng"]},
+  {id:"bc-21",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Chọn nghĩa đúng của 学习",dap_an:["Học tập","Ngủ","Chạy","Ăn"],dung:0,pinyin:"xuéxí",giai_thich:"Học / học tập",type:"mc",topic:"hsk",zh:"学习"},
+  {id:"cp-07",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Tan ca” tiếng Trung là?",dap_an:["上班","下班","加班","仓库"],dung:1,pinyin:"xiàbān",giai_thich:"Tan ca / hết giờ làm",type:"mc",topic:"factory",zh:"下班",optionPy:["shàngbān","xiàbān","jiābān","cāngkù"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Kho hàng"]},
+  {id:"cp-08",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Mũ bảo hộ” tiếng Trung là?",dap_an:["安全帽","次品","打卡","加班"],dung:0,pinyin:"ānquánmào",giai_thich:"Mũ bảo hộ",type:"mc",topic:"factory",zh:"安全帽",optionPy:["ānquánmào","cìpǐn","dǎkǎ","jiābān"],optionVi:["Mũ bảo hộ","Hàng kém / phế phẩm","Chấm công","Làm thêm giờ"],stage:2},
+  {id:"cp-09",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Công nhân hỏi nhà vệ sinh. Câu nào đúng?",dap_an:["洗手间在哪里？","仓库在哪里？","今天加班吗？","机器坏了吗？"],dung:0,pinyin:"Xǐshǒujiān zài nǎlǐ?",giai_thich:"Nhà vệ sinh ở đâu?",type:"mc",topic:"factory",zh:"洗手间在哪里？",optionPy:["Xǐshǒujiān zài nǎlǐ?","Cāngkù zài nǎlǐ?","Jīntiān jiābān ma?","Jīqì huài le ma?"],optionVi:["Nhà vệ sinh ở đâu?","Kho ở đâu?","Hôm nay có làm thêm không?","Máy hỏng rồi à?"],stage:2},
+  {id:"cp-10",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nghe — QC nói gì về sản phẩm?",dap_an:["这个有质量问题。","请戴安全帽。","今天加班。","机器坏了。"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"listen",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Qǐng dài ānquánmào.","Jīntiān jiābān.","Jīqì huài le."],optionVi:["Cái này có vấn đề chất lượng","Xin đội mũ bảo hộ","Hôm nay làm thêm","Máy hỏng rồi"],speak:"这个有质量问题。",stage:2},
+  {id:"cp-11",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Sắp xếp: Máy hỏng rồi.",dap_an:["机器坏了。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Jīqì huài le.",giai_thich:"Máy hỏng rồi.",type:"order",topic:"factory",zh:"机器坏了。",words:["机器","坏了"],wordPy:["Jīqì","huài le"],wordVi:["máy","hỏng rồi"],answerOrder:["机器","坏了"],stage:2},
+  {id:"cp-12",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Điền: Xin ____ mũ bảo hộ.",dap_an:["戴","吃","看","睡"],dung:0,pinyin:"Qǐng ____ ānquánmào.",giai_thich:"Xin … mũ bảo hộ.",type:"fill",topic:"factory",zh:"请____安全帽。",optionPy:["dài","chī","kàn","shuì"],optionVi:["Đội/mang","Ăn","Nhìn","Ngủ"],blankHint:"động từ",stage:2},
+  {id:"cp-13",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"QC kiểm hàng — câu nào đúng?",dap_an:["这个有质量问题。","这是次品。","请去仓库。","今天打卡了吗？"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"situ",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Zhè shì cìpǐn.","Qǐng qù cāngkù.","Jīntiān dǎkǎ le ma?"],optionVi:["Cái này có vấn đề chất lượng","Đây là hàng kém","Xin đến kho","Hôm nay đã chấm công chưa?"],stage:2},
+  {id:"cp-14",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Đi làm / vào ca” là?",dap_an:["上班","下班","加班","打卡"],dung:0,pinyin:"shàngbān",giai_thich:"Đi làm / vào ca",type:"mc",topic:"factory",zh:"上班",optionPy:["shàngbān","xiàbān","jiābān","dǎkǎ"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Chấm công"],stage:2},
+  {id:"cp-15",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Báo hàng lỗi cho QC — câu nào đúng?",dap_an:["这是不良品。","这是次品。","请去打卡。","仓库在那边。"],dung:0,pinyin:"Zhè shì bùliángpǐn.",giai_thich:"Đây là hàng lỗi.",type:"situ",topic:"factory",zh:"这是不良品。",optionPy:["Zhè shì bùliángpǐn.","Zhè shì cìpǐn.","Qǐng qù dǎkǎ.","Cāngkù zài nàbiān."],optionVi:["Đây là hàng lỗi","Đây là hàng kém","Xin đi chấm công","Kho ở bên kia"],stage:2}
+];
+const QUESTIONS = normalizeQuestions(QUESTIONS_RAW);
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:linear-gradient(#0b3d5c,#1b7a8c 50%,#e8c27a);color:#fff;min-height:100vh;display:flex;justify-content:center;overflow-x:hidden}
+#app{width:100%;max-width:480px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:100vh;position:relative;z-index:1}
+.screen{display:none;flex-direction:column;gap:10px;flex:1}.screen.on{display:flex}
+h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-align:center}
+.btn{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:700;background:#ffd34d;color:#3a2600;box-shadow:0 4px 0 #b8901c}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #b8901c}
+.btn.alt{background:#fff;color:#0b3d5c;box-shadow:0 4px 0 #9bb}
+.btn.zalo{background:#0068ff;color:#fff;box-shadow:0 4px 0 #0040a0;text-align:center;text-decoration:none}
+.btn.ghost{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.card{background:rgba(0,0,0,.3);border-radius:16px;padding:12px;backdrop-filter:blur(4px)}
+.bar{height:14px;background:rgba(0,0,0,.4);border-radius:8px;overflow:hidden;position:relative}
+.bar i,.bar .trail{display:block;height:100%;position:absolute;left:0;top:0;border-radius:8px}
+.bar i{z-index:2;transition:width .25s ease-out}
+.bar .trail{z-index:1;opacity:.5;transition:width .7s ease-out .12s;background:#ffb0b0}
+#bossHp i{background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
+#heroHp i{background:linear-gradient(90deg,#3dff8a,#2bc4ff)}
+#timer i{background:#ffd34d;transition:width .1s linear;position:relative}
+.arena-wrap{position:relative;height:max(234px,min(55vw,286px));min-height:234px;border-radius:16px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
+#gl{display:block;width:100%;height:100%}
+.arena-fallback{display:none;height:100%;align-items:center;justify-content:space-around;font-size:64px;padding:10px}
+.arena-fallback.on{display:flex}
+.webgl-msg{display:none;font-size:12px;text-align:center;opacity:.9;padding:6px;background:rgba(0,0,0,.35);border-radius:10px}
+.webgl-msg.on{display:block}
+.skill-tag{position:absolute;left:50%;top:6%;transform:translateX(-50%);font-weight:900;font-size:15px;text-shadow:0 2px 8px #000;opacity:0;pointer-events:none;z-index:10;white-space:nowrap;max-width:90%;text-align:center}
+.skill-tag.show{animation:skillPop .9s forwards}
+@keyframes skillPop{0%{opacity:0;transform:translate(-50%,16px) scale(.7)}25%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-36px)}}
+.dmg{position:absolute;font-weight:900;font-size:26px;text-shadow:0 2px 4px #000;animation:fly 1s forwards;pointer-events:none;z-index:7}
+.dmg.big{font-size:36px;color:#ffd34d}.dmg.red{color:#ff6b6b}.dmg.crit{font-size:40px;color:#fff;text-shadow:0 0 10px #2ec4b6,0 2px 4px #000}
+@keyframes fly{to{transform:translateY(-80px);opacity:0}}
+.q{font-size:18px;font-weight:700;line-height:1.35}.zh{font-size:22px;font-weight:800;margin-top:6px}.py{color:#ffe9a8;font-style:italic;margin-top:2px;font-size:14px}.vi{opacity:.9;margin-top:2px;font-size:14px}
+.opts{display:grid;gap:7px}.opt{text-align:left;font-size:15px;padding:11px 12px;border-radius:12px;border:2px solid transparent;background:#fff;color:#123;font-weight:600}
+.opt:active{transform:scale(.98)}.opt.ok{background:#3dd17a;color:#fff}.opt.no{background:#ff5a5a;color:#fff}
+.opt small{display:block;font-weight:500;opacity:.7;margin-top:2px;font-size:12px}
+.row{display:flex;justify-content:space-between;font-size:12px;opacity:.95;align-items:center;gap:6px;flex-wrap:wrap}
+.combo-box{text-align:center;min-height:0;font-weight:900;display:none}.combo-box.on{display:block;margin-top:2px}
+.combo-box .c{display:inline-block;background:rgba(0,0,0,.35);padding:3px 12px;border-radius:999px;color:#ffd34d;font-size:14px}
+.combo-box .c.hot{animation:pulse .5s infinite alternate;color:#fff;background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
+@keyframes pulse{to{transform:scale(1.06)}}
+.badge{font-size:96px;text-align:center;animation:pop .6s}@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:40}.flash.go{animation:fl .4s}@keyframes fl{25%{opacity:.55}100%{opacity:0}}
+.flash.red.go{background:#ff3030}@keyframes flr{30%{opacity:.4}100%{opacity:0}}
+.shake{animation:shake .35s}@keyframes shake{0%,100%{transform:none}25%{transform:translate(-6px,2px)}50%{transform:translate(6px,-2px)}75%{transform:translate(-4px,1px)}}
+.tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#ffd34d;color:#3a2600}
+.tag.listen{background:#2ec4b6;color:#042}.tag.order{background:#a78bfa;color:#1a0a3a}.tag.fill{background:#fb923c;color:#3a1600}.tag.situ{background:#60a5fa;color:#0a1a3a}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:0;border-radius:999px;padding:8px 12px;font-weight:700;font-size:14px;background:#fff;color:#123}
+.chip.used{opacity:.35}
+.order-slot{min-height:44px;border:2px dashed rgba(255,255,255,.35);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.order-slot .chip{background:#ffd34d;color:#3a2600}
+.overlay{position:fixed;inset:0;background:rgba(0,10,20,.75);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:14px;backdrop-filter:blur(3px)}
+.overlay.on{display:flex}
+.up-card{background:linear-gradient(180deg,#1a4a66,#0d2a3d);border:2px solid #ffd34d;border-radius:20px 20px 14px 14px;padding:16px 12px 12px;width:100%;max-width:460px;animation:slideUp .3s ease-out}
+@keyframes slideUp{from{transform:translateY(36px);opacity:0}to{transform:none;opacity:1}}
+.up-card h3{text-align:center;font-size:17px;margin-bottom:4px}
+.up-card p.sub{text-align:center;opacity:.85;font-size:12px;margin-bottom:10px}
+.up-opts{display:grid;gap:7px}
+.up-opts button{border:0;border-radius:14px;padding:12px;text-align:left;background:#fff;color:#123;font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center;box-shadow:0 3px 0 #9bb}
+.up-opts .ico{font-size:26px;width:36px;text-align:center}
+.up-opts small{display:block;font-weight:500;opacity:.7;margin-top:2px}
+.stats{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:11px;margin-bottom:8px}
+.stats span{background:rgba(255,255,255,.12);padding:3px 8px;border-radius:999px}
+.concept{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.concept img{height:72px;border-radius:10px;border:2px solid rgba(255,217,49,.5)}
+.note{font-size:12px;opacity:.85;line-height:1.4}
+@media (prefers-reduced-motion:reduce){.shake,.skill-tag.show,.dmg,.flash.go{animation:none!important}}
+
+/* --- Combat HUD / MOBA feel --- */
+.vignette{position:absolute;inset:0;pointer-events:none;z-index:8;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(180,0,0,.75) 100%);transition:opacity .15s}
+.vignette.on{opacity:1;animation:vig .55s ease-out forwards}
+@keyframes vig{0%{opacity:.95}100%{opacity:0}}
+.float-layer{position:absolute;inset:0;pointer-events:none;z-index:9;overflow:hidden}
+.fdmg{position:absolute;font-weight:900;font-size:28px;color:#fff;text-shadow:0 2px 0 #000,0 0 10px rgba(255,200,0,.6);animation:fdmgUp .95s cubic-bezier(.2,.8,.2,1) forwards;white-space:nowrap;left:68%;top:48%;z-index:7;pointer-events:none}
+.fdmg.x2{font-size:34px;color:#ffd34d}
+.fdmg.crit{font-size:42px;color:#fff;text-shadow:0 0 14px #2ec4b6,0 3px 0 #000;-webkit-text-stroke:1px #0a3}
+.fdmg.hurt{left:18%;color:#ff6b6b;text-shadow:0 2px 0 #400,0 0 8px #f00}
+.fdmg .tag{display:block;font-size:12px;letter-spacing:.04em;opacity:.95}
+@keyframes fdmgUp{0%{transform:translate(-50%,0) scale(.5);opacity:0}15%{transform:translate(-50%,-8px) scale(1.2);opacity:1}100%{transform:translate(-50%,-72px) scale(.9);opacity:0}}
+.combo-float{position:absolute;right:8px;top:8px;z-index:10;font-weight:900;font-size:15px;background:rgba(0,0,0,.45);padding:4px 10px;border-radius:999px;color:#ffd34d;opacity:0;transform:scale(.8);transition:.15s}
+.combo-float.on{opacity:1;transform:scale(1)}
+.combo-float.hot{color:#fff;background:linear-gradient(90deg,#ff4d4d,#ff9a3d);animation:pulse .45s infinite alternate}
+.lvl-banner{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:12;pointer-events:none;flex-direction:column;gap:6px;background:rgba(0,20,40,.25)}
+.lvl-banner.on{display:flex;animation:lvlIn .9s ease-out forwards}
+.lvl-banner .pill{font-size:28px;font-weight:900;letter-spacing:.08em;color:#16171B;background:linear-gradient(180deg,#FFE97A,#FFD91F);padding:10px 22px;border-radius:14px;box-shadow:0 6px 0 #b8901c,0 0 30px rgba(255,217,31,.7)}
+.lvl-banner .stats{font-size:13px;font-weight:700;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:999px}
+@keyframes lvlIn{0%{opacity:0;transform:scale(.6)}20%{opacity:1;transform:scale(1.12)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.05) translateY(-20px)}}
+.invite{margin-top:8px;padding:16px 14px;border-radius:18px;background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B;border:2px solid #16171B;box-shadow:0 8px 0 rgba(22,23,27,.85)}
+.invite h3{font-size:18px;margin:0 0 6px;line-height:1.25}
+.invite p{font-size:13.5px;margin:0 0 12px;opacity:.9}
+.invite .row-btns{display:flex;flex-direction:column;gap:8px}
+.invite .btn{box-shadow:0 4px 0 rgba(0,0,0,.28)}
+.invite .btn.form{background:#16171B;color:#FFD91F}
+
+
+.bar-lab{display:flex;justify-content:space-between;align-items:center;font-size:11px;opacity:.9;margin-top:4px;margin-bottom:2px}
+.bar-lab b{font-weight:700}
+.opt .py,.opt .vi-ans{display:none;font-size:12px;font-weight:500;margin-top:2px;line-height:1.35}
+.opt .py{font-style:italic;color:#1e5aa8;opacity:.95}
+.opt .vi-ans{opacity:.9}
+/* Sau khi trả lời: hiện py + nghĩa Việt cho MỌI đáp án có chữ Hán */
+.opts.revealed .opt .py,
+.opts.revealed .opt .vi-ans{display:block}
+.opt.ok .py,.opt.no .py,
+.opt.ok .vi-ans,.opt.no .vi-ans{color:rgba(255,255,255,.95);opacity:1}
+.learn-card{margin-top:8px;padding:12px;border-radius:14px;background:rgba(0,0,0,.28)}
+.learn-card h4{margin:0 0 6px;font-size:14px}
+.learn-card .zh{font-size:20px;font-weight:800}
+.invite .btn.form{background:#16171B;color:#FFD91F;font-size:17px;min-height:52px}
+.invite .btn.zalo{background:#fff;color:#0068ff;border:2px solid #0068ff;box-shadow:0 3px 0 #0040a0}
+.invite .price{font-weight:700;font-size:14px;margin:0 0 10px;line-height:1.45}
+.invite .offers{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(22,23,27,.08);font-size:12.5px;line-height:1.45;text-align:left}
+.invite .offers p{margin:0 0 6px;opacity:1;font-weight:600}
+.invite .offers p:last-child{margin:0}
+.chip .py{display:block;font-size:10px;font-weight:500;opacity:.75;font-style:italic}
+
+.mute-btn{position:fixed;bottom:14px;right:14px;z-index:40;width:44px;height:44px;border-radius:14px;border:2px solid var(--ink,#16171B);background:var(--sun,#FFD91F);font-size:20px;box-shadow:3px 3px 0 #16171B;cursor:pointer}
+#endTitle{padding-right:8px;line-height:1.25;word-break:break-word;max-width:100%}
+.hp-lab{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;margin-bottom:2px;gap:8px}
+.hp-lab .nm{flex:1;min-width:0;padding-right:4px}
+.hp-lab.boss .nm{color:#ff7a6e}
+.hp-lab.hero .nm{color:#5dffb0}
+.hp-lab .hp-num{font-variant-numeric:tabular-nums;opacity:.95}
+.hp-lab.boss .hp-num{color:#ffb4a8}
+.hp-lab.hero .hp-num{color:#9eecff}
+.bar.boss-bar{outline:1px solid rgba(255,80,60,.35)}
+.bar.hero-bar{outline:1px solid rgba(60,220,160,.3)}
+.end-links{display:flex;justify-content:center;gap:18px;margin:10px 0 4px;flex-wrap:wrap}
+.end-links a,.end-links button.linkish{
+  background:none;border:0;color:#FFD91F;font-size:13.5px;font-weight:600;
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 4px;
+  box-shadow:none;min-height:0;font-family:inherit
+}
+.end-links a:active,.end-links button.linkish:active{opacity:.7}
+.road-art{margin-top:12px;width:100%;border-radius:16px;overflow:hidden;background:linear-gradient(#4a90b8 0%,#6eb6d9 42%,#2a7a9a 43%,#3d8a5a 70%,#c4a35a 100%);border:2px solid rgba(22,23,27,.5);aspect-ratio:16/11;position:relative}
+.road-art svg{display:block;width:100%;height:100%}
+.bike-progress{position:absolute;left:8%;top:52%;transform:translate(-50%,-50%);font-size:22px;filter:drop-shadow(0 2px 2px #000);transition:left .45s ease;pointer-events:none;z-index:2}
+
+.stage-map.screen{display:none;padding:16px 14px 28px}.stage-map.screen.on{display:flex;flex-direction:column}
+.stage-map h2{margin:8px 0 4px;font-size:22px}
+.stage-map .road{margin:16px 0;padding:14px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
+.stage-node{display:flex;align-items:center;gap:12px;padding:12px;margin:8px 0;border-radius:14px;background:rgba(255,255,255,.08);border:2px solid transparent}
+.stage-node.done{border-color:#2ec4b6}.stage-node.current{border-color:#FFD91F;background:rgba(255,217,31,.15)}
+.stage-node.lock{opacity:.55}
+.stage-node .dot{width:36px;height:36px;border-radius:50%;background:#FFD91F;color:#16171B;display:grid;place-items:center;font-weight:900}
+.stage-node.lock .dot{background:#666;color:#ccc}
+.stage-map .btn{margin-top:8px}
+</style>
+</head>
+<body>
+<button type="button" class="mute-btn" id="muteBtn" aria-label="Tắt/bật tiếng" title="Âm thanh">🔊</button>
+
+<div id="app">
+ <div class="screen on" id="sStart">
+  <h1>⚔️ Bảo Khựa 阿宝<br>Đánh Boss 3D</h1>
+  <div class="card">
+   <h2>📍 Chặng 1: Bãi Cháy – Lễ tân</h2>
+   <p class="note" style="margin-top:6px">Trả lời đúng → chiêu 3D. Nhanh <b id="fs"></b>s → x2. Combo 3 → <b>Long Hạ</b>. Nâng giáp / ATK / chiêu đều đổi hình tướng (concept Media).</p>
+   <div class="concept" style="margin-top:8px">
+    <img src="v4/ninja_tier1_phi_tieu.jpg" alt="Cấp 1 Phi tiêu" width="72" height="72">
+    <img src="v4/ninja_tier2_chem_gio.jpg" alt="Cấp 2 Chém gió" width="72" height="72">
+    <img src="v4/ninja_tier3_long_ha.jpg" alt="Cấp 3 Long Hạ" width="72" height="72">
+    <img src="v4/boss_le_tan_kho_tinh.jpg" alt="Boss lễ tân" width="72" height="72">
+   </div>
+  </div>
+  <div class="card" id="progress"></div>
+  <p class="webgl-msg" id="webglMsg">Máy không hỗ trợ WebGL — chạy chế độ dự phòng (emoji). Vẫn chơi đủ tính năng học.</p>
+  <button class="btn" type="button" id="btnStart">BẮT ĐẦU</button>
+ </div>
+
+ 
+<div class="screen stage-map" id="sMap">
+ <div class="wrap">
+  <span class="eyebrow">Hạ Long → Cẩm Phả</span>
+  <h2>Bản đồ chặng</h2>
+  <p class="lead" style="opacity:.85;font-size:14px">Đường Hạ Long–Cẩm Phả · 2 chặng boss. Mỗi câu Trung có pinyin + nghĩa Việt.</p>
+  <div class="road">
+   <div class="stage-node" id="node1"><span class="dot">1</span><div><b>Bãi Cháy – Khách sạn</b><br><small>Boss Lễ Tân · nhận phòng / trả phòng</small></div></div>
+   <div style="text-align:center;opacity:.6;font-size:12px;margin:4px 0">QL18 · Hạ Long → Cẩm Phả</div>
+   <div class="stage-node lock" id="node2"><span class="dot">2</span><div><b>Cẩm Phả – Nhà máy</b><br><small>Boss Tổ trưởng · an toàn / tan ca</small></div></div>
+  </div>
+  <div class="road-art" id="roadArt" aria-label="Bản đồ QL18 ven biển">
+   <span class="bike-progress" id="bikeIcon">🚲</span>
+   <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" role="img">
+    <!-- sky already via CSS bg; karsts -->
+    <g fill="#3d5c48" opacity=".9">
+      <path d="M20 95 L40 40 L60 95 Z"/><path d="M55 100 L80 35 L105 100 Z"/><path d="M100 98 L125 50 L150 98 Z"/>
+      <path d="M200 100 L230 42 L260 100 Z"/><path d="M250 105 L275 55 L300 105 Z"/>
+    </g>
+    <ellipse cx="160" cy="128" rx="150" ry="22" fill="#1e6a8a" opacity=".55"/>
+    <!-- coastal road QL18 -->
+    <path id="ql18" d="M28 165 C 80 150, 120 175, 160 160 S 240 145, 295 155" fill="none" stroke="#4a4a4a" stroke-width="14" stroke-linecap="round"/>
+    <path d="M28 165 C 80 150, 120 175, 160 160 S 240 145, 295 155" fill="none" stroke="#e8d24a" stroke-width="2" stroke-dasharray="8 10" stroke-linecap="round"/>
+    <!-- markers -->
+    <circle cx="36" cy="164" r="7" fill="#FFD91F" stroke="#16171B" stroke-width="2"/>
+    <circle cx="288" cy="154" r="7" fill="#2ec4b6" stroke="#16171B" stroke-width="2"/>
+    <text x="36" y="190" text-anchor="middle" font-size="11" font-weight="700" fill="#16171B">Hạ Long</text>
+    <text x="288" y="190" text-anchor="middle" font-size="11" font-weight="700" fill="#16171B">Cẩm Phả</text>
+    <text x="160" y="210" text-anchor="middle" font-size="10" fill="#16171B" opacity=".75">🚲 tiến độ trên QL18</text>
+   </svg>
+  </div>
+  <button class="btn" type="button" id="btnEnterStage">▶ Vào chặng</button>
+  <button class="btn alt" type="button" id="btnMapBack">← Menu</button>
+ </div>
+</div>
+
+<div class="screen" id="sGame">
+  <div class="hp-lab boss"><span class="nm" id="bossName">👹 Boss Lễ Tân</span><span class="hp-num" id="bossTxt">0/0</span></div>
+  <div class="bar boss-bar" id="bossHp"><span class="trail"></span><i></i></div>
+  <div class="arena-wrap" id="arena">
+   <canvas id="gl"></canvas>
+   <div class="arena-fallback" id="fallback" aria-hidden="true"><span id="heroEmoji">🥷</span><span>👹</span></div>
+   <div class="float-layer" id="floatLayer"></div>
+   <div class="vignette" id="vignette"></div>
+   <div class="combo-float" id="comboFloat"></div>
+   <div class="lvl-banner" id="lvlBanner"><div class="pill">⬆ LÊN CẤP</div><div class="stats" id="lvlStats"></div></div>
+   <div class="skill-tag" id="skillTag"></div>
+  </div>
+  <div class="hp-lab hero"><span class="nm">🥷 Tướng · <b id="heroLvl">Lv1</b></span><span class="hp-num" id="heroTxt">0/0</span></div>
+  <div class="bar hero-bar" id="heroHp"><i></i></div>
+  <div class="combo-box" id="combo"></div>
+  <div class="bar-lab"><b>⏱ Thời gian trả lời</b><span id="timerTxt"></span></div>
+  <div class="bar" id="timer"><i></i></div>
+  <div class="card">
+   <div class="row"><span id="qNum"></span><span id="pwr"></span></div>
+   <div id="qType"></div>
+   <div class="q" id="qText"></div>
+   <div class="zh" id="qZh"></div>
+   <div class="py" id="qPy"></div>
+   <div class="vi" id="qVi"></div>
+   <div id="qExtra"></div>
+  </div>
+  <div class="opts" id="opts"></div>
+ </div>
+
+ <div class="screen" id="sEnd">
+  <div class="badge" id="badge"></div>
+  <h1 id="endTitle"></h1>
+  <div class="card" id="endInfo"></div>
+  <div class="card learn-card" id="learnCard" hidden>
+   <h4>📖 Câu học được hôm nay</h4>
+   <div class="zh" id="learnZh"></div>
+   <div class="py" id="learnPy"></div>
+   <div class="vi" id="learnVi"></div>
+  </div>
+  <div class="invite" id="inviteCard">
+   <h3>🎓 Học tiếp với Bảo Khựa 阿宝</h3>
+   <p class="price" id="invitePrice"></p>
+   <p id="inviteShareLine" style="font-size:13px;margin:0 0 10px;opacity:.85"></p>
+   <div class="offers" id="inviteOffers">
+    <p data-offer-hold>⏰ Giữ chỗ đến 18:00 ngày 01/11.</p>
+    <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 18:00 ngày 01/11 → bạn được cộng thêm 7 ngày.</p>
+    <p>🎯 Mini game đoán nghĩa trong nhóm Zalo: đoán đúng → giảm đến 20k khi mua thẻ.</p>
+   </div>
+   <div class="row-btns">
+    <a class="btn form" id="formBtn" target="_blank" rel="noopener">📝 Đăng ký thẻ</a>
+    <a class="btn zalo" id="zaloBtn" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a>
+   </div>
+  </div>
+  <div class="end-links">
+   <button type="button" class="linkish" id="shareBtn">Chia sẻ</button>
+   <button type="button" class="linkish" id="btnAgain">Chơi lại</button>
+  </div>
+ </div>
+</div>
+<div class="flash" id="flash"></div>
+<div class="overlay" id="upOverlay" role="dialog" aria-modal="true">
+ <div class="up-card">
+  <h3>✨ Nâng cấp tướng (đổi hình 3D)</h3>
+  <p class="sub">Giáp · vũ khí · hào quang sẽ đổi ngay trên sân</p>
+  <div class="stats" id="upStats"></div>
+  <div class="up-opts" id="upOpts"></div>
+ </div>
+</div>
+
+<script type="module">
+import { createBattle, webglAvailable } from './v4/battle3d.mjs';
+
+const SAVE_KEY = 'baokhua_game_v4';
+const BOSS_PER_Q = 16, HERO_BASE = 110, BASE_DMG = 12, WRONG_DMG = 20;
+const SKILLS = [
+  { id:'phi_tieu', name:'Phi tiêu', emoji:'🎯', mult:1 },
+  { id:'chem_gio', name:'Chém gió', emoji:'🗡️', mult:1.35 },
+  { id:'long_ha', name:'Long Hạ', emoji:'🐉', mult:1.8, finisher:true }
+];
+const TOPIC_LABEL = { hotel:'Khách sạn', factory:'Nhà máy', hsk:'HSK 1–2 (luyện tập, không phải đề chính thức)' };
+const TYPE_LABEL = { mc:'Trắc nghiệm', listen:'Nghe', order:'Sắp xếp', fill:'Điền từ', situ:'Tình huống' };
+
+const $ = id => document.getElementById(id);
+let prog = JSON.parse(localStorage.getItem(SAVE_KEY) || '{"wins":0,"best":0,"badges":[]}');
+const save = () => localStorage.setItem(SAVE_KEY, JSON.stringify(prog));
+
+$('fs').textContent = FAST_SECONDS;
+$('zaloBtn').href = ZALO_LINK;
+applyHoldSeatVisibility();
+if ($('formBtn')) $('formBtn').href = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
+$('progress').innerHTML = `🏆 Thắng: <b>${prog.wins}</b> · Điểm cao: <b>${prog.best}</b><br>🎖️ ${prog.badges.length ? prog.badges.join(' ') : 'chưa có huy hiệu'} · ${QUESTIONS.length} câu · 2 chặng`;
+
+let battle = null, use3d = false, st, timerId, qStart, locked, bossTrail = 0, orderPicked = [];
+let stageIdx = 0; // 0 = stage1 hotel, 1 = stage2 factory
+let runScore = 0, runCorrect = 0, runAnswered = 0, runComboMax = 0, runQPool = 0;
+let audioReady = false, muted = localStorage.getItem('baokhua_mute') === '1';
+let sfx = {}, bgm = null;
+let TWEEN = null;
+
+async function loadTween() {
+  try {
+    const mod = await import('@tweenjs/tween.js');
+    TWEEN = mod.default || mod;
+    (function tweenLoop(t){ if (TWEEN && TWEEN.update) TWEEN.update(t); requestAnimationFrame(tweenLoop); })(performance.now());
+  } catch (e) { console.warn('tween CDN fail', e); TWEEN = null; }
+}
+loadTween();
+
+function initAudio() {
+  if (audioReady || typeof Howl === 'undefined') return;
+  try {
+    const base = './v4/audio/';
+    sfx = {
+      hit: new Howl({ src:[base+'hit.ogg'], volume:0.55 }),
+      crit: new Howl({ src:[base+'crit.ogg'], volume:0.65 }),
+      hurt: new Howl({ src:[base+'hurt.ogg'], volume:0.55 }),
+      ui: new Howl({ src:[base+'ui.ogg'], volume:0.4 }),
+      win: new Howl({ src:[base+'win.ogg'], volume:0.7 })
+    };
+    bgm = new Howl({ src:[base+'bgm_loop.ogg'], loop:true, volume:0.22 });
+    audioReady = true;
+    applyMute();
+  } catch (e) { console.warn('audio init fail', e); }
+}
+function applyMute() {
+  muted = localStorage.getItem('baokhua_mute') === '1';
+  const btn = $('muteBtn');
+  if (btn) btn.textContent = muted ? '🔇' : '🔊';
+  if (typeof Howler !== 'undefined') Howler.mute(muted);
+}
+function playSfx(name) {
+  if (muted || !audioReady) return;
+  try { sfx[name] && sfx[name].play(); } catch(e) {}
+}
+function ensureBgm() {
+  if (muted || !audioReady || !bgm) return;
+  try { if (!bgm.playing()) bgm.play(); } catch(e) {}
+}
+function questionsForStage(si) {
+  const stage = STAGES[si];
+  const topics = new Set(stage.topics);
+  let pool = QUESTIONS.filter(q => topics.has(q.topic));
+  // Prefer stage:2 extras for factory
+  if (si === 1) {
+    const tagged = pool.filter(q => q.stage === 2);
+    if (tagged.length >= 6) pool = tagged.concat(pool.filter(q => q.stage !== 2)).slice(0, 14);
+  } else {
+    pool = pool.filter(q => q.stage !== 2);
+  }
+  if (pool.length < 8) pool = QUESTIONS.filter(q => topics.has(q.topic));
+  return shuffle(pool).slice(0, Math.min(12, Math.max(8, pool.length)));
+}
+function refreshMapUI() {
+  const n1 = $('node1'), n2 = $('node2');
+  if (!n1 || !n2) return;
+  n1.className = 'stage-node' + (stageIdx > 0 ? ' done' : ' current');
+  n2.className = 'stage-node' + (stageIdx >= 1 ? (stageIdx > 1 ? ' done' : ' current') : ' lock');
+  const btn = $('btnEnterStage');
+  if (btn) btn.textContent = stageIdx >= STAGES.length ? '✓ Xong cả lộ trình' : ('▶ Vào: ' + STAGES[Math.min(stageIdx, STAGES.length-1)].name);
+  // Bicycle on QL18: 12% start → 50% mid → 88% end
+  const bike = $('bikeIcon');
+  if (bike) {
+    const pct = stageIdx <= 0 ? 12 : (stageIdx === 1 ? 50 : 88);
+    bike.style.left = pct + '%';
+  }
+}
+function openMap() {
+  refreshMapUI();
+  show('sMap');
+  playSfx('ui');
+}
+function tweenWidth(el, toPct, ms=280) {
+  if (!el) return;
+  if (!TWEEN || !TWEEN.Tween) { el.style.width = toPct + '%'; return; }
+  const cur = parseFloat(el.style.width) || 0;
+  const o = { w: cur };
+  new TWEEN.Tween(o).to({ w: toPct }, ms).easing(TWEEN.Easing.Quadratic.Out)
+    .onUpdate(() => { el.style.width = o.w + '%'; }).start();
+}
+
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  $(id).classList.add('on');
+}
+function shuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function vib(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+function flash(kind) {
+  const f = $('flash'); f.className = 'flash' + (kind === 'red' ? ' red' : '');
+  void f.offsetWidth; f.classList.add('go');
+}
+function shake() {
+  document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake');
+}
+function showSkill(name) {
+  const t = $('skillTag'); t.textContent = name; t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
+}
+function floatDmg(amount, { crit=false, x2=false, hurt=false, tag='' } = {}) {
+  const layer = $('floatLayer'); if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fdmg' + (crit ? ' crit' : '') + (x2 && !crit ? ' x2' : '') + (hurt ? ' hurt' : '');
+  el.innerHTML = (hurt ? '-' : '-') + amount + (tag ? `<span class="tag">${tag}</span>` : '');
+  // Damage from boss (right) or hero (left when hurt)
+  if (hurt) {
+    el.style.left = (18 + Math.random()*8) + '%';
+    el.style.top = (42 + Math.random()*10) + '%';
+  } else {
+    el.style.left = (66 + Math.random()*8) + '%';
+    el.style.top = (40 + Math.random()*12) + '%';
+  }
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+function shakeMs(ms) {
+  document.body.classList.remove('shake'); void document.body.offsetWidth;
+  document.body.classList.add('shake');
+  // Extend body shake to ~ms via inline animation duration
+  document.body.style.animationDuration = (ms || 150) + 'ms';
+  setTimeout(() => { document.body.style.animationDuration = ''; document.body.classList.remove('shake'); }, (ms || 150) + 20);
+}
+function showComboFloat(n, hot) {
+  const c = $('comboFloat');
+  if (!n) { c.className = 'combo-float'; return; }
+  c.textContent = 'COMBO x' + n; c.className = 'combo-float on' + (hot ? ' hot' : '');
+}
+function showVignette() {
+  const v = $('vignette'); v.classList.remove('on'); void v.offsetWidth; v.classList.add('on');
+}
+function showLevelBanner(statsText) {
+  $('lvlStats').textContent = statsText;
+  const b = $('lvlBanner'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
+  setTimeout(() => b.classList.remove('on'), 950);
+}
+function pop(txt, cls, side) {
+  const d = document.createElement('div'); d.className = 'dmg ' + (cls || '');
+  d.textContent = txt; d.style[side || 'right'] = '20px'; d.style.top = '24px';
+  $('arena').appendChild(d); setTimeout(() => d.remove(), 1000);
+}
+
+function speakZh(text) {
+  const box = $('qExtra');
+  const q = st && st.list ? st.list[st.i] : null;
+  if (!window.speechSynthesis) {
+    if (q) { $('qZh').textContent = q.zh || text; $('qPy').textContent = q.py || ''; $('qVi').textContent = q.vi || ''; }
+    box.innerHTML = `<p class="note">Máy không hỗ trợ đọc tiếng — hiện chữ + pinyin để bạn đọc.</p>`;
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN'; u.rate = 0.9;
+  const voices = speechSynthesis.getVoices();
+  const zh = voices.find(v => /zh(-|_)?CN|Chinese/i.test(v.lang + v.name));
+  if (zh) u.voice = zh;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+  // If no zh voice, still speak; show fallback note
+  setTimeout(() => {
+    const has = speechSynthesis.getVoices().some(v => /zh/i.test(v.lang));
+    if (!has) box.insertAdjacentHTML('beforeend', `<p class="note">Không tìm thấy giọng zh-CN — hãy đọc theo pinyin.</p>`);
+  }, 300);
+}
+
+function init3d() {
+  use3d = webglAvailable();
+  if (!use3d) {
+    $('webglMsg').classList.add('on');
+    $('fallback').classList.add('on');
+    $('gl').style.display = 'none';
+    return;
+  }
+  try {
+    battle = createBattle($('gl'));
+    if (!battle.ok) throw new Error('no ctx');
+    $('fallback').classList.remove('on');
+  } catch (e) {
+    window.__battleErr = String(e && e.stack || e);
+    console.error('battle3d init failed', e);
+    use3d = false; battle = null;
+    $('webglMsg').classList.add('on');
+    $('fallback').classList.add('on');
+    $('gl').style.display = 'none';
+  }
+}
+
+function syncVisual() {
+  if (battle) battle.setVisual({ armor: st.armor, atk: st.atkTier, skillLv: st.skillLv });
+  const em = ['🥷', '🥷🛡️', '🥷⚔️', '🐉🥷'][Math.min(3, st.armor + (st.skillLv >= 2 ? 1 : 0))];
+  $('heroEmoji').textContent = em;
+}
+
+function beginRun() {
+  stageIdx = 0; runScore = 0; runCorrect = 0; runAnswered = 0; runComboMax = 0; runQPool = 0;
+  initAudio(); ensureBgm();
+  openMap();
+}
+function startStage(si) {
+  stageIdx = si;
+  const stage = STAGES[si];
+  const list = questionsForStage(si);
+  const bossMax = Math.max(list.length, 8) * BOSS_PER_Q;
+  st = {
+    i: 0, boss: bossMax, bossMax, hero: HERO_BASE, heroMax: HERO_BASE,
+    streak: 0, comboMax: 0, score: runScore, correct: 0, answered: 0,
+    atk: BASE_DMG + si * 2, atkTier: 0, armor: 0, skillLv: 0, level: 1 + si,
+    list, pending: null, lastLearned: null, stageId: stage.id, stageName: stage.name, bossName: stage.boss
+  };
+  bossTrail = bossMax;
+  runQPool += list.length; // tổng mẫu số khớp kiểu Câu X/Y (Y = số câu chặng)
+  const bn = $('bossName');
+  if (bn) bn.textContent = (si === 1 ? '🏭 ' : '👹 ') + stage.boss;
+  show('sGame');
+  initAudio(); ensureBgm(); playSfx('ui');
+  requestAnimationFrame(() => {
+    if (!battle) init3d();
+    else battle.resize();
+    if (battle && battle.setStage) battle.setStage(stage.key);
+    syncVisual();
+  });
+  syncVisual();
+  upd();
+  ask();
+}
+function startGame() { beginRun(); }
+
+function upd() {
+  const bp = Math.max(0, st.boss / st.bossMax * 100);
+  tweenWidth($('bossHp').querySelector('i'), bp, 220);
+  bossTrail = Math.max(st.boss, bossTrail - st.bossMax * 0.025);
+  if (bossTrail < st.boss) bossTrail = st.boss;
+  tweenWidth($('bossHp').querySelector('.trail'), (bossTrail / st.bossMax * 100), 400);
+  tweenWidth($('heroHp').firstChild, Math.max(0, st.hero / st.heroMax * 100), 220);
+  $('bossTxt').textContent = Math.max(0, Math.ceil(st.boss)) + '/' + st.bossMax;
+  $('heroTxt').textContent = Math.max(0, Math.ceil(st.hero)) + '/' + st.heroMax;
+  $('heroLvl').textContent = 'Lv' + st.level;
+  const sk = SKILLS[Math.min(st.skillLv, 2)];
+  $('pwr').textContent = `ATK ${st.atk} · Giáp ${st.armor} · ${sk.emoji}${sk.name}`;
+  const c = $('combo');
+  if (st.streak >= 3) { c.classList.add('on'); c.innerHTML = `<span class="c hot">🔥 COMBO x${st.streak} — LONG HẠ!</span>`; }
+  else if (st.streak > 0) { c.classList.add('on'); c.innerHTML = `<span class="c">🔥 COMBO x${st.streak}</span>`; }
+  else { c.classList.remove('on'); c.innerHTML = ''; }
+}
+
+function ask() {
+  locked = false; orderPicked = [];
+  const q = st.list[st.i];
+  $('qNum').textContent = `Câu ${st.i + 1}/${st.list.length}`;
+  $('qType').innerHTML = `<span class="tag ${q.type}">${TYPE_LABEL[q.type] || q.type}</span> <span class="tag">${TOPIC_LABEL[q.topic] || q.topic || ''}</span>`;
+  $('qText').textContent = q.q || '';
+  // situ/order: không hiện sẵn câu Hán đúng (tránh lộ đáp án); vẫn giữ nghĩa Việt làm gợi ý
+  if (q.type === 'situ') {
+    $('qZh').textContent = '';
+    $('qPy').textContent = '';
+    $('qVi').textContent = 'Chọn câu phù hợp — mỗi đáp án có pinyin + nghĩa Việt.';
+  } else if (q.type === 'order') {
+    $('qZh').textContent = '';
+    $('qPy').textContent = q.py ? ('Gợi ý pinyin: ' + q.py) : '';
+    $('qVi').textContent = q.vi ? ('Nghĩa: ' + q.vi) : '';
+  } else if (q.type === 'listen') {
+    $('qZh').textContent = ''; // nghe trước; fallback hiện sau nếu không có voice
+    $('qPy').textContent = '';
+    $('qVi').textContent = 'Bấm Nghe lại, rồi chọn nghĩa đúng.';
+  } else {
+    $('qZh').textContent = q.zh || '';
+    $('qPy').textContent = q.py || '';
+    $('qVi').textContent = q.vi || '';
+  }
+  $('qExtra').innerHTML = '';
+  const o = $('opts'); o.innerHTML = '';
+
+  if (q.type === 'listen') {
+    const row = document.createElement('div');
+    row.style.display = 'flex'; row.style.gap = '8px'; row.style.marginTop = '8px';
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost'; b.style.flex = '1';
+    b.textContent = '🔊 Nghe lại'; b.onclick = () => speakZh(q.speak || q.zh);
+    row.appendChild(b); $('qExtra').appendChild(row);
+    speakZh(q.speak || q.zh);
+    renderOptions(q, o);
+  } else if (q.type === 'order') {
+    renderOrder(q, o);
+  } else {
+    renderOptions(q, o);
+  }
+
+  qStart = Date.now(); clearInterval(timerId);
+  timerId = setInterval(() => {
+    const left = QUESTION_SECONDS - (Date.now() - qStart) / 1000;
+    $('timer').firstChild.style.width = Math.max(0, left / QUESTION_SECONDS * 100) + '%';
+    const tt = $('timerTxt'); if (tt) tt.textContent = Math.max(0, Math.ceil(left)) + 's';
+    if (left <= 0) onTimeout();
+  }, 100);
+}
+
+function hasHan(s) { return /[一-鿿]/.test(String(s || '')); }
+function renderOptions(q, o) {
+  o.classList.remove('revealed');
+  (q.options || []).forEach((txt, k) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
+    let html = `<span class="han">${txt}</span>`;
+    const py = q.optionPy && q.optionPy[k];
+    const vi = q.optionVi && q.optionVi[k];
+    if (hasHan(txt)) {
+      if (py) html += `<span class="py">${py}</span>`;
+      if (vi) html += `<span class="vi-ans">${vi}</span>`;
+    }
+    b.innerHTML = html;
+    b.onclick = () => answerChoice(k, b);
+    o.appendChild(b);
+  });
+}
+
+function renderOrder(q, o) {
+  const slot = document.createElement('div'); slot.className = 'order-slot'; slot.id = 'orderSlot';
+  const chips = document.createElement('div'); chips.className = 'chips'; chips.id = 'orderChips';
+  const words = shuffle(q.words);
+  words.forEach((w, idx) => {
+    const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.w = w;
+    const pyIdx = (q.words || []).indexOf(w);
+    const py = (q.wordPy && pyIdx >= 0) ? q.wordPy[pyIdx] : '';
+    const viw = (q.wordVi && pyIdx >= 0) ? q.wordVi[pyIdx] : '';
+    c.innerHTML = w + (py || viw ? `<span class="py">${[py,viw].filter(Boolean).join(' · ')}</span>` : '');
+    c.onclick = () => {
+      if (c.classList.contains('used') || locked) return;
+      c.classList.add('used'); orderPicked.push(w);
+      const pill = document.createElement('span'); pill.className = 'chip'; pill.textContent = w;
+      pill.onclick = () => { /* undo last matching */ };
+      slot.appendChild(pill);
+    };
+    chips.appendChild(c);
+  });
+  const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'btn'; ok.style.marginTop = '8px';
+  ok.textContent = '✓ Kiểm tra'; ok.onclick = () => answerOrder(q);
+  const reset = document.createElement('button'); reset.type = 'button'; reset.className = 'btn alt'; reset.style.marginTop = '8px';
+  reset.textContent = '↺ Xóa'; reset.onclick = () => { orderPicked = []; slot.innerHTML = ''; chips.querySelectorAll('.chip').forEach(c => c.classList.remove('used')); };
+  o.appendChild(slot); o.appendChild(chips); o.appendChild(ok); o.appendChild(reset);
+}
+
+function onTimeout() {
+  if (locked) return;
+  const q = st.list[st.i];
+  const box = $('opts');
+  if (box) {
+    box.classList.add('revealed');
+    if (q && typeof q.answer === 'number') {
+      const btns = box.querySelectorAll('.opt');
+      if (btns[q.answer]) btns[q.answer].classList.add('ok');
+    }
+  }
+  resolve(false, null);
+}
+
+function answerChoice(k, btn) {
+  if (locked) return;
+  const q = st.list[st.i];
+  const ok = k === q.answer;
+  const btns = $('opts').querySelectorAll('.opt');
+  if (btns[q.answer]) btns[q.answer].classList.add('ok');
+  if (!ok && btn) btn.classList.add('no');
+  $('opts').classList.add('revealed');
+  resolve(ok, btn);
+}
+
+function answerOrder(q) {
+  if (locked) return;
+  const ok = orderPicked.length === q.answer.length && orderPicked.every((w, i) => w === q.answer[i]);
+  resolve(ok, null);
+}
+
+function pickSkill(willKill, fast) {
+  // Skills gated by unlocked skillLv; KẾT LIỄU (Long Hạ) only when this hit will kill boss
+  if (willKill && st.skillLv >= 2) return SKILLS[2];
+  if (st.skillLv >= 1) return fast ? SKILLS[1] : SKILLS[Math.random() < 0.55 ? 1 : 0];
+  return SKILLS[0];
+}
+
+function resolve(ok, btn) {
+  locked = true; clearInterval(timerId);
+  st.answered = (st.answered || 0) + 1;
+  const q = st.list[st.i];
+  const secs = (Date.now() - qStart) / 1000;
+  if (ok) {
+    st.streak++; st.correct++; st.comboMax = Math.max(st.comboMax, st.streak);
+    if (q && q.zh) st.lastLearned = { zh: q.zh, py: q.py || '', vi: q.vi || '' };
+    showComboFloat(st.streak, st.streak >= 3);
+    const fast = secs <= FAST_SECONDS;
+    // Preview damage with current skill tier (no Long Hạ yet)
+    let previewSk = pickSkill(false, fast);
+    let previewDmg = Math.round(st.atk * previewSk.mult);
+    if (fast) previewDmg = Math.round(previewDmg * 2);
+    // Combo streak boost (not finisher label unless kill)
+    if (st.streak >= 3) previewDmg = Math.round(previewDmg * 1.35);
+    const willKill = previewDmg >= st.boss && st.skillLv >= 2;
+    const sk = pickSkill(willKill, fast);
+    let dmg = Math.round(st.atk * sk.mult);
+    let label = sk.emoji + ' ' + sk.name;
+    if (fast) { dmg = Math.round(dmg * 2); label += ' ⚡x2'; }
+    if (st.streak >= 3 && !willKill) { dmg = Math.round(dmg * 1.35); label += ' · Combo'; }
+    if (willKill) {
+      dmg = Math.max(dmg, st.boss); // ensure kill
+      label = '🐉 LONG HẠ · KẾT LIỄU';
+      flash('white'); shakeMs(220); vib([40, 30, 40, 30, 100]);
+    } else {
+      vib(30); if (fast) flash('white');
+      if (battle && battle.flashBoss) battle.flashBoss(150);
+      shakeMs(150);
+    }
+    showSkill(label);
+    const timing = battle ? battle.playHeroAttack(sk.id) : { impactAt: 180 };
+    const impactAt = (timing && timing.impactAt) || 180;
+    setTimeout(() => {
+      floatDmg(dmg, { crit: willKill, x2: fast && !willKill, tag: willKill ? 'KẾT LIỄU' : (fast ? 'x2' : sk.name) });
+      playSfx(willKill ? 'crit' : 'hit');
+      st.boss -= dmg; st.score += dmg; upd();
+    }, impactAt);
+    st.pending = () => openUpgrade();
+    setTimeout(() => { if (st.pending) st.pending(); }, impactAt + 720);
+  } else {
+    st.streak = 0; showComboFloat(0);
+    showSkill('👹 Phản đòn lễ tân!');
+    const timing = battle ? battle.playBossAttack() : { impactAt: 320 };
+    const impactAt = (timing && timing.impactAt) || 320;
+    setTimeout(() => {
+      // Giáp giảm sát thương nhận: mỗi cấp −6 (tối thiểu 4)
+      const taken = Math.max(4, WRONG_DMG - (st.armor || 0) * 6);
+      floatDmg(taken, { hurt: true, tag: st.armor ? ('GIÁP −' + (WRONG_DMG - taken)) : 'TRÚNG ĐÒN' });
+      playSfx('hurt');
+      flash('red'); shakeMs(150); showVignette(); vib(160);
+      st.hero -= taken; upd();
+    }, impactAt);
+    st.pending = () => afterRound();
+    setTimeout(() => { if (st.pending) st.pending(); }, impactAt + 650);
+  }
+}
+
+function openUpgrade() {
+  // Boss đã hạ: bỏ nâng cấp, hỏi tiếp cho đủ mẫu số
+  if (st.boss <= 0) return afterRound();
+  if (st.hero <= 0) return end(false);
+  const choices = [
+    { id: 'atk', ico: '⚔️', title: '+ Sức đánh', desc: 'ATK +4 · vũ khí sáng / to hơn', apply: () => { st.atk += 4; st.atkTier++; } },
+    { id: 'armor', ico: '🛡️', title: '+ Giáp / Máu', desc: 'Hiện giáp 3D · HP +20 · −6 ST mỗi cấp', apply: () => { st.armor = Math.min(3, st.armor + 1); st.heroMax += 20; st.hero = Math.min(st.heroMax, st.hero + 20); } },
+    { id: 'skill', ico: '✨', title: st.skillLv === 0 ? 'Mở chiêu: Chém gió' : (st.skillLv === 1 ? 'Mở chiêu: Long Hạ' : 'Nâng chiêu (+15% dmg)'),
+      desc: st.skillLv < 2 ? 'Đổi vũ khí + hào quang trên sân 3D' : 'Vũ khí Long Hạ mạnh hơn',
+      apply: () => { if (st.skillLv < 2) st.skillLv++; else st.atk = Math.round(st.atk * 1.15); } }
+  ];
+  const order = shuffle(choices);
+  const sk = SKILLS[Math.min(st.skillLv, 2)];
+  $('upStats').innerHTML = `<span>Lv ${st.level}</span><span>ATK ${st.atk}</span><span>Giáp ${st.armor}</span><span>HP ${Math.ceil(st.hero)}/${st.heroMax}</span><span>${sk.emoji}${sk.name}</span>`;
+  const box = $('upOpts'); box.innerHTML = '';
+  order.forEach(c => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = `<span class="ico">${c.ico}</span><span><b>${c.title}</b><small>${c.desc}</small></span>`;
+    b.onclick = () => {
+      c.apply(); st.level++;
+      $('upOverlay').classList.remove('on');
+      syncVisual(); upd();
+      const sk = SKILLS[Math.min(st.skillLv, 2)];
+      showLevelBanner(`Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor} · ${sk.emoji}${sk.name}`);
+      if (battle && battle.playLevelUp) battle.playLevelUp();
+      setTimeout(() => afterRound(), 700);
+    };
+    box.appendChild(b);
+  });
+  $('upOverlay').classList.add('on');
+}
+
+function afterRound() {
+  // Boss về 0: vẫn hỏi hết câu trong chặng (tránh thắng sớm → Đúng 7/24 lệch)
+  if (st.hero <= 0) return end(false);
+  st.i++;
+  if (st.i >= st.list.length) return end(st.boss <= 0);
+  ask();
+}
+
+function end(win) {
+  $('upOverlay').classList.remove('on');
+  runScore = st.score;
+  runCorrect += st.correct;
+  runAnswered += (st.answered || 0);
+  runComboMax = Math.max(runComboMax, st.comboMax);
+  const stage = STAGES[stageIdx] || STAGES[0];
+  if (win) {
+    if (!prog.badges.includes(stage.badge)) prog.badges.push(stage.badge);
+    // More stages left?
+    if (stageIdx + 1 < STAGES.length) {
+      stageIdx += 1;
+      playSfx('win');
+      prog.best = Math.max(prog.best, runScore); save();
+      openMap();
+      const btn = $('btnEnterStage');
+      if (btn) { btn.textContent = '▶ Chặng tiếp: ' + STAGES[stageIdx].name; }
+      return;
+    }
+    // Full clear
+    prog.wins++;
+    playSfx('win');
+  }
+  show('sEnd');
+  if (win) {
+    $('badge').textContent = '🏅';
+    $('endTitle').textContent = 'Xong lộ trình Hạ Long–Cẩm Phả!';
+  } else {
+    $('badge').textContent = '💀';
+    $('endTitle').textContent = 'Thua ở ' + (st.stageName || stage.name) + ' — thử lại nhé!';
+  }
+  prog.best = Math.max(prog.best, runScore); save();
+  // Tử/mẫu = đúng / đã trả lời (chơi hết chặng); ngân hàng chỉ ghi chú
+  const totalQ = runQPool || (st.list ? st.list.length : 0);
+  const correctN = runCorrect || st.correct || 0;
+  const answeredN = runAnswered || st.answered || correctN;
+  $('endInfo').innerHTML = `✅ Đúng ${correctN}/${answeredN} câu đã trả lời` +
+    (totalQ && totalQ !== answeredN ? ` <span style="opacity:.75">(ngân hàng ${totalQ})</span>` : '') +
+    `<br>🗺️ ${win ? 'Hạ Long–Cẩm Phả' : (st.stageName || stage.name)}<br>⚔️ Điểm: ${runScore}<br>🆙 Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor} · ${SKILLS[Math.min(st.skillLv,2)].name}`;
+  const lc = $('learnCard');
+  if (st.lastLearned && st.lastLearned.zh) {
+    $('learnZh').textContent = st.lastLearned.zh;
+    $('learnPy').textContent = st.lastLearned.py || '';
+    $('learnVi').textContent = st.lastLearned.vi || '';
+    lc.hidden = false;
+  } else { lc.hidden = true; }
+  const priceEl = $('invitePrice');
+  if (priceEl) priceEl.textContent = INVITE_BLURB;
+  const shareLine = $('inviteShareLine');
+  if (shareLine) shareLine.textContent = INVITE_SHARE_LINE;
+  $('formBtn').href = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
+  $('zaloBtn').href = ZALO_LINK;
+  $('inviteCard').hidden = false;
+  $('shareBtn').style.display = '';
+}
+
+$('btnStart').onclick = beginRun;
+$('btnAgain').onclick = beginRun;
+if ($('btnEnterStage')) $('btnEnterStage').onclick = () => {
+  if (stageIdx >= STAGES.length) { show('sEnd'); return; }
+  startStage(stageIdx);
+};
+if ($('btnMapBack')) $('btnMapBack').onclick = () => { show('sStart'); playSfx('ui'); };
+if ($('muteBtn')) $('muteBtn').onclick = () => {
+  muted = !muted;
+  localStorage.setItem('baokhua_mute', muted ? '1' : '0');
+  applyMute();
+  if (!muted) { initAudio(); ensureBgm(); playSfx('ui'); }
+};
+// First tap unlocks audio on mobile
+document.body.addEventListener('pointerdown', () => { initAudio(); }, { once:true });
+applyMute();
+function buildShareCard() {
+  const W = 1080, H = 1920;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  // bg
+  g.fillStyle = '#1E5AA8'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#FFD91F'; g.fillRect(0, 0, W, 28); g.fillRect(0, H - 28, W, 28);
+  g.fillStyle = '#16171B';
+  g.font = 'bold 64px system-ui,sans-serif'; g.textAlign = 'center';
+  g.fillText('Bảo Khựa 阿宝', W/2, 160);
+  g.font = 'bold 48px system-ui,sans-serif'; g.fillStyle = '#FFD91F';
+  g.fillText(stageIdx >= 1 && st.boss <= 0 ? '🏅 Hạ Long–Cẩm Phả!' : (st.boss <= 0 ? '🏅 Hạ Boss!' : '🎮 Thành tích Bảo Khựa'), W/2, 260);
+  g.fillStyle = '#fff'; g.font = '36px system-ui,sans-serif';
+  const totalQ = runQPool || st.list.length;
+  const lines = [
+    `Đúng ${runCorrect || st.correct}/${runAnswered || totalQ} câu đã trả lời`,
+    `Điểm: ${runScore || st.score}`,
+    `Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor}`,
+  ];
+  lines.forEach((ln, i) => g.fillText(ln, W/2, 380 + i * 70));
+  if (st.lastLearned && st.lastLearned.zh) {
+    g.fillStyle = '#FFD91F'; g.font = 'bold 32px system-ui,sans-serif';
+    g.fillText('Câu học được hôm nay', W/2, 640);
+    g.fillStyle = '#fff'; g.font = 'bold 56px "Noto Sans SC",serif';
+    g.fillText(st.lastLearned.zh, W/2, 730);
+    g.font = 'italic 30px system-ui,sans-serif'; g.fillStyle = '#cde';
+    g.fillText(st.lastLearned.py || '', W/2, 790);
+    g.font = '28px system-ui,sans-serif'; g.fillStyle = '#fff';
+    g.fillText(st.lastLearned.vi || '', W/2, 850);
+  }
+  // CTA box (+ offers)
+  g.fillStyle = '#FFD91F';
+  roundRect(g, 80, 1040, W - 160, 520, 28); g.fill();
+  g.fillStyle = '#16171B'; g.font = 'bold 40px system-ui,sans-serif';
+  g.fillText('Học tiếp với Bảo Khựa', W/2, 1120);
+  g.font = 'bold 32px system-ui,sans-serif';
+  wrapText(g, INVITE_SHARE_LINE, W/2, 1195, W - 220, 44);
+  g.font = 'bold 26px system-ui,sans-serif';
+  if (!holdSeatExpired()) wrapText(g, OFFER_HOLD, W/2, 1285, W - 220, 34);
+  if (!holdSeatExpired()) wrapText(g, OFFER_REFERRAL, W/2, 1360, W - 220, 34);
+  wrapText(g, OFFER_MINIGAME, W/2, 1445, W - 220, 34);
+  g.font = '24px system-ui,sans-serif';
+  const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
+  wrapText(g, /THAY_/.test(formUrl) ? 'Đăng ký thẻ · Zoom T2 T4 T6 20:00' : formUrl, W/2, 1500, W - 220, 34);
+  g.fillStyle = '#16171B'; g.font = '22px system-ui,sans-serif';
+  g.fillText('ngoquocgiabao-hy.github.io/Baokhua', W/2, 1860);
+  return c;
+}
+function roundRect(g, x, y, w, h, r) {
+  g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
+  g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();
+}
+function wrapText(g, text, x, y, maxW, lineH) {
+  const words = String(text).split(/\s+/); let line = '', yy = y;
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (g.measureText(test).width > maxW && line) { g.fillText(line, x, yy); line = w; yy += lineH; }
+    else line = test;
+  }
+  if (line) g.fillText(line, x, yy);
+}
+$('shareBtn').onclick = async () => {
+  const answered = st.answered || Math.min(st.i + 1, st.list.length);
+  const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
+  const totalQ = runQPool || (st.list && st.list.length) || 0;
+  const text = `Mình chơi Bảo Khựa 3D (Hạ Long–Cẩm Phả), đúng ${runCorrect || st.correct}/${runAnswered || totalQ}! 🏅
+${INVITE_SHARE_LINE}
+${holdSeatExpired() ? "" : (OFFER_HOLD + "\n")}${holdSeatExpired() ? "" : OFFER_REFERRAL}
+${OFFER_MINIGAME}
+${/THAY_/.test(formUrl) ? '' : formUrl}`.trim();
+  const canvas = buildShareCard();
+  try {
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    const file = new File([blob], 'bao-khua-thanh-tich.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ title: 'Bảo Khựa 阿宝', text, files: [file] });
+      return;
+    }
+  } catch (e) { /* fall through */ }
+  try {
+    // Download PNG + copy text
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png'); a.download = 'bao-khua-thanh-tich.png'; a.click();
+  } catch (e) {}
+  try { await navigator.clipboard.writeText(text); alert('Đã tải ảnh 1080×1920 + copy chữ — dán Zalo/Facebook nhé!'); }
+  catch (e) { prompt('Copy:', text); }
+};
+
+// Pre-check WebGL message on load (don't init GL until start to save battery)
+if (!webglAvailable()) $('webglMsg').classList.add('on');
+if (window.speechSynthesis) speechSynthesis.getVoices();
+
+// Smoke / debug hooks (không ảnh hưởng chơi)
+window.__bao = {
+  end, beginRun, startStage, openMap, get st(){ return st; }, get battle(){ return battle; },
+  get stageIdx(){ return stageIdx; },
+  buildShareCard, onTimeout, holdSeatExpired, applyHoldSeatVisibility,
+  get QUESTIONS(){ return QUESTIONS; },
+  get TOPIC_LABEL(){ return TOPIC_LABEL; },
+  get GOOGLE_FORM_LINK(){ return GOOGLE_FORM_LINK; },
+  forceCorrect(){
+    const q = st.list[st.i];
+    if (q.type === 'order') { orderPicked = q.answer.slice(); answerOrder(q); return; }
+    resolve(true, null);
+  },
+  forceWrong(){ resolve(false, null); }
+};
+
+</script>
+</body>
+</html>

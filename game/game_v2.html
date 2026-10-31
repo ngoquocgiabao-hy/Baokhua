@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Bảo Khựa 阿宝 – Đánh Boss v2</title>
+<script>
+/* ===== CẤU HÌNH – anh sửa ở đây ===== */
+const ZALO_LINK = "https://zalo.me/g/THAY_LINK_NHOM_CUA_ANH";
+const FAST_SECONDS = 5;
+const QUESTION_SECONDS = 15;
+/* ===== NGÂN HÀNG CÂU HỎI – thêm câu theo đúng mẫu ===== */
+const QUESTIONS = [
+ {q:"Khách nói: 我想办理入住。", py:"Wǒ xiǎng bànlǐ rùzhù.", vi:"Khách muốn làm gì?", options:["Nhận phòng","Trả phòng","Gọi taxi","Đặt bàn"], answer:0},
+ {q:"“Trả phòng” tiếng Trung là gì?", py:"", vi:"", options:["入住 (rùzhù)","退房 (tuìfáng)","早餐 (zǎocān)","护照 (hùzhào)"], answer:1},
+ {q:"请出示您的护照。", py:"Qǐng chūshì nín de hùzhào.", vi:"Lễ tân đang yêu cầu gì?", options:["Xin số điện thoại","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"], answer:1},
+ {q:"早餐几点开始？", py:"Zǎocān jǐ diǎn kāishǐ?", vi:"Khách hỏi gì?", options:["Mấy giờ ăn sáng","Phòng giá bao nhiêu","Wifi mật khẩu gì","Bể bơi ở đâu"], answer:0},
+ {q:"Chọn câu đúng: “Đây là thẻ phòng của anh.”", py:"", vi:"", options:["这是您的房卡。(Zhè shì nín de fángkǎ.)","这是您的护照。(Zhè shì nín de hùzhào.)","这是您的早餐。(Zhè shì nín de zǎocān.)","这是您的行李。(Zhè shì nín de xíngli.)"], answer:0},
+ {q:"WiFi密码是多少？", py:"WiFi mìmǎ shì duōshǎo?", vi:"Khách hỏi gì?", options:["Giờ trả phòng","Mật khẩu WiFi","Giá phòng","Số tầng"], answer:1},
+ {q:"“Thang máy” tiếng Trung là gì?", py:"", vi:"", options:["电梯 (diàntī)","房间 (fángjiān)","前台 (qiántái)","海边 (hǎibiān)"], answer:0},
+ {q:"您的房间在八楼。", py:"Nín de fángjiān zài bā lóu.", vi:"Phòng khách ở đâu?", options:["Tầng 1","Tầng 6","Tầng 8","Tầng 10"], answer:2},
+ {q:"退房时间是中午十二点。", py:"Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.", vi:"Giờ trả phòng là mấy giờ?", options:["10 giờ sáng","12 giờ trưa","2 giờ chiều","6 giờ tối"], answer:1},
+ {q:"Khách cảm ơn, lễ tân đáp lại thế nào?", py:"", vi:"", options:["不客气。(Bú kèqi. – Không có gì.)","对不起。(Duìbuqǐ. – Xin lỗi.)","再见。(Zàijiàn. – Tạm biệt.)","没有。(Méiyǒu. – Không có.)"], answer:0}
+];
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:linear-gradient(#0b3d5c,#1b7a8c 55%,#e8c27a);color:#fff;min-height:100vh;display:flex;justify-content:center;overflow-x:hidden}
+#app{width:100%;max-width:480px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:100vh;position:relative;z-index:1}
+.screen{display:none;flex-direction:column;gap:12px;flex:1}.screen.on{display:flex}
+h1{font-size:22px;text-align:center;line-height:1.25}h2{font-size:18px;text-align:center}
+.btn{border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:700;background:#ffd34d;color:#3a2600;box-shadow:0 4px 0 #b8901c}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #b8901c}
+.btn.alt{background:#fff;color:#0b3d5c;box-shadow:0 4px 0 #9bb}
+.btn.zalo{background:#0068ff;color:#fff;box-shadow:0 4px 0 #0040a0;text-align:center;text-decoration:none}
+.card{background:rgba(0,0,0,.28);border-radius:16px;padding:14px;backdrop-filter:blur(4px)}
+.bar-wrap{position:relative}
+.bar{height:16px;background:rgba(0,0,0,.4);border-radius:8px;overflow:hidden;position:relative}
+.bar i,.bar .trail{display:block;height:100%;position:absolute;left:0;top:0;border-radius:8px}
+.bar i{z-index:2;transition:width .25s ease-out}
+.bar .trail{z-index:1;opacity:.55;transition:width .7s ease-out .15s}
+#bossHp i{background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
+#bossHp .trail{background:#ffb0b0}
+#heroHp i{background:linear-gradient(90deg,#3dff8a,#2bc4ff)}
+#timer i{background:#ffd34d;transition:width .1s linear;position:relative}
+.arena{position:relative;height:190px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 14px;overflow:hidden;border-radius:16px;background:rgba(0,0,0,.18)}
+.fx{position:absolute;inset:0;pointer-events:none;z-index:5}
+.unit{font-size:72px;transition:transform .15s;position:relative;z-index:2;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35));will-change:transform}
+.boss{font-size:92px}
+.unit .lvl{position:absolute;top:-8px;right:-18px;font-size:12px;font-weight:900;background:#ffd34d;color:#3a2600;border-radius:999px;padding:2px 7px;box-shadow:0 2px 0 #b8901c}
+.skill-tag{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-weight:900;font-size:18px;text-shadow:0 2px 8px #000;opacity:0;pointer-events:none;z-index:6;white-space:nowrap}
+.skill-tag.show{animation:skillPop .9s forwards}
+@keyframes skillPop{0%{opacity:0;transform:translate(-50%,20px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-40px) scale(1)}}
+.hit{animation:hit .35s}@keyframes hit{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px) rotate(-4deg)}75%{transform:translateX(12px) rotate(4deg)}}
+.lunge{animation:lunge .32s}@keyframes lunge{40%{transform:translateX(110px) scale(1.2) rotate(8deg)}100%{transform:translateX(0) scale(1)}}
+.bossAtk{animation:bossAtk .4s}@keyframes bossAtk{40%{transform:translateX(-100px) scale(1.15) rotate(-6deg)}100%{transform:none}}
+.flash-hit{animation:flashHit .25s}@keyframes flashHit{0%,100%{filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}40%{filter:brightness(2.2) drop-shadow(0 0 12px #fff)}}
+.dmg{position:absolute;font-weight:900;font-size:28px;text-shadow:0 2px 4px #000;animation:fly 1s forwards;pointer-events:none;z-index:7}
+.dmg.big{font-size:40px;color:#ffd34d}.dmg.red{color:#ff5a5a}.dmg.crit{font-size:46px;color:#fff;text-shadow:0 0 12px #ff0,0 2px 4px #000}
+@keyframes fly{to{transform:translateY(-90px);opacity:0}}
+.q{font-size:21px;font-weight:700;line-height:1.35}.py{color:#ffe9a8;font-style:italic;margin-top:4px;font-size:15px}.vi{opacity:.9;margin-top:4px;font-size:15px}
+.opts{display:grid;gap:8px}.opt{text-align:left;font-size:16px;padding:13px;border-radius:12px;border:2px solid transparent;background:#fff;color:#123;font-weight:600}
+.opt:active{transform:scale(.98)}.opt.ok{background:#3dd17a;color:#fff}.opt.no{background:#ff5a5a;color:#fff}
+.row{display:flex;justify-content:space-between;font-size:13px;opacity:.95;align-items:center;gap:8px}
+.combo-box{text-align:center;min-height:28px;font-weight:900;letter-spacing:.02em}
+.combo-box .c{display:inline-block;background:rgba(0,0,0,.35);padding:4px 14px;border-radius:999px;color:#ffd34d;font-size:15px;box-shadow:0 0 0 2px rgba(255,211,77,.25)}
+.combo-box .c.hot{animation:pulse .5s infinite alternate;color:#fff;background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
+@keyframes pulse{to{transform:scale(1.08);box-shadow:0 0 16px #ff9a3d}}
+.badge{font-size:110px;text-align:center;animation:pop .6s}@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:40}.flash.go{animation:fl .45s}@keyframes fl{25%{opacity:.75}100%{opacity:0}}
+.flash.red.go{background:#ff3030;animation:flr .4s}@keyframes flr{30%{opacity:.45}100%{opacity:0}}
+.shake{animation:shake .4s}@keyframes shake{0%,100%{transform:translate(0)}20%{transform:translate(-8px,3px)}40%{transform:translate(8px,-3px)}60%{transform:translate(-6px,-2px)}80%{transform:translate(6px,2px)}}
+/* Upgrade modal */
+.overlay{position:fixed;inset:0;background:rgba(0,10,20,.72);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:16px;backdrop-filter:blur(3px)}
+.overlay.on{display:flex}
+.up-card{background:linear-gradient(180deg,#1a4a66,#0d2a3d);border:2px solid #ffd34d;border-radius:20px 20px 16px 16px;padding:18px 14px 14px;width:100%;max-width:460px;box-shadow:0 -8px 40px rgba(0,0,0,.5);animation:slideUp .35s ease-out}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{none}}
+.up-card h3{text-align:center;font-size:18px;margin-bottom:4px}
+.up-card p.sub{text-align:center;opacity:.85;font-size:13px;margin-bottom:12px}
+.up-opts{display:grid;gap:8px}
+.up-opts button{border:0;border-radius:14px;padding:14px 12px;text-align:left;background:#fff;color:#123;font-weight:700;font-size:15px;display:flex;gap:12px;align-items:center;box-shadow:0 3px 0 #9bb}
+.up-opts button:active{transform:translateY(2px);box-shadow:0 1px 0 #9bb}
+.up-opts .ico{font-size:28px;width:40px;text-align:center}
+.up-opts small{display:block;font-weight:500;opacity:.7;margin-top:2px}
+.stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:12px;margin-bottom:10px}
+.stats span{background:rgba(255,255,255,.12);padding:4px 10px;border-radius:999px}
+@media (prefers-reduced-motion:reduce){
+  .hit,.lunge,.bossAtk,.shake,.flash.go,.skill-tag.show,.dmg{animation:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+ <div class="screen on" id="sStart">
+  <h1>⚔️ Bảo Khựa 阿宝<br>Đánh Boss Học Tiếng Trung</h1>
+  <div class="card"><h2>📍 Chặng 1: Bãi Cháy – Lễ tân khách sạn</h2>
+   <p style="margin-top:8px">Trả lời đúng → chiêu đánh boss. Nhanh trong <b id="fs"></b> giây → <b>x2</b>. Chuỗi 3 → <b>Long Hạ · Kết liễu</b>. Mỗi lần đúng chọn nâng cấp. Sai → boss phản đòn!</p></div>
+  <div class="card" id="progress"></div>
+  <button class="btn" type="button" onclick="startGame()">BẮT ĐẦU</button>
+ </div>
+
+ <div class="screen" id="sGame">
+  <div class="row"><span>👹 Boss Lễ Tân Khó Tính</span><span id="bossTxt"></span></div>
+  <div class="bar-wrap"><div class="bar" id="bossHp"><span class="trail"></span><i></i></div></div>
+  <div class="arena" id="arena">
+   <canvas class="fx" id="fx" width="480" height="190" aria-hidden="true"></canvas>
+   <div class="skill-tag" id="skillTag"></div>
+   <div class="unit" id="hero">🥷<span class="lvl" id="heroLvl">Lv1</span></div>
+   <div class="unit boss" id="boss">👹</div>
+  </div>
+  <div class="row"><span>🥷 Tướng của bạn</span><span id="heroTxt"></span></div>
+  <div class="bar" id="heroHp"><i></i></div>
+  <div class="combo-box" id="combo"></div>
+  <div class="bar" id="timer"><i></i></div>
+  <div class="card"><div class="row"><span id="qNum"></span><span id="pwr" style="opacity:.85"></span></div>
+   <div class="q" id="qText"></div><div class="py" id="qPy"></div><div class="vi" id="qVi"></div></div>
+  <div class="opts" id="opts"></div>
+ </div>
+
+ <div class="screen" id="sEnd">
+  <div class="badge" id="badge"></div>
+  <h1 id="endTitle"></h1>
+  <div class="card" id="endInfo"></div>
+  <button class="btn" id="shareBtn" type="button" onclick="share()">📤 Chia sẻ thành tích</button>
+  <a class="btn zalo" id="zaloBtn" target="_blank" rel="noopener">💬 Vào nhóm Zalo học tiếp</a>
+  <button class="btn alt" type="button" onclick="startGame()">🔁 Chơi lại</button>
+ </div>
+</div>
+<div class="flash" id="flash"></div>
+<div class="overlay" id="upOverlay" role="dialog" aria-modal="true" aria-labelledby="upTitle">
+ <div class="up-card">
+  <h3 id="upTitle">✨ Nâng cấp tướng!</h3>
+  <p class="sub">Chọn 1 trong 3 — nhanh nhé</p>
+  <div class="stats" id="upStats"></div>
+  <div class="up-opts" id="upOpts"></div>
+ </div>
+</div>
+<script>
+const SAVE_KEY="baokhua_game_v2";
+const BOSS_BASE_PER_Q=18, HERO_BASE=100, BASE_DMG=12, WRONG_DMG=22;
+const SKILLS=[
+  {id:"phi_tieu", name:"Phi tiêu", emoji:"🎯", unlockAt:0, mult:1},
+  {id:"chem_gio", name:"Chém gió", emoji:"🗡️", unlockAt:1, mult:1.35},
+  {id:"long_ha", name:"Long Hạ", emoji:"🐉", unlockAt:2, mult:1.8, finisher:true}
+];
+let st, timerId, qStart, locked, particles=[], rafId=0, bossTrail=0;
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem(SAVE_KEY,JSON.stringify(prog));
+let prog=JSON.parse(localStorage.getItem(SAVE_KEY)||'{"wins":0,"best":0,"badges":[]}');
+$("fs").textContent=FAST_SECONDS; $("zaloBtn").href=ZALO_LINK;
+
+function showProg(){
+  $("progress").innerHTML=`🏆 Thắng: <b>${prog.wins}</b> lần · Điểm cao nhất: <b>${prog.best}</b><br>🎖️ Huy hiệu: ${prog.badges.length?prog.badges.join(" "):"chưa có"}`;
+}
+showProg();
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$(id).classList.add("on")}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function vib(ms){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
+function anim(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c);setTimeout(()=>el.classList.remove(c),500)}
+
+function startGame(){
+  const bossMax=QUESTIONS.length*BOSS_BASE_PER_Q;
+  st={i:0,boss:bossMax,bossMax,hero:HERO_BASE,heroMax:HERO_BASE,streak:0,comboMax:0,score:0,correct:0,
+      atk:BASE_DMG, skillLv:0, level:1, list:shuffle(QUESTIONS), pendingNext:null};
+  bossTrail=bossMax;
+  show("sGame"); upd(); ask(); startFx();
+}
+
+function upd(){
+  const bp=Math.max(0,st.boss/st.bossMax*100), hp=Math.max(0,st.hero/st.heroMax*100);
+  $("bossHp").querySelector("i").style.width=bp+"%";
+  bossTrail=Math.max(st.boss, bossTrail-(st.bossMax*0.02));
+  if(bossTrail<st.boss) bossTrail=st.boss;
+  $("bossHp").querySelector(".trail").style.width=(bossTrail/st.bossMax*100)+"%";
+  $("heroHp").firstChild.style.width=hp+"%";
+  $("bossTxt").textContent=Math.max(0,Math.ceil(st.boss))+"/"+st.bossMax;
+  $("heroTxt").textContent=Math.max(0,Math.ceil(st.hero))+"/"+st.heroMax;
+  $("heroLvl").textContent="Lv"+st.level;
+  const sk=SKILLS[Math.min(st.skillLv, SKILLS.length-1)];
+  $("pwr").textContent=`ATK ${st.atk} · ${sk.emoji}${sk.name}`;
+  const c=$("combo");
+  if(st.streak>=3) c.innerHTML=`<span class="c hot">🔥 COMBO x${st.streak} — LONG HẠ SẴN SÀNG!</span>`;
+  else if(st.streak>0) c.innerHTML=`<span class="c">🔥 COMBO x${st.streak}${st.streak===2?" → thêm 1 = Kết liễu":""}</span>`;
+  else c.innerHTML="";
+}
+
+function ask(){
+  locked=false;
+  const q=st.list[st.i];
+  $("qNum").textContent=`Câu ${st.i+1}/${st.list.length}`;
+  $("qText").textContent=q.q; $("qPy").textContent=q.py; $("qVi").textContent=q.vi;
+  const o=$("opts"); o.innerHTML="";
+  q.options.forEach((t,k)=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=t;b.onclick=()=>answer(k,b);o.appendChild(b)});
+  qStart=Date.now(); clearInterval(timerId);
+  timerId=setInterval(()=>{
+    const left=QUESTION_SECONDS-(Date.now()-qStart)/1000;
+    $("timer").firstChild.style.width=Math.max(0,left/QUESTION_SECONDS*100)+"%";
+    if(left<=0) answer(-1,null);
+  },100);
+}
+
+function pop(txt,cls,side){
+  const d=document.createElement("div"); d.className="dmg "+(cls||""); d.textContent=txt;
+  d.style[side||"right"]="24px"; d.style.top="28px";
+  $("arena").appendChild(d); setTimeout(()=>d.remove(),1000);
+}
+
+function showSkill(name){
+  const t=$("skillTag"); t.textContent=name; t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
+}
+
+function shake(){anim(document.body,"shake")}
+function flash(kind){const f=$("flash"); f.className="flash"+(kind==="red"?" red":""); void f.offsetWidth; f.classList.add("go")}
+
+function burst(x,y,color,n){
+  for(let i=0;i<(n||14);i++){
+    const a=Math.random()*Math.PI*2, sp=2+Math.random()*5;
+    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,life:1,color,size:2+Math.random()*3});
+  }
+}
+
+function startFx(){
+  cancelAnimationFrame(rafId);
+  const cv=$("fx"), ctx=cv.getContext("2d");
+  function resize(){const r=$("arena").getBoundingClientRect(); cv.width=r.width*devicePixelRatio; cv.height=r.height*devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+  resize();
+  function loop(){
+    const w=cv.width/devicePixelRatio, h=cv.height/devicePixelRatio;
+    ctx.clearRect(0,0,w,h);
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.life-=0.03;
+      if(p.life<=0){particles.splice(i,1);continue}
+      ctx.globalAlpha=Math.max(0,p.life); ctx.fillStyle=p.color;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    rafId=requestAnimationFrame(loop);
+  }
+  loop();
+  window.addEventListener("resize",resize,{passive:true});
+}
+
+function pickSkill(isFinisher, isFast){
+  if(isFinisher) return SKILLS[2];
+  if(st.skillLv>=2 && Math.random()<0.35) return SKILLS[2];
+  if(st.skillLv>=1) return isFast?SKILLS[1]:SKILLS[Math.random()<0.5?1:0];
+  return SKILLS[0];
+}
+
+function answer(k,btn){
+  if(locked)return; locked=true; clearInterval(timerId);
+  const q=st.list[st.i], secs=(Date.now()-qStart)/1000, btns=$("opts").children;
+  btns[q.answer].classList.add("ok");
+  const arena=$("arena").getBoundingClientRect();
+  const hx=80, hy=arena.height*0.55, bx=arena.width-90, by=arena.height*0.45;
+
+  if(k===q.answer){
+    st.streak++; st.correct++; st.comboMax=Math.max(st.comboMax,st.streak);
+    const isFast=secs<=FAST_SECONDS;
+    const isFinisher=st.streak>=3;
+    const sk=pickSkill(isFinisher,isFast);
+    let dmg=Math.round(st.atk*sk.mult);
+    let label=sk.emoji+" "+sk.name;
+    if(isFast){dmg=Math.round(dmg*2); label+=" ⚡x2"}
+    if(isFinisher){
+      dmg=Math.max(dmg, Math.ceil(st.boss*0.55)+st.atk*2);
+      label="🐉 LONG HẠ · KẾT LIỄU";
+      st.streak=0;
+      flash("white"); shake(); vib([40,30,40,30,120]);
+      burst(bx,by,"#ffd34d",28); burst(bx,by,"#fff",16);
+    } else {
+      vib(35); burst(bx,by,"#ffe08a",12); burst(bx,by,"#fff",8);
+      if(isFast) flash("white");
+    }
+    showSkill(label);
+    anim($("hero"),"lunge");
+    setTimeout(()=>{
+      $("boss").classList.remove("hit","flash-hit"); void $("boss").offsetWidth; $("boss").classList.add("hit","flash-hit"); setTimeout(()=>$("boss").classList.remove("hit","flash-hit"),450);
+      pop("-"+dmg+(isFinisher?" 💥":""), isFinisher?"crit":(isFast?"big":""),"right");
+      st.boss-=dmg; st.score+=dmg; upd();
+    },140);
+    st.pendingNext=()=>openUpgrade();
+  } else {
+    if(btn) btn.classList.add("no");
+    st.streak=0;
+    const dmg=WRONG_DMG;
+    showSkill("👹 Phản đòn lễ tân!");
+    anim($("boss"),"bossAtk");
+    setTimeout(()=>{
+      $("hero").classList.remove("hit","flash-hit"); void $("hero").offsetWidth; $("hero").classList.add("hit","flash-hit"); setTimeout(()=>$("hero").classList.remove("hit","flash-hit"),450);
+      pop("-"+dmg,"red","left");
+      burst(hx,hy,"#ff6b6b",14);
+      flash("red"); shake(); vib(180);
+      st.hero-=dmg; upd();
+    },180);
+    st.pendingNext=()=>afterRound();
+  }
+  setTimeout(()=>{ if(st.pendingNext) st.pendingNext(); }, 900);
+}
+
+function openUpgrade(){
+  if(st.boss<=0){ end(true); return; }
+  if(st.hero<=0){ end(false); return; }
+  const choices=[
+    {id:"atk", ico:"⚔️", title:"+ Sức đánh", desc:"ATK +4 (đòn mạnh hơn)", apply:()=>{st.atk+=4}},
+    {id:"hp", ico:"❤️", title:"+ Máu", desc:"Máu tối đa +20 & hồi 20", apply:()=>{st.heroMax+=20; st.hero=Math.min(st.heroMax,st.hero+20)}},
+    {id:"skill", ico:"✨", title: st.skillLv===0?"Mở chiêu: Chém gió":(st.skillLv===1?"Mở chiêu: Long Hạ":"Nâng chiêu (+15% sát thương)"),
+      desc: st.skillLv<2?"Mở kỹ năng mới":"Mọi đòn mạnh hơn",
+      apply:()=>{ if(st.skillLv<2) st.skillLv++; else st.atk=Math.round(st.atk*1.15); }}
+  ];
+  // shuffle display order
+  const order=shuffle(choices);
+  $("upStats").innerHTML=`<span>Lv ${st.level}</span><span>ATK ${st.atk}</span><span>HP ${Math.ceil(st.hero)}/${st.heroMax}</span><span>${SKILLS[Math.min(st.skillLv,2)].emoji} ${SKILLS[Math.min(st.skillLv,2)].name}</span>`;
+  const box=$("upOpts"); box.innerHTML="";
+  order.forEach(c=>{
+    const b=document.createElement("button"); b.type="button";
+    b.innerHTML=`<span class="ico">${c.ico}</span><span><b>${c.title}</b><small>${c.desc}</small></span>`;
+    b.onclick=()=>{ c.apply(); st.level++; $("upOverlay").classList.remove("on"); upd(); afterRound(); };
+    box.appendChild(b);
+  });
+  $("upOverlay").classList.add("on");
+}
+
+function afterRound(){
+  if(st.boss<=0) return end(true);
+  if(st.hero<=0) return end(false);
+  st.i++;
+  if(st.i>=st.list.length) return end(st.boss<=0);
+  ask();
+}
+
+function end(win){
+  $("upOverlay").classList.remove("on");
+  cancelAnimationFrame(rafId); particles=[];
+  show("sEnd");
+  if(win){
+    $("badge").textContent="🏅";
+    $("endTitle").textContent="Chiến thắng Bãi Cháy!";
+    prog.wins++;
+    if(!prog.badges.includes("🏅Bãi Cháy")) prog.badges.push("🏅Bãi Cháy");
+  } else {
+    $("badge").textContent="💀";
+    $("endTitle").textContent="Thua rồi, thử lại nhé!";
+  }
+  prog.best=Math.max(prog.best,st.score); save(); showProg();
+  $("endInfo").innerHTML=`✅ Đúng ${st.correct}/${st.list.length} câu<br>⚔️ Sát thương: ${st.score}<br>🔥 Combo cao nhất: x${st.comboMax}<br>🆙 Tướng đạt Lv${st.level} · ATK ${st.atk}<br>🏆 Kỷ lục: ${prog.best}`;
+  $("shareBtn").style.display=win?"":"none";
+}
+
+async function share(){
+  const text=`Mình vừa hạ Boss Lễ Tân ở Bãi Cháy (v2), đúng ${st.correct}/${st.list.length} câu, tướng Lv${st.level}! 🏅 Thử sức cùng Bảo Khựa 阿宝:`;
+  const url=location.href;
+  try{if(navigator.share){await navigator.share({title:"Bảo Khựa 阿宝",text,url});return}}catch(e){return}
+  try{await navigator.clipboard.writeText(text+" "+url);alert("Đã copy nội dung, dán vào Zalo/Facebook để chia sẻ nhé!")}
+  catch(e){prompt("Copy nội dung này để chia sẻ:",text+" "+url)}
+}
+</script>
+</body>
+</html>

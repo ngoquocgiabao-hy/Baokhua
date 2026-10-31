@@ -1,0 +1,522 @@
+[
+  {
+    "id": "v6-bl-01",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "bat_loi",
+    "cau_hoi": "Khách muốn nhận phòng nhưng nói sai: 「我要出去房间」(Wǒ yào chūqù fángjiān — ý muốn: tôi muốn nhận phòng). Câu nào đúng?",
+    "dap_an": [
+      "我要出去房间。",
+      "我要出门房间。",
+      "我要办出去住。",
+      "我要办理入住。"
+    ],
+    "dung": 3,
+    "pinyin": "Wǒ yào bànlǐ rùzhù.",
+    "giai_thich": "办理入住 (bànlǐ rùzhù) = làm thủ tục nhận phòng; không nói 出去房间."
+  },
+  {
+    "id": "v6-bl-02",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "bat_loi",
+    "cau_hoi": "Lễ tân muốn hỏi họ của khách nhưng nói sai: 「你叫什么名字？」(Nǐ jiào shénme míngzi — quá thân mật). Câu lịch sự đúng?",
+    "dap_an": [
+      "你叫什么名字？",
+      "你是谁名字？",
+      "请问您贵姓？",
+      "请问你名什么？"
+    ],
+    "dung": 2,
+    "pinyin": "Qǐngwèn nín guìxìng?",
+    "giai_thich": "贵姓 (guìxìng) = hỏi họ lịch sự; với khách dùng 您 (nín), không dùng 你叫什么名字 quá thân."
+  },
+  {
+    "id": "v6-bl-03",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "bat_loi",
+    "cau_hoi": "Công nhân muốn nói 'Tôi sẽ chấm công' nhưng nói: 「我打卡了去」(Wǒ dǎkǎ le qù). Câu nào đúng?",
+    "dap_an": [
+      "我去打卡。",
+      "我打卡了去。",
+      "我打了卡去。",
+      "我去了打卡。"
+    ],
+    "dung": 0,
+    "pinyin": "Wǒ qù dǎkǎ.",
+    "giai_thich": "去打卡 (qù dǎkǎ) = đi chấm công; 了 (le) đặt sai làm câu tối nghĩa."
+  },
+  {
+    "id": "v6-bl-04",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Lễ tân muốn nói 'Xin đợi một chút' nhưng nói: 「请等一点」(Qǐng děng yìdiǎn). Câu nào tự nhiên?",
+    "dap_an": [
+      "请等一点。",
+      "请稍等。",
+      "请一点等。",
+      "请等一等点。"
+    ],
+    "dung": 1,
+    "pinyin": "Qǐng shāo děng.",
+    "giai_thich": "稍等 (shāo děng) = xin đợi một chút; cũng có thể nói 等一下 (děng yíxià)."
+  },
+  {
+    "id": "v6-bl-05",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Hướng dẫn viên muốn nói 'Mời lên thuyền' nhưng nói: 「请上船来上面」(Qǐng shàng chuán lái shàngmiàn). Câu nào đúng?",
+    "dap_an": [
+      "请上船来上面。",
+      "请上上面船。",
+      "请来船上面。",
+      "请上船。"
+    ],
+    "dung": 3,
+    "pinyin": "Qǐng shàng chuán.",
+    "giai_thich": "上船 (shàng chuán) = lên thuyền; thừa 来上面 khiến câu sai."
+  },
+  {
+    "id": "v6-bl-06",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Công nhân muốn nói 'Máy cần bảo dưỡng' nhưng nói: 「机器要保修了保养」(Jīqì yào bǎoxiū le bǎoyǎng). Câu nào đúng?",
+    "dap_an": [
+      "机器要保修了保养。",
+      "机器保养了需要。",
+      "机器需要保养。",
+      "需要机器保养了。"
+    ],
+    "dung": 2,
+    "pinyin": "Jīqì xūyào bǎoyǎng.",
+    "giai_thich": "需要保养 (xūyào bǎoyǎng) = cần bảo dưỡng; 保修 (bǎoxiū) = bảo hành — dễ nhầm."
+  },
+  {
+    "id": "v6-bl-07",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Khách muốn hỏi 'Có đặt phòng trước không?' nhưng nói: 「我有订了房间吗？」(Wǒ yǒu dìng le fángjiān ma?). Câu nào đúng?",
+    "dap_an": [
+      "请问您有预订吗？",
+      "我有订了房间吗？",
+      "我预订有吗房间？",
+      "您订了有房间吗？"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐngwèn nín yǒu yùdìng ma?",
+    "giai_thich": "有预订 (yǒu yùdìng) = có đặt trước; tránh chồng 了 (le) với 有."
+  },
+  {
+    "id": "v6-bl-08",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "bat_loi",
+    "cau_hoi": "Khách muốn nói 'Tôi không ăn cay' nhưng nói: 「我不吃辣了菜」(Wǒ bù chī là le cài). Câu nào đúng?",
+    "dap_an": [
+      "我不吃辣了菜。",
+      "我菜不吃辣了。",
+      "我不辣吃菜。",
+      "我不吃辣。"
+    ],
+    "dung": 3,
+    "pinyin": "Wǒ bù chī là.",
+    "giai_thich": "不吃辣 (bù chī là) = không ăn cay; 了 (le) đặt sai làm câu rối."
+  },
+  {
+    "id": "v6-bl-09",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "bat_loi",
+    "cau_hoi": "QC muốn nói 'Lô hàng này chưa đạt' nhưng nói: 「这批货没有通过了质检」(Zhè pī huò méiyǒu tōngguò le zhìjiǎn). Câu nào đúng?",
+    "dap_an": [
+      "这批货没有通过了质检。",
+      "这批货没通过质检。",
+      "这批货通过没有质检。",
+      "这批货质检了没通过。"
+    ],
+    "dung": 1,
+    "pinyin": "Zhè pī huò méi tōngguò zhìjiǎn.",
+    "giai_thich": "没通过质检 (méi tōngguò zhìjiǎn) = chưa đạt kiểm tra; 没 và 了 (le) không đi cùng."
+  },
+  {
+    "id": "v6-bl-10",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "bat_loi",
+    "cau_hoi": "Lễ tân muốn nói 'Cọc sẽ được hoàn khi trả phòng' nhưng nói: 「押金退房的时候给回您」(Yājīn tuìfáng de shíhou gěi huí nín). Câu nào đúng?",
+    "dap_an": [
+      "押金退房的时候给回您。",
+      "退房押金时候退还您。",
+      "押金退房时退还给您。",
+      "押金退还您退房时给。"
+    ],
+    "dung": 2,
+    "pinyin": "Yājīn tuìfáng shí tuìhuán gěi nín.",
+    "giai_thich": "退还 (tuìhuán) = hoàn lại; 押金 (yājīn) = tiền cọc; 给回 không tự nhiên bằng 退还."
+  },
+  {
+    "id": "v6-hai-01",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn hỏi khách một câu (请问 Qǐngwèn), nhưng đọc nhầm thành 请吻 (qǐng wěn = xin hôn). Nói thế nào mới không 'toang'?",
+    "dap_an": [
+      "请问一下。",
+      "请吻一下。",
+      "请稳一下。",
+      "请温一下。"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐngwèn yíxià.",
+    "giai_thich": "问 (wèn, thanh 4) = hỏi; 吻 (wěn, thanh 3) = hôn — đọc sai là tình huống đỏ mặt."
+  },
+  {
+    "id": "v6-hai-02",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "hai",
+    "cau_hoi": "Khách gọi 'canh' (汤 tāng), bạn nghe thành 'đường' (糖 táng) rồi mang cả hũ đường ra. Câu nào đúng khi gọi canh?",
+    "dap_an": [
+      "请来一碗糖。",
+      "请来一碗躺。",
+      "请来一碗烫。",
+      "请来一碗汤。"
+    ],
+    "dung": 3,
+    "pinyin": "Qǐng lái yì wǎn tāng.",
+    "giai_thich": "汤 (tāng, thanh 1) = canh; 糖 (táng, thanh 2) = đường — chỉ khác thanh điệu."
+  },
+  {
+    "id": "v6-hai-03",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn nói với sếp 'Tôi mua nguyên liệu' (买 mǎi) nhưng nói thành 卖 (mài = bán). Câu nào đúng?",
+    "dap_an": [
+      "我去卖原料。",
+      "我去埋原料。",
+      "我去买原料。",
+      "我去迈原料。"
+    ],
+    "dung": 2,
+    "pinyin": "Wǒ qù mǎi yuánliào.",
+    "giai_thich": "买 (mǎi, thanh 3) = mua; 卖 (mài, thanh 4) = bán — nói nhầm là 'bán sạch kho'."
+  },
+  {
+    "id": "v6-hai-04",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Bạn đói, muốn gọi há cảo (水饺 shuǐjiǎo) nhưng nói thành 睡觉 (shuìjiào = ngủ) với phục vụ. Câu nào gọi món đúng?",
+    "dap_an": [
+      "我要水饺。",
+      "我要睡觉。",
+      "我要水叫。",
+      "我要谁教。"
+    ],
+    "dung": 0,
+    "pinyin": "Wǒ yào shuǐjiǎo.",
+    "giai_thich": "水饺 (shuǐjiǎo) = há cảo/sủi cảo; 睡觉 (shuìjiào) = đi ngủ — phục vụ sẽ tưởng bạn xin giường."
+  },
+  {
+    "id": "v6-hai-05",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Khách hỏi phòng hút thuốc. Bạn muốn nói 'Không hút thuốc' (抽烟 chōuyān) nhưng nói nhầm 丑烟. Câu lịch sự đúng là?",
+    "dap_an": [
+      "这里不可以丑烟。",
+      "这里不可以抽烟。",
+      "这里不可以抽盐。",
+      "这里不可以出烟。"
+    ],
+    "dung": 1,
+    "pinyin": "Zhèlǐ bù kěyǐ chōuyān.",
+    "giai_thich": "抽烟 (chōuyān) = hút thuốc; phát âm rõ 抽 (chōu) kẻo nghe thành từ khác."
+  },
+  {
+    "id": "v6-hai-06",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn khen 'Cảnh đẹp quá!' (景色真美 jǐngsè zhēn měi) nhưng nói thành 景色真妹. Câu nào đúng?",
+    "dap_an": [
+      "景色真妹！",
+      "景色真每！",
+      "景色真没！",
+      "景色真美！"
+    ],
+    "dung": 3,
+    "pinyin": "Jǐngsè zhēn měi!",
+    "giai_thich": "美 (měi, thanh 3) = đẹp; 妹 (mèi, thanh 4) = em gái — khen cảnh thành 'cảnh đúng là em' thì toang."
+  },
+  {
+    "id": "v6-hai-07",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Bạn báo sếp 'Hàng đã gửi đi' (发货 fāhuò) nhưng nói thành 发火 (fāhuǒ = nổi nóng). Câu nào đúng?",
+    "dap_an": [
+      "我们已经发火了。",
+      "我们已经发活了。",
+      "我们已经发货了。",
+      "我们已经发和了。"
+    ],
+    "dung": 2,
+    "pinyin": "Wǒmen yǐjīng fāhuò le.",
+    "giai_thich": "发货 (fāhuò) = gửi hàng; 发火 (fāhuǒ) = nổi nóng — sếp sẽ tưởng cả xưởng đang cáu."
+  },
+  {
+    "id": "v6-hai-08",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn nói 'Xin giữ hộ hành lý' (寄存 jìcún) nhưng nói thành 记错 (jìcuò = nhớ nhầm). Câu nào đúng?",
+    "dap_an": [
+      "请帮我寄存行李。",
+      "请帮我记错行李。",
+      "请帮我记住行李。",
+      "请帮我寄出行李。"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐng bāng wǒ jìcún xínglǐ.",
+    "giai_thich": "寄存 (jìcún) = gửi/giữ hộ; 记错 (jìcuò) = nhớ sai — lễ tân sẽ rất bối rối."
+  },
+  {
+    "id": "v6-hai-09",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn 'thanh toán hóa đơn' (买单 mǎidān) nhưng nói thành 卖单 (màidān). Câu nào đúng?",
+    "dap_an": [
+      "老板，卖单！",
+      "老板，买单！",
+      "老板，慢单！",
+      "老板，满单！"
+    ],
+    "dung": 1,
+    "pinyin": "Lǎobǎn, mǎidān!",
+    "giai_thich": "买单 (mǎidān) = tính tiền; 卖 (mài) = bán — nói 卖单 là 'bán hóa đơn', rất dễ gây cười nhầm."
+  },
+  {
+    "id": "v6-hai-10",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn báo 'Cần họp ngắn' (开会 kāihuì) nhưng nói thành 开荤 (kāihūn = được ăn mặn sau kiêng). Câu nào đúng với sếp?",
+    "dap_an": [
+      "我们开荤五分钟。",
+      "我们开惠五分钟。",
+      "我们开悔五分钟。",
+      "我们开会五分钟。"
+    ],
+    "dung": 3,
+    "pinyin": "Wǒmen kāihuì wǔ fēnzhōng.",
+    "giai_thich": "开会 (kāihuì) = họp; 开荤 (kāihūn) = phá chay — nói nhầm trước sếp là cảnh hài khó quên."
+  },
+  {
+    "id": "v6-nn-01",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Nín hǎo, huānyíng guānglín. Câu này nghĩa là gì?",
+    "dap_an": [
+      "Xin chào, tạm biệt",
+      "Xin chào, trả phòng đi",
+      "Xin chào, hân hạnh đón tiếp",
+      "Xin chào, tăng ca nhé"
+    ],
+    "dung": 2,
+    "pinyin": "Nín hǎo, huānyíng guānglín.",
+    "am_thanh": "您好，欢迎光临。",
+    "giai_thich": "欢迎光临 (huānyíng guānglín) = chào đón quý khách khi bước vào."
+  },
+  {
+    "id": "v6-nn-02",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Qǐng gěi wǒ yì bēi shuǐ. Nghĩa đúng?",
+    "dap_an": [
+      "Cho tôi một ly nước",
+      "Cho tôi một ly rượu",
+      "Cho tôi một ly trà sữa",
+      "Cho tôi một tô phở"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐng gěi wǒ yì bēi shuǐ.",
+    "am_thanh": "请给我一杯水。",
+    "giai_thich": "一杯水 (yì bēi shuǐ) = một ly nước."
+  },
+  {
+    "id": "v6-nn-03",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Qǐng chuān gōngzuòfú. Bạn cần làm gì?",
+    "dap_an": [
+      "Đeo mũ bảo hộ",
+      "Ra điểm tập kết",
+      "Đi chấm công",
+      "Mặc đồng phục/đồ bảo hộ lao động"
+    ],
+    "dung": 3,
+    "pinyin": "Qǐng chuān gōngzuòfú.",
+    "am_thanh": "请穿工作服。",
+    "giai_thich": "穿工作服 (chuān gōngzuòfú) = mặc đồ bảo hộ/đồng phục làm việc."
+  },
+  {
+    "id": "v6-nn-04",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Nín de fángjiān zài wǔ lóu. Chọn nghĩa đúng.",
+    "dap_an": [
+      "Phòng quý khách ở tầng 3",
+      "Phòng quý khách ở tầng 5",
+      "Phòng quý khách ở tầng 4",
+      "Phòng quý khách ở tầng 15"
+    ],
+    "dung": 1,
+    "pinyin": "Nín de fángjiān zài wǔ lóu.",
+    "am_thanh": "您的房间在五楼。",
+    "giai_thich": "五楼 (wǔ lóu) = tầng 5."
+  },
+  {
+    "id": "v6-nn-05",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Xiǎoxīn, dì bǎn hěn huá. Cảnh báo gì?",
+    "dap_an": [
+      "Cẩn thận, gió rất to",
+      "Cẩn thận, nước rất sâu",
+      "Cẩn thận, sàn rất trơn",
+      "Cẩn thận, trời sắp mưa"
+    ],
+    "dung": 2,
+    "pinyin": "Xiǎoxīn, dìbǎn hěn huá.",
+    "am_thanh": "小心，地板很滑。",
+    "giai_thich": "小心 (xiǎoxīn) = cẩn thận; 地板很滑 (dìbǎn hěn huá) = sàn rất trơn."
+  },
+  {
+    "id": "v6-nn-06",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh cặp gần âm: chọn đúng chữ cho 'yàngpǐn' (hàng mẫu).",
+    "dap_an": [
+      "样品",
+      "次品",
+      "药品",
+      "阳品"
+    ],
+    "dung": 0,
+    "pinyin": "yàngpǐn",
+    "am_thanh": "样品",
+    "giai_thich": "样品 (yàngpǐn) = hàng mẫu; 次品 (cìpǐn) = hàng lỗi; 药品 (yàopǐn) = thuốc."
+  },
+  {
+    "id": "v6-nn-07",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Zhè dào cài bú là. Nghĩa là?",
+    "dap_an": [
+      "Món này rất cay",
+      "Món này hết rồi",
+      "Món này không tính tiền",
+      "Món này không cay"
+    ],
+    "dung": 3,
+    "pinyin": "Zhè dào cài bú là.",
+    "am_thanh": "这道菜不辣。",
+    "giai_thich": "不辣 (bú là) = không cay; 道 (dào) là lượng từ cho món ăn."
+  },
+  {
+    "id": "v6-nn-08",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Duìbuqǐ, jīntiān fángjiān dōu mǎn le. Lễ tân đang nói gì?",
+    "dap_an": [
+      "Xin lỗi, hôm nay phòng đang dọn",
+      "Xin lỗi, hôm nay phòng đều hết",
+      "Xin lỗi, hôm nay thang máy hỏng",
+      "Xin lỗi, hôm nay WiFi yếu"
+    ],
+    "dung": 1,
+    "pinyin": "Duìbuqǐ, jīntiān fángjiān dōu mǎn le.",
+    "am_thanh": "对不起，今天房间都满了。",
+    "giai_thich": "满了 (mǎn le) = đã đầy/hết chỗ; 对不起 (duìbuqǐ) = xin lỗi."
+  },
+  {
+    "id": "v6-nn-09",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Zhè pī huò xūyào chóngxīn jiǎnchá. Việc cần làm là gì?",
+    "dap_an": [
+      "Gửi hàng ngay",
+      "Tăng ca đến tối",
+      "Kiểm tra lại lô hàng",
+      "Chuyển sang kho khác"
+    ],
+    "dung": 2,
+    "pinyin": "Zhè pī huò xūyào chóngxīn jiǎnchá.",
+    "am_thanh": "这批货需要重新检查。",
+    "giai_thich": "重新检查 (chóngxīn jiǎnchá) = kiểm tra lại; 这批货 (zhè pī huò) = lô hàng này."
+  },
+  {
+    "id": "v6-nn-10",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Chuán jiāngzài shí fēnzhōng hòu chūfā. Thời điểm xuất phát?",
+    "dap_an": [
+      "Sau 10 phút nữa",
+      "Đã xuất phát rồi",
+      "Sau 10 giờ nữa",
+      "Hủy chuyến hôm nay"
+    ],
+    "dung": 0,
+    "pinyin": "Chuán jiāngzài shí fēnzhōng hòu chūfā.",
+    "am_thanh": "船将在十分钟后出发。",
+    "giai_thich": "将在…后 (jiāngzài…hòu) = sẽ … sau; 出发 (chūfā) = xuất phát; 十分钟 (shí fēnzhōng) = 10 phút."
+  }
+]

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Bảo Khựa · Proto 3D – Vịnh Hạ Long (anime toon)</title>
+<style>
+html,body{margin:0;height:100%;background:#0a1628;color:#fff;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#c{display:block;width:100%;height:100%;touch-action:none}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:5}
+#fps{position:absolute;top:10px;left:10px;background:rgba(22,23,27,.72);border:2px solid #FFD91F;border-radius:12px;padding:7px 11px;font:800 12px/1.25 ui-monospace,monospace;color:#FFD91F;box-shadow:3px 3px 0 #16171B}
+#info{position:absolute;top:10px;right:10px;max-width:48%;text-align:right;font-size:11px;line-height:1.35;background:rgba(22,23,27,.55);padding:7px 9px;border-radius:12px;border:1px solid rgba(255,255,255,.2)}
+#stickZone{position:absolute;left:0;bottom:0;width:50%;height:42%;pointer-events:auto}
+#lookZone{position:absolute;right:0;top:0;width:50%;height:100%;pointer-events:auto}
+#stickBase{position:absolute;width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);left:24px;bottom:28px;display:none}
+#stickKnob{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:#FFD91F;border:2px solid #16171B;left:60px;top:60px;box-shadow:0 3px 0 #16171B}
+#skillBtn{pointer-events:auto;position:absolute;right:18px;bottom:28px;width:64px;height:64px;border-radius:50%;border:3px solid #16171B;background:linear-gradient(180deg,#7c5cff,#4b2fd6);color:#fff;font-weight:800;font-size:13px;box-shadow:3px 3px 0 #16171B;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1}
+#qPanel{pointer-events:auto;position:absolute;left:8px;right:8px;bottom:118px;background:rgba(22,23,27,.88);border:2px solid #FFD91F;border-radius:16px;padding:12px;display:none;box-shadow:4px 4px 0 #16171B}
+#qPanel .zh{font-size:26px;font-weight:800;letter-spacing:.04em}
+#qPanel .py{color:#ffe9a8;font-style:italic;font-size:14px;margin-top:2px}
+#qPanel .hint{font-size:12px;opacity:.8;margin-top:6px}
+#qOpts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+#qOpts button{min-height:48px;border-radius:12px;border:2px solid #16171B;background:#fff;color:#16171B;font-weight:700;font-size:14px;box-shadow:2px 2px 0 #16171B;pointer-events:auto}
+#qReveal{display:none;margin-top:8px;padding:8px;border-radius:10px;background:rgba(255,217,31,.15);font-size:13px}
+#qReveal.on{display:block}
+#hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;opacity:.65;text-align:center;width:88%}
+#err{position:absolute;left:12px;right:12px;bottom:90px;background:#5a1020;padding:10px;border-radius:10px;display:none;font-size:13px}
+#qual{pointer-events:auto;position:absolute;top:52px;left:10px;border:2px solid #16171B;background:#FFD91F;color:#16171B;font-weight:800;font-size:11px;border-radius:999px;padding:6px 10px;box-shadow:2px 2px 0 #16171B}
+</style>
+<!-- B1 cảnh+điều khiển · B2 GLB · B3 câu hỏi v7 · B4 FX. Spec v7 + moodboard anime toon. KHÔNG deploy. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div id="fps">FPS --</div>
+  <button type="button" id="qual" title="Chất lượng">HQ</button>
+  <div id="info">Vịnh Hạ Long · anime toon<br>Trái joystick · Phải xoay 360°<br>WASD + chuột · 2 ngón zoom</div>
+  <div id="stickZone"><div id="stickBase"><div id="stickKnob"></div></div></div>
+  <div id="lookZone"></div>
+  <button type="button" id="skillBtn">✨<br>Chiêu</button>
+  <div id="qPanel">
+    <div class="zh" id="qZh">你好</div>
+    <div class="py" id="qPy">nǐ hǎo</div>
+    <div class="hint" id="qHint">Chọn nghĩa · không hiện nghĩa trước khi chọn</div>
+    <div id="qOpts"></div>
+    <div id="qReveal"></div>
+  </div>
+  <div id="hint">Proto · Three.js MIT · CC0 Quaternius · Không liên kết với kỳ thi HSK chính thức · chưa deploy</div>
+  <div id="err"></div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { Water } from 'three/addons/objects/Water.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* Palette moodboard */
+const C = {
+  waterNear: 0x3DB8C5, waterDeep: 0x1E90C6,
+  rockA: 0x8A9A8E, rockB: 0x5C6B73, grass: 0x2F4F4F,
+  sun: 0xFFB347, fog: 0xE8F4F8, brand: 0xFFD91F, ink: 0x16171B,
+  sky: 0x87CEEB, ground: 0x8A9A8E,
+  hero: 0x1E90C6, skin: 0xffdbac, hat: 0xFFD91F
+};
+
+const CFG = {
+  pixelRatioMax: 1.5,
+  fogNear: 18, fogFar: 95,
+  camDistMin: 4, camDistMax: 12, camDist: 7.5,
+  camPolarMin: THREE.MathUtils.degToRad(10),
+  camPolarMax: THREE.MathUtils.degToRad(60),
+  moveSpeed: 6.2, joyRadius: 60, joyDead: 0.10,
+  lowFpsMs: 3000, lowFpsThresh: 30,
+  bloomStrength: 0.45, bloomRadius: 0.35, bloomThresh: 0.82
+};
+
+const canvas = document.getElementById('c');
+const fpsEl = document.getElementById('fps');
+const errEl = document.getElementById('err');
+const stickBase = document.getElementById('stickBase');
+const stickKnob = document.getElementById('stickKnob');
+const qualBtn = document.getElementById('qual');
+
+let renderer, scene, camera, clock, composer, bloomPass, water;
+let hero, layers = { near: null, mid: null, far: null };
+let toonGrad;
+const quality = {
+  level: 2, // 2 HQ, 1 mid, 0 low
+  pixelRatio: Math.min(devicePixelRatio || 1, CFG.pixelRatioMax),
+  bloom: true, waterReflect: true, fog: true
+};
+const orbit = { theta: 0.55, phi: THREE.MathUtils.degToRad(32), dist: CFG.camDist };
+const look = { active: false, id: null, lx: 0, ly: 0 };
+const joy = { active: false, id: null, x: 0, y: 0, ox: 0, oy: 0 };
+const keys = Object.create(null);
+const move = new THREE.Vector3();
+const fpsHist = [];
+let lowFpsAcc = 0;
+let inputLockUntil = 0;
+let questions = [];
+let qIndex = 0;
+
+window.__PROTO3D = {
+  fps: 0, avgFps: 0, p5: 0, ready: false, quality, questions,
+  injectMove(x, y) { joy.x = x; joy.y = y; },
+  injectOrbit(dt, dp) {
+    orbit.theta += dt;
+    orbit.phi = THREE.MathUtils.clamp(orbit.phi + dp, CFG.camPolarMin, CFG.camPolarMax);
+  },
+  setOrbit(t, p, d) {
+    if (t != null) orbit.theta = t;
+    if (p != null) orbit.phi = p;
+    if (d != null) orbit.dist = d;
+  },
+  openQuestion: () => openQuestion(),
+  getState: () => ({ orbit: { ...orbit }, hero: hero ? hero.position.toArray() : null })
+};
+
+function showErr(m) { errEl.style.display = 'block'; errEl.textContent = m; console.error(m); }
+
+function makeToonGradient() {
+  const c = document.createElement('canvas'); c.width = 3; c.height = 1;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(3, 1);
+  const px = [0,0,0,255, 140,140,140,255, 255,255,255,255];
+  img.data.set(px); ctx.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(c);
+  tex.minFilter = THREE.NearestFilter;
+  tex.magFilter = THREE.NearestFilter;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function toonMat(color, opts = {}) {
+  return new THREE.MeshToonMaterial({
+    color, gradientMap: toonGrad,
+    emissive: opts.emissive || 0x000000,
+    emissiveIntensity: opts.emissiveIntensity || 0,
+    ...opts
+  });
+}
+
+/** Inverted-hull outline (anime) */
+function addOutline(mesh, scale = 1.04, color = C.ink) {
+  const o = mesh.clone();
+  o.material = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide });
+  o.scale.multiplyScalar(scale);
+  o.renderOrder = -1;
+  mesh.add(o);
+  return o;
+}
+
+function makeSky() {
+  const g = new THREE.SphereGeometry(320, 24, 14);
+  const m = new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false,
+    uniforms: {
+      top: { value: new THREE.Color(0x4A90C8) },
+      mid: { value: new THREE.Color(0xFFB07A) },
+      hor: { value: new THREE.Color(0xFFD4A0) },
+      bot: { value: new THREE.Color(0xE8F4F8) }
+    },
+    vertexShader: `varying vec3 vP; void main(){ vP=normalize(position); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+    fragmentShader: `
+      uniform vec3 top,mid,hor,bot; varying vec3 vP;
+      void main(){
+        float h = vP.y;
+        vec3 c = mix(bot, hor, smoothstep(-0.15, 0.05, h));
+        c = mix(c, mid, smoothstep(0.02, 0.35, h));
+        c = mix(c, top, smoothstep(0.25, 0.95, h));
+        /* sun disc golden hour */
+        vec3 sunDir = normalize(vec3(0.55, 0.22, 0.35));
+        float sun = pow(max(0., dot(normalize(vP), sunDir)), 48.0);
+        c += vec3(1.0, 0.75, 0.35) * sun * 1.2;
+        gl_FragColor = vec4(c, 1.0);
+      }`
+  });
+  return new THREE.Mesh(g, m);
+}
+
+function makeWater() {
+  const geo = new THREE.PlaneGeometry(280, 280);
+  const w = new Water(geo, {
+    textureWidth: quality.level >= 2 ? 512 : 256,
+    textureHeight: quality.level >= 2 ? 512 : 256,
+    waterNormals: new THREE.TextureLoader().load(
+      'https://raw.githubusercontent.com/mrdoob/three.js/r170/examples/textures/waternormals.jpg',
+      t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; }
+    ),
+    sunDirection: new THREE.Vector3(0.55, 0.35, 0.4).normalize(),
+    sunColor: C.sun,
+    waterColor: C.waterDeep,
+    distortionScale: quality.level >= 1 ? 3.2 : 1.6,
+    fog: false,
+    alpha: 0.95
+  });
+  w.rotation.x = -Math.PI / 2;
+  w.position.y = 0;
+  /* tint toward Hạ Long teal */
+  if (w.material && w.material.uniforms && w.material.uniforms.waterColor) {
+    w.material.uniforms.waterColor.value.set(C.waterNear);
+  }
+  return w;
+}
+
+function karstMesh(h, r, color, grassTop) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(
+    new THREE.CylinderGeometry(r * 0.55, r, h, 6, 1),
+    toonMat(color)
+  );
+  body.position.y = h * 0.5;
+  addOutline(body, 1.035);
+  g.add(body);
+  const tip = new THREE.Mesh(
+    new THREE.ConeGeometry(r * 0.55, h * 0.45, 6),
+    toonMat(grassTop ? C.grass : color)
+  );
+  tip.position.y = h + h * 0.2;
+  addOutline(tip, 1.04);
+  g.add(tip);
+  return g;
+}
+
+/** Multi-layer karst: near / mid / far silhouettes */
+function makeKarstLayers() {
+  const near = new THREE.Group();
+  const mid = new THREE.Group();
+  const far = new THREE.Group();
+
+  const nearPos = [[10, 6], [-12, 4], [8, -9], [-6, -11], [14, -2]];
+  nearPos.forEach((p, i) => {
+    const m = karstMesh(3.2 + (i % 3) * 0.7, 1.4 + (i % 2) * 0.4, i % 2 ? C.rockA : C.rockB, true);
+    m.position.set(p[0], 0, p[1]);
+    m.rotation.y = i * 0.7;
+    near.add(m);
+  });
+
+  const midPos = [[28, 18], [-30, 12], [32, -22], [-24, -28], [0, 34], [-36, -8]];
+  midPos.forEach((p, i) => {
+    const m = karstMesh(5 + (i % 4), 2.2 + (i % 3) * 0.5, C.rockB, i % 2 === 0);
+    m.position.set(p[0], -0.3, p[1]);
+    m.scale.setScalar(1.15);
+    mid.add(m);
+  });
+
+  /* far silhouettes — darker, flatter */
+  for (let i = 0; i < 10; i++) {
+    const ang = (i / 10) * Math.PI * 2;
+    const rad = 70 + (i % 3) * 8;
+    const m = karstMesh(8 + (i % 5) * 1.5, 3.5, 0x3a4550, false);
+    m.position.set(Math.cos(ang) * rad, -1, Math.sin(ang) * rad);
+    m.scale.set(1.6, 1.3 + (i % 3) * 0.25, 1.6);
+    far.add(m);
+  }
+
+  /* small jetty + boat (procedural, B2 can swap Kenney Watercraft) */
+  const dock = new THREE.Mesh(new THREE.BoxGeometry(4, 0.25, 1.2), toonMat(0x8B5A2B));
+  dock.position.set(2.5, 0.2, 3.5);
+  addOutline(dock, 1.02);
+  near.add(dock);
+  const boat = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.4, 0.85), toonMat(0xC45C26));
+  boat.position.set(5.5, 0.35, 5);
+  addOutline(boat, 1.03);
+  near.add(boat);
+
+  /* shore strip */
+  const shore = new THREE.Mesh(
+    new THREE.CircleGeometry(9, 20),
+    toonMat(0xC2B280)
+  );
+  shore.rotation.x = -Math.PI / 2;
+  shore.position.y = 0.02;
+  near.add(shore);
+
+  return { near, mid, far };
+}
+
+function makeHero() {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 0.75, 4, 10), toonMat(C.hero));
+  body.position.y = 0.95;
+  addOutline(body, 1.06);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 10), toonMat(C.skin));
+  head.position.y = 1.72;
+  addOutline(head, 1.07);
+  const hat = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.4, 8), toonMat(C.hat, { emissive: C.hat, emissiveIntensity: 0.15 }));
+  hat.position.y = 2.05;
+  addOutline(hat, 1.05);
+  /* sash accent */
+  const sash = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.06, 6, 16), toonMat(0xE63946));
+  sash.position.y = 1.05; sash.rotation.x = Math.PI / 2;
+  g.add(body, head, hat, sash);
+  g.userData.bob = 0;
+  return g;
+}
+
+/** Skill bloom burst — B4 expands per class */
+function spawnSkillBurst() {
+  if (!hero) return;
+  const geo = new THREE.BufferGeometry();
+  const n = 80;
+  const pos = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    pos[i * 3] = (Math.random() - 0.5) * 0.2;
+    pos[i * 3 + 1] = Math.random() * 0.5;
+    pos[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({ color: C.brand, size: 0.18, transparent: true, opacity: 1, depthWrite: false });
+  const pts = new THREE.Points(geo, mat);
+  pts.position.copy(hero.position); pts.position.y += 1.2;
+  scene.add(pts);
+  const t0 = performance.now();
+  function tick() {
+    const t = (performance.now() - t0) / 700;
+    if (t >= 1) { scene.remove(pts); geo.dispose(); mat.dispose(); return; }
+    const a = geo.attributes.position;
+    for (let i = 0; i < n; i++) {
+      a.array[i * 3] += (Math.random() - 0.5) * 0.08;
+      a.array[i * 3 + 1] += 0.04 + Math.random() * 0.03;
+      a.array[i * 3 + 2] += (Math.random() - 0.5) * 0.08;
+    }
+    a.needsUpdate = true;
+    mat.opacity = 1 - t;
+    if (bloomPass && quality.bloom) bloomPass.strength = CFG.bloomStrength + (1 - t) * 0.8;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  setTimeout(() => { if (bloomPass) bloomPass.strength = quality.bloom ? CFG.bloomStrength : 0; }, 750);
+}
+
+function applyQuality(level) {
+  quality.level = level;
+  quality.pixelRatio = level >= 2 ? Math.min(devicePixelRatio || 1, CFG.pixelRatioMax) : 1;
+  quality.bloom = level >= 1;
+  quality.waterReflect = level >= 1;
+  quality.fog = level >= 1;
+  renderer.setPixelRatio(quality.pixelRatio);
+  if (scene.fog) {
+    if (quality.fog) { scene.fog.near = CFG.fogNear; scene.fog.far = CFG.fogFar; }
+    else { scene.fog.near = 200; scene.fog.far = 400; }
+  }
+  if (bloomPass) bloomPass.strength = quality.bloom ? CFG.bloomStrength : 0;
+  if (water && water.material && water.material.uniforms && water.material.uniforms.distortionScale) {
+    water.material.uniforms.distortionScale.value = level >= 1 ? 3.2 : 1.2;
+  }
+  qualBtn.textContent = level >= 2 ? 'HQ' : level === 1 ? 'MID' : 'LOW';
+}
+
+function init() {
+  try {
+    toonGrad = makeToonGradient();
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', alpha: false });
+    renderer.setPixelRatio(quality.pixelRatio);
+    renderer.setSize(innerWidth, innerHeight, false);
+    renderer.setClearColor(0x87CEEB, 1);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    renderer.shadowMap.enabled = false;
+
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(C.fog, CFG.fogNear, CFG.fogFar);
+
+    camera = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, 0.2, 420);
+
+    /* Golden hour */
+    const hemi = new THREE.HemisphereLight(C.sky, C.ground, 0.7);
+    scene.add(hemi);
+    const sun = new THREE.DirectionalLight(C.sun, 1.25);
+    sun.position.set(45, 28, 20);
+    scene.add(sun);
+    const fill = new THREE.DirectionalLight(0xa0c8ff, 0.25);
+    fill.position.set(-30, 20, -10);
+    scene.add(fill);
+
+    scene.add(makeSky());
+    water = makeWater();
+    scene.add(water);
+    layers = makeKarstLayers();
+    scene.add(layers.near, layers.mid, layers.far);
+    hero = makeHero();
+    scene.add(hero);
+
+    /* Post: bloom mobile-safe */
+    composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bs = new THREE.Vector2(Math.min(innerWidth, 720), Math.min(innerHeight, 1280));
+    bloomPass = new UnrealBloomPass(bs, CFG.bloomStrength, CFG.bloomRadius, CFG.bloomThresh);
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
+
+    clock = new THREE.Clock();
+    bindInput();
+    qualBtn.onclick = () => applyQuality((quality.level + 2) % 3);
+    document.getElementById('skillBtn').onclick = () => {
+      if (performance.now() < inputLockUntil) return;
+      inputLockUntil = performance.now() + 300;
+      spawnSkillBurst();
+    };
+
+    loadQuestions().then(() => { window.__PROTO3D.ready = true; });
+    loop();
+  } catch (e) {
+    showErr('WebGL/init: ' + (e && e.message));
+  }
+}
+
+/* ---- Questions: embedded cau_hoi_v7.json (30q) · single-file ---- */
+const CAU_HOI_V7 = [{"id": "v6-bl-01", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 1, "loai": "bat_loi", "type": "text", "distractor_group": "nhận/trả phòng khách sạn", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "我要办理入住。", "dap_an": ["Tôi muốn trả phòng", "Tôi muốn đổi phòng", "Tôi muốn gia hạn phòng", "Tôi muốn làm thủ tục nhận phòng"], "dung": 3, "pinyin": "Wǒ yào bànlǐ rùzhù.", "nghia": "Tôi muốn làm thủ tục nhận phòng.", "giai_thich": "办理入住 (bànlǐ rùzhù) = làm thủ tục nhận phòng; dễ nhầm với 退房 (tuìfáng) trả phòng."}, {"id": "v6-bl-02", "chang": "Hạ Long – Nhà hàng", "ngon_ngu": "zh", "do_kho": 1, "loai": "bat_loi", "type": "text", "distractor_group": "hỏi thông tin khách lịch sự", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "请问您贵姓？", "dap_an": ["Xin hỏi quý khách đi mấy người?", "Xin hỏi quý khách ở mấy đêm?", "Xin hỏi quý họ là gì?", "Xin hỏi quý khách có đặt trước không?"], "dung": 2, "pinyin": "Qǐngwèn nín guìxìng?", "nghia": "Xin hỏi quý họ là gì?", "giai_thich": "贵姓 (guìxìng) = hỏi họ lịch sự; dùng 您 (nín) với khách."}, {"id": "v6-bl-03", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 1, "loai": "bat_loi", "type": "text", "distractor_group": "chấm công / ca làm nhà máy", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "我去打卡。", "dap_an": ["Tôi đi chấm công", "Tôi đi tăng ca", "Tôi đi tan ca", "Tôi đi vào kho"], "dung": 0, "pinyin": "Wǒ qù dǎkǎ.", "nghia": "Tôi đi chấm công.", "giai_thich": "打卡 (dǎkǎ) = chấm công; khác 加班 (jiābān) tăng ca, 下班 (xiàbān) tan ca."}, {"id": "v6-bl-04", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 2, "loai": "bat_loi", "type": "text", "distractor_group": "câu lịch sự quầy lễ tân", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "请稍等。", "dap_an": ["Xin mời vào", "Xin đợi một chút", "Xin mời ngồi", "Xin giữ liên lạc"], "dung": 1, "pinyin": "Qǐng shāo děng.", "nghia": "Xin đợi một chút.", "giai_thich": "稍等 (shāo děng) = đợi một chút; cũng nói 等一下 (děng yíxià)."}, {"id": "v6-bl-05", "chang": "Hạ Long – Du thuyền", "ngon_ngu": "zh", "do_kho": 2, "loai": "bat_loi", "type": "text", "distractor_group": "lên/xuống du thuyền", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "请上船。", "dap_an": ["Mời xuống thuyền", "Mời ngồi yên", "Mời đeo áo phao", "Mời lên thuyền"], "dung": 3, "pinyin": "Qǐng shàng chuán.", "nghia": "Mời lên thuyền.", "giai_thich": "上船 (shàng chuán) = lên thuyền; 下船 (xià chuán) = xuống thuyền."}, {"id": "v6-bl-06", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 2, "loai": "bat_loi", "type": "text", "distractor_group": "bảo dưỡng / sửa máy", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "机器需要保养。", "dap_an": ["Máy cần thay dầu", "Máy đã hỏng rồi", "Máy cần bảo dưỡng", "Máy cần tắt nguồn"], "dung": 2, "pinyin": "Jīqì xūyào bǎoyǎng.", "nghia": "Máy cần bảo dưỡng.", "giai_thich": "保养 (bǎoyǎng) = bảo dưỡng; dễ nhầm 保修 (bǎoxiū) bảo hành, 维修 (wéixiū) sửa chữa."}, {"id": "v6-bl-07", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 2, "loai": "bat_loi", "type": "text", "distractor_group": "đặt phòng / nhận phòng", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "请问您有预订吗？", "dap_an": ["Quý khách đã đặt phòng trước chưa?", "Quý khách muốn trả phòng chứ?", "Quý khách muốn đổi phòng chứ?", "Quý khách muốn ở thêm đêm chứ?"], "dung": 0, "pinyin": "Qǐngwèn nín yǒu yùdìng ma?", "nghia": "Quý khách đã đặt phòng trước chưa?", "giai_thich": "预订 (yùdìng) = đặt trước; khác 退房 (tuìfáng), 续住 (xùzhù) ở thêm."}, {"id": "v6-bl-08", "chang": "Hạ Long – Nhà hàng", "ngon_ngu": "zh", "do_kho": 3, "loai": "bat_loi", "type": "text", "distractor_group": "yêu cầu món ăn / khẩu vị", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "我不吃辣。", "dap_an": ["Tôi không ăn mặn", "Tôi không ăn ngọt", "Tôi không ăn chua", "Tôi không ăn cay"], "dung": 3, "pinyin": "Wǒ bù chī là.", "nghia": "Tôi không ăn cay.", "giai_thich": "不吃辣 (bù chī là) = không ăn cay; 辣 (là) = cay."}, {"id": "v6-bl-09", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 3, "loai": "bat_loi", "type": "text", "distractor_group": "kiểm tra chất lượng hàng", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "这批货没通过质检。", "dap_an": ["Lô hàng này đã xuất kho", "Lô hàng này chưa đạt kiểm tra chất lượng", "Lô hàng này đang đóng gói", "Lô hàng này là hàng mẫu"], "dung": 1, "pinyin": "Zhè pī huò méi tōngguò zhìjiǎn.", "nghia": "Lô hàng này chưa đạt kiểm tra chất lượng.", "giai_thich": "没通过质检 (méi tōngguò zhìjiǎn) = chưa đạt kiểm định chất lượng."}, {"id": "v6-bl-10", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 3, "loai": "bat_loi", "type": "text", "distractor_group": "cọc / thanh toán khách sạn", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "押金退房时退还给您。", "dap_an": ["Phí phòng thu khi nhận phòng", "Phí mini-bar trừ vào hóa đơn", "Tiền cọc hoàn lại khi trả phòng", "Phí muộn giờ tính thêm một đêm"], "dung": 2, "pinyin": "Yājīn tuìfáng shí tuìhuán gěi nín.", "nghia": "Tiền cọc hoàn lại khi trả phòng.", "giai_thich": "押金 (yājīn) = tiền cọc; 退还 (tuìhuán) = hoàn lại; 退房 (tuìfáng) = trả phòng."}, {"id": "v6-hai-01", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 1, "loai": "hai", "type": "text", "distractor_group": "câu mở đầu lịch sự", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "请问一下。", "dap_an": ["Xin hỏi một chút", "Xin ngồi một chút", "Xin chờ một chút", "Xin ký một chút"], "dung": 0, "pinyin": "Qǐngwèn yíxià.", "nghia": "Xin hỏi một chút.", "giai_thich": "问 (wèn, thanh 4) = hỏi; dễ đọc nhầm 吻 (wěn, thanh 3) = hôn."}, {"id": "v6-hai-02", "chang": "Hạ Long – Nhà hàng", "ngon_ngu": "zh", "do_kho": 1, "loai": "hai", "type": "text", "distractor_group": "gọi món nước/canh nhà hàng", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "请来一碗汤。", "dap_an": ["Cho một tô cơm", "Cho một tô phở", "Cho một tô chè", "Cho một tô canh"], "dung": 3, "pinyin": "Qǐng lái yì wǎn tāng.", "nghia": "Cho một tô canh.", "giai_thich": "汤 (tāng, thanh 1) = canh; gần âm 糖 (táng, thanh 2) = đường."}, {"id": "v6-hai-03", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 1, "loai": "hai", "type": "text", "distractor_group": "mua/bán nguyên liệu nhà máy", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "我去买原料。", "dap_an": ["Tôi đi bán nguyên liệu", "Tôi đi kiểm nguyên liệu", "Tôi đi mua nguyên liệu", "Tôi đi chuyển nguyên liệu"], "dung": 2, "pinyin": "Wǒ qù mǎi yuánliào.", "nghia": "Tôi đi mua nguyên liệu.", "giai_thich": "买 (mǎi, thanh 3) = mua; 卖 (mài, thanh 4) = bán — chỉ khác thanh."}, {"id": "v6-hai-04", "chang": "Hạ Long – Nhà hàng", "ngon_ngu": "zh", "do_kho": 2, "loai": "hai", "type": "text", "distractor_group": "gọi món điểm tâm", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "我要水饺。", "dap_an": ["Tôi muốn há cảo", "Tôi muốn mì xào", "Tôi muốn bánh bao", "Tôi muốn cháo trắng"], "dung": 0, "pinyin": "Wǒ yào shuǐjiǎo.", "nghia": "Tôi muốn há cảo (sủi cảo).", "giai_thich": "水饺 (shuǐjiǎo) = há cảo; gần âm 睡觉 (shuìjiào) = ngủ."}, {"id": "v6-hai-05", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 2, "loai": "hai", "type": "text", "distractor_group": "nội quy phòng khách sạn", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "这里不可以抽烟。", "dap_an": ["Ở đây không được ồn ào", "Ở đây không được hút thuốc", "Ở đây không được gửi đồ", "Ở đây không được mang thú cưng"], "dung": 1, "pinyin": "Zhèlǐ bù kěyǐ chōuyān.", "nghia": "Ở đây không được hút thuốc.", "giai_thich": "抽烟 (chōuyān) = hút thuốc; 不可以 (bù kěyǐ) = không được."}, {"id": "v6-hai-06", "chang": "Hạ Long – Du thuyền", "ngon_ngu": "zh", "do_kho": 2, "loai": "hai", "type": "text", "distractor_group": "khen cảnh du lịch", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "景色真美！", "dap_an": ["Cảnh đông quá!", "Cảnh xa quá!", "Cảnh lạ quá!", "Cảnh đẹp quá!"], "dung": 3, "pinyin": "Jǐngsè zhēn měi!", "nghia": "Cảnh đẹp quá!", "giai_thich": "美 (měi, thanh 3) = đẹp; dễ nhầm 妹 (mèi, thanh 4) = em gái."}, {"id": "v6-hai-07", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 2, "loai": "hai", "type": "text", "distractor_group": "gửi hàng / xuất kho", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "我们已经发货了。", "dap_an": ["Chúng tôi đã nổi nóng rồi", "Chúng tôi đã kiểm hàng rồi", "Chúng tôi đã gửi hàng rồi", "Chúng tôi đã nhập kho rồi"], "dung": 2, "pinyin": "Wǒmen yǐjīng fāhuò le.", "nghia": "Chúng tôi đã gửi hàng rồi.", "giai_thich": "发货 (fāhuò) = gửi hàng; gần âm 发火 (fāhuǒ) = nổi nóng."}, {"id": "v6-hai-08", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 3, "loai": "hai", "type": "text", "distractor_group": "hành lý lễ tân", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "请帮我寄存行李。", "dap_an": ["Xin giúp tôi gửi giữ hành lý", "Xin giúp tôi mang hành lý lên phòng", "Xin giúp tôi cân hành lý", "Xin giúp tôi bọc hành lý"], "dung": 0, "pinyin": "Qǐng bāng wǒ jìcún xínglǐ.", "nghia": "Xin giúp tôi gửi giữ hành lý.", "giai_thich": "寄存 (jìcún) = gửi/giữ hộ; gần âm 记错 (jìcuò) = nhớ nhầm."}, {"id": "v6-hai-09", "chang": "Hạ Long – Nhà hàng", "ngon_ngu": "zh", "do_kho": 3, "loai": "hai", "type": "text", "distractor_group": "thanh toán nhà hàng", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "老板，买单！", "dap_an": ["Chủ quán, gọi món!", "Chủ quán, tính tiền!", "Chủ quán, gọi nước!", "Chủ quán, đổi bàn!"], "dung": 1, "pinyin": "Lǎobǎn, mǎidān!", "nghia": "Chủ quán, tính tiền!", "giai_thich": "买单 (mǎidān) = tính tiền; 买 (mǎi) ≠ 卖 (mài) bán."}, {"id": "v6-hai-10", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 3, "loai": "hai", "type": "text", "distractor_group": "họp / trao đổi nội bộ", "cau_hoi": "Chọn nghĩa đúng:", "chu_han": "我们开会五分钟。", "dap_an": ["Chúng ta nghỉ năm phút", "Chúng ta tan ca năm phút", "Chúng ta kiểm hàng năm phút", "Chúng ta họp năm phút"], "dung": 3, "pinyin": "Wǒmen kāihuì wǔ fēnzhōng.", "nghia": "Chúng ta họp năm phút.", "giai_thich": "开会 (kāihuì) = họp; gần âm 开荤 (kāihūn) = phá chay."}, {"id": "v6-nn-01", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 1, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "câu chào đón khách sạn", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "您好，欢迎光临。", "dap_an": ["Xin chào, chúc ngủ ngon", "Xin chào, hẹn gặp lại", "Xin chào, hân hạnh đón tiếp", "Xin chào, xin lỗi quý khách"], "dung": 2, "pinyin": "Nín hǎo, huānyíng guānglín.", "nghia": "Xin chào, hân hạnh đón tiếp.", "giai_thich": "欢迎光临 (huānyíng guānglín) = chào đón khi khách vào."}, {"id": "v6-nn-02", "chang": "Hạ Long – Nhà hàng", "ngon_ngu": "zh", "do_kho": 1, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "gọi đồ uống", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "请给我一杯水。", "dap_an": ["Cho tôi một ly nước", "Cho tôi một ly trà", "Cho tôi một ly sữa", "Cho tôi một ly cà phê"], "dung": 0, "pinyin": "Qǐng gěi wǒ yì bēi shuǐ.", "nghia": "Cho tôi một ly nước.", "giai_thich": "一杯水 (yì bēi shuǐ) = một ly nước."}, {"id": "v6-nn-03", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 1, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "trang phục / bảo hộ lao động", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "请穿工作服。", "dap_an": ["Xin đeo mũ bảo hộ", "Xin đeo kính bảo hộ", "Xin mang găng tay", "Xin mặc đồ bảo hộ lao động"], "dung": 3, "pinyin": "Qǐng chuān gōngzuòfú.", "nghia": "Xin mặc đồ bảo hộ lao động.", "giai_thich": "穿工作服 (chuān gōngzuòfú) = mặc đồng phục/đồ bảo hộ."}, {"id": "v6-nn-04", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 2, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "số tầng / vị trí phòng", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "您的房间在五楼。", "dap_an": ["Phòng quý khách ở tầng 3", "Phòng quý khách ở tầng 5", "Phòng quý khách ở tầng 4", "Phòng quý khách ở tầng 15"], "dung": 1, "pinyin": "Nín de fángjiān zài wǔ lóu.", "nghia": "Phòng quý khách ở tầng 5.", "giai_thich": "五楼 (wǔ lóu) = tầng 5."}, {"id": "v6-nn-05", "chang": "Hạ Long – Du thuyền", "ngon_ngu": "zh", "do_kho": 2, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "cảnh báo an toàn trên thuyền", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "小心，地板很滑。", "dap_an": ["Cẩn thận, lan can thấp", "Cẩn thận, sóng rất mạnh", "Cẩn thận, sàn rất trơn", "Cẩn thận, cửa hẹp"], "dung": 2, "pinyin": "Xiǎoxīn, dìbǎn hěn huá.", "nghia": "Cẩn thận, sàn rất trơn.", "giai_thich": "小心 (xiǎoxīn) = cẩn thận; 地板很滑 (dìbǎn hěn huá) = sàn rất trơn."}, {"id": "v6-nn-06", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 2, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "phân loại hàng gần âm -品", "cau_hoi": "Nghe và chọn chữ đúng:", "am_thanh": "样品", "dap_an": ["样品", "次品", "药品", "成品"], "dung": 0, "pinyin": "yàngpǐn", "nghia": "Hàng mẫu.", "giai_thich": "样品 (yàngpǐn) = hàng mẫu; 次品 (cìpǐn) hàng lỗi; 药品 (yàopǐn) thuốc; 成品 (chéngpǐn) thành phẩm."}, {"id": "v6-nn-07", "chang": "Hạ Long – Nhà hàng", "ngon_ngu": "zh", "do_kho": 2, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "khẩu vị món ăn", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "这道菜不辣。", "dap_an": ["Món này rất cay", "Món này hơi mặn", "Món này hơi ngọt", "Món này không cay"], "dung": 3, "pinyin": "Zhè dào cài bú là.", "nghia": "Món này không cay.", "giai_thich": "不辣 (bú là) = không cay."}, {"id": "v6-nn-08", "chang": "Bãi Cháy – Lễ tân", "ngon_ngu": "zh", "do_kho": 3, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "tình trạng phòng khách sạn", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "对不起，今天房间都满了。", "dap_an": ["Xin lỗi, hôm nay phòng đang dọn", "Xin lỗi, hôm nay phòng đều hết", "Xin lỗi, hôm nay phòng đang sửa", "Xin lỗi, hôm nay chỉ còn phòng đơn"], "dung": 1, "pinyin": "Duìbuqǐ, jīntiān fángjiān dōu mǎn le.", "nghia": "Xin lỗi, hôm nay phòng đều hết.", "giai_thich": "满了 (mǎn le) = đã đầy/hết chỗ."}, {"id": "v6-nn-09", "chang": "Cẩm Phả – Nhà máy", "ngon_ngu": "zh", "do_kho": 3, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "xử lý lô hàng nhà máy", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "这批货需要重新检查。", "dap_an": ["Lô hàng này cần đóng gói lại", "Lô hàng này cần chuyển kho", "Lô hàng này cần kiểm tra lại", "Lô hàng này cần xuất ngay"], "dung": 2, "pinyin": "Zhè pī huò xūyào chóngxīn jiǎnchá.", "nghia": "Lô hàng này cần kiểm tra lại.", "giai_thich": "重新检查 (chóngxīn jiǎnchá) = kiểm tra lại."}, {"id": "v6-nn-10", "chang": "Hạ Long – Du thuyền", "ngon_ngu": "zh", "do_kho": 3, "loai": "nghe_nhanh", "type": "audio", "distractor_group": "giờ xuất phát du thuyền", "cau_hoi": "Nghe và chọn nghĩa đúng:", "am_thanh": "船将在十分钟后出发。", "dap_an": ["Thuyền xuất phát sau 10 phút", "Thuyền xuất phát sau 10 giờ", "Thuyền đã xuất phát 10 phút", "Thuyền hủy trong 10 phút"], "dung": 0, "pinyin": "Chuán jiāngzài shí fēnzhōng hòu chūfā.", "nghia": "Thuyền xuất phát sau 10 phút.", "giai_thich": "十分钟后 (shí fēnzhōng hòu) = sau 10 phút; 出发 (chūfā) = xuất phát."}];
+window.__PROTO3D = window.__PROTO3D || {};
+window.__PROTO3D.CAU_HOI_V7 = CAU_HOI_V7;
+
+
+const FALLBACK_Q = CAU_HOI_V7; // alias
+
+function normalizeV7(raw) {
+  return {
+    id: raw.id || '',
+    chang: raw.chang || '',
+    ngon_ngu: raw.ngon_ngu || 'zh',
+    do_kho: raw.do_kho || 1,
+    loai: raw.loai || '',
+    type: raw.type === 'audio' ? 'audio' : 'text',
+    distractor_group: raw.distractor_group || '',
+    cau_hoi: raw.cau_hoi || '',
+    chu_han: raw.chu_han || '',
+    am_thanh: raw.am_thanh || '',
+    dap_an: (raw.dap_an || []).slice(),
+    dung: raw.dung != null ? raw.dung : 0,
+    pinyin: raw.pinyin || '',
+    nghia: raw.nghia || '',
+    giai_thich: raw.giai_thich || ''
+  };
+}
+
+/** Stage pool: stage1 ~70/30 text/audio; stage3 50/50 (reuse audio). */
+function buildStagePool(stage = 1) {
+  const all = questions.length ? questions : CAU_HOI_V7.map(normalizeV7);
+  const text = all.filter(q => q.type === 'text');
+  const audio = all.filter(q => q.type === 'audio');
+  const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  if (stage >= 3) {
+    const a = shuffle(audio);
+    const t = shuffle(text);
+    const n = Math.min(t.length, a.length, 10);
+    const mix = [];
+    for (let i = 0; i < n; i++) { mix.push(t[i], a[i % a.length]); }
+    return shuffle(mix);
+  }
+  // stage 1: 70% text 30% audio of available
+  const wantAudio = Math.max(1, Math.round(all.length * 0.3));
+  return shuffle(text.concat(shuffle(audio).slice(0, wantAudio)));
+}
+
+window.__PROTO3D.buildStagePool = buildStagePool;
+async function loadQuestions() {
+  // Prefer embedded (single-file). Optional external override if present.
+  try {
+    const r = await fetch('cau_hoi_v7.json', { cache: 'no-store' });
+    if (r.ok) {
+      const data = await r.json();
+      if (Array.isArray(data) && data.length) {
+        questions = data.map(normalizeV7);
+        window.__PROTO3D.questions = questions;
+        console.info('[B3] external cau_hoi_v7.json', questions.length);
+        return questions;
+      }
+    }
+  } catch (_) {}
+  questions = CAU_HOI_V7.map(normalizeV7);
+  window.__PROTO3D.questions = questions;
+  console.info('[B3] embedded CAU_HOI_V7', questions.length);
+  return questions;
+}
+
+function openQuestion() {
+  if (!questions.length) questions = CAU_HOI_V7.map(normalizeV7);
+  const q = questions[qIndex % questions.length];
+  const panel = document.getElementById('qPanel');
+  const opts = document.getElementById('qOpts');
+  const rev = document.getElementById('qReveal');
+  panel.style.display = 'block';
+  rev.classList.remove('on'); rev.innerHTML = '';
+  /* LAW: text = chu_han + pinyin only; audio = TTS am_thanh; NO nghia/giai_thich before answer */
+  const isAudio = q.type === 'audio';
+  document.getElementById('qZh').textContent = isAudio ? '🔊' : (q.chu_han || '');
+  document.getElementById('qPy').textContent = q.pinyin || '';
+  document.getElementById('qHint').textContent = q.cau_hoi || (isAudio ? 'Nghe và chọn' : 'Chọn nghĩa đúng');
+  opts.innerHTML = '';
+  const n = q.dap_an.length;
+  const order = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  order.forEach((orig) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = q.dap_an[orig];
+    b.dataset.orig = String(orig);
+    b.onclick = () => {
+      if (performance.now() < inputLockUntil) return;
+      inputLockUntil = performance.now() + 300;
+      const ok = orig === q.dung;
+      [...opts.querySelectorAll('button')].forEach(btn => {
+        if (+btn.dataset.orig === q.dung) btn.style.background = '#5dffb0';
+      });
+      if (!ok) b.style.background = '#ff7a6e';
+      rev.innerHTML = '<b>' + (ok ? '✓ Đúng' : '✗ Sai') + '</b> · ' +
+        (q.chu_han || q.am_thanh || '') + '<br><i>' + (q.pinyin || '') + '</i><br>' +
+        '<span>' + (q.nghia || '') + '</span><br><small>' + (q.giai_thich || '') + '</small>';
+      rev.classList.add('on');
+      if (ok) spawnSkillBurst();
+      setTimeout(() => { panel.style.display = 'none'; qIndex++; }, 1600);
+    };
+    opts.appendChild(b);
+  });
+  if (isAudio && q.am_thanh && window.speechSynthesis) {
+    const u = new SpeechSynthesisUtterance(q.am_thanh);
+    u.lang = 'zh-CN';
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+}
+
+function bindInput() {
+  const stickZone = document.getElementById('stickZone');
+  const lookZone = document.getElementById('lookZone');
+
+  function joyStart(x, y, id) {
+    joy.active = true; joy.id = id;
+    stickBase.style.display = 'block';
+    const r = stickBase.getBoundingClientRect();
+    joy.ox = r.left + r.width / 2; joy.oy = r.top + r.height / 2;
+    joyMove(x, y);
+  }
+  function joyMove(x, y) {
+    if (!joy.active) return;
+    const dx = x - joy.ox, dy = y - joy.oy;
+    const len = Math.hypot(dx, dy), max = CFG.joyRadius;
+    const nx = len > max ? dx / len * max : dx;
+    const ny = len > max ? dy / len * max : dy;
+    stickKnob.style.left = (60 + nx) + 'px';
+    stickKnob.style.top = (60 + ny) + 'px';
+    let jx = nx / max, jy = ny / max;
+    const mag = Math.hypot(jx, jy);
+    if (mag < CFG.joyDead) { joy.x = 0; joy.y = 0; }
+    else {
+      const s = (mag - CFG.joyDead) / (1 - CFG.joyDead);
+      joy.x = (jx / mag) * s; joy.y = (jy / mag) * s;
+    }
+  }
+  function joyEnd() {
+    joy.active = false; joy.id = null; joy.x = 0; joy.y = 0;
+    stickKnob.style.left = '60px'; stickKnob.style.top = '60px';
+    stickBase.style.display = 'none';
+  }
+
+  stickZone.addEventListener('pointerdown', e => { stickZone.setPointerCapture(e.pointerId); joyStart(e.clientX, e.clientY, e.pointerId); });
+  stickZone.addEventListener('pointermove', e => { if (e.pointerId === joy.id) joyMove(e.clientX, e.clientY); });
+  stickZone.addEventListener('pointerup', e => { if (e.pointerId === joy.id) joyEnd(); });
+  stickZone.addEventListener('pointercancel', e => { if (e.pointerId === joy.id) joyEnd(); });
+
+  lookZone.addEventListener('pointerdown', e => {
+    lookZone.setPointerCapture(e.pointerId);
+    look.active = true; look.id = e.pointerId; look.lx = e.clientX; look.ly = e.clientY;
+  });
+  lookZone.addEventListener('pointermove', e => {
+    if (!look.active || e.pointerId !== look.id) return;
+    const dx = e.clientX - look.lx, dy = e.clientY - look.ly;
+    look.lx = e.clientX; look.ly = e.clientY;
+    orbit.theta -= dx * 0.005;
+    orbit.phi = THREE.MathUtils.clamp(orbit.phi + dy * 0.004, CFG.camPolarMin, CFG.camPolarMax);
+  });
+  lookZone.addEventListener('pointerup', e => { if (e.pointerId === look.id) { look.active = false; look.id = null; } });
+  lookZone.addEventListener('pointercancel', e => { if (e.pointerId === look.id) { look.active = false; look.id = null; } });
+
+  let pinch = null;
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      const a = e.touches[0], b = e.touches[1];
+      pinch = { d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), dist: orbit.dist };
+    }
+  }, { passive: true });
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 2 && pinch) {
+      const a = e.touches[0], b = e.touches[1];
+      const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      orbit.dist = THREE.MathUtils.clamp(pinch.dist * (pinch.d / d), CFG.camDistMin, CFG.camDistMax);
+    }
+  }, { passive: true });
+  canvas.addEventListener('touchend', () => { pinch = null; }, { passive: true });
+
+  addEventListener('keydown', e => {
+    keys[e.code] = true;
+    if (e.code === 'KeyQ') openQuestion();
+  });
+  addEventListener('keyup', e => { keys[e.code] = false; });
+  let md = false;
+  canvas.addEventListener('mousedown', e => {
+    if (e.button === 0 && e.clientX > innerWidth / 2) { md = true; look.lx = e.clientX; look.ly = e.clientY; }
+  });
+  addEventListener('mouseup', () => { md = false; });
+  addEventListener('mousemove', e => {
+    if (!md) return;
+    const dx = e.clientX - look.lx, dy = e.clientY - look.ly;
+    look.lx = e.clientX; look.ly = e.clientY;
+    orbit.theta -= dx * 0.005;
+    orbit.phi = THREE.MathUtils.clamp(orbit.phi + dy * 0.004, CFG.camPolarMin, CFG.camPolarMax);
+  });
+  canvas.addEventListener('wheel', e => {
+    orbit.dist = THREE.MathUtils.clamp(orbit.dist + e.deltaY * 0.01, CFG.camDistMin, CFG.camDistMax);
+  }, { passive: true });
+
+  addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight, false);
+    composer.setSize(innerWidth, innerHeight);
+  });
+
+  /* tap near NPC/hero to open question (B3 interact ≤3m) */
+  lookZone.addEventListener('click', e => {
+    if (performance.now() < inputLockUntil) return;
+    /* simple: double-purpose — if nearly idle click opens Q */
+    if (Math.hypot(joy.x, joy.y) < 0.05) {
+      /* ignore — skill button / Q key preferred for now */
+    }
+  });
+}
+
+function updateHero(dt) {
+  let mx = joy.x, mz = joy.y;
+  if (keys['KeyW'] || keys['ArrowUp']) mz -= 1;
+  if (keys['KeyS'] || keys['ArrowDown']) mz += 1;
+  if (keys['KeyA'] || keys['ArrowLeft']) mx -= 1;
+  if (keys['KeyD'] || keys['ArrowRight']) mx += 1;
+  const len = Math.hypot(mx, mz);
+  if (len > 1) { mx /= len; mz /= len; }
+  const sin = Math.sin(orbit.theta), cos = Math.cos(orbit.theta);
+  move.set(mx * cos + mz * sin, 0, -mx * sin + mz * cos);
+  if (len > 0.01) {
+    hero.position.x += move.x * CFG.moveSpeed * dt;
+    hero.position.z += move.z * CFG.moveSpeed * dt;
+    hero.position.x = THREE.MathUtils.clamp(hero.position.x, -80, 80);
+    hero.position.z = THREE.MathUtils.clamp(hero.position.z, -80, 80);
+    hero.rotation.y = Math.atan2(move.x, move.z);
+    hero.userData.bob += dt * 10;
+    hero.position.y = Math.abs(Math.sin(hero.userData.bob)) * 0.08;
+  } else hero.position.y = 0;
+
+  /* subtle parallax on far layer */
+  if (layers.far) {
+    layers.far.position.x = hero.position.x * 0.08;
+    layers.far.position.z = hero.position.z * 0.08;
+  }
+  if (layers.mid) {
+    layers.mid.position.x = hero.position.x * 0.03;
+    layers.mid.position.z = hero.position.z * 0.03;
+  }
+}
+
+function updateCamera() {
+  const hx = hero.position.x, hz = hero.position.z;
+  const x = hx + orbit.dist * Math.sin(orbit.theta) * Math.sin(orbit.phi);
+  const y = hero.position.y + 1.0 + orbit.dist * Math.cos(orbit.phi);
+  const z = hz + orbit.dist * Math.cos(orbit.theta) * Math.sin(orbit.phi);
+  camera.position.set(x, y, z);
+  camera.lookAt(hx, hero.position.y + 1.15, hz);
+}
+
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  if (water && water.material && water.material.uniforms && water.material.uniforms.time) {
+    water.material.uniforms.time.value += dt;
+  }
+  updateHero(dt);
+  updateCamera();
+  if (composer && quality.bloom) composer.render();
+  else renderer.render(scene, camera);
+
+  const f = dt > 0 ? 1 / dt : 0;
+  fpsHist.push(f);
+  if (fpsHist.length > 120) fpsHist.shift();
+  const avg = fpsHist.reduce((a, b) => a + b, 0) / fpsHist.length;
+  const sorted = fpsHist.slice().sort((a, b) => a - b);
+  const p5 = sorted[Math.max(0, Math.floor(sorted.length * 0.05))] || 0;
+  window.__PROTO3D.fps = f;
+  window.__PROTO3D.avgFps = avg;
+  window.__PROTO3D.p5 = p5;
+  if ((performance.now() / 250 | 0) !== loop._hud) {
+    loop._hud = performance.now() / 250 | 0;
+    fpsEl.textContent = `FPS ${f.toFixed(0)} · avg ${avg.toFixed(0)} · p5 ${p5.toFixed(0)}`;
+  }
+  if (avg < CFG.lowFpsThresh && fpsHist.length > 40) {
+    lowFpsAcc += dt * 1000;
+    if (lowFpsAcc >= CFG.lowFpsMs && quality.level > 0) {
+      applyQuality(quality.level - 1);
+      lowFpsAcc = 0;
+    }
+  } else lowFpsAcc = 0;
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,3927 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Bảo Khựa 阿宝 – Hạ Long Ngữ Tiên v6</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/",
+    "postprocessing": "https://cdn.jsdelivr.net/npm/postprocessing@6.39.5/build/index.js",
+    "@tweenjs/tween.js": "https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@25.0.0/dist/tween.esm.js"
+  }
+}
+</script>
+<script>
+/* Howler: lazy sau pointer/idle — KHÔNG defer-block DOMContentLoaded (Slow3G CDN) */
+window.__loadHowler = function(cb){
+  if (typeof Howl !== 'undefined') { cb && cb(true); return; }
+  if (window.__howlerLoading) { window.__howlerCbs = (window.__howlerCbs||[]).concat(cb||[]); return; }
+  window.__howlerLoading = true; window.__howlerCbs = cb ? [cb] : [];
+  function done(ok){ (window.__howlerCbs||[]).forEach(function(f){ try{f(ok)}catch(e){} }); window.__howlerCbs=[]; window.__howlerLoading=false; }
+  function inject(src, next){
+    var s=document.createElement('script'); s.async=true; s.src=src;
+    var t=setTimeout(function(){ s.onload=s.onerror=null; next(false); }, 2500);
+    s.onload=function(){ clearTimeout(t); done(true); };
+    s.onerror=function(){ clearTimeout(t); next(false); };
+    document.head.appendChild(s);
+  }
+  inject('https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js', function(ok){
+    if (ok || typeof Howl !== 'undefined') return done(true);
+    inject('https://unpkg.com/howler@2.2.4/dist/howler.min.js', function(ok2){ done(!!ok2 || typeof Howl !== 'undefined'); });
+  });
+};
+// Prefetch sau 2.5s idle — không chặn Start
+if (typeof requestIdleCallback === 'function') requestIdleCallback(function(){ setTimeout(function(){ window.__loadHowler(); }, 2500); }, {timeout:5000});
+else setTimeout(function(){ window.__loadHowler(); }, 4000);
+</script>
+<script>
+/* ===== CẤU HÌNH ===== */
+const ZALO_LINK = "https://zalo.me/g/16yx8ptwane8ggwrnyxl";
+const GOOGLE_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform";
+const FAST_SECONDS = 3;
+const FAST_BONUS_FLAT = 10;
+const QUESTION_SECONDS = 10;
+const COMBO_3 = 1.5, COMBO_5 = 2.0;
+const BOSS_TICK_MS = 8000;
+const STAGE_BALANCE = [
+  { bossHP: 500, tickDmg: 10 },
+  { bossHP: 550, tickDmg: 12 }
+];
+const RETRY_SCALE = [1, 0.9, 0.8];
+const TUTORIAL_BOSS_HP = 180; // GIẢ ĐỊNH §2 — mini-boss 1a; full stage1 = 500
+const CLASSES = {
+  /* QA balance: stage1 boss 500; LH 125/44/5; KK 100/52/0; TV 120/45/6; skills via btn; target 72–85% */
+  linh_ho:    { id:'linh_ho', name:'Linh Hồ', py:'Línghú', vi:'Hồ ly lễ tân', hp:125, atk:43, armor:5, emoji:'🦊', art:'v6/art/linh_ho.webp', sig:'欢迎光临！', sigPy:'Huānyíng guānglín!', sigVi:'Hoan nghênh quang lâm!' },
+  kiem_khach: { id:'kiem_khach', name:'Kiếm Khách', py:'Jiànkè', vi:'Hướng dẫn viên', hp:105, atk:53, armor:0, emoji:'⚔️', art:'v6/art/kiem_khach.webp', sig:'跟我来！', sigPy:'Gēn wǒ lái!', sigVi:'Theo tôi nào!' },
+  thiet_ve:   { id:'thiet_ve', name:'Thiết Vệ', py:'Tiěwèi', vi:'Thợ xưởng', hp:120, atk:45, armor:6, emoji:'🛡️', art:'v6/art/thiet_ve.webp', sig:'有我在。', sigPy:'Yǒu wǒ zài.', sigVi:'Có tôi ở đây.' }
+};
+const CLASS_SKILLS = {
+  linh_ho: [
+    { id:'hoi_xuan', name:'Hồi xuân quán', py:'Huí chūn guàn', vi:'Hồi máu quán', desc:'+25 HP (1×/stage)' },
+    { id:'dinh_ngon', name:'Đình ngôn', py:'Tíng yán', vi:'Ngừng lời', desc:'Boss bỏ 1 tick · stun 3s' }
+  ],
+  kiem_khach: [
+    { id:'lien_cu', name:'Liên cú', py:'Lián jù', vi:'Đòn liên', desc:'Câu đúng kế ×1.25' },
+    { id:'dot_kich', name:'Đột kích', py:'Dū jī', vi:'Đột kích', desc:'+15 ST tức thì (1×/stage)' }
+  ],
+  thiet_ve: [
+    { id:'giap_xuong', name:'Giáp xưởng', py:'Jiǎ xiàng', vi:'Giáp xưởng', desc:'4s nhận ×0.5 ST' },
+    { id:'phan_am', name:'Phản âm', py:'Fǎn yīn', vi:'Phản âm', desc:'Sau khi chịu hit, phản 20 ST' }
+  ]
+};
+const ART = {
+  bg: 'v6/art/bg_ha_long.webp',
+  boss: 'v6/art/boss_hon_ngu.webp',
+  placeholder: false // official battle sprites webp (2026-10-30)
+};
+const Q1_NIHAO = {
+  id:'v6-q1-nihao', chang:'Bãi Cháy – Mở ấn', ngon_ngu:'zh', do_kho:1, type:'mc', topic:'hotel',
+  cau_hoi:'Chọn nghĩa đúng của 你好',
+  dap_an:['Xin chào','Tạm biệt','Cảm ơn','Xin lỗi'], dung:0,
+  pinyin:'nǐ hǎo', giai_thich:'Xin chào', zh:'你好',
+  optionPy:['nǐ hǎo','zàijiàn','xièxie','duìbuqǐ'],
+  optionVi:['Xin chào','Tạm biệt','Cảm ơn','Xin lỗi']
+};
+ // ẩn: thua 0/1/2+ → nhân boss HP
+const MAX_STAGE_QUESTIONS = 18; // lặp câu sai vào pool tối đa
+const UNLOCK_CODE = 'BAOKHUA'; // GIẢ ĐỊNH — anh Bảo đổi sau; so khớp không phân biệt hoa thường
+const STAGES = [
+  { id:1, key:'hotel', name:'Bãi Cháy – Khách sạn', boss:'Boss Lễ Tân', topics:['hotel','hsk'], badge:'🏅Bãi Cháy' },
+  { id:2, key:'factory', name:'Cẩm Phả – Nhà máy', boss:'Boss Tổ trưởng', topics:['factory'], badge:'🏅Cẩm Phả' }
+];
+
+const FORM_UTM_GAME = 'utm_source=game&utm_campaign=lop_0211';
+const INVITE_BLURB = '99k cho 3 tháng, 299k cho 1 năm, học Zoom thứ Hai, Tư, Sáu lúc 20:00';
+const INVITE_SHARE_LINE = 'Thẻ 99k/299k · Zoom 20:00 T2 T4 T6 · buổi đầu 02/11';
+const OFFER_HOLD = '⏰ Giữ chỗ đến 18:00 ngày 01/11';
+const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 18:00 ngày 01/11 → bạn được cộng thêm 7 ngày.';
+const OFFER_MINIGAME = '🎯 Mini game Zalo đoán nghĩa → giảm đến 20k';
+function holdSeatExpired() {
+  // 18:00 01/11/2026 Asia/Saigon = 11:00 UTC
+  return Date.now() >= Date.parse('2026-11-01T11:00:00Z');
+}
+function applyHoldSeatVisibility() {
+  const exp = holdSeatExpired();
+  document.querySelectorAll('[data-offer-hold],[data-offer-referral]').forEach(el => { el.hidden = exp; });
+}
+function withUtm(url, qs) {
+  if (!url || /THAY_/.test(url)) return url;
+  return url + (url.includes('?') ? '&' : '?') + qs;
+}
+/*
+===== NGÂN HÀNG CÂU HỎI =====
+Xem /workspace/game/v3/QUESTION_FORMAT.md
+type: mc | listen | order | fill | situ
+topic: hotel | factory | hsk
+Mọi câu Trung phải có py + vi.
+*/
+/** Schema bắt buộc (9 field) → runtime. Field phụ: type/topic/zh/optionPy/optionVi/words/... */
+const LOAI_TO_TYPE = { bat_loi: 'bat_loi', hai: 'hai', nghe_nhanh: 'nghe_nhanh' };
+function topicFromChang(chang) {
+  const s = String(chang || '');
+  if (/Cẩm\s*Phả|Nhà máy|nhà máy/i.test(s)) return 'factory';
+  if (/HSK/i.test(s)) return 'hsk';
+  return 'hotel';
+}
+function normalizeQ(raw) {
+  if (!raw) return raw;
+  if (raw.cau_hoi == null && (raw.q != null || raw.options != null)) return raw;
+  const type = raw.type || LOAI_TO_TYPE[raw.loai] || 'mc';
+  const topic = raw.topic || topicFromChang(raw.chang);
+  const answer = (type === 'order' && raw.answerOrder) ? raw.answerOrder : (raw.dung != null ? raw.dung : 0);
+  const am = raw.am_thanh || '';
+  const q = {
+    id: raw.id, chang: raw.chang, ngon_ngu: raw.ngon_ngu || 'zh', do_kho: raw.do_kho || 1,
+    type, topic, loai: raw.loai || type,
+    q: raw.cau_hoi,
+    options: (raw.dap_an || []).slice(),
+    answer,
+    py: raw.pinyin || '',
+    vi: raw.giai_thich || '',
+    zh: raw.zh || '',
+    am_thanh: am,
+    optionPy: raw.optionPy, optionVi: raw.optionVi,
+    words: raw.words, wordPy: raw.wordPy, wordVi: raw.wordVi,
+    speak: raw.speak || am || undefined,
+    blankHint: raw.blankHint, stage: raw.stage
+  };
+  if (!q.zh) {
+    if (type === 'nghe_nhanh' && am) q.zh = am;
+    else if (type === 'order' && q.options[0]) q.zh = q.options[0];
+    else if (typeof answer === 'number' && q.options[answer]) q.zh = q.options[answer];
+  }
+  return q;
+}
+function normalizeQuestions(arr) { return (arr || []).map(normalizeQ); }
+
+const QUESTIONS_RAW = [
+  {id:"bc-01",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách đến quầy lễ tân — câu nào hỏi số người trong đoàn?",dap_an:["请问您几位？","请问您住几天？","请问您贵姓？","请问您有预订吗？"],dung:0,pinyin:"Qǐngwèn nín jǐ wèi?",giai_thich:"Xin hỏi quý khách có mấy vị?",type:"situ",topic:"hotel",zh:"请问您几位？",optionPy:["Qǐngwèn nín jǐ wèi?","Qǐngwèn nín zhù jǐ tiān?","Qǐngwèn nín guìxìng?","Qǐngwèn nín yǒu yùdìng ma?"],optionVi:["Xin hỏi mấy vị?","Quý khách ở mấy ngày?","Quý khách họ gì?","Quý khách đặt phòng trước chưa?"]},
+  {id:"bc-02",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách muốn làm gì?",dap_an:["Nhận phòng","Trả phòng","Gọi taxi","Đặt bàn"],dung:0,pinyin:"Wǒ xiǎng bànlǐ rùzhù.",giai_thich:"Tôi muốn làm thủ tục nhận phòng.",type:"mc",topic:"hotel",zh:"我想办理入住。"},
+  {id:"bc-03",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Trả phòng” tiếng Trung là gì?",dap_an:["入住","退房","早餐","护照"],dung:1,pinyin:"tuìfáng",giai_thich:"Trả phòng / check-out",type:"mc",topic:"hotel",zh:"退房",optionPy:["rùzhù","tuìfáng","zǎocān","hùzhào"],optionVi:["Nhận phòng","Trả phòng","Bữa sáng","Hộ chiếu"]},
+  {id:"bc-04",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Lễ tân đang yêu cầu gì?",dap_an:["Xin số điện thoại","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"],dung:1,pinyin:"Qǐng chūshì nín de hùzhào.",giai_thich:"Xin xuất trình hộ chiếu của anh/chị.",type:"mc",topic:"hotel",zh:"请出示您的护照。"},
+  {id:"bc-05",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi gì?",dap_an:["Mấy giờ ăn sáng","Phòng giá bao nhiêu","Wifi mật khẩu gì","Bể bơi ở đâu"],dung:0,pinyin:"Zǎocān jǐ diǎn kāishǐ?",giai_thich:"Bữa sáng bắt đầu lúc mấy giờ?",type:"mc",topic:"hotel",zh:"早餐几点开始？"},
+  {id:"bc-06",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Phòng khách ở đâu?",dap_an:["Tầng 1","Tầng 6","Tầng 8","Tầng 10"],dung:2,pinyin:"Nín de fángjiān zài bā lóu.",giai_thich:"Phòng của anh/chị ở tầng tám.",type:"mc",topic:"hotel",zh:"您的房间在八楼。"},
+  {id:"bc-07",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Giờ trả phòng là mấy giờ?",dap_an:["10 giờ sáng","12 giờ trưa","2 giờ chiều","6 giờ tối"],dung:1,pinyin:"Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.",giai_thich:"Giờ trả phòng là 12 giờ trưa.",type:"mc",topic:"hotel",zh:"退房时间是中午十二点。"},
+  {id:"bc-08",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Thang máy ở bên kia","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"],dung:0,pinyin:"Diàntī zài nàbiān.",giai_thich:"Thang máy ở bên kia.",type:"listen",topic:"hotel",zh:"电梯在那边。",speak:"电梯在那边。"},
+  {id:"bc-09",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe câu khách nói — họ cần gì?",dap_an:["Giờ trả phòng","Mật khẩu WiFi","Giá phòng","Số tầng"],dung:1,pinyin:"WiFi mìmǎ shì duōshǎo?",giai_thich:"Mật khẩu WiFi là bao nhiêu?",type:"listen",topic:"hotel",zh:"WiFi密码是多少？",speak:"WiFi密码是多少？"},
+  {id:"cp-01",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe — công nhân hỏi gì?",dap_an:["洗手间在哪里？","几点下班？","机器坏了。","今天加班。"],dung:0,pinyin:"Xǐshǒujiān zài nǎlǐ?",giai_thich:"Nhà vệ sinh ở đâu?",type:"listen",topic:"factory",zh:"洗手间在哪里？",optionPy:["Xǐshǒujiān zài nǎlǐ?","Jǐ diǎn xiàbān?","Jīqì huài le.","Jīntiān jiābān."],optionVi:["Nhà vệ sinh ở đâu?","Mấy giờ tan ca?","Máy hỏng rồi","Hôm nay làm thêm"],speak:"洗手间在哪里？"},
+  {id:"bc-10",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa.",dap_an:["Đi xe buýt đi làm","Đi bộ về nhà","Ăn cơm trưa","Học tiếng Trung"],dung:0,pinyin:"Wǒ měitiān zuò gōngjiāochē qù shàngbān.",giai_thich:"Tôi mỗi ngày đi xe buýt đi làm.",type:"listen",topic:"hsk",zh:"我每天坐公交车去上班。",speak:"我每天坐公交车去上班。"},
+  {id:"bc-11",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp thành câu khi đưa thẻ phòng.",dap_an:["这是您的房卡。","请出示护照。","我要退房。","电梯在那边。"],dung:0,pinyin:"Zhè shì nín de fángkǎ.",giai_thich:"Đây là thẻ phòng của anh/chị.",type:"order",topic:"hotel",zh:"这是您的房卡。",words:["这是","您的","房卡"],wordPy:["Zhè shì","nín de","fángkǎ"],wordVi:["Đây là","của quý khách","thẻ phòng"],answerOrder:["这是","您的","房卡"]},
+  {id:"bc-12",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp lời đáp khi khách cảm ơn.",dap_an:["不客气。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Bú kèqi.",giai_thich:"Không có gì.",type:"order",topic:"hotel",zh:"不客气。",words:["不","客气"],wordPy:["Bú","kèqi"],wordVi:["không","khách sáo"],answerOrder:["不","客气"]},
+  {id:"cp-02",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp: “Xin đeo kính bảo hộ.”",dap_an:["请戴护目镜。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Qǐng dài hùmùjìng.",giai_thich:"Xin hãy đeo kính bảo hộ.",type:"order",topic:"factory",zh:"请戴护目镜。",words:["请","戴","护目镜"],wordPy:["Qǐng","dài","hùmùjìng"],wordVi:["xin","đeo","kính bảo hộ"],answerOrder:["请","戴","护目镜"]},
+  {id:"bc-13",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp câu (HSK 1 · luyện tập, không phải đề chính thức): Tôi muốn học tiếng Trung.",dap_an:["我想学汉语。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Wǒ xiǎng xué Hànyǔ.",giai_thich:"Tôi muốn học tiếng Trung.",type:"order",topic:"hsk",zh:"我想学汉语。",words:["我","想","学","汉语"],wordPy:["Wǒ","xiǎng","xué","Hànyǔ"],wordVi:["tôi","muốn","học","tiếng Hán"],answerOrder:["我","想","学","汉语"]},
+  {id:"bc-14",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền từ: Thang máy tiếng Trung là ____.",dap_an:["电梯","房间","前台","海边"],dung:0,pinyin:"diàntī",giai_thich:"Thang máy",type:"fill",topic:"hotel",zh:"____",optionPy:["diàntī","fángjiān","qiántái","hǎibiān"],optionVi:["Thang máy","Phòng","Quầy lễ tân","Bờ biển"],blankHint:"thang máy"},
+  {id:"bc-15",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống.",dap_an:["八","六","七","九"],dung:0,pinyin:"Nín de fángjiān zài ____ lóu.",giai_thich:"Phòng anh/chị ở tầng …",type:"fill",topic:"hotel",zh:"您的房间在____楼。",optionPy:["bā","liù","qī","jiǔ"],optionVi:["Tám","Sáu","Bảy","Chín"],blankHint:"số tầng"},
+  {id:"cp-03",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền: Chúng tôi tan ca lúc ____ giờ.",dap_an:["五","三","九","零"],dung:0,pinyin:"Wǒmen ____ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc … giờ.",type:"fill",topic:"factory",zh:"我们____点下班。",optionPy:["wǔ","sān","jiǔ","líng"],optionVi:["Năm","Ba","Chín","Không"],blankHint:"giờ"},
+  {id:"bc-16",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["坐公交车","睡觉","游泳","唱歌"],dung:0,pinyin:"Wǒ ____ qù shàngbān.",giai_thich:"Tôi đi … đi làm.",type:"fill",topic:"hsk",zh:"我____去上班。",optionPy:["zuò gōngjiāochē","shuìjiào","yóuyǒng","chànggē"],optionVi:["Đi xe buýt","Ngủ","Bơi","Hát"],blankHint:"phương tiện"},
+  {id:"bc-17",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách cảm ơn sau khi nhận phòng. Bạn đáp?",dap_an:["不用谢。","对不起。","再见。","没有。"],dung:0,pinyin:"Bú yòng xiè.",giai_thich:"Không cần cảm ơn.",type:"situ",topic:"hotel",zh:"不用谢。",optionPy:["Bú yòng xiè.","Duìbuqǐ.","Zàijiàn.","Méiyǒu."],optionVi:["Không cần cảm ơn","Xin lỗi","Tạm biệt","Không có"]},
+  {id:"bc-18",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi đường ra biển. Câu nào tự nhiên?",dap_an:["往海边走。","请出示护照。","电梯在那边。","前台在这里。"],dung:0,pinyin:"Wǎng hǎibiān zǒu.",giai_thich:"Đi về phía biển.",type:"situ",topic:"hotel",zh:"往海边走。",optionPy:["Wǎng hǎibiān zǒu.","Qǐng chūshì hùzhào.","Diàntī zài nàbiān.","Qiántái zài zhèlǐ."],optionVi:["Đi về phía biển","Xin hộ chiếu","Thang máy bên kia","Quầy lễ tân ở đây"]},
+  {id:"cp-04",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Công nhân hỏi giờ tan ca. Bạn đáp?",dap_an:["我们五点下班。","我们五点上班。","今天加班。","请去打卡。"],dung:0,pinyin:"Wǒmen wǔ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc 5 giờ.",type:"situ",topic:"factory",zh:"我们五点下班。",optionPy:["Wǒmen wǔ diǎn xiàbān.","Wǒmen wǔ diǎn shàngbān.","Jīntiān jiābān.","Qǐng qù dǎkǎ."],optionVi:["Tan ca lúc 5 giờ","Đi làm lúc 5 giờ","Hôm nay làm thêm","Xin đi chấm công"]},
+  {id:"cp-05",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nhắc an toàn trước khi vào xưởng — câu nào đúng?",dap_an:["请戴安全帽。","请去打卡。","这是次品。","仓库在那边。"],dung:0,pinyin:"Qǐng dài ānquánmào.",giai_thich:"Xin hãy đội mũ bảo hộ.",type:"situ",topic:"factory",zh:"请戴安全帽。",optionPy:["Qǐng dài ānquánmào.","Qǐng qù dǎkǎ.","Zhè shì cìpǐn.","Cāngkù zài nàbiān."],optionVi:["Xin đội mũ bảo hộ","Xin đi chấm công","Đây là hàng kém","Kho ở bên kia"]},
+  {id:"cp-06",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Máy dừng — bạn báo tổ trưởng thế nào?",dap_an:["机器坏了。","机器在仓库。","我要加班。","质量有问题。"],dung:0,pinyin:"Jīqì huài le.",giai_thich:"Máy hỏng rồi.",type:"situ",topic:"factory",zh:"机器坏了。",optionPy:["Jīqì huài le.","Jīqì zài cāngkù.","Wǒ yào jiābān.","Zhìliàng yǒu wèntí."],optionVi:["Máy hỏng rồi","Máy ở trong kho","Tôi muốn làm thêm","Chất lượng có vấn đề"]},
+  {id:"bc-19",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bạn tự giới thiệu trong lớp (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["我叫宝，我是越南人。","我要办理入住。","请戴安全帽。","退房时间是十二点。"],dung:0,pinyin:"Wǒ jiào Bǎo, wǒ shì Yuènán rén.",giai_thich:"Tôi tên Bảo, tôi là người Việt Nam.",type:"situ",topic:"hsk",zh:"我叫宝，我是越南人。",optionPy:["Wǒ jiào Bǎo, wǒ shì Yuènán rén.","Wǒ yào bànlǐ rùzhù.","Qǐng dài ānquánmào.","Tuìfáng shíjiān shì shí'èr diǎn."],optionVi:["Tôi tên Bảo, người Việt","Tôi muốn nhận phòng","Đội mũ bảo hộ","Trả phòng 12h"]},
+  {id:"bc-20",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi giá món ăn ở quán — câu nào đúng?",dap_an:["这个多少钱？","洗手间在哪里？","请出示护照。","机器坏了。"],dung:0,pinyin:"Zhège duōshǎo qián?",giai_thich:"Cái này bao nhiêu tiền?",type:"situ",topic:"hsk",zh:"这个多少钱？",optionPy:["Zhège duōshǎo qián?","Xǐshǒujiān zài nǎlǐ?","Qǐng chūshì hùzhào.","Jīqì huài le."],optionVi:["Bao nhiêu tiền?","WC ở đâu?","Xin hộ chiếu","Máy hỏng"]},
+  {id:"bc-21",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Chọn nghĩa đúng của 学习",dap_an:["Học tập","Ngủ","Chạy","Ăn"],dung:0,pinyin:"xuéxí",giai_thich:"Học / học tập",type:"mc",topic:"hsk",zh:"学习"},
+  {id:"cp-07",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Tan ca” tiếng Trung là?",dap_an:["上班","下班","加班","仓库"],dung:1,pinyin:"xiàbān",giai_thich:"Tan ca / hết giờ làm",type:"mc",topic:"factory",zh:"下班",optionPy:["shàngbān","xiàbān","jiābān","cāngkù"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Kho hàng"]},
+  {id:"cp-08",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Mũ bảo hộ” tiếng Trung là?",dap_an:["安全帽","次品","打卡","加班"],dung:0,pinyin:"ānquánmào",giai_thich:"Mũ bảo hộ",type:"mc",topic:"factory",zh:"安全帽",optionPy:["ānquánmào","cìpǐn","dǎkǎ","jiābān"],optionVi:["Mũ bảo hộ","Hàng kém / phế phẩm","Chấm công","Làm thêm giờ"],stage:2},
+  {id:"cp-09",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Công nhân hỏi phân xưởng. Câu nào đúng?",dap_an:["车间在哪里？","仓库在哪里？","今天加班吗？","机器坏了吗？"],dung:0,pinyin:"Chējiān zài nǎlǐ?",giai_thich:"Phân xưởng ở đâu?",type:"mc",topic:"factory",zh:"车间在哪里？",optionPy:["Chējiān zài nǎlǐ?","Cāngkù zài nǎlǐ?","Jīntiān jiābān ma?","Jīqì huài le ma?"],optionVi:["Phân xưởng ở đâu?","Kho ở đâu?","Hôm nay tăng ca không?","Máy hỏng rồi phải không?"],stage:2},
+  {id:"cp-10",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nghe — QC nói gì về sản phẩm?",dap_an:["这个有质量问题。","请戴安全帽。","今天加班。","机器坏了。"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"listen",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Qǐng dài ānquánmào.","Jīntiān jiābān.","Jīqì huài le."],optionVi:["Cái này có vấn đề chất lượng","Xin đội mũ bảo hộ","Hôm nay làm thêm","Máy hỏng rồi"],speak:"这个有质量问题。",stage:2},
+  {id:"cp-11",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Sắp xếp: Cần sửa chữa.",dap_an:["需要维修。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Xūyào wéixiū.",giai_thich:"Cần sửa chữa.",type:"order",topic:"factory",zh:"需要维修。",words:["需要","维修"],wordPy:["Xūyào","wéixiū"],wordVi:["cần","sửa chữa"],answerOrder:["需要","维修"],stage:2},
+  {id:"cp-12",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Điền: Xin ____ mũ bảo hộ.",dap_an:["戴","吃","看","睡"],dung:0,pinyin:"Qǐng ____ ānquánmào.",giai_thich:"Xin … mũ bảo hộ.",type:"fill",topic:"factory",zh:"请____安全帽。",optionPy:["dài","chī","kàn","shuì"],optionVi:["Đội/mang","Ăn","Nhìn","Ngủ"],blankHint:"động từ",stage:2},
+  {id:"cp-13",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"QC kiểm hàng — câu nào đúng?",dap_an:["这个有质量问题。","请去打卡。","请去仓库。","今天打卡了吗？"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"situ",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Qǐng qù dǎkǎ.","Qǐng qù cāngkù.","Jīntiān dǎkǎ le ma?"],optionVi:["Cái này có vấn đề chất lượng","Xin đi chấm công","Xin đến kho","Hôm nay đã chấm công chưa?"],stage:2},
+  {id:"cp-14",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Đi làm / vào ca” là?",dap_an:["上班","下班","加班","打卡"],dung:0,pinyin:"shàngbān",giai_thich:"Đi làm / vào ca",type:"mc",topic:"factory",zh:"上班",optionPy:["shàngbān","xiàbān","jiābān","dǎkǎ"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Chấm công"],stage:2},
+  {id:"cp-15",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Báo hàng lỗi cho QC — câu nào đúng?",dap_an:["这是不良品。","这是合格品。","请去打卡。","仓库在那边。"],dung:0,pinyin:"Zhè shì bùliángpǐn.",giai_thich:"Đây là hàng lỗi.",type:"situ",topic:"factory",zh:"这是不良品。",optionPy:["Zhè shì bùliángpǐn.","Zhè shì hégépǐn.","Qǐng qù dǎkǎ.","Cāngkù zài nàbiān."],optionVi:["Đây là hàng lỗi","Đây là hàng đạt chuẩn","Xin đi chấm công","Kho ở bên kia"],stage:2},
+  {id:"cp-16",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Trước khi vào xưởng, nhắc công nhân 'Xin đeo kính bảo hộ' nói thế nào?",dap_an:["请戴护目镜","请戴安全帽","请穿工作服","请去打卡"],dung:0,pinyin:"Qǐng dài hùmùjìng",giai_thich:"护目镜 (hùmùjìng) = kính bảo hộ; 安全帽 (ānquánmào) = mũ bảo hộ.",type:"situ",topic:"factory",zh:"请戴护目镜",optionPy:["Qǐng dài hùmùjìng","Qǐng dài ānquánmào","Qǐng chuān gōngzuòfú","Qǐng qù dǎkǎ"],optionVi:["Xin đeo kính bảo hộ","Xin đội mũ bảo hộ","Xin mặc đồ bảo hộ","Xin đi chấm công"]},
+  {id:"cp-17",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bảo công nhân đi chấm công đầu ca nói thế nào?",dap_an:["请去仓库","请去下班","请去打卡","请去加班"],dung:2,pinyin:"Qǐng qù dǎkǎ",giai_thich:"打卡 (dǎkǎ) = chấm công.",type:"situ",topic:"factory",zh:"请去打卡",optionPy:["Qǐng qù cāngkù","Qǐng qù xiàbān","Qǐng qù dǎkǎ","Qǐng qù jiābān"],optionVi:["Xin đến kho","Xin đi tan ca","Xin đi chấm công","Xin đi tăng ca"]},
+  {id:"cp-18",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi đồng nghiệp 'Hôm nay có tăng ca không?' nói thế nào?",dap_an:["今天上班吗？","今天加班吗？","今天下班吗？","今天打卡了吗？"],dung:1,pinyin:"Jīntiān jiābān ma?",giai_thich:"加班 (jiābān) = làm thêm, tăng ca.",type:"situ",topic:"factory",zh:"今天加班吗？",optionPy:["Jīntiān shàngbān ma?","Jīntiān jiābān ma?","Jīntiān xiàbān ma?","Jīntiān dǎkǎ le ma?"],optionVi:["Hôm nay đi làm không?","Hôm nay tăng ca không?","Hôm nay tan ca không?","Hôm nay đã chấm công chưa?"]},
+  {id:"cp-19",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Chỉ đường cho khách: 'Kho hàng ở bên kia' nói thế nào?",dap_an:["车间在那边","办公室在那边","仓库在那边","洗手间在那边"],dung:2,pinyin:"Cāngkù zài nàbiān",giai_thich:"仓库 (cāngkù) = kho; 车间 (chējiān) = phân xưởng.",type:"situ",topic:"factory",zh:"仓库在那边",stage:2,optionPy:["Chējiān zài nàbiān","Bàngōngshì zài nàbiān","Cāngkù zài nàbiān","Xǐshǒujiān zài nàbiān"],optionVi:["Phân xưởng bên kia","Văn phòng bên kia","Kho bên kia","WC bên kia"]},
+  {id:"cp-20",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"QC lấy hàng để đối chiếu, nói 'Đây là hàng mẫu' thế nào?",dap_an:["这是次品","这是样品","这是成品","这是原料"],dung:1,pinyin:"Zhè shì yàngpǐn",giai_thich:"样品 (yàngpǐn) = hàng mẫu; 成品 (chéngpǐn) = thành phẩm; 原料 (yuánliào) = nguyên liệu.",type:"situ",topic:"factory",zh:"这是样品",stage:2,optionPy:["Zhè shì cìpǐn","Zhè shì yàngpǐn","Zhè shì chéngpǐn","Zhè shì yuánliào"],optionVi:["Đây là hàng kém","Đây là hàng mẫu","Đây là thành phẩm","Đây là nguyên liệu"]},
+  {id:"cp-21",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nói với đoàn kiểm tra: 'Xin đợi một chút, giám đốc đến ngay' thế nào?",dap_an:["请稍等，工人马上到","请稍等，机器马上修好","请稍等，仓库马上开门","请稍等，老板马上到"],dung:3,pinyin:"Qǐng shāo děng, lǎobǎn mǎshàng dào",giai_thich:"老板 (lǎobǎn) = sếp, giám đốc; 马上 (mǎshàng) = ngay.",type:"situ",topic:"factory",zh:"请稍等，老板马上到",stage:2,optionPy:["Qǐng shāo děng, gōngrén mǎshàng dào","Qǐng shāo děng, jīqì mǎshàng xiū hǎo","Qǐng shāo děng, cāngkù mǎshàng kāimén","Qǐng shāo děng, lǎobǎn mǎshàng dào"],optionVi:["Xin đợi, công nhân đến ngay","Xin đợi, máy sửa xong ngay","Xin đợi, kho mở ngay","Xin đợi, giám đốc đến ngay"]},
+  {id:"cp-22",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Đoàn PCCC sắp vào. Nhắc tổ trưởng 'Hãy chuẩn bị bình chữa cháy' nói thế nào?",dap_an:["请准备安全帽","请准备灭火器","请准备打卡机","请准备样品"],dung:1,pinyin:"Qǐng zhǔnbèi mièhuǒqì",giai_thich:"灭火器 (mièhuǒqì) = bình chữa cháy.",type:"situ",topic:"factory",zh:"请准备灭火器",stage:2,optionPy:["Qǐng zhǔnbèi ānquánmào","Qǐng zhǔnbèi mièhuǒqì","Qǐng zhǔnbèi dǎkǎjī","Qǐng zhǔnbèi yàngpǐn"],optionVi:["Xin chuẩn bị mũ bảo hộ","Xin chuẩn bị bình chữa cháy","Xin chuẩn bị máy chấm công","Xin chuẩn bị hàng mẫu"]},
+  {id:"cp-23",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Báo sếp Trung Quốc: 'Lô hàng này đã đạt kiểm tra chất lượng' nói thế nào?",dap_an:["这批货有质量问题","这批货是次品","这批货已通过质检","这批货还没生产"],dung:2,pinyin:"Zhè pī huò yǐ tōngguò zhìjiǎn",giai_thich:"这批货 (zhè pī huò) = lô hàng này; 通过 (tōngguò) = đạt; 质检 (zhìjiǎn) = kiểm tra chất lượng.",type:"situ",topic:"factory",zh:"这批货已通过质检",stage:2,optionPy:["Zhè pī huò yǒu zhìliàng wèntí","Zhè pī huò shì cìpǐn","Zhè pī huò yǐ tōngguò zhìjiǎn","Zhè pī huò hái méi shēngchǎn"],optionVi:["Lô này có vấn đề chất lượng","Lô này là hàng kém","Lô này đã đạt QC","Lô này chưa sản xuất"]},
+  {id:"cp-24",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Dẫn đoàn kiểm tra: 'Mời đi theo tôi vào phân xưởng' nói thế nào?",dap_an:["请跟我来车间","请跟我去办公室","请在门口等一下","请先去打卡"],dung:0,pinyin:"Qǐng gēn wǒ lái chējiān",giai_thich:"跟我来 (gēn wǒ lái) = đi theo tôi; 车间 (chējiān) = phân xưởng.",type:"situ",topic:"factory",zh:"请跟我来车间",stage:2,optionPy:["Qǐng gēn wǒ lái chējiān","Qǐng gēn wǒ qù bàngōngshì","Qǐng zài ménkǒu děng yīxià","Qǐng xiān qù dǎkǎ"],optionVi:["Mời theo tôi vào phân xưởng","Mời theo tôi đến văn phòng","Xin đợi ở cửa","Xin chấm công trước"]},
+  {id:"cp-25",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Khi diễn tập PCCC, hô 'Mọi người ra điểm tập kết khẩn cấp!' nói thế nào?",dap_an:["大家去食堂集合！","大家去紧急集合点！","大家回车间加班！","大家去仓库盘点！"],dung:1,pinyin:"Dàjiā qù jǐnjí jíhé diǎn!",giai_thich:"紧急集合点 (jǐnjí jíhé diǎn) = điểm tập kết khẩn cấp.",type:"situ",topic:"factory",zh:"大家去紧急集合点！",stage:2,optionPy:["Dàjiā qù shítáng jíhé!","Dàjiā qù jǐnjí jíhé diǎn!","Dàjiā huí chējiān jiābān!","Dàjiā qù cāngkù pándiǎn!"],optionVi:["Mọi người tập hợp ở nhà ăn!","Mọi người ra điểm tập kết khẩn cấp!","Mọi người về xưởng tăng ca!","Mọi người đến kho kiểm kê!"]}
+];
+
+const QUESTIONS_V6_RAW = [
+  {
+    "id": "v6-bl-01",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "bat_loi",
+    "cau_hoi": "Khách muốn nhận phòng nhưng nói sai: 「我要出去房间」(Wǒ yào chūqù fángjiān — ý muốn: tôi muốn nhận phòng). Câu nào đúng?",
+    "dap_an": [
+      "我要出去房间。",
+      "我要出门房间。",
+      "我要办出去住。",
+      "我要办理入住。"
+    ],
+    "dung": 3,
+    "pinyin": "Wǒ yào bànlǐ rùzhù.",
+    "giai_thich": "办理入住 (bànlǐ rùzhù) = làm thủ tục nhận phòng; không nói 出去房间.",
+    "optionPy": [
+      "wǒ yào chū qù fáng jiān 。",
+      "wǒ yào chū mén fáng jiān 。",
+      "wǒ yào bàn chū qù zhù 。",
+      "wǒ yào bàn lǐ rù zhù 。"
+    ],
+    "optionVi": [
+      "Tôi muốn ra khỏi phòng (sai).",
+      "Tôi muốn ra cửa phòng (sai).",
+      "Tôi muốn làm thủ tục ra ở (sai).",
+      "办理入住 (bànlǐ rùzhù) = làm thủ tục nhận phòng"
+    ]
+  },
+  {
+    "id": "v6-bl-02",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "bat_loi",
+    "cau_hoi": "Lễ tân muốn hỏi họ của khách nhưng nói sai: 「你叫什么名字？」(Nǐ jiào shénme míngzi — quá thân mật). Câu lịch sự đúng?",
+    "dap_an": [
+      "你叫什么名字？",
+      "你是谁名字？",
+      "请问您贵姓？",
+      "请问你名什么？"
+    ],
+    "dung": 2,
+    "pinyin": "Qǐngwèn nín guìxìng?",
+    "giai_thich": "贵姓 (guìxìng) = hỏi họ lịch sự; với khách dùng 您 (nín), không dùng 你叫什么名字 quá thân.",
+    "optionPy": [
+      "nǐ jiào shén me míng zì ？",
+      "nǐ shì shuí míng zì ？",
+      "qǐng wèn nín guì xìng ？",
+      "qǐng wèn nǐ míng shén me ？"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "贵姓 (guìxìng) = hỏi họ lịch sự",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-bl-03",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "bat_loi",
+    "cau_hoi": "Công nhân muốn nói 'Tôi sẽ chấm công' nhưng nói: 「我打卡了去」(Wǒ dǎkǎ le qù). Câu nào đúng?",
+    "dap_an": [
+      "我去打卡。",
+      "我打卡了去。",
+      "我打了卡去。",
+      "我去了打卡。"
+    ],
+    "dung": 0,
+    "pinyin": "Wǒ qù dǎkǎ.",
+    "giai_thich": "去打卡 (qù dǎkǎ) = đi chấm công; 了 (le) đặt sai làm câu tối nghĩa.",
+    "optionPy": [
+      "wǒ qù dǎ kǎ 。",
+      "wǒ dǎ kǎ le qù 。",
+      "wǒ dǎ le kǎ qù 。",
+      "wǒ qù le dǎ kǎ 。"
+    ],
+    "optionVi": [
+      "去打卡 (qù dǎkǎ) = đi chấm công",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-bl-04",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Lễ tân muốn nói 'Xin đợi một chút' nhưng nói: 「请等一点」(Qǐng děng yìdiǎn). Câu nào tự nhiên?",
+    "dap_an": [
+      "请等一点。",
+      "请稍等。",
+      "请一点等。",
+      "请等一等点。"
+    ],
+    "dung": 1,
+    "pinyin": "Qǐng shāo děng.",
+    "giai_thich": "稍等 (shāo děng) = xin đợi một chút; cũng có thể nói 等一下 (děng yíxià).",
+    "optionPy": [
+      "qǐng děng yì diǎn 。",
+      "qǐng shāo děng 。",
+      "qǐng yì diǎn děng 。",
+      "qǐng děng yī děng diǎn 。"
+    ],
+    "optionVi": [
+      "Xin đợi một chút (không tự nhiên).",
+      "稍等 (shāo děng) = xin đợi một chút",
+      "Xin một chút đợi (sai trật tự).",
+      "Xin đợi đợi chút (sai)."
+    ]
+  },
+  {
+    "id": "v6-bl-05",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Hướng dẫn viên muốn nói 'Mời lên thuyền' nhưng nói: 「请上船来上面」(Qǐng shàng chuán lái shàngmiàn). Câu nào đúng?",
+    "dap_an": [
+      "请上船来上面。",
+      "请上上面船。",
+      "请来船上面。",
+      "请上船。"
+    ],
+    "dung": 3,
+    "pinyin": "Qǐng shàng chuán.",
+    "giai_thich": "上船 (shàng chuán) = lên thuyền; thừa 来上面 khiến câu sai.",
+    "optionPy": [
+      "qǐng shàng chuán lái shàng miàn 。",
+      "qǐng shàng shàng miàn chuán 。",
+      "qǐng lái chuán shàng miàn 。",
+      "qǐng shàng chuán 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "上船 (shàng chuán) = lên thuyền"
+    ]
+  },
+  {
+    "id": "v6-bl-06",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Công nhân muốn nói 'Máy cần bảo dưỡng' nhưng nói: 「机器要保修了保养」(Jīqì yào bǎoxiū le bǎoyǎng). Câu nào đúng?",
+    "dap_an": [
+      "机器要保修了保养。",
+      "机器保养了需要。",
+      "机器需要保养。",
+      "需要机器保养了。"
+    ],
+    "dung": 2,
+    "pinyin": "Jīqì xūyào bǎoyǎng.",
+    "giai_thich": "需要保养 (xūyào bǎoyǎng) = cần bảo dưỡng; 保修 (bǎoxiū) = bảo hành — dễ nhầm.",
+    "optionPy": [
+      "jī qì yào bǎo xiū le bǎo yǎng 。",
+      "jī qì bǎo yǎng le xū yào 。",
+      "jī qì xū yào bǎo yǎng 。",
+      "xū yào jī qì bǎo yǎng le 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "需要保养 (xūyào bǎoyǎng) = cần bảo dưỡng",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-bl-07",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "bat_loi",
+    "cau_hoi": "Khách muốn hỏi 'Có đặt phòng trước không?' nhưng nói: 「我有订了房间吗？」(Wǒ yǒu dìng le fángjiān ma?). Câu nào đúng?",
+    "dap_an": [
+      "请问您有预订吗？",
+      "我有订了房间吗？",
+      "我预订有吗房间？",
+      "您订了有房间吗？"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐngwèn nín yǒu yùdìng ma?",
+    "giai_thich": "有预订 (yǒu yùdìng) = có đặt trước; tránh chồng 了 (le) với 有.",
+    "optionPy": [
+      "qǐng wèn nín yǒu yù dìng ma ？",
+      "wǒ yǒu dìng le fáng jiān ma ？",
+      "wǒ yù dìng yǒu ma fáng jiān ？",
+      "nín dìng le yǒu fáng jiān ma ？"
+    ],
+    "optionVi": [
+      "有预订 (yǒu yùdìng) = có đặt trước",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-bl-08",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "bat_loi",
+    "cau_hoi": "Khách muốn nói 'Tôi không ăn cay' nhưng nói: 「我不吃辣了菜」(Wǒ bù chī là le cài). Câu nào đúng?",
+    "dap_an": [
+      "我不吃辣了菜。",
+      "我菜不吃辣了。",
+      "我不辣吃菜。",
+      "我不吃辣。"
+    ],
+    "dung": 3,
+    "pinyin": "Wǒ bù chī là.",
+    "giai_thich": "不吃辣 (bù chī là) = không ăn cay; 了 (le) đặt sai làm câu rối.",
+    "optionPy": [
+      "wǒ bù chī là le cài 。",
+      "wǒ cài bù chī là le 。",
+      "wǒ bù là chī cài 。",
+      "wǒ bù chī là 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "不吃辣 (bù chī là) = không ăn cay"
+    ]
+  },
+  {
+    "id": "v6-bl-09",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "bat_loi",
+    "cau_hoi": "QC muốn nói 'Lô hàng này chưa đạt' nhưng nói: 「这批货没有通过了质检」(Zhè pī huò méiyǒu tōngguò le zhìjiǎn). Câu nào đúng?",
+    "dap_an": [
+      "这批货没有通过了质检。",
+      "这批货没通过质检。",
+      "这批货通过没有质检。",
+      "这批货质检了没通过。"
+    ],
+    "dung": 1,
+    "pinyin": "Zhè pī huò méi tōngguò zhìjiǎn.",
+    "giai_thich": "没通过质检 (méi tōngguò zhìjiǎn) = chưa đạt kiểm tra; 没 và 了 (le) không đi cùng.",
+    "optionPy": [
+      "zhè pī huò méi yǒu tōng guò le zhì jiǎn 。",
+      "zhè pī huò méi tōng guò zhì jiǎn 。",
+      "zhè pī huò tōng guò méi yǒu zhì jiǎn 。",
+      "zhè pī huò zhì jiǎn le méi tōng guò 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "没通过质检 (méi tōngguò zhìjiǎn) = chưa đạt kiểm tra",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-bl-10",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "bat_loi",
+    "cau_hoi": "Lễ tân muốn nói 'Cọc sẽ được hoàn khi trả phòng' nhưng nói: 「押金退房的时候给回您」(Yājīn tuìfáng de shíhou gěi huí nín). Câu nào đúng?",
+    "dap_an": [
+      "押金退房的时候给回您。",
+      "退房押金时候退还您。",
+      "押金退房时退还给您。",
+      "押金退还您退房时给。"
+    ],
+    "dung": 2,
+    "pinyin": "Yājīn tuìfáng shí tuìhuán gěi nín.",
+    "giai_thich": "退还 (tuìhuán) = hoàn lại; 押金 (yājīn) = tiền cọc; 给回 không tự nhiên bằng 退还.",
+    "optionPy": [
+      "yā jīn tuì fáng de shí hòu gěi huí nín 。",
+      "tuì fáng yā jīn shí hòu tuì huán nín 。",
+      "yā jīn tuì fáng shí tuì huán gěi nín 。",
+      "yā jīn tuì huán nín tuì fáng shí gěi 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "退还 (tuìhuán) = hoàn lại",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-01",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn hỏi khách một câu (请问 Qǐngwèn), nhưng đọc nhầm thành 请吻 (qǐng wěn = xin hôn). Nói thế nào mới không 'toang'?",
+    "dap_an": [
+      "请问一下。",
+      "请吻一下。",
+      "请稳一下。",
+      "请温一下。"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐngwèn yíxià.",
+    "giai_thich": "问 (wèn, thanh 4) = hỏi; 吻 (wěn, thanh 3) = hôn — đọc sai là tình huống đỏ mặt.",
+    "optionPy": [
+      "qǐng wèn yī xià 。",
+      "qǐng wěn yī xià 。",
+      "qǐng wěn yī xià 。",
+      "qǐng wēn yī xià 。"
+    ],
+    "optionVi": [
+      "问 (wèn, thanh 4) = hỏi",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-02",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "hai",
+    "cau_hoi": "Khách gọi 'canh' (汤 tāng), bạn nghe thành 'đường' (糖 táng) rồi mang cả hũ đường ra. Câu nào đúng khi gọi canh?",
+    "dap_an": [
+      "请来一碗糖。",
+      "请来一碗躺。",
+      "请来一碗烫。",
+      "请来一碗汤。"
+    ],
+    "dung": 3,
+    "pinyin": "Qǐng lái yì wǎn tāng.",
+    "giai_thich": "汤 (tāng, thanh 1) = canh; 糖 (táng, thanh 2) = đường — chỉ khác thanh điệu.",
+    "optionPy": [
+      "qǐng lái yī wǎn táng 。",
+      "qǐng lái yī wǎn tǎng 。",
+      "qǐng lái yī wǎn tàng 。",
+      "qǐng lái yī wǎn tāng 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "汤 (tāng, thanh 1) = canh"
+    ]
+  },
+  {
+    "id": "v6-hai-03",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn nói với sếp 'Tôi mua nguyên liệu' (买 mǎi) nhưng nói thành 卖 (mài = bán). Câu nào đúng?",
+    "dap_an": [
+      "我去卖原料。",
+      "我去埋原料。",
+      "我去买原料。",
+      "我去迈原料。"
+    ],
+    "dung": 2,
+    "pinyin": "Wǒ qù mǎi yuánliào.",
+    "giai_thich": "买 (mǎi, thanh 3) = mua; 卖 (mài, thanh 4) = bán — nói nhầm là 'bán sạch kho'.",
+    "optionPy": [
+      "wǒ qù mài yuán liào 。",
+      "wǒ qù mái yuán liào 。",
+      "wǒ qù mǎi yuán liào 。",
+      "wǒ qù mài yuán liào 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "买 (mǎi, thanh 3) = mua",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-04",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Bạn đói, muốn gọi há cảo (水饺 shuǐjiǎo) nhưng nói thành 睡觉 (shuìjiào = ngủ) với phục vụ. Câu nào gọi món đúng?",
+    "dap_an": [
+      "我要水饺。",
+      "我要睡觉。",
+      "我要水叫。",
+      "我要谁教。"
+    ],
+    "dung": 0,
+    "pinyin": "Wǒ yào shuǐjiǎo.",
+    "giai_thich": "水饺 (shuǐjiǎo) = há cảo/sủi cảo; 睡觉 (shuìjiào) = đi ngủ — phục vụ sẽ tưởng bạn xin giường.",
+    "optionPy": [
+      "wǒ yào shuǐ jiǎo 。",
+      "wǒ yào shuì jiào 。",
+      "wǒ yào shuǐ jiào 。",
+      "wǒ yào shuí jiào 。"
+    ],
+    "optionVi": [
+      "水饺 (shuǐjiǎo) = há cảo/sủi cảo",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-05",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Khách hỏi phòng hút thuốc. Bạn muốn nói 'Không hút thuốc' (抽烟 chōuyān) nhưng nói nhầm 丑烟. Câu lịch sự đúng là?",
+    "dap_an": [
+      "这里不可以丑烟。",
+      "这里不可以抽烟。",
+      "这里不可以抽盐。",
+      "这里不可以出烟。"
+    ],
+    "dung": 1,
+    "pinyin": "Zhèlǐ bù kěyǐ chōuyān.",
+    "giai_thich": "抽烟 (chōuyān) = hút thuốc; phát âm rõ 抽 (chōu) kẻo nghe thành từ khác.",
+    "optionPy": [
+      "zhè lǐ bù kě yǐ chǒu yān 。",
+      "zhè lǐ bù kě yǐ chōu yān 。",
+      "zhè lǐ bù kě yǐ chōu yán 。",
+      "zhè lǐ bù kě yǐ chū yān 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "抽烟 (chōuyān) = hút thuốc",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-06",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn khen 'Cảnh đẹp quá!' (景色真美 jǐngsè zhēn měi) nhưng nói thành 景色真妹. Câu nào đúng?",
+    "dap_an": [
+      "景色真妹！",
+      "景色真每！",
+      "景色真没！",
+      "景色真美！"
+    ],
+    "dung": 3,
+    "pinyin": "Jǐngsè zhēn měi!",
+    "giai_thich": "美 (měi, thanh 3) = đẹp; 妹 (mèi, thanh 4) = em gái — khen cảnh thành 'cảnh đúng là em' thì toang.",
+    "optionPy": [
+      "jǐng sè zhēn mèi ！",
+      "jǐng sè zhēn měi ！",
+      "jǐng sè zhēn méi ！",
+      "jǐng sè zhēn měi ！"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "美 (měi, thanh 3) = đẹp"
+    ]
+  },
+  {
+    "id": "v6-hai-07",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "hai",
+    "cau_hoi": "Bạn báo sếp 'Hàng đã gửi đi' (发货 fāhuò) nhưng nói thành 发火 (fāhuǒ = nổi nóng). Câu nào đúng?",
+    "dap_an": [
+      "我们已经发火了。",
+      "我们已经发活了。",
+      "我们已经发货了。",
+      "我们已经发和了。"
+    ],
+    "dung": 2,
+    "pinyin": "Wǒmen yǐjīng fāhuò le.",
+    "giai_thich": "发货 (fāhuò) = gửi hàng; 发火 (fāhuǒ) = nổi nóng — sếp sẽ tưởng cả xưởng đang cáu.",
+    "optionPy": [
+      "wǒ men yǐ jīng fā huǒ le 。",
+      "wǒ men yǐ jīng fā huó le 。",
+      "wǒ men yǐ jīng fā huò le 。",
+      "wǒ men yǐ jīng fā hú le 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "发货 (fāhuò) = gửi hàng",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-08",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn nói 'Xin giữ hộ hành lý' (寄存 jìcún) nhưng nói thành 记错 (jìcuò = nhớ nhầm). Câu nào đúng?",
+    "dap_an": [
+      "请帮我寄存行李。",
+      "请帮我记错行李。",
+      "请帮我记住行李。",
+      "请帮我寄出行李。"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐng bāng wǒ jìcún xínglǐ.",
+    "giai_thich": "寄存 (jìcún) = gửi/giữ hộ; 记错 (jìcuò) = nhớ sai — lễ tân sẽ rất bối rối.",
+    "optionPy": [
+      "qǐng bāng wǒ jì cún xíng lǐ 。",
+      "qǐng bāng wǒ jì cuò xíng lǐ 。",
+      "qǐng bāng wǒ jì zhù xíng lǐ 。",
+      "qǐng bāng wǒ jì chū xíng lǐ 。"
+    ],
+    "optionVi": [
+      "寄存 (jìcún) = gửi/giữ hộ",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-09",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn 'thanh toán hóa đơn' (买单 mǎidān) nhưng nói thành 卖单 (màidān). Câu nào đúng?",
+    "dap_an": [
+      "老板，卖单！",
+      "老板，买单！",
+      "老板，慢单！",
+      "老板，满单！"
+    ],
+    "dung": 1,
+    "pinyin": "Lǎobǎn, mǎidān!",
+    "giai_thich": "买单 (mǎidān) = tính tiền; 卖 (mài) = bán — nói 卖单 là 'bán hóa đơn', rất dễ gây cười nhầm.",
+    "optionPy": [
+      "lǎo bǎn ， mài dān ！",
+      "lǎo bǎn ， mǎi dān ！",
+      "lǎo bǎn ， màn dān ！",
+      "lǎo bǎn ， mǎn dān ！"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "买单 (mǎidān) = tính tiền",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên"
+    ]
+  },
+  {
+    "id": "v6-hai-10",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "hai",
+    "cau_hoi": "Bạn muốn báo 'Cần họp ngắn' (开会 kāihuì) nhưng nói thành 开荤 (kāihūn = được ăn mặn sau kiêng). Câu nào đúng với sếp?",
+    "dap_an": [
+      "我们开荤五分钟。",
+      "我们开惠五分钟。",
+      "我们开悔五分钟。",
+      "我们开会五分钟。"
+    ],
+    "dung": 3,
+    "pinyin": "Wǒmen kāihuì wǔ fēnzhōng.",
+    "giai_thich": "开会 (kāihuì) = họp; 开荤 (kāihūn) = phá chay — nói nhầm trước sếp là cảnh hài khó quên.",
+    "optionPy": [
+      "wǒ men kāi hūn wǔ fēn zhōng 。",
+      "wǒ men kāi huì wǔ fēn zhōng 。",
+      "wǒ men kāi huǐ wǔ fēn zhōng 。",
+      "wǒ men kāi huì wǔ fēn zhōng 。"
+    ],
+    "optionVi": [
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "Phương án nhiễu / không tự nhiên",
+      "开会 (kāihuì) = họp"
+    ]
+  },
+  {
+    "id": "v6-nn-01",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Nín hǎo, huānyíng guānglín. Câu này nghĩa là gì?",
+    "dap_an": [
+      "Xin chào, tạm biệt",
+      "Xin chào, trả phòng đi",
+      "Xin chào, hân hạnh đón tiếp",
+      "Xin chào, tăng ca nhé"
+    ],
+    "dung": 2,
+    "pinyin": "Nín hǎo, huānyíng guānglín.",
+    "am_thanh": "您好，欢迎光临。",
+    "giai_thich": "欢迎光临 (huānyíng guānglín) = chào đón quý khách khi bước vào."
+  },
+  {
+    "id": "v6-nn-02",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Qǐng gěi wǒ yì bēi shuǐ. Nghĩa đúng?",
+    "dap_an": [
+      "Cho tôi một ly nước",
+      "Cho tôi một ly rượu",
+      "Cho tôi một ly trà sữa",
+      "Cho tôi một tô phở"
+    ],
+    "dung": 0,
+    "pinyin": "Qǐng gěi wǒ yì bēi shuǐ.",
+    "am_thanh": "请给我一杯水。",
+    "giai_thich": "一杯水 (yì bēi shuǐ) = một ly nước."
+  },
+  {
+    "id": "v6-nn-03",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 1,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Qǐng chuān gōngzuòfú. Bạn cần làm gì?",
+    "dap_an": [
+      "Đeo mũ bảo hộ",
+      "Ra điểm tập kết",
+      "Đi chấm công",
+      "Mặc đồng phục/đồ bảo hộ lao động"
+    ],
+    "dung": 3,
+    "pinyin": "Qǐng chuān gōngzuòfú.",
+    "am_thanh": "请穿工作服。",
+    "giai_thich": "穿工作服 (chuān gōngzuòfú) = mặc đồ bảo hộ/đồng phục làm việc."
+  },
+  {
+    "id": "v6-nn-04",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Nín de fángjiān zài wǔ lóu. Chọn nghĩa đúng.",
+    "dap_an": [
+      "Phòng quý khách ở tầng 3",
+      "Phòng quý khách ở tầng 5",
+      "Phòng quý khách ở tầng 4",
+      "Phòng quý khách ở tầng 15"
+    ],
+    "dung": 1,
+    "pinyin": "Nín de fángjiān zài wǔ lóu.",
+    "am_thanh": "您的房间在五楼。",
+    "giai_thich": "五楼 (wǔ lóu) = tầng 5."
+  },
+  {
+    "id": "v6-nn-05",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Xiǎoxīn, dì bǎn hěn huá. Cảnh báo gì?",
+    "dap_an": [
+      "Cẩn thận, gió rất to",
+      "Cẩn thận, nước rất sâu",
+      "Cẩn thận, sàn rất trơn",
+      "Cẩn thận, trời sắp mưa"
+    ],
+    "dung": 2,
+    "pinyin": "Xiǎoxīn, dìbǎn hěn huá.",
+    "am_thanh": "小心，地板很滑。",
+    "giai_thich": "小心 (xiǎoxīn) = cẩn thận; 地板很滑 (dìbǎn hěn huá) = sàn rất trơn."
+  },
+  {
+    "id": "v6-nn-06",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh cặp gần âm: chọn đúng chữ cho 'yàngpǐn' (hàng mẫu).",
+    "dap_an": [
+      "样品",
+      "次品",
+      "药品",
+      "阳品"
+    ],
+    "dung": 0,
+    "pinyin": "yàngpǐn",
+    "am_thanh": "样品",
+    "giai_thich": "样品 (yàngpǐn) = hàng mẫu; 次品 (cìpǐn) = hàng lỗi; 药品 (yàopǐn) = thuốc."
+  },
+  {
+    "id": "v6-nn-07",
+    "chang": "Hạ Long – Nhà hàng",
+    "ngon_ngu": "zh",
+    "do_kho": 2,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Zhè dào cài bú là. Nghĩa là?",
+    "dap_an": [
+      "Món này rất cay",
+      "Món này hết rồi",
+      "Món này không tính tiền",
+      "Món này không cay"
+    ],
+    "dung": 3,
+    "pinyin": "Zhè dào cài bú là.",
+    "am_thanh": "这道菜不辣。",
+    "giai_thich": "不辣 (bú là) = không cay; 道 (dào) là lượng từ cho món ăn."
+  },
+  {
+    "id": "v6-nn-08",
+    "chang": "Bãi Cháy – Lễ tân",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Duìbuqǐ, jīntiān fángjiān dōu mǎn le. Lễ tân đang nói gì?",
+    "dap_an": [
+      "Xin lỗi, hôm nay phòng đang dọn",
+      "Xin lỗi, hôm nay phòng đều hết",
+      "Xin lỗi, hôm nay thang máy hỏng",
+      "Xin lỗi, hôm nay WiFi yếu"
+    ],
+    "dung": 1,
+    "pinyin": "Duìbuqǐ, jīntiān fángjiān dōu mǎn le.",
+    "am_thanh": "对不起，今天房间都满了。",
+    "giai_thich": "满了 (mǎn le) = đã đầy/hết chỗ; 对不起 (duìbuqǐ) = xin lỗi."
+  },
+  {
+    "id": "v6-nn-09",
+    "chang": "Cẩm Phả – Nhà máy",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Zhè pī huò xūyào chóngxīn jiǎnchá. Việc cần làm là gì?",
+    "dap_an": [
+      "Gửi hàng ngay",
+      "Tăng ca đến tối",
+      "Kiểm tra lại lô hàng",
+      "Chuyển sang kho khác"
+    ],
+    "dung": 2,
+    "pinyin": "Zhè pī huò xūyào chóngxīn jiǎnchá.",
+    "am_thanh": "这批货需要重新检查。",
+    "giai_thich": "重新检查 (chóngxīn jiǎnchá) = kiểm tra lại; 这批货 (zhè pī huò) = lô hàng này."
+  },
+  {
+    "id": "v6-nn-10",
+    "chang": "Hạ Long – Du thuyền",
+    "ngon_ngu": "zh",
+    "do_kho": 3,
+    "loai": "nghe_nhanh",
+    "cau_hoi": "Nghe nhanh: Chuán jiāngzài shí fēnzhōng hòu chūfā. Thời điểm xuất phát?",
+    "dap_an": [
+      "Sau 10 phút nữa",
+      "Đã xuất phát rồi",
+      "Sau 10 giờ nữa",
+      "Hủy chuyến hôm nay"
+    ],
+    "dung": 0,
+    "pinyin": "Chuán jiāngzài shí fēnzhōng hòu chūfā.",
+    "am_thanh": "船将在十分钟后出发。",
+    "giai_thich": "将在…后 (jiāngzài…hòu) = sẽ … sau; 出发 (chūfā) = xuất phát; 十分钟 (shí fēnzhōng) = 10 phút."
+  }
+];
+
+const QUESTIONS_V5 = normalizeQuestions(QUESTIONS_RAW);
+const QUESTIONS_V6 = normalizeQuestions(QUESTIONS_V6_RAW);
+const QUESTIONS = QUESTIONS_V5.concat(QUESTIONS_V6);
+
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:linear-gradient(#0b3d5c,#1b7a8c 50%,#e8c27a);color:#fff;min-height:100vh;display:flex;justify-content:center;overflow-x:hidden}
+#app{width:100%;max-width:480px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:100vh;position:relative;z-index:1}
+.screen{display:none;flex-direction:column;gap:10px;flex:1}.screen.on{display:flex}
+h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-align:center}
+.btn{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:700;background:#ffd34d;color:#3a2600;box-shadow:0 4px 0 #b8901c}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #b8901c}
+.btn.alt{background:#fff;color:#0b3d5c;box-shadow:0 4px 0 #9bb}
+.btn.zalo{background:#0068ff;color:#fff;box-shadow:0 4px 0 #0040a0;text-align:center;text-decoration:none}
+.btn.ghost{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.card{background:rgba(0,0,0,.3);border-radius:16px;padding:12px;backdrop-filter:blur(4px)}
+.bar{height:14px;background:rgba(0,0,0,.4);border-radius:8px;overflow:hidden;position:relative}
+.bar i,.bar .trail{display:block;height:100%;position:absolute;left:0;top:0;border-radius:8px}
+.bar i{z-index:2;transition:width .25s ease-out}
+.bar .trail{z-index:1;opacity:.5;transition:width .7s ease-out .12s;background:#ffb0b0}
+#bossHp i{background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
+#heroHp i{background:linear-gradient(90deg,#3dff8a,#2bc4ff)}
+#timer i{background:#ffd34d;transition:width .1s linear;position:relative}
+.arena-wrap{position:relative;height:max(234px,min(55vw,286px));min-height:234px;border-radius:16px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
+#gl{display:block;width:100%;height:100%}
+.arena-fallback{display:none;height:100%;align-items:center;justify-content:space-around;font-size:64px;padding:10px}
+.arena-fallback.on{display:flex}
+.webgl-msg{display:none;font-size:12px;text-align:center;opacity:.9;padding:6px;background:rgba(0,0,0,.35);border-radius:10px}
+.webgl-msg.on{display:block}
+.skill-tag{position:absolute;left:50%;top:6%;transform:translateX(-50%);font-weight:900;font-size:15px;text-shadow:0 2px 8px #000;opacity:0;pointer-events:none;z-index:10;white-space:nowrap;max-width:90%;text-align:center}
+.skill-tag.show{animation:skillPop .9s forwards}
+@keyframes skillPop{0%{opacity:0;transform:translate(-50%,16px) scale(.7)}25%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-36px)}}
+.dmg{position:absolute;font-weight:900;font-size:26px;text-shadow:0 2px 4px #000;animation:fly 1s forwards;pointer-events:none;z-index:7}
+.dmg.big{font-size:36px;color:#ffd34d}.dmg.red{color:#ff6b6b}.dmg.crit{font-size:40px;color:#fff;text-shadow:0 0 10px #2ec4b6,0 2px 4px #000}
+@keyframes fly{to{transform:translateY(-80px);opacity:0}}
+.q{font-size:18px;font-weight:700;line-height:1.35}.zh{font-size:22px;font-weight:800;margin-top:6px}.py{color:#ffe9a8;font-style:italic;margin-top:2px;font-size:14px}.vi{opacity:.9;margin-top:2px;font-size:14px}
+.opts{display:grid;gap:7px}.opt{text-align:left;font-size:15px;padding:11px 12px;border-radius:12px;border:2px solid transparent;background:#fff;color:#123;font-weight:600}
+.opt:active{transform:scale(.98)}.opt.ok{background:#3dd17a;color:#fff}.opt.no{background:#ff5a5a;color:#fff}
+.opt small{display:block;font-weight:500;opacity:.7;margin-top:2px;font-size:12px}
+.row{display:flex;justify-content:space-between;font-size:12px;opacity:.95;align-items:center;gap:6px;flex-wrap:wrap}
+.combo-box{text-align:center;min-height:0;font-weight:900;display:none}.combo-box.on{display:block;margin-top:2px}
+.combo-box .c{display:inline-block;background:rgba(0,0,0,.35);padding:3px 12px;border-radius:999px;color:#ffd34d;font-size:14px}
+.combo-box .c.hot{animation:pulse .5s infinite alternate;color:#fff;background:linear-gradient(90deg,#ff2d55,#9b3dff)}
+@keyframes pulse{to{transform:scale(1.06)}}
+.badge{font-size:96px;text-align:center;animation:pop .6s}@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:40}.flash.go{animation:fl .4s}@keyframes fl{25%{opacity:.55}100%{opacity:0}}
+.flash.red.go{background:#ff3030}@keyframes flr{30%{opacity:.4}100%{opacity:0}}
+.shake{animation:shake 200ms ease-in-out}@keyframes shake{0%,100%{transform:none}20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-5px,2px)}80%{transform:translate(4px,-2px)}}
+.shake.lite{animation:shakeLite 200ms ease-in-out}@keyframes shakeLite{0%,100%{transform:none}50%{transform:translate(-2px,1px)}}
+.hitstop-freeze *{animation-play-state:paused!important}
+#app.combo-orange .btn,#app.combo-orange .opt.ok{box-shadow:0 4px 0 #c45a00}
+#app.combo-orange .combo-box .c,#app.combo-orange .combo-float.on{background:linear-gradient(90deg,#ff9a3d,#ff6b00);color:#fff}
+#app.combo-hot .btn,#app.combo-hot .opt.ok{box-shadow:0 4px 0 #5b0a6e}
+#app.combo-hot .combo-box .c,#app.combo-hot .combo-float.on{background:linear-gradient(90deg,#ff2d55,#9b3dff);color:#fff;animation:pulse .45s infinite alternate}
+#timer.urgent i{background:linear-gradient(90deg,#ff3030,#ff9a3d)!important;box-shadow:0 0 10px rgba(255,48,48,.55)}
+#timer.urgent{outline:2px solid rgba(255,60,60,.55);border-radius:8px}
+.fdmg.crit{font-size:48px;color:#ffe14a;text-shadow:0 0 16px #ffd34d,0 3px 0 #000;-webkit-text-stroke:1px #7a5200}
+.fdmg.nhanh{font-size:34px;color:#7dffb0}
+.fdmg .tag.nhanh{color:#7dffb0;font-size:14px;font-weight:900;letter-spacing:.08em}
+.combo-mult{position:absolute;left:50%;top:18%;transform:translateX(-50%);z-index:11;font-weight:900;font-size:22px;opacity:0;pointer-events:none;text-shadow:0 2px 8px #000}
+.combo-mult.on{animation:multPop .7s forwards}
+@keyframes multPop{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}25%{opacity:1;transform:translate(-50%,0) scale(1.25)}100%{opacity:0;transform:translate(-50%,-28px) scale(1)}}
+.combo-box .c.orange{color:#fff;background:linear-gradient(90deg,#ff9a3d,#ff6b00)}
+.combo-box .c.hot{animation:pulse .5s infinite alternate;color:#fff;background:linear-gradient(90deg,#ff2d55,#9b3dff)}
+.combo-float.orange{color:#fff;background:linear-gradient(90deg,#ff9a3d,#ff6b00)}
+.combo-float.hot{color:#fff;background:linear-gradient(90deg,#ff2d55,#9b3dff);animation:pulse .45s infinite alternate}
+.tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#ffd34d;color:#3a2600}
+.tag.listen{background:#2ec4b6;color:#042}.tag.order{background:#a78bfa;color:#1a0a3a}.tag.fill{background:#fb923c;color:#3a1600}.tag.situ{background:#60a5fa;color:#0a1a3a}.tag.bat_loi{background:#f472b6;color:#3a0a2a}.tag.hai{background:#fbbf24;color:#3a2600}.tag.nghe_nhanh{background:#2ec4b6;color:#042}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:0;border-radius:999px;padding:8px 12px;font-weight:700;font-size:14px;background:#fff;color:#123}
+.chip.used{opacity:.35}
+.order-slot{min-height:44px;border:2px dashed rgba(255,255,255,.35);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.order-slot .chip{background:#ffd34d;color:#3a2600}
+.overlay{position:fixed;inset:0;background:rgba(0,10,20,.75);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:14px;backdrop-filter:blur(3px)}
+.overlay.on{display:flex}
+.up-card{background:linear-gradient(180deg,#1a4a66,#0d2a3d);border:2px solid #ffd34d;border-radius:20px 20px 14px 14px;padding:16px 12px 12px;width:100%;max-width:460px;animation:slideUp .3s ease-out}
+@keyframes slideUp{from{transform:translateY(36px);opacity:0}to{transform:none;opacity:1}}
+.up-card h3{text-align:center;font-size:17px;margin-bottom:4px}
+.up-card p.sub{text-align:center;opacity:.85;font-size:12px;margin-bottom:10px}
+.up-opts{display:grid;gap:7px}
+.up-opts button{border:0;border-radius:14px;padding:12px;text-align:left;background:#fff;color:#123;font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center;box-shadow:0 3px 0 #9bb}
+.up-opts .ico{font-size:26px;width:36px;text-align:center}
+.up-opts small{display:block;font-weight:500;opacity:.7;margin-top:2px}
+.stats{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:11px;margin-bottom:8px}
+.stats span{background:rgba(255,255,255,.12);padding:3px 8px;border-radius:999px}
+.concept{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.concept img{height:72px;border-radius:10px;border:2px solid rgba(255,217,49,.5)}
+.note{font-size:12px;opacity:.85;line-height:1.4}
+@media (prefers-reduced-motion:reduce){
+  .skill-tag.show,.dmg,.flash.go,.fdmg,.combo-mult.on{animation:none!important}
+  .shake{animation:shakeLite 200ms ease-in-out!important}
+  .combo-box .c.hot,.combo-float.hot{animation:none!important}
+}
+
+/* --- Combat HUD / MOBA feel --- */
+.vignette{position:absolute;inset:0;pointer-events:none;z-index:8;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(180,0,0,.75) 100%);transition:opacity .15s}
+.vignette.on{opacity:1;animation:vig .55s ease-out forwards}
+@keyframes vig{0%{opacity:.95}100%{opacity:0}}
+.float-layer{position:absolute;inset:0;pointer-events:none;z-index:9;overflow:hidden}
+.fdmg{position:absolute;font-weight:900;font-size:28px;color:#fff;text-shadow:0 2px 0 #000,0 0 10px rgba(255,200,0,.6);animation:fdmgUp .95s cubic-bezier(.2,.8,.2,1) forwards;white-space:nowrap;left:68%;top:48%;z-index:7;pointer-events:none}
+.fdmg.x2{font-size:34px;color:#ffd34d}
+.fdmg.crit{font-size:48px;color:#ffe14a;text-shadow:0 0 16px #ffd34d,0 3px 0 #000;-webkit-text-stroke:1px #7a5200}
+.fdmg.hurt{left:18%;color:#ff6b6b;text-shadow:0 2px 0 #400,0 0 8px #f00}
+.fdmg .tag{display:block;font-size:12px;letter-spacing:.04em;opacity:.95}
+@keyframes fdmgUp{0%{transform:translate(-50%,0) scale(.5);opacity:0}15%{transform:translate(-50%,-8px) scale(1.2);opacity:1}100%{transform:translate(-50%,-72px) scale(.9);opacity:0}}
+.combo-float{position:absolute;right:8px;top:8px;z-index:10;font-weight:900;font-size:15px;background:rgba(0,0,0,.45);padding:4px 10px;border-radius:999px;color:#ffd34d;opacity:0;transform:scale(.8);transition:.15s}
+.combo-float.on{opacity:1;transform:scale(1)}
+.combo-float.hot{color:#fff;background:linear-gradient(90deg,#ff2d55,#9b3dff);animation:pulse .45s infinite alternate}
+.lvl-banner{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:12;pointer-events:none;flex-direction:column;gap:6px;background:rgba(0,20,40,.25)}
+.lvl-banner.on{display:flex;animation:lvlIn .9s ease-out forwards}
+.lvl-banner .pill{font-size:28px;font-weight:900;letter-spacing:.08em;color:#16171B;background:linear-gradient(180deg,#FFE97A,#FFD91F);padding:10px 22px;border-radius:14px;box-shadow:0 6px 0 #b8901c,0 0 30px rgba(255,217,31,.7)}
+.lvl-banner .stats{font-size:13px;font-weight:700;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:999px}
+@keyframes lvlIn{0%{opacity:0;transform:scale(.6)}20%{opacity:1;transform:scale(1.12)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.05) translateY(-20px)}}
+.invite{margin-top:8px;padding:16px 14px;border-radius:18px;background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B;border:2px solid #16171B;box-shadow:0 8px 0 rgba(22,23,27,.85)}
+.invite h3{font-size:18px;margin:0 0 6px;line-height:1.25}
+.invite p{font-size:13.5px;margin:0 0 12px;opacity:.9}
+.invite .row-btns{display:flex;flex-direction:column;gap:8px}
+.invite .btn{box-shadow:0 4px 0 rgba(0,0,0,.28)}
+.invite .btn.form{background:#16171B;color:#FFD91F}
+
+
+.bar-lab{display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:.9;margin-top:4px;margin-bottom:2px}
+.bar-lab b{font-weight:700}
+.opt .py{display:block}.opt .vi-ans{display:none}.opt .py,.opt .vi-ans{font-size:12px;font-weight:500;margin-top:2px;line-height:1.35}
+.opt .py{font-style:italic;color:#1e5aa8;opacity:.95}
+.opt .vi-ans{opacity:.9}
+/* pinyin hiện khi đang chọn; nghĩa Việt chỉ hiện SAU khi chọn */
+.opts.revealed .opt .vi-ans{display:block}
+.opt.ok .py,.opt.no .py,
+.opt.ok .vi-ans,.opt.no .vi-ans{color:rgba(255,255,255,.95);opacity:1}
+.learn-card{margin-top:8px;padding:12px;border-radius:14px;background:rgba(0,0,0,.28)}
+.learn-card h4{margin:0 0 6px;font-size:14px}
+.learn-card .zh{font-size:20px;font-weight:800}
+.invite .btn.form{background:#16171B;color:#FFD91F;font-size:17px;min-height:52px}
+.invite .btn.zalo{background:#fff;color:#0068ff;border:2px solid #0068ff;box-shadow:0 3px 0 #0040a0}
+.invite .price{font-weight:700;font-size:14px;margin:0 0 10px;line-height:1.45}
+.invite .offers{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(22,23,27,.08);font-size:12.5px;line-height:1.45;text-align:left}
+.invite .offers p{margin:0 0 6px;opacity:1;font-weight:600}
+.invite .offers p:last-child{margin:0}
+.chip .py{display:block;font-size:10px;font-weight:500;opacity:.75;font-style:italic}
+.opts.revealed .chip .py{display:block}
+
+.skill-btn{display:block;width:100%;margin:6px 0 4px;min-height:44px;font-size:15px;background:linear-gradient(180deg,#7c5cff,#4b2fd6);color:#fff;border:2px solid #16171B;box-shadow:0 3px 0 #16171B}
+.skill-btn[hidden]{display:none!important}
+.mute-btn{position:fixed;bottom:14px;right:14px;z-index:40;width:44px;height:44px;border-radius:14px;border:2px solid var(--ink,#16171B);background:var(--sun,#FFD91F);font-size:20px;box-shadow:3px 3px 0 #16171B;cursor:pointer}
+#endTitle{padding-right:8px;line-height:1.25;word-break:break-word;max-width:100%}
+.hp-lab{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;margin-bottom:2px;gap:8px}
+.hp-lab .nm{flex:1;min-width:0;padding-right:4px}
+.hp-lab.boss .nm{color:#ff7a6e}
+.hp-lab.hero .nm{color:#5dffb0}
+.hp-lab .hp-num{font-variant-numeric:tabular-nums;opacity:.95}
+.hp-lab.boss .hp-num{color:#ffb4a8}
+.hp-lab.hero .hp-num{color:#9eecff}
+.bar.boss-bar{outline:1px solid rgba(255,80,60,.35)}
+.bar.hero-bar{outline:1px solid rgba(60,220,160,.3)}
+.end-links{display:flex;justify-content:center;gap:18px;margin:10px 0 4px;flex-wrap:wrap}
+.end-links a,.end-links button.linkish{
+  background:none;border:0;color:#FFD91F;font-size:13.5px;font-weight:600;
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 4px;
+  box-shadow:none;min-height:0;font-family:inherit
+}
+.end-links a:active,.end-links button.linkish:active{opacity:.7}
+.road-art{margin-top:12px;width:100%;border-radius:16px;overflow:hidden;background:linear-gradient(#4a90b8 0%,#6eb6d9 42%,#2a7a9a 43%,#3d8a5a 70%,#c4a35a 100%);border:2px solid rgba(22,23,27,.5);aspect-ratio:16/11;position:relative}
+.road-art svg{display:block;width:100%;height:100%}
+.bike-progress{position:absolute;left:8%;top:52%;transform:translate(-50%,-50%);font-size:22px;filter:drop-shadow(0 2px 2px #000);transition:left .45s ease;pointer-events:none;z-index:2}
+
+.stage-map.screen{display:none;padding:16px 14px 28px}.stage-map.screen.on{display:flex;flex-direction:column}
+.stage-map h2{margin:8px 0 4px;font-size:22px}
+.stage-map .road{margin:16px 0;padding:14px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
+.stage-node{display:flex;align-items:center;gap:12px;padding:12px;margin:8px 0;border-radius:14px;background:rgba(255,255,255,.08);border:2px solid transparent}
+.stage-node.done{border-color:#2ec4b6}.stage-node.current{border-color:#FFD91F;background:rgba(255,217,31,.15)}
+.stage-node.lock{opacity:.55}
+.stage-node .dot{width:36px;height:36px;border-radius:50%;background:#FFD91F;color:#16171B;display:grid;place-items:center;font-weight:900}
+.stage-node.lock .dot{background:#666;color:#ccc}
+.stage-map .btn{margin-top:8px}
+
+/* ===== v5 hub / realm / srs / chest / unlock ===== */
+.v5-bar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.v5-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700}
+.v5-chip b{color:#FFD91F}
+.hub-grid{display:grid;gap:10px;margin-top:12px}
+.hub-grid .btn{margin:0;font-size:15px;padding:12px}
+.diff-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+.diff-row button{padding:12px 8px;border-radius:14px;border:2px solid rgba(255,255,255,.25);background:rgba(0,0,0,.25);color:#fff;font-weight:800;font-size:13px}
+.diff-row button.on{border-color:#FFD91F;background:rgba(255,217,31,.2)}
+.diff-row button small{display:block;font-weight:600;opacity:.8;margin-top:4px;font-size:10px}
+.srs-card{background:rgba(255,255,255,.1);border-radius:14px;padding:14px;margin:8px 0;border:1px solid rgba(255,255,255,.15)}
+.srs-card .zh{font-size:26px;font-weight:800}
+.srs-card .py{color:#ffe9a8;font-style:italic}
+.srs-card .vi{opacity:.9}
+.weapon-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;margin:6px 0;border-radius:12px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.12)}
+.mastery{height:8px;border-radius:99px;background:#333;overflow:hidden;width:80px}
+.mastery>i{display:block;height:100%;background:linear-gradient(90deg,#2ec4b6,#FFD91F)}
+.realm-up{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.72);z-index:60;color:#fff;text-align:center;padding:24px}
+.realm-up.on{display:grid}
+.realm-up .burst{font-size:64px;animation:pop .6s ease}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.chest-fx{font-size:56px;animation:pop .5s ease}
+.cosmetic-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.cosmetic-list span{font-size:22px;padding:6px 8px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
+.cosmetic-list span.eq{border-color:#FFD91F;box-shadow:0 0 0 2px rgba(255,217,31,.35)}
+.eq-row{border-color:#FFD91F!important;box-shadow:0 0 0 1px rgba(255,217,31,.4)}
+.preview-banner{background:rgba(255,217,31,.2);border:1px dashed #FFD91F;border-radius:12px;padding:8px 10px;font-size:12px;margin:8px 0;font-weight:700}
+.unlock-box{margin:12px 0;padding:14px;border-radius:14px;background:rgba(0,0,0,.28);border:1px solid rgba(255,217,31,.35)}
+.unlock-box input{width:100%;padding:12px;border-radius:10px;border:2px solid rgba(255,255,255,.25);background:#16171B;color:#fff;font-size:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:8px 0}
+
+#boot h1{line-height:1.25}
+.arena-fallback img{max-width:42%;border-radius:12px}
+#telegraphToast{animation:pulse .5s infinite alternate}
+</style>
+</head>
+<body>
+<button type="button" class="mute-btn" id="muteBtn" aria-label="Tắt/bật tiếng" title="Âm thanh">🔊</button>
+
+<div id="app">
+ <div class="screen on" id="sStart">
+  <div id="boot" style="display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center;padding:12px 4px 24px">
+    <div style="text-align:center">
+      <img id="bootBg" src="v6/art/bg_ha_long.webp" alt="" style="width:100%;max-height:160px;object-fit:cover;border-radius:16px;border:2px solid rgba(255,217,31,.4);margin-bottom:10px">
+      <div style="font-size:13px;opacity:.85;letter-spacing:.08em">HẠ LONG NGỮ TIÊN</div>
+      <h1 style="font-size:22px;margin:6px 0">混语 · Hùnyǔ · <span style="font-weight:600;font-size:16px">Ngôn ngữ hỗn loạn</span></h1>
+      <p class="note">Mỗi câu Hán đúng = một đòn pháp thuật. Nhanh <b id="fs"></b>s → +10 ST.</p>
+    </div>
+    <button class="btn" type="button" id="btnStart" style="font-size:18px;min-height:56px;width:100%">⚔️ Thử hạ Boss Lễ Tân</button>
+    <p class="webgl-msg" id="webglMsg">Máy không hỗ trợ WebGL — chạy chế độ dự phòng (emoji).</p>
+    <div class="card" id="progress" style="opacity:.85;font-size:12px"></div>
+    <button class="btn ghost" type="button" id="btnOpenHub" style="opacity:.55;font-size:13px">Đạo quán (sau chặng 1)</button>
+  </div>
+ </div>
+ <div id="toastStack" style="position:fixed;left:50%;top:12%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:6px;pointer-events:none;width:min(420px,92%)"></div>
+ <div id="telegraphToast" style="display:none;position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:85;background:rgba(0,0,0,.75);border:2px solid #FFD91F;color:#FFD91F;font-weight:900;padding:10px 16px;border-radius:14px;text-align:center;pointer-events:none">Boss sắp đánh!</div>
+ <a id="zaloCliff" href="https://zalo.me/g/16yx8ptwane8ggwrnyxl" target="_blank" rel="noopener" style="display:none;position:fixed;right:10px;bottom:64px;z-index:35;opacity:.5;background:#0068ff;color:#fff;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;text-decoration:none">Zalo nhóm</a>
+
+
+ 
+
+<!-- ===== v5 HUB ===== -->
+<div class="screen" id="sHub">
+  <div class="wrap" style="padding:16px 14px 28px">
+    <span class="eyebrow">Tu tiên · Học Trung</span>
+    <h2>Đạo quán Bảo Khựa</h2>
+    <div class="v5-bar" id="hubStats"></div>
+    <div class="preview-banner" id="realmBanner"></div>
+    <div class="hub-grid">
+      <button class="btn" type="button" id="btnHubBattle">⚔️ Xuất chiến (chọn độ khó)</button>
+      <button class="btn alt" type="button" id="btnHubWeapons">🗡️ Ôn luyện binh khí</button>
+      <button class="btn alt" type="button" id="btnHubChest">🎁 Rương linh khí (0đ / ngày)</button>
+      <button class="btn alt" type="button" id="btnHubRealm">🏯 Cảnh giới tu sĩ</button>
+      <!-- phase2: BXH tuần (mock) ẩn đến khi có bảng thật --><button class="btn alt" type="button" id="btnHubBoard" hidden>📊 BXH tuần</button>
+      <button class="btn alt" type="button" id="btnHubBack">← Menu</button>
+    </div>
+    <div class="card" id="hubInvite" hidden style="margin-top:12px">
+      <h3 id="hubInviteTitle">🔥 Chuỗi tu luyện</h3>
+      <p id="hubInviteBody" style="font-size:14px"></p>
+      <a class="btn form" id="hubFormBtn" target="_blank" rel="noopener">📝 Đăng ký thẻ</a>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="sDiff">
+  <div class="wrap" style="padding:16px 14px 28px">
+    <span class="eyebrow">Bot đối thủ</span>
+    <h2>Chọn độ khó</h2>
+    <p class="lead" style="font-size:14px;opacity:.85">Dễ / Thường / Ác — khác HP &amp; tốc độ câu. Thắng Ác nhận badge + Form đặc biệt.</p>
+    <div class="diff-row">
+      <button type="button" data-diff="easy"><b>Dễ</b><small>HP ×0.7 · 12s</small></button>
+      <button type="button" data-diff="normal" class="on"><b>Thường</b><small>HP ×1 · 10s</small></button>
+      <button type="button" data-diff="hard"><b>Ác</b><small>HP ×1.35 · 8s</small></button>
+    </div>
+    <button class="btn" type="button" id="btnDiffGo">▶ Vào bản đồ chặng</button>
+    <button class="btn alt" type="button" id="btnDiffBack">← Đạo quán</button>
+  </div>
+</div>
+
+<div class="screen" id="sWeapons">
+  <div class="wrap" style="padding:16px 14px 28px">
+    <span class="eyebrow">SRS · 1 / 3 / 7 ngày</span>
+    <h2>Ôn luyện binh khí</h2>
+    <p class="lead" style="font-size:13px;opacity:.85">Thẻ từ câu sai · Hán + pinyin + Việt. Đúng = mài binh khí (+ATK tạm).</p>
+    <div id="weaponSets"></div>
+    <div id="srsPanel"></div>
+    <div class="card" id="zoomAfter10" hidden>
+      <h3>🎧 Học Zoom để nghe phát âm thật</h3>
+      <p style="font-size:14px">Bạn đã ôn ≥10 thẻ. Vào lớp Zoom T2 T4 T6 20:00.</p>
+      <a class="btn form" id="zoomFormBtn" target="_blank" rel="noopener">📝 Đăng ký thẻ</a>
+      <a class="btn zalo" id="zoomZaloBtn" target="_blank" rel="noopener" style="margin-top:8px">💬 Zalo nhóm</a>
+    </div>
+    <button class="btn alt" type="button" id="btnWeaponsBack" style="margin-top:12px">← Đạo quán</button>
+  </div>
+</div>
+
+<div class="screen" id="sChest">
+  <div class="wrap" style="padding:16px 14px 28px">
+    <span class="eyebrow">0đ · chỉ cosmetic</span>
+    <h2>Rương linh khí</h2>
+    <p class="lead" style="font-size:13px;opacity:.85">Mỗi ngày 1 lần · skin / hiệu ứng — <b>không bán lượt, không tiền thật</b>.</p>
+    <div class="card" style="text-align:center">
+      <div class="chest-fx" id="chestEmoji">🎁</div>
+      <p id="chestMsg">Nhận rương hôm nay?</p>
+      <button class="btn" type="button" id="btnOpenChest">Mở rương ngày</button>
+    </div>
+    <h3 style="margin-top:16px;font-size:16px">Tủ đồ</h3>
+    <div class="cosmetic-list" id="cosmeticBag"></div>
+    <button class="btn alt" type="button" id="btnChestBack" style="margin-top:12px">← Đạo quán</button>
+  </div>
+</div>
+
+<div class="screen" id="sRealm">
+  <div class="wrap" style="padding:16px 14px 28px">
+    <span class="eyebrow">修士 · xiūshì</span>
+    <h2>Cảnh giới tu sĩ</h2>
+    <div id="realmList"></div>
+    <p class="note" id="cardFlagNote" style="margin-top:12px"></p>
+    <label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px">
+      <input type="checkbox" id="chkHasCard"> Tôi đã có thẻ thành viên (mở full Trúc cơ+)
+    </label>
+    <button class="btn alt" type="button" id="btnRealmBack">← Đạo quán</button>
+  </div>
+</div>
+
+<div class="screen" id="sBoard">
+  <div class="wrap" style="padding:16px 14px 28px">
+    <span class="eyebrow">Top 10 tuần</span>
+    <h2>Bảng xếp hạng</h2>
+    <p class="note" id="boardWeekNote"></p>
+    <div id="boardList"></div>
+    <button class="btn alt" type="button" id="btnBoardBack" style="margin-top:12px">← Đạo quán</button>
+  </div>
+</div>
+
+<div class="screen" id="sUnlock">
+  <div class="wrap" style="padding:16px 14px 28px">
+    <span class="eyebrow">Chặng 2+</span>
+    <h2>🔓 Nhập mã mở khóa</h2>
+    <p class="lead" style="font-size:14px;opacity:.9">Chặng Cẩm Phả cần mã trong nhóm Zalo. Nhập một lần — máy nhớ giúp bạn.</p>
+    <div class="unlock-box">
+      <label for="unlockInput" style="font-size:13px;font-weight:700">Mã mở khóa</label>
+      <input id="unlockInput" type="text" autocomplete="off" autocapitalize="characters" placeholder="Nhập mã…">
+      <p class="note" id="unlockErr" style="color:#ff8a8a" hidden>Mã chưa đúng — lấy mã trong nhóm Zalo.</p>
+      <button class="btn" type="button" id="btnUnlockSubmit">Mở khóa chặng</button>
+      <a class="btn zalo" id="btnUnlockZalo" href="https://zalo.me/g/16yx8ptwane8ggwrnyxl" target="_blank" rel="noopener" style="margin-top:10px;display:block;text-align:center">💬 Lấy mã trong nhóm Zalo</a>
+      <button class="btn alt" type="button" id="btnUnlockBack" style="margin-top:10px">← Bản đồ</button>
+    </div>
+  </div>
+</div>
+
+<div class="realm-up" id="realmUpFx" aria-live="polite">
+  <div>
+    <div class="burst" id="realmUpEmoji">✨</div>
+    <h2 id="realmUpTitle">Đột phá!</h2>
+    <p id="realmUpBody"></p>
+    <button class="btn" type="button" id="btnRealmUpOk">Tiếp tục</button>
+  </div>
+</div>
+
+<div class="screen stage-map" id="sMap">
+ <div class="wrap">
+  <span class="eyebrow">Hạ Long → Cẩm Phả</span>
+  <h2>Bản đồ chặng</h2>
+  <p class="lead" style="opacity:.85;font-size:14px">Đường Hạ Long–Cẩm Phả · 2 chặng boss. Mỗi câu Trung có pinyin + nghĩa Việt.</p>
+  <div class="road">
+   <div class="stage-node" id="node1"><span class="dot">1</span><div><b>Bãi Cháy – Khách sạn</b><br><small>Boss Lễ Tân · nhận phòng / trả phòng</small></div></div>
+   <div style="text-align:center;opacity:.6;font-size:12px;margin:4px 0">QL18 · Hạ Long → Cẩm Phả</div>
+   <div class="stage-node lock" id="node2"><span class="dot">2</span><div><b>Cẩm Phả – Nhà máy</b><br><small>Boss Tổ trưởng · an toàn / tan ca</small></div></div>
+  </div>
+  <div class="road-art" id="roadArt" aria-label="Bản đồ QL18 ven biển">
+   <span class="bike-progress" id="bikeIcon">🚲</span>
+   <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" role="img">
+    <!-- sky already via CSS bg; karsts -->
+    <g fill="#3d5c48" opacity=".9">
+      <path d="M20 95 L40 40 L60 95 Z"/><path d="M55 100 L80 35 L105 100 Z"/><path d="M100 98 L125 50 L150 98 Z"/>
+      <path d="M200 100 L230 42 L260 100 Z"/><path d="M250 105 L275 55 L300 105 Z"/>
+    </g>
+    <ellipse cx="160" cy="128" rx="150" ry="22" fill="#1e6a8a" opacity=".55"/>
+    <!-- coastal road QL18 -->
+    <path id="ql18" d="M28 165 C 80 150, 120 175, 160 160 S 240 145, 295 155" fill="none" stroke="#4a4a4a" stroke-width="14" stroke-linecap="round"/>
+    <path d="M28 165 C 80 150, 120 175, 160 160 S 240 145, 295 155" fill="none" stroke="#e8d24a" stroke-width="2" stroke-dasharray="8 10" stroke-linecap="round"/>
+    <!-- markers -->
+    <circle cx="36" cy="164" r="7" fill="#FFD91F" stroke="#16171B" stroke-width="2"/>
+    <circle cx="288" cy="154" r="7" fill="#2ec4b6" stroke="#16171B" stroke-width="2"/>
+    <text x="36" y="190" text-anchor="middle" font-size="11" font-weight="700" fill="#16171B">Hạ Long</text>
+    <text x="288" y="190" text-anchor="middle" font-size="11" font-weight="700" fill="#16171B">Cẩm Phả</text>
+    <text x="160" y="210" text-anchor="middle" font-size="10" fill="#16171B" opacity=".75">🚲 tiến độ trên QL18</text>
+   </svg>
+  </div>
+  <button class="btn" type="button" id="btnEnterStage">▶ Vào chặng</button>
+  <button class="btn alt" type="button" id="btnMapBack">← Menu</button>
+ </div>
+</div>
+
+<div class="screen" id="sGame">
+  <div class="hp-lab boss"><span class="nm" id="bossName">👹 Boss Lễ Tân</span><span class="hp-num" id="bossTxt">0/0</span></div>
+  <div class="bar boss-bar" id="bossHp"><span class="trail"></span><i></i></div>
+  <div class="arena-wrap" id="arena">
+   <canvas id="gl"></canvas>
+   <div class="arena-fallback" id="fallback" aria-hidden="true"><span id="heroEmoji">🥷</span><span>👹</span></div>
+   <div class="float-layer" id="floatLayer"></div>
+   <div class="vignette" id="vignette"></div>
+   <div class="combo-float" id="comboFloat"></div>
+   <div class="combo-mult" id="comboMult"></div>
+   <div class="lvl-banner" id="lvlBanner"><div class="pill">⬆ LÊN CẤP</div><div class="stats" id="lvlStats"></div></div>
+   <div class="skill-tag" id="skillTag"></div>
+  </div>
+  <div class="hp-lab hero"><span class="nm">🥷 Tướng · <b id="heroLvl">Lv1</b></span><span class="hp-num" id="heroTxt">0/0</span></div>
+  <div class="bar hero-bar" id="heroHp"><i></i></div>
+  <div class="combo-box" id="combo"></div>
+  <button type="button" class="btn skill-btn" id="btnSkill" hidden>✨ Chiêu</button>
+  <div class="bar-lab"><b>⏱ Thời gian trả lời</b><span id="timerTxt"></span></div>
+  <div class="bar" id="timer"><i></i></div>
+  <div class="card">
+   <div class="row"><span id="qNum"></span><span id="pwr"></span></div>
+   <div id="qType"></div>
+   <div class="q" id="qText"></div>
+   <div class="zh" id="qZh"></div>
+   <div class="py" id="qPy"></div>
+   <div class="vi" id="qVi"></div>
+   <div id="qExtra"></div>
+  </div>
+  <div class="opts" id="opts"></div>
+ </div>
+
+ <div class="screen" id="sEnd">
+  <div class="badge" id="badge"></div>
+  <h1 id="endTitle"></h1>
+  <div class="card" id="endInfo"></div>
+  <div class="card learn-card" id="learnCard" hidden>
+   <h4>📖 Câu học được hôm nay</h4>
+   <div class="zh" id="learnZh"></div>
+   <div class="py" id="learnPy"></div>
+   <div class="vi" id="learnVi"></div>
+  </div>
+  <div class="invite" id="inviteCard">
+   <h3>🎓 Học tiếp với Bảo Khựa 阿宝</h3>
+   <p class="price" id="invitePrice"></p>
+   <p id="inviteShareLine" style="font-size:13px;margin:0 0 10px;opacity:.85"></p>
+   <div class="offers" id="inviteOffers">
+    <p data-offer-hold>⏰ Giữ chỗ đến 18:00 ngày 01/11.</p>
+    <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 18:00 ngày 01/11 → bạn được cộng thêm 7 ngày.</p>
+    <p>🎯 Mini game đoán nghĩa trong nhóm Zalo: đoán đúng → giảm đến 20k khi mua thẻ.</p>
+   </div>
+   <div class="row-btns">
+    <a class="btn form" id="formBtn" target="_blank" rel="noopener">📝 Đăng ký thẻ</a>
+    <a class="btn zalo" id="zaloBtn" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a>
+   </div>
+  </div>
+  <div class="end-links">
+   <button type="button" class="linkish" id="shareBtn">Chia sẻ</button>
+   <button type="button" class="linkish" id="btnAgain">Chơi lại</button>
+  </div>
+ </div>
+</div>
+<div class="flash" id="flash"></div>
+<div class="overlay" id="upOverlay" role="dialog" aria-modal="true">
+ <div class="up-card">
+  <h3>✨ Nâng cấp tướng (đổi hình 3D)</h3>
+  <p class="sub">Giáp · vũ khí · hào quang sẽ đổi ngay trên sân</p>
+  <div class="stats" id="upStats"></div>
+  <div class="up-opts" id="upOpts"></div>
+ </div>
+</div>
+
+<script type="module">
+/* ===== inlined from v4/battle3d.mjs — lazy CDN (2D first, swap-in when ready) ===== */
+let createBattle = null;
+function webglAvailable() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
+  } catch (e) { return false; }
+}
+let __battle3dPromise = null;
+function ensureBattle3d() {
+  if (__battle3dPromise) return __battle3dPromise;
+  __battle3dPromise = (async () => {
+    const THREE = await import('three');
+/**
+ * Bảo Khựa battle scene — procedural low-poly (Media concept):
+ * denim #1E5AA8 · sun #FFD91F · ink #16171B · teal aura Long Hạ
+ * No GLB required; three.js from CDN import map in game_v4.html
+ */
+let BloomEffect, EffectComposer, EffectPass, RenderPass;
+let postOk = false;
+async function loadPost() {
+  try {
+    const pp = await import('postprocessing');
+    BloomEffect = pp.BloomEffect;
+    EffectComposer = pp.EffectComposer;
+    EffectPass = pp.EffectPass;
+    RenderPass = pp.RenderPass;
+    postOk = true;
+  } catch (e) {
+    console.warn('postprocessing CDN fail — bloom off', e);
+    postOk = false;
+  }
+}
+const postReady = loadPost();
+
+const DENIM = 0x1e5aa8, DENIM_DEEP = 0x0f3468, SUN = 0xffd91f, INK = 0x16171b;
+const SKIN = 0xf0c9a0, TEAL = 0x2ec4b6, WHITE = 0xfff8e7, GOLD = 0xffd34d;
+
+function mat(color, opts = {}) {
+  return new THREE.MeshStandardMaterial({
+    color, flatShading: true, roughness: opts.roughness ?? 0.72, metalness: opts.metalness ?? 0.08,
+    emissive: opts.emissive ?? 0x000000, emissiveIntensity: opts.emissiveIntensity ?? 0,
+    transparent: !!opts.transparent, opacity: opts.opacity ?? 1
+  });
+}
+
+function box(w, h, d, color, opts) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color, opts));
+  m.castShadow = false; m.receiveShadow = false;
+  return m;
+}
+
+function makeBadgeTexture() {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const g = c.getContext('2d');
+  g.fillStyle = '#FFD91F'; g.beginPath();
+  g.moveTo(32, 4); g.lineTo(60, 32); g.lineTo(32, 60); g.lineTo(4, 32); g.closePath(); g.fill();
+  g.fillStyle = '#16171B'; g.font = 'bold 34px serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('宝', 32, 34);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+createBattle = function createBattle(canvas) {
+  const state = {
+    armor: 0, atk: 0, skillLv: 0, stageKey: 'hotel',
+    particles: [], shakeT: 0, shakeAmp: 0,
+    atkAnim: 0, bossAnim: 0, hitFlash: 0,
+    auraColor: new THREE.Color(TEAL),
+    running: true, reduced: matchMedia('(prefers-reduced-motion: reduce)').matches
+  };
+  let composer = null, bloomOn = false;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
+  renderer.setClearColor(0x4a90b8, 1);
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x4a90b8);
+  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 80);
+  camera.position.set(0, 1.95, 5.15);
+  camera.lookAt(0, 1.05, 0);
+  const camBase = camera.position.clone();
+
+  scene.add(new THREE.HemisphereLight(0xfff0d0, 0x1a3050, 1.15));
+  const key = new THREE.DirectionalLight(0xffffff, 1.05);
+  key.position.set(3, 6, 4); scene.add(key);
+  const rim = new THREE.DirectionalLight(0x7ec8ff, 0.35);
+  rim.position.set(-4, 3, -2); scene.add(rim);
+
+  // --- Floor / lobby ---
+  const floor = box(10, 0.12, 5, 0x3a3f48); floor.position.set(0, -0.06, 0.3); scene.add(floor);
+  const rug = box(3.2, 0.02, 1.6, 0x1e5aa8); rug.position.set(0, 0.02, 0.5); scene.add(rug);
+
+  // Stylized Ha Long karsts (backdrop)
+  const bg = new THREE.Group(); bg.position.set(0, 0, -3.5); scene.add(bg);
+  const sky = box(14, 7, 0.2, 0x6eb6d9); sky.position.y = 3; bg.add(sky);
+  [[-3.2, 1.4, 0.9], [-1.4, 2.0, 1.1], [0.2, 1.6, 0.8], [2.0, 2.2, 1.2], [3.5, 1.5, 0.85]].forEach(([x, h, s]) => {
+    const k = box(s, h, s * 0.7, 0x5a7a62); k.position.set(x, h / 2, -0.2); bg.add(k);
+  });
+  const water = box(14, 0.08, 2, 0x2a7a9a); water.position.set(0, 0.2, 0.6); bg.add(water);
+
+  // Reception desk
+  const desk = new THREE.Group(); desk.position.set(1.55, 0, 0.15); scene.add(desk);
+  const deskBody = box(1.8, 0.95, 0.7, 0x5a5e66); deskBody.position.y = 0.48; desk.add(deskBody);
+  const deskTop = box(1.9, 0.08, 0.78, GOLD); deskTop.position.y = 0.98; desk.add(deskTop);
+  const bell = box(0.18, 0.12, 0.18, GOLD, { metalness: 0.6, roughness: 0.3 }); bell.position.set(-0.55, 1.1, 0.1); desk.add(bell);
+  const book = box(0.35, 0.05, 0.28, WHITE); book.position.set(0.1, 1.06, 0.05); desk.add(book);
+  const card = box(0.18, 0.28, 0.02, DENIM); card.position.set(0.55, 1.2, 0.15); desk.add(card);
+
+  const badgeTex = makeBadgeTexture();
+
+  // --- Hero ---
+  const hero = new THREE.Group(); hero.position.set(-1.55, 0, 0.4); scene.add(hero);
+  const heroParts = {};
+
+  function buildHero() {
+    while (hero.children.length) hero.remove(hero.children[0]);
+    const body = new THREE.Group(); hero.add(body);
+
+    // legs
+    const legL = box(0.28, 0.55, 0.28, INK); legL.position.set(-0.16, 0.28, 0); body.add(legL);
+    const legR = box(0.28, 0.55, 0.28, INK); legR.position.set(0.16, 0.28, 0); body.add(legR);
+    const bootL = box(0.32, 0.16, 0.36, INK); bootL.position.set(-0.16, 0.08, 0.02); body.add(bootL);
+    const bootR = box(0.32, 0.16, 0.36, INK); bootR.position.set(0.16, 0.08, 0.02); body.add(bootR);
+    heroParts.bootGoldL = box(0.34, 0.04, 0.38, SUN); heroParts.bootGoldL.position.set(-0.16, 0.02, 0.02); heroParts.bootGoldL.visible = false; body.add(heroParts.bootGoldL);
+    heroParts.bootGoldR = box(0.34, 0.04, 0.38, SUN); heroParts.bootGoldR.position.set(0.16, 0.02, 0.02); heroParts.bootGoldR.visible = false; body.add(heroParts.bootGoldR);
+
+    // torso
+    const torso = box(0.72, 0.7, 0.42, DENIM); torso.position.set(0, 0.9, 0); body.add(torso);
+    heroParts.wave = box(0.74, 0.28, 0.44, DENIM_DEEP); heroParts.wave.position.set(0, 0.68, 0); body.add(heroParts.wave);
+
+    // badge 宝
+    const badge = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.28), new THREE.MeshStandardMaterial({ map: badgeTex, transparent: true, flatShading: true }));
+    badge.position.set(-0.18, 1.05, 0.22); body.add(badge);
+    heroParts.badgeBig = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.34), new THREE.MeshStandardMaterial({ map: badgeTex, transparent: true, flatShading: true, emissive: SUN, emissiveIntensity: 0.2 }));
+    heroParts.badgeBig.position.set(0, 1.05, 0.22); heroParts.badgeBig.visible = false; body.add(heroParts.badgeBig);
+
+    // armor pieces (upgrades)
+    heroParts.shoulderL = box(0.32, 0.22, 0.38, DENIM_DEEP, { metalness: 0.2 }); heroParts.shoulderL.position.set(-0.48, 1.18, 0); heroParts.shoulderL.visible = false; body.add(heroParts.shoulderL);
+    heroParts.shoulderR = box(0.32, 0.22, 0.38, DENIM_DEEP, { metalness: 0.2 }); heroParts.shoulderR.position.set(0.48, 1.18, 0); heroParts.shoulderR.visible = false; body.add(heroParts.shoulderR);
+    heroParts.shoulderGoldL = box(0.34, 0.06, 0.4, SUN, { emissive: SUN, emissiveIntensity: 0.15 }); heroParts.shoulderGoldL.position.set(-0.48, 1.28, 0); heroParts.shoulderGoldL.visible = false; body.add(heroParts.shoulderGoldL);
+    heroParts.shoulderGoldR = box(0.34, 0.06, 0.4, SUN, { emissive: SUN, emissiveIntensity: 0.15 }); heroParts.shoulderGoldR.position.set(0.48, 1.28, 0); heroParts.shoulderGoldR.visible = false; body.add(heroParts.shoulderGoldR);
+    heroParts.chestPlate = box(0.76, 0.36, 0.46, INK, { metalness: 0.25 }); heroParts.chestPlate.position.set(0, 0.95, 0.02); heroParts.chestPlate.visible = false; body.add(heroParts.chestPlate);
+
+    // arms
+    const armL = box(0.22, 0.55, 0.22, DENIM); armL.position.set(-0.52, 0.85, 0); body.add(armL);
+    const armR = box(0.22, 0.55, 0.22, DENIM); armR.position.set(0.52, 0.85, 0); body.add(armR);
+    heroParts.armWrapL = box(0.24, 0.2, 0.24, INK); heroParts.armWrapL.position.set(-0.52, 0.62, 0); heroParts.armWrapL.visible = false; body.add(heroParts.armWrapL);
+    heroParts.armWrapR = box(0.24, 0.2, 0.24, INK); heroParts.armWrapR.position.set(0.52, 0.62, 0); heroParts.armWrapR.visible = false; body.add(heroParts.armWrapR);
+
+    // head
+    const head = box(0.55, 0.55, 0.5, SKIN); head.position.set(0, 1.52, 0); body.add(head);
+    const hair = box(0.58, 0.28, 0.52, INK); hair.position.set(0, 1.78, -0.02); body.add(hair);
+    const spike = box(0.12, 0.22, 0.12, INK); spike.position.set(-0.12, 1.95, 0); body.add(spike);
+    const spike2 = box(0.1, 0.18, 0.1, INK); spike2.position.set(0.14, 1.92, 0.05); body.add(spike2);
+    // eyes
+    const eyeL = box(0.1, 0.1, 0.04, INK); eyeL.position.set(-0.12, 1.54, 0.26); body.add(eyeL);
+    const eyeR = box(0.1, 0.1, 0.04, INK); eyeR.position.set(0.12, 1.54, 0.26); body.add(eyeR);
+    // headband
+    const band = box(0.58, 0.1, 0.52, SUN); band.position.set(0, 1.68, 0.02); body.add(band);
+    heroParts.bandTail = box(0.08, 0.45, 0.08, SUN); heroParts.bandTail.position.set(0.32, 1.55, -0.15); heroParts.bandTail.rotation.z = 0.4; body.add(heroParts.bandTail);
+    heroParts.bandBadge = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.16), new THREE.MeshStandardMaterial({ map: badgeTex, transparent: true }));
+    heroParts.bandBadge.position.set(0, 1.68, 0.28); heroParts.bandBadge.visible = false; body.add(heroParts.bandBadge);
+
+    // Weapons group
+    heroParts.weapons = new THREE.Group(); heroParts.weapons.position.set(0.55, 0.95, 0.25); body.add(heroParts.weapons);
+
+    // Tier1 shuriken
+    heroParts.shuriken = new THREE.Group();
+    for (let i = 0; i < 4; i++) {
+      const blade = box(0.55, 0.06, 0.14, SUN, { emissive: SUN, emissiveIntensity: 0.25, metalness: 0.4 });
+      blade.rotation.z = (Math.PI / 2) * i; heroParts.shuriken.add(blade);
+    }
+    const hub = box(0.14, 0.08, 0.14, INK); heroParts.shuriken.add(hub);
+    heroParts.weapons.add(heroParts.shuriken);
+
+    // Tier2 dual blades
+    heroParts.blades = new THREE.Group(); heroParts.blades.visible = false;
+    const mkBlade = (x) => {
+      const g = new THREE.Group();
+      const blade = box(0.08, 0.7, 0.04, 0xe8f0ff, { emissive: SUN, emissiveIntensity: 0.45, metalness: 0.5 });
+      blade.position.y = 0.35; g.add(blade);
+      const hilt = box(0.1, 0.18, 0.1, INK); g.add(hilt);
+      const guard = box(0.22, 0.04, 0.08, SUN); guard.position.y = 0.1; g.add(guard);
+      g.position.x = x; return g;
+    };
+    heroParts.blades.add(mkBlade(-0.15)); heroParts.blades.add(mkBlade(0.15));
+    heroParts.weapons.add(heroParts.blades);
+
+    // Tier3 dragon shuriken (bigger + glow)
+    heroParts.dragonStar = new THREE.Group(); heroParts.dragonStar.visible = false;
+    for (let i = 0; i < 4; i++) {
+      const blade = box(0.75, 0.08, 0.16, SUN, { emissive: SUN, emissiveIntensity: 0.7, metalness: 0.55 });
+      blade.rotation.z = (Math.PI / 2) * i + 0.2; heroParts.dragonStar.add(blade);
+    }
+    const hub2 = box(0.18, 0.1, 0.18, TEAL, { emissive: TEAL, emissiveIntensity: 0.5 }); heroParts.dragonStar.add(hub2);
+    heroParts.weapons.add(heroParts.dragonStar);
+
+    // Aura ring (skill)
+    heroParts.aura = new THREE.Mesh(
+      new THREE.TorusGeometry(0.85, 0.04, 6, 20),
+      mat(TEAL, { emissive: TEAL, emissiveIntensity: 0.8, transparent: true, opacity: 0.75 })
+    );
+    heroParts.aura.rotation.x = Math.PI / 2; heroParts.aura.position.y = 0.9; heroParts.aura.visible = false; body.add(heroParts.aura);
+
+    heroParts.aura2 = new THREE.Mesh(
+      new THREE.TorusGeometry(1.05, 0.03, 6, 16),
+      mat(SUN, { emissive: SUN, emissiveIntensity: 0.5, transparent: true, opacity: 0.5 })
+    );
+    heroParts.aura2.rotation.x = Math.PI / 2; heroParts.aura2.position.y = 1.1; heroParts.aura2.visible = false; body.add(heroParts.aura2);
+
+    heroParts.body = body;
+  }
+  buildHero();
+
+  // --- Boss ---
+  const boss = new THREE.Group(); boss.position.set(1.55, 0, -0.15); scene.add(boss);
+  const bossParts = {};
+  (function buildBoss() {
+    const body = new THREE.Group(); boss.add(body);
+    // skirt/legs
+    const skirt = box(0.7, 0.5, 0.4, INK); skirt.position.set(0, 0.35, 0); body.add(skirt);
+    // blazer
+    const torso = box(0.75, 0.75, 0.42, DENIM); torso.position.set(0, 0.95, 0); body.add(torso);
+    const trimL = box(0.08, 0.7, 0.44, SUN); trimL.position.set(-0.28, 0.95, 0); body.add(trimL);
+    const trimR = box(0.08, 0.7, 0.44, SUN); trimR.position.set(0.28, 0.95, 0); body.add(trimR);
+    const shirt = box(0.28, 0.35, 0.4, WHITE); shirt.position.set(0, 1.05, 0.05); body.add(shirt);
+    // crossed arms
+    const armL = box(0.55, 0.18, 0.18, DENIM); armL.position.set(-0.15, 0.95, 0.28); armL.rotation.z = 0.15; body.add(armL);
+    const armR = box(0.55, 0.18, 0.18, DENIM); armR.position.set(0.15, 0.95, 0.28); armR.rotation.z = -0.15; body.add(armR);
+    // head
+    const head = box(0.5, 0.5, 0.45, SKIN); head.position.set(0, 1.55, 0); body.add(head);
+    const bun = box(0.22, 0.22, 0.22, INK); bun.position.set(0, 1.88, -0.05); body.add(bun);
+    const hair = box(0.52, 0.2, 0.48, INK); hair.position.set(0, 1.78, -0.02); body.add(hair);
+    const browL = box(0.14, 0.04, 0.04, INK); browL.position.set(-0.12, 1.62, 0.24); browL.rotation.z = 0.3; body.add(browL);
+    const browR = box(0.14, 0.04, 0.04, INK); browR.position.set(0.12, 1.62, 0.24); browR.rotation.z = -0.3; body.add(browR);
+    const eyeL = box(0.09, 0.08, 0.04, INK); eyeL.position.set(-0.12, 1.52, 0.24); body.add(eyeL);
+    const eyeR = box(0.09, 0.08, 0.04, INK); eyeR.position.set(0.12, 1.52, 0.24); body.add(eyeR);
+    const nameTag = box(0.16, 0.1, 0.02, SUN); nameTag.position.set(-0.22, 1.1, 0.22); body.add(nameTag);
+    bossParts.body = body;
+    bossParts.glow = new THREE.Mesh(new THREE.SphereGeometry(0.9, 8, 8), mat(0xff4444, { transparent: true, opacity: 0, emissive: 0xff2222, emissiveIntensity: 0.5 }));
+    bossParts.glow.position.y = 1; body.add(bossParts.glow);
+  })();
+
+  // ===== Combat VFX (MOBA feel) — models unchanged =====
+  const MAX_PARTICLES = 72;
+  const projectiles = [];
+  const fxMeshes = []; // slash arcs, rings, beams — temporary
+  const particlePool = [];
+
+  // Telegraph / impact helpers on boss
+  bossParts.telegraph = new THREE.Mesh(
+    new THREE.RingGeometry(0.35, 0.55, 24),
+    mat(0xff3333, { transparent: true, opacity: 0, emissive: 0xff2222, emissiveIntensity: 0.8 })
+  );
+  bossParts.telegraph.rotation.x = -Math.PI / 2;
+  bossParts.telegraph.position.set(0, 0.05, 0.35);
+  boss.add(bossParts.telegraph);
+
+  bossParts.hitFlashMat = [];
+  boss.traverse(ch => {
+    if (ch.isMesh && ch.material && ch.material.emissive) bossParts.hitFlashMat.push(ch.material);
+  });
+
+  state.hitStop = 0;
+  state.knockT = 0;
+  state.knockDir = 0;
+  state.bossHitT = 0;
+  state.telegraphT = 0;
+  state.levelUpT = 0;
+  state.timeScale = 1;
+  hero.userData.baseX = -1.55;
+  boss.userData.baseX = 1.55;
+
+  function acquireParticle() {
+    let p = particlePool.pop();
+    if (!p) {
+      p = box(0.07, 0.07, 0.07, SUN, { emissive: SUN, emissiveIntensity: 0.7, transparent: true, opacity: 1 });
+    }
+    p.visible = true;
+    return p;
+  }
+  function releaseParticle(p) {
+    p.visible = false;
+    if (p.parent) p.parent.remove(p);
+    if (particlePool.length < MAX_PARTICLES) particlePool.push(p);
+  }
+
+  function spawnParticle(x, y, z, color, n = 12, speed = 0.08) {
+    if (state.reduced) n = Math.min(n, 6);
+    const room = MAX_PARTICLES - state.particles.length;
+    n = Math.min(n, Math.max(0, room));
+    for (let i = 0; i < n; i++) {
+      const p = acquireParticle();
+      p.material.color.setHex(color);
+      p.material.emissive.setHex(color);
+      p.material.emissiveIntensity = 0.75;
+      p.material.opacity = 1;
+      p.position.set(x, y, z);
+      p.scale.setScalar(0.7 + Math.random() * 0.8);
+      p.userData.v = new THREE.Vector3((Math.random() - 0.5) * speed, Math.random() * speed * 1.2, (Math.random() - 0.5) * speed);
+      p.userData.life = 1;
+      p.userData.decay = 1.6 + Math.random() * 1.2;
+      scene.add(p);
+      state.particles.push(p);
+    }
+  }
+
+  function addFxMesh(mesh, life) {
+    mesh.userData.life = life;
+    mesh.userData.maxLife = life;
+    scene.add(mesh);
+    fxMeshes.push(mesh);
+    return mesh;
+  }
+
+  function spawnShockwave(x, y, z, color, scale = 1) {
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.15, 0.28, 28),
+      mat(color, { transparent: true, opacity: 0.9, emissive: color, emissiveIntensity: 0.9 })
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(x, y, z);
+    ring.userData.grow = 3.5 * scale;
+    addFxMesh(ring, 0.45);
+  }
+
+  function spawnSlashArc(from, to, color) {
+    const mid = from.clone().lerp(to, 0.45);
+    mid.y += 0.35;
+    const arc = new THREE.Mesh(
+      new THREE.TorusGeometry(0.85, 0.06, 6, 18, Math.PI * 0.85),
+      mat(color, { transparent: true, opacity: 0.95, emissive: color, emissiveIntensity: 1 })
+    );
+    arc.position.copy(mid);
+    arc.rotation.set(-0.4, 0.6, 0.9);
+    arc.userData.spin = 8;
+    addFxMesh(arc, 0.28);
+  }
+
+  function spawnTrailProjectile(origin, target, color, kind) {
+    const body = box(
+      kind === 'chem_gio' ? 0.12 : 0.32,
+      kind === 'chem_gio' ? 0.55 : 0.1,
+      kind === 'chem_gio' ? 0.06 : 0.32,
+      color,
+      { emissive: color, emissiveIntensity: 1, metalness: 0.4 }
+    );
+    body.position.copy(origin);
+    const dir = target.clone().sub(origin);
+    const dist = dir.length();
+    dir.normalize();
+    body.userData.v = dir.multiplyScalar(0.11);
+    body.userData.life = Math.min(0.55, dist / 6);
+    body.userData.trailColor = color;
+    body.userData.trailAcc = 0;
+    if (kind === 'chem_gio') body.rotation.z = -0.9;
+    scene.add(body);
+    projectiles.push(body);
+    return body;
+  }
+
+  function spawnAoEPillar(x, z, color) {
+    const pillar = box(0.35, 2.8, 0.35, color, { transparent: true, opacity: 0.55, emissive: color, emissiveIntensity: 1 });
+    pillar.position.set(x, 1.4, z);
+    pillar.userData.shrink = true;
+    addFxMesh(pillar, 0.55);
+    spawnShockwave(x, 0.08, z, color, 1.6);
+    spawnParticle(x, 1.2, z, color, 22, 0.14);
+    spawnParticle(x, 1.4, z, 0xffffff, 10, 0.1);
+  }
+
+  function hitStop(ms) {
+    state.hitStop = Math.max(state.hitStop, ms / 1000);
+  }
+
+  function applyVisuals() {
+    const a = state.armor, atk = state.atk, sk = state.skillLv;
+    heroParts.shoulderL.visible = a >= 1;
+    heroParts.shoulderR.visible = a >= 1;
+    heroParts.armWrapL.visible = a >= 1;
+    heroParts.armWrapR.visible = a >= 1;
+    heroParts.chestPlate.visible = a >= 2;
+    heroParts.shoulderGoldL.visible = a >= 3;
+    heroParts.shoulderGoldR.visible = a >= 3;
+    heroParts.bootGoldL.visible = a >= 2;
+    heroParts.bootGoldR.visible = a >= 2;
+    heroParts.badgeBig.visible = a >= 3;
+    heroParts.bandBadge.visible = sk >= 2 || a >= 3;
+    heroParts.shuriken.visible = sk === 0;
+    heroParts.blades.visible = sk === 1;
+    heroParts.dragonStar.visible = sk >= 2;
+    heroParts.aura.visible = sk >= 2;
+    heroParts.aura2.visible = sk >= 2;
+    const glow = Math.min(1, 0.2 + atk * 0.08);
+    const setEmissive = (obj, c, inten) => obj.traverse(ch => {
+      if (ch.material && ch.material.emissive) {
+        ch.material.emissive.setHex(c);
+        ch.material.emissiveIntensity = inten;
+      }
+    });
+    if (sk === 0) setEmissive(heroParts.shuriken, SUN, glow);
+    if (sk === 1) setEmissive(heroParts.blades, SUN, glow + 0.15);
+    if (sk >= 2) setEmissive(heroParts.dragonStar, SUN, glow + 0.35);
+    const auraCol = sk >= 2 ? TEAL : (atk >= 3 ? 0xff6b35 : SUN);
+    if (heroParts.aura.material) {
+      heroParts.aura.material.color.setHex(auraCol);
+      heroParts.aura.material.emissive.setHex(auraCol);
+    }
+    state.auraColor.setHex(auraCol);
+    const ws = 1 + Math.min(0.45, atk * 0.06);
+    heroParts.weapons.scale.setScalar(ws);
+  }
+
+  function resize() {
+    const parent = canvas.parentElement;
+    const w = Math.max(2, (parent && parent.clientWidth) || canvas.clientWidth || 320);
+    const h = Math.max(2, (parent && parent.clientHeight) || canvas.clientHeight || 200);
+    canvas.width = w; canvas.height = h;
+    renderer.setSize(w, h, false);
+    if (composer && composer.setSize) composer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+
+  let last = performance.now();
+  function tick(now) {
+    if (!state.running) return;
+    requestAnimationFrame(tick);
+    let dt = Math.min(0.05, (now - last) / 1000); last = now;
+
+    // Hit-stop / freeze frames
+    if (state.hitStop > 0) {
+      state.hitStop -= dt;
+      dt *= 0.08; // near-freeze
+    }
+
+    const t = now * 0.001;
+
+    // idle bob (respect knock)
+    const heroKnock = state.knockT > 0 && state.knockDir < 0 ? -0.35 * state.knockT : 0;
+    const bossKnock = state.knockT > 0 && state.knockDir > 0 ? 0.4 * state.knockT : 0;
+    if (state.knockT > 0) state.knockT -= dt * 2.2;
+
+    hero.position.y = Math.sin(t * 2.2) * 0.03;
+    boss.position.y = Math.sin(t * 2.0 + 1) * 0.02;
+    if (heroParts.shuriken.visible) heroParts.shuriken.rotation.z += dt * (2.5 + state.atk * 0.4);
+    if (heroParts.dragonStar.visible) heroParts.dragonStar.rotation.z += dt * 3.5;
+    if (heroParts.aura.visible) {
+      heroParts.aura.rotation.z += dt * 1.5;
+      heroParts.aura2.rotation.z -= dt * 1.1;
+      heroParts.aura.material.opacity = 0.55 + Math.sin(t * 4) * 0.2;
+    }
+
+    // attack lunge
+    if (state.atkAnim > 0) {
+      state.atkAnim -= dt;
+      const k = Math.max(0, state.atkAnim);
+      hero.position.x = hero.userData.baseX + Math.sin((1 - k) * Math.PI) * 1.35 + heroKnock;
+      hero.rotation.y = Math.sin((1 - k) * Math.PI) * 0.45;
+    } else {
+      hero.position.x = hero.userData.baseX + heroKnock;
+      hero.rotation.y = 0.15;
+    }
+
+    // boss telegraph pulse
+    if (state.telegraphT > 0) {
+      state.telegraphT -= dt;
+      const p = state.telegraphT;
+      bossParts.telegraph.material.opacity = Math.min(0.95, p * 2.2);
+      const s = 1 + (1 - Math.min(1, p)) * 1.4;
+      bossParts.telegraph.scale.set(s, s, s);
+    } else {
+      bossParts.telegraph.material.opacity = 0;
+      bossParts.telegraph.scale.set(1, 1, 1);
+    }
+
+    if (state.bossAnim > 0) {
+      state.bossAnim -= dt;
+      const k = Math.max(0, state.bossAnim);
+      boss.position.x = boss.userData.baseX - Math.sin((1 - k) * Math.PI) * 1.15 + bossKnock;
+      bossParts.glow.material.opacity = k * 0.5;
+    } else {
+      boss.position.x = boss.userData.baseX + bossKnock;
+      bossParts.glow.material.opacity = 0;
+    }
+
+    // boss hit flash reaction
+    if (state.bossHitT > 0) {
+      state.bossHitT -= dt;
+      const f = Math.min(1, state.bossHitT * 5);
+      bossParts.hitFlashMat.forEach(m => { m.emissiveIntensity = 0.2 + f * 1.4; m.emissive.setHex(0xff2222); });
+      boss.rotation.z = Math.sin(state.bossHitT * 40) * 0.08 * f;
+    } else {
+      boss.rotation.z = 0;
+    }
+
+    // level-up pillar local
+    if (state.levelUpT > 0) {
+      state.levelUpT -= dt;
+    }
+
+    // projectiles + trails
+    for (let i = projectiles.length - 1; i >= 0; i--) {
+      const pr = projectiles[i];
+      pr.position.addScaledVector(pr.userData.v, dt * 60);
+      pr.userData.life -= dt;
+      pr.rotation.z += dt * (pr.userData.spin || 12);
+      pr.userData.trailAcc = (pr.userData.trailAcc || 0) + dt;
+      if (!state.reduced && pr.userData.trailAcc > 0.03) {
+        pr.userData.trailAcc = 0;
+        spawnParticle(pr.position.x, pr.position.y, pr.position.z, pr.userData.trailColor || SUN, 2, 0.04);
+      }
+      if (pr.userData.life <= 0) { scene.remove(pr); projectiles.splice(i, 1); }
+    }
+
+    // fx meshes (slash, rings, pillars)
+    for (let i = fxMeshes.length - 1; i >= 0; i--) {
+      const m = fxMeshes[i];
+      m.userData.life -= dt;
+      const lifeRatio = m.userData.life / m.userData.maxLife;
+      if (m.material) m.material.opacity = Math.max(0, lifeRatio);
+      if (m.userData.grow) {
+        const s = 1 + (1 - lifeRatio) * m.userData.grow;
+        m.scale.set(s, s, s);
+      }
+      if (m.userData.spin) m.rotation.z += dt * m.userData.spin;
+      if (m.userData.shrink) m.scale.y = Math.max(0.1, lifeRatio);
+      if (m.userData.life <= 0) {
+        scene.remove(m);
+        if (m.geometry) m.geometry.dispose();
+        fxMeshes.splice(i, 1);
+      }
+    }
+
+    // particles
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+      const p = state.particles[i];
+      p.position.add(p.userData.v);
+      p.userData.v.y -= 0.004;
+      p.userData.life -= dt * (p.userData.decay || 1.8);
+      p.material.opacity = Math.max(0, p.userData.life);
+      p.material.transparent = true;
+      if (p.userData.life <= 0) {
+        state.particles.splice(i, 1);
+        releaseParticle(p);
+      }
+    }
+
+    // camera shake
+    if (state.shakeT > 0) {
+      state.shakeT -= dt;
+      const a = state.shakeAmp * Math.max(0, state.shakeT);
+      camera.position.x = camBase.x + (Math.random() - 0.5) * a;
+      camera.position.y = camBase.y + (Math.random() - 0.5) * a * 0.65;
+    } else {
+      camera.position.copy(camBase);
+    }
+
+    if (state.hitFlash > 0) {
+      state.hitFlash -= dt;
+      const a = Math.min(0.4, state.hitFlash * 1.5);
+      renderer.setClearColor(state.hitFlashColor || 0xffffff, 1);
+      // blend via scene fog-ish: temporarily tint lights
+    } else {
+      renderer.setClearColor(0x4a90b8, 1);
+    }
+
+    if (composer && bloomOn) composer.render();
+    else renderer.render(scene, camera);
+  }
+
+  function applyStageTheme(key) {
+    state.stageKey = key || 'hotel';
+    const factory = state.stageKey === 'factory';
+    // Minimal palette swap — không beautify model
+    scene.background.setHex(factory ? 0x5a6a72 : 0x4a90b8);
+    renderer.setClearColor(factory ? 0x5a6a72 : 0x4a90b8, 1);
+    try {
+      // hard-hat tint on boss hair-ish / band if present
+      boss.traverse(ch => {
+        if (!ch.isMesh || !ch.material || !ch.material.color) return;
+        // skip particles
+      });
+      if (factory) {
+        // small orange block as hard hat (once)
+        if (!boss.userData.hardHat) {
+          const hat = box(0.5, 0.18, 0.45, 0xff8c1a, { metalness: 0.2 });
+          hat.position.set(0, 1.95, 0);
+          boss.add(hat);
+          boss.userData.hardHat = hat;
+        }
+        boss.userData.hardHat.visible = true;
+      } else if (boss.userData.hardHat) {
+        boss.userData.hardHat.visible = false;
+      }
+    } catch (e) {}
+  }
+
+  async function setupBloom() {
+    await postReady;
+    if (!postOk || state.reduced) return;
+    try {
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      const bloom = new BloomEffect({
+        intensity: 0.55,
+        luminanceThreshold: 0.72,
+        luminanceSmoothing: 0.3,
+        mipmapBlur: true
+      });
+      composer.addPass(new EffectPass(camera, bloom));
+      bloomOn = true;
+      const _r = resize;
+      // keep composer size in sync
+      const origResize = resize;
+      // monkey: call setSize on composer inside resize via wrap
+    } catch (e) {
+      console.warn('bloom setup fail', e);
+      composer = null; bloomOn = false;
+    }
+  }
+  setupBloom();
+
+  resize();
+  applyVisuals();
+  applyStageTheme('hotel');
+  requestAnimationFrame(tick);
+  window.addEventListener('resize', resize, { passive: true });
+
+  // wrap resize to sync composer
+  const _resize = resize;
+  function resizeWithComposer() {
+    _resize();
+    if (composer && composer.setSize) {
+      const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
+      composer.setSize(w, h);
+    }
+  }
+  window.removeEventListener('resize', resize);
+  window.addEventListener('resize', resizeWithComposer, { passive: true });
+
+  return {
+    resize: resizeWithComposer,
+    setStage(key) { applyStageTheme(key); },
+    setVisual({ armor = 0, atk = 0, skillLv = 0 } = {}) {
+      state.armor = armor; state.atk = atk; state.skillLv = skillLv; applyVisuals();
+    },
+    /** @returns {{ impactAt:number }} ms until impact for syncing float dmg */
+    playHeroAttack(kind = 'phi_tieu') {
+      const origin = new THREE.Vector3(hero.position.x, 1.05, hero.position.z);
+      const target = new THREE.Vector3(boss.position.x, 1.25, boss.position.z);
+      let impactAt = 180;
+      state.atkAnim = 0.32;
+
+      if (kind === 'phi_tieu') {
+        spawnTrailProjectile(origin, target, SUN, 'phi_tieu');
+        spawnParticle(origin.x, origin.y, origin.z, SUN, 8, 0.06);
+        impactAt = 200;
+        setTimeout(() => {
+          spawnParticle(target.x, target.y, target.z, SUN, 16, 0.12);
+          spawnParticle(target.x, target.y, target.z, 0xffffff, 8, 0.09);
+          spawnShockwave(target.x, 0.1, target.z, SUN, 0.9);
+          state.bossHitT = 0.28;
+          state.knockT = 0.45; state.knockDir = 1;
+          hitStop(70);
+          state.shakeT = 0.2; state.shakeAmp = 0.14;
+          state.hitFlash = 0.12; state.hitFlashColor = SUN;
+        }, impactAt);
+      } else if (kind === 'chem_gio') {
+        spawnSlashArc(origin, target, 0xffe08a);
+        spawnTrailProjectile(origin.clone().add(new THREE.Vector3(0, 0.2, 0)), target, GOLD, 'chem_gio');
+        impactAt = 160;
+        setTimeout(() => {
+          spawnSlashArc(target.clone().add(new THREE.Vector3(-0.3, 0, 0)), target, SUN);
+          spawnParticle(target.x, target.y, target.z, GOLD, 18, 0.13);
+          spawnParticle(target.x, target.y, target.z, 0xffffff, 10, 0.1);
+          spawnShockwave(target.x, 0.12, target.z, GOLD, 1.1);
+          state.bossHitT = 0.35;
+          state.knockT = 0.55; state.knockDir = 1;
+          hitStop(80);
+          state.shakeT = 0.26; state.shakeAmp = 0.18;
+          state.hitFlash = 0.14; state.hitFlashColor = GOLD;
+        }, impactAt);
+      } else {
+        // Long Hạ ultimate — AoE
+        spawnParticle(origin.x, origin.y, origin.z, TEAL, 14, 0.1);
+        spawnAoEPillar(target.x, target.z, TEAL);
+        const p2 = spawnTrailProjectile(origin, target, TEAL, 'long_ha');
+        p2.scale.setScalar(1.4);
+        impactAt = 220;
+        setTimeout(() => {
+          spawnAoEPillar(target.x, target.z, SUN);
+          spawnShockwave(target.x, 0.1, target.z, TEAL, 2.2);
+          spawnShockwave(target.x, 0.15, target.z, SUN, 1.4);
+          spawnParticle(target.x, target.y, target.z, TEAL, 28, 0.16);
+          spawnParticle(target.x, target.y + 0.4, target.z, 0xffffff, 14, 0.12);
+          state.bossHitT = 0.5;
+          state.knockT = 0.7; state.knockDir = 1;
+          hitStop(90);
+          state.shakeT = 0.4; state.shakeAmp = 0.32;
+          state.hitFlash = 0.22; state.hitFlashColor = TEAL;
+        }, impactAt);
+      }
+      return { impactAt };
+    },
+    playBossAttack() {
+      // telegraph then strike
+      state.telegraphT = 0.35;
+      state.shakeT = 0.12; state.shakeAmp = 0.06;
+      setTimeout(() => {
+        state.bossAnim = 0.38;
+        state.shakeT = 0.32; state.shakeAmp = 0.22;
+        state.hitFlash = 0.2; state.hitFlashColor = 0xff3030;
+        state.knockT = 0.5; state.knockDir = -1;
+        hitStop(75);
+        const tpos = new THREE.Vector3(hero.position.x, 1.05, hero.position.z);
+        spawnParticle(tpos.x, tpos.y, tpos.z, 0xff5555, 18, 0.12);
+        spawnShockwave(tpos.x, 0.08, tpos.z, 0xff3333, 1.0);
+      }, 320);
+      return { impactAt: 320 };
+    },
+    playLevelUp() {
+      state.levelUpT = 0.9;
+      const x = hero.position.x, z = hero.position.z;
+      spawnAoEPillar(x, z, SUN);
+      spawnShockwave(x, 0.08, z, SUN, 1.8);
+      spawnShockwave(x, 0.12, z, TEAL, 1.2);
+      spawnParticle(x, 1.2, z, SUN, 20, 0.12);
+      spawnParticle(x, 1.5, z, 0xffffff, 10, 0.08);
+      state.shakeT = 0.18; state.shakeAmp = 0.1;
+    },
+    burstAtBoss(color = SUN) {
+      spawnParticle(boss.position.x, 1.2, boss.position.z, color, 18, 0.1);
+    },
+    /** Red flash on boss materials for ms (default 150) */
+    flashBoss(ms = 150) {
+      state.bossHitT = Math.max(state.bossHitT, ms / 1000);
+      state.shakeT = Math.max(state.shakeT, ms / 1000);
+      state.shakeAmp = Math.max(state.shakeAmp, 0.16);
+      state.hitFlash = Math.max(state.hitFlash, ms / 1000);
+      state.hitFlashColor = 0xff3030;
+    },
+    dispose() {
+      state.running = false;
+      renderer.dispose();
+    },
+    get ok() { return !!renderer.getContext(); }
+  };
+}
+
+
+    return !!createBattle;
+  })().catch(e => {
+    console.warn('3D CDN fail — stay 2D', e);
+    createBattle = null;
+    return false;
+  });
+  return __battle3dPromise;
+}
+/* ===== end inlined battle3d ===== */
+
+const SAVE_KEY = 'baokhua_game_v6';
+const BOSS_PER_Q = 16, HERO_BASE = 100, BASE_DMG = 50, WRONG_DMG = 20; // BOSS_PER_Q unused — fixed STAGE_BALANCE
+const SKILLS = [
+  { id:'phi_tieu', name:'Phi tiêu', emoji:'🎯', mult:1 },
+  { id:'chem_gio', name:'Chém gió', emoji:'🗡️', mult:1.35 },
+  { id:'long_ha', name:'Long Hạ', emoji:'🐉', mult:1.8, finisher:true }
+];
+const TOPIC_LABEL = { hotel:'Khách sạn', factory:'Nhà máy', hsk:'HSK 1–2 (luyện tập, không phải đề chính thức)' };
+const TYPE_LABEL = { mc:'Trắc nghiệm', listen:'Nghe', order:'Sắp xếp', fill:'Điền từ', situ:'Tình huống', bat_loi:'Bắt lỗi', hai:'Tình huống hài', nghe_nhanh:'Nghe nhanh' };
+
+const $ = id => document.getElementById(id);
+let __memStore = {};
+function lsGet(k, fallback) {
+  try { const v = localStorage.getItem(k); return v == null ? fallback : v; }
+  catch (e) { return __memStore[k] != null ? __memStore[k] : fallback; }
+}
+function lsSet(k, v) {
+  try { localStorage.setItem(k, v); }
+  catch (e) { __memStore[k] = v; }
+}
+let prog;
+try {
+  prog = JSON.parse(lsGet(SAVE_KEY, '{"wins":0,"best":0,"badges":[]}'));
+  if (!prog || typeof prog !== 'object') throw new Error('bad prog');
+  if (!Array.isArray(prog.badges)) prog.badges = [];
+  if (typeof prog.wins !== 'number') prog.wins = 0;
+  if (typeof prog.best !== 'number') prog.best = 0;
+} catch (e) {
+  prog = { wins: 0, best: 0, badges: [] };
+}
+const save = () => { try { lsSet(SAVE_KEY, JSON.stringify(prog)); } catch (e) {} };
+
+/* ========== v5 systems: streak / SRS / realm / bot / chest / unlock ========== */
+const REALMS = [
+  { id:0, key:'luyen_khi', name:'Luyện khí', py:'Liànqì', vi:'Cảnh giới mở đầu — mở chặng Bãi Cháy', atkMult:1, xpNeed:0 },
+  { id:1, key:'truc_co', name:'Trúc cơ', py:'Zhújī', vi:'Nền tảng vững — mở Cẩm Phả (preview 1 câu nếu chưa thẻ)', atkMult:1.15, xpNeed:10 },
+  { id:2, key:'kim_dan', name:'Kim đan', py:'Jīndān', vi:'Đan đạo — buff mạnh + bot Ác', atkMult:1.35, xpNeed:24 }
+];
+const DIFFS = {
+  easy:   { id:'easy', label:'Dễ', hpMult:0.7, seconds:12 },
+  normal: { id:'normal', label:'Thường', hpMult:1, seconds:10 },
+  hard:   { id:'hard', label:'Ác', hpMult:1.35, seconds:8 }
+};
+const COSMETICS = [
+  { id:'aura_vang', emoji:'✨', name:'Hào quang vàng' },
+  { id:'aura_rong', emoji:'🐉', name:'Khí rồng' },
+  { id:'frame_kim', emoji:'🥇', name:'Khung kim' },
+  { id:'frame_lan', emoji:'🌊', name:'Khung biển Hạ Long' },
+  { id:'pet_phuong', emoji:'🐦', name:'Linh thú nhỏ' },
+  { id:'trail_sao', emoji:'⭐', name:'Vệt sao' }
+];
+const WEAPON_SETS = {
+  hotel:   { name:'Binh khí Lễ tân', emoji:'🏨' },
+  factory: { name:'Binh khí Nhà máy', emoji:'🏭' },
+  hsk:     { name:'Binh khí HSK', emoji:'📚' }
+};
+let botDiff = 'normal';
+let weaponBuffAtk = 0;
+let bossTickId = null;
+let stageLosses = 0; // per-run hidden retry scale
+
+function dayKey(d = new Date()) {
+  const fmt = new Intl.DateTimeFormat('en-CA', { timeZone:'Asia/Saigon', year:'numeric', month:'2-digit', day:'2-digit' });
+  return fmt.format(d);
+}
+function ensureV5Prog() {
+  if (!prog.streak) prog.streak = { count:0, lastDay:'', freeze:0, freezeBank:0 };
+  if (!Array.isArray(prog.srs)) prog.srs = [];
+  if (prog.tuVi == null) prog.tuVi = 0;
+  if (prog.realm == null) prog.realm = 0;
+  if (prog.xp == null) prog.xp = 0;
+  if (prog.hasCard == null) prog.hasCard = false;
+  if (!prog.cosmetics) prog.cosmetics = { owned:['aura_vang'], equipped:'aura_vang', lastChest:'' };
+  if (!Array.isArray(prog.badges)) prog.badges = [];
+  if (prog.srsReviews == null) prog.srsReviews = 0;
+  if (!prog.weaponMastery) prog.weaponMastery = { hotel:0, factory:0, hsk:0 };
+  if (!prog.weekBoard) prog.weekBoard = { week:'', me:0, name:'Bạn***' };
+  if (prog.stage2Unlocked == null) prog.stage2Unlocked = false;
+  if (prog.losses == null) prog.losses = 0;
+}
+ensureV5Prog();
+
+function weekKey(d = new Date()) {
+  const fmt = new Intl.DateTimeFormat('en-CA', { timeZone:'Asia/Saigon', year:'numeric', month:'2-digit', day:'2-digit' });
+  const [y,m,day] = fmt.format(d).split('-').map(Number);
+  const utc = new Date(Date.UTC(y, m-1, day));
+  const dayNum = utc.getUTCDay() || 7;
+  utc.setUTCDate(utc.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(),0,1));
+  const week = Math.ceil((((utc - yearStart) / 86400000) + 1) / 7);
+  return utc.getUTCFullYear() + '-W' + String(week).padStart(2,'0');
+}
+function noteWeeklyScore(n) {
+  ensureV5Prog();
+  const wk = weekKey();
+  if (!prog.weekBoard || prog.weekBoard.week !== wk) prog.weekBoard = { week: wk, me: 0, name: 'Bạn***' };
+  prog.weekBoard.me = (prog.weekBoard.me || 0) + (n || 0);
+  save();
+}
+function weeklyBoardRows() {
+  ensureV5Prog();
+  const wk = weekKey();
+  if (!prog.weekBoard || prog.weekBoard.week !== wk) prog.weekBoard = { week: wk, me: 0, name: 'Bạn***' };
+  const me = prog.weekBoard.me || 0;
+  const seeds = [
+    { name:'Bảo***', score: Math.max(me + 12, 28) },
+    { name:'Minh***', score: Math.max(me + 7, 22) },
+    { name:'Lan***', score: Math.max(me + 3, 18) },
+    { name:'Hùng***', score: Math.max(me - 1, 14) },
+    { name:'Mai***', score: Math.max(me - 4, 11) },
+    { name:'Tuấn***', score: Math.max(me - 6, 9) },
+    { name:'Vy***', score: Math.max(me - 8, 7) },
+    { name:'Đức***', score: Math.max(me - 10, 5) },
+    { name:'Hà***', score: Math.max(me - 12, 3) }
+  ];
+  const rows = seeds.concat([{ name:'Bạn***', score: me, me:true }]);
+  rows.sort((a,b)=>b.score-a.score);
+  return rows.slice(0,10);
+}
+function renderBoard() {
+  const box = $('boardList'); if (!box) return;
+  box.innerHTML = weeklyBoardRows().map((r,i)=>`<div class="weapon-row${r.me?' eq-row':''}"><span>#${i+1} ${r.name}${r.me?' (bạn)':''}</span><b>${r.score}</b></div>`).join('');
+  const note = $('boardWeekNote');
+  if (note) note.textContent = 'Tuần ' + weekKey() + ' · theo câu đúng · Top 10 (ẩn tên đầy đủ).';
+}
+
+function pushSrsFromQuestion(q) {
+  if (!q || !(q.zh || q.py)) return;
+  ensureV5Prog();
+  const zh = q.zh || q.q || '';
+  if (!zh) return;
+  let card = prog.srs.find(c => c.zh === zh);
+  const today = dayKey();
+  if (!card) {
+    prog.srs.push({ zh, py:q.py||'', vi:q.vi||q.giai_thich||'', topic:q.topic||'hsk', interval:1, due:today, mastery:0 });
+  } else {
+    card.interval = 1; card.due = today;
+    card.py = q.py || card.py; card.vi = q.vi || q.giai_thich || card.vi;
+  }
+  save();
+}
+function dueSrsCards() {
+  ensureV5Prog();
+  const today = dayKey();
+  return prog.srs.filter(c => c.due <= today).sort((a,b)=>a.due.localeCompare(b.due));
+}
+function reviewSrsCard(card, ok) {
+  ensureV5Prog();
+  const today = dayKey();
+  if (ok) {
+    if (card.interval <= 1) card.interval = 3;
+    else if (card.interval <= 3) card.interval = 7;
+    else card.interval = 7;
+    const dt = new Date();
+    dt.setDate(dt.getDate() + card.interval);
+    card.due = dayKey(dt);
+    card.mastery = Math.min(10, (card.mastery||0) + 1);
+    prog.srsReviews = (prog.srsReviews||0) + 1;
+    const topic = card.topic || 'hsk';
+    prog.weaponMastery[topic] = Math.min(100, (prog.weaponMastery[topic]||0) + 8);
+    weaponBuffAtk = Math.min(12, weaponBuffAtk + 2);
+  } else {
+    card.interval = 1; card.due = today;
+  }
+  save();
+}
+function noteStreakOnCorrect() {
+  ensureV5Prog();
+  const today = dayKey();
+  const s = prog.streak;
+  if (s.lastDay === today) return;
+  if (s.lastDay) {
+    const last = new Date(s.lastDay + 'T12:00:00+07:00');
+    const now = new Date(today + 'T12:00:00+07:00');
+    const gap = Math.round((now - last) / 86400000);
+    if (gap === 1) s.count += 1;
+    else if (gap > 1) {
+      if (s.freeze > 0) { s.freeze -= 1; s.count += 1; }
+      else s.count = 1;
+    }
+  } else s.count = 1;
+  s.lastDay = today;
+  if (s.count > 0 && s.count % 7 === 0) {
+    s.freeze = Math.min(3, s.freeze + 1);
+    s.freezeBank = (s.freezeBank||0) + 1;
+  }
+  save();
+}
+function addXp(n) {
+  ensureV5Prog();
+  prog.xp = (prog.xp||0) + n;
+  let up = null;
+  while (prog.realm < REALMS.length - 1 && prog.xp >= REALMS[prog.realm + 1].xpNeed) {
+    prog.realm += 1; up = REALMS[prog.realm];
+  }
+  save();
+  if (up) showRealmUp(up);
+}
+function showRealmUp(realm) {
+  const fx = $('realmUpFx'); if (!fx) return;
+  $('realmUpEmoji').textContent = '🏯';
+  $('realmUpTitle').textContent = 'Đột phá · ' + realm.name + '！';
+  $('realmUpBody').innerHTML = `<span class="py">${realm.py}</span><br>${realm.vi}<br>ATK ×${realm.atkMult}`;
+  fx.classList.add('on');
+}
+function realmAtkMult() {
+  ensureV5Prog();
+  return REALMS[Math.min(prog.realm, REALMS.length-1)].atkMult;
+}
+function isStageUnlocked(si) {
+  ensureV5Prog();
+  if (si <= 0) return true;
+  return !!prog.stage2Unlocked;
+}
+function tryUnlockCode(raw) {
+  ensureV5Prog();
+  const ok = String(raw||'').trim().toUpperCase() === String(UNLOCK_CODE).trim().toUpperCase();
+  if (ok) { prog.stage2Unlocked = true; save(); }
+  return ok;
+}
+function openChest() {
+  ensureV5Prog();
+  const today = dayKey();
+  if (prog.cosmetics.lastChest === today) {
+    $('chestMsg').textContent = 'Hôm nay đã mở rương rồi. Quay lại ngày mai (0đ).';
+    return;
+  }
+  const owned = new Set(prog.cosmetics.owned);
+  const pool = COSMETICS.filter(c => !owned.has(c.id));
+  const pick = pool.length ? pool[Math.floor(Math.random()*pool.length)] : COSMETICS[Math.floor(Math.random()*COSMETICS.length)];
+  if (!owned.has(pick.id)) prog.cosmetics.owned.push(pick.id);
+  prog.cosmetics.lastChest = today;
+  const voucher = Math.random() < 1/7;
+  save();
+  $('chestEmoji').textContent = pick.emoji;
+  $('chestMsg').innerHTML = `Nhận <b>${pick.name}</b> ${pick.emoji}` + (voucher ? `<br>🎟️ Vé gợi ý: mini game Zalo giảm đến 20k — vào Form!` : '');
+  renderCosmetics();
+}
+function renderCosmetics() {
+  ensureV5Prog();
+  const box = $('cosmeticBag'); if (!box) return;
+  box.innerHTML = '';
+  COSMETICS.forEach(c => {
+    const owned = prog.cosmetics.owned.includes(c.id);
+    const sp = document.createElement('span');
+    sp.textContent = c.emoji;
+    sp.title = c.name + (owned?'':' (chưa có)');
+    if (!owned) sp.style.opacity = '.35';
+    if (prog.cosmetics.equipped === c.id) sp.classList.add('eq');
+    if (owned) sp.onclick = () => { prog.cosmetics.equipped = c.id; save(); renderCosmetics(); syncCosmeticVisual(); };
+    box.appendChild(sp);
+  });
+}
+function syncCosmeticVisual() {
+  ensureV5Prog();
+  const c = COSMETICS.find(x => x.id === prog.cosmetics.equipped);
+  const he = $('heroEmoji');
+  if (he && c) he.dataset.cosmetic = c.emoji;
+}
+function renderHub() {
+  ensureV5Prog();
+  const s = prog.streak;
+  const r = REALMS[prog.realm] || REALMS[0];
+  if ($('hubStats')) $('hubStats').innerHTML = `
+    <span class="v5-chip">🔥 Streak <b>${s.count}</b> ngày · ❄️ ${s.freeze}</span>
+    <span class="v5-chip">🏯 ${r.name} <b>${r.py}</b></span>
+    <span class="v5-chip">XP <b>${prog.xp}</b></span>
+    <span class="v5-chip">🗡️ SRS <b>${prog.srs.length}</b> · due ${dueSrsCards().length}</span>
+    <span class="v5-chip">🔓 Chặng2 <b>${prog.stage2Unlocked?'đã mở':'cần mã'}</b></span>`;
+  if ($('realmBanner')) $('realmBanner').textContent = `${r.name} (${r.py}) — ${r.vi}`;
+  const inv = $('hubInvite');
+  if (inv) {
+    if (s.count === 3 || s.count === 7 || s.count === 14) {
+      inv.hidden = false;
+      $('hubInviteTitle').textContent = '🔥 Streak ' + s.count + ' ngày!';
+      $('hubInviteBody').textContent = 'Giữ đà tu luyện — mở thẻ 99k/299k Zoom T2 T4 T6 20:00.';
+      $('hubFormBtn').href = withUtm(GOOGLE_FORM_LINK, 'utm_source=streak&utm_campaign=lop_0211&utm_content=day' + s.count);
+    } else inv.hidden = true;
+  }
+  syncCosmeticVisual();
+}
+function renderRealm() {
+  ensureV5Prog();
+  const box = $('realmList'); if (!box) return;
+  box.innerHTML = '';
+  REALMS.forEach((r, i) => {
+    const locked = prog.realm < i;
+    const div = document.createElement('div');
+    div.className = 'srs-card';
+    div.style.opacity = locked ? '.55' : '1';
+    div.innerHTML = `<div class="zh">${r.name}${prog.realm===i?' · đang tu':''}</div>
+      <div class="py">${r.py}</div><div class="vi">${r.vi}</div>
+      <div style="margin-top:6px;font-size:12px">Cần XP ${r.xpNeed} · ATK ×${r.atkMult} ${locked?'🔒':''}</div>`;
+    box.appendChild(div);
+  });
+  if ($('chkHasCard')) $('chkHasCard').checked = !!prog.hasCard;
+  if ($('cardFlagNote')) $('cardFlagNote').textContent = prog.hasCard
+    ? 'Đã mở full nội dung Trúc cơ+ (không còn preview 1 câu).'
+    : 'Chưa có thẻ: chặng Cẩm Phả chỉ preview 1 câu sau khi có mã. Tick nếu đã mua thẻ.';
+}
+function renderWeapons() {
+  ensureV5Prog();
+  const sets = $('weaponSets'); if (!sets) return;
+  sets.innerHTML = '';
+  Object.keys(WEAPON_SETS).forEach(k => {
+    const meta = WEAPON_SETS[k];
+    const m = prog.weaponMastery[k] || 0;
+    const row = document.createElement('div');
+    row.className = 'weapon-row';
+    row.innerHTML = `<span>${meta.emoji} ${meta.name}</span><span class="mastery"><i style="width:${m}%"></i></span>`;
+    sets.appendChild(row);
+  });
+  const panel = $('srsPanel'); if (!panel) return;
+  const due = dueSrsCards().slice(0, 10);
+  if (!due.length) {
+    panel.innerHTML = '<p class="note">Không có thẻ đến hạn — trả lời sai trong trận sẽ thêm thẻ.</p>';
+  } else {
+    panel.innerHTML = '';
+    due.forEach(card => {
+      const div = document.createElement('div');
+      div.className = 'srs-card';
+      div.innerHTML = `<div class="zh">${card.zh}</div><div class="py">${card.py||''}</div><div class="vi">${card.vi||''}</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button type="button" class="btn" data-ok="1">Nhớ rồi</button>
+          <button type="button" class="btn alt" data-ok="0">Chưa vững</button>
+        </div>`;
+      div.querySelectorAll('button').forEach(b => b.onclick = () => {
+        reviewSrsCard(card, b.getAttribute('data-ok')==='1');
+        renderWeapons();
+        if ((prog.srsReviews||0) >= 10 && $('zoomAfter10')) {
+          $('zoomAfter10').hidden = false;
+          $('zoomFormBtn').href = withUtm(GOOGLE_FORM_LINK, 'utm_source=srs&utm_campaign=lop_0211&utm_content=after10');
+          $('zoomZaloBtn').href = ZALO_LINK;
+        }
+      });
+      panel.appendChild(div);
+    });
+  }
+  if ((prog.srsReviews||0) >= 10 && $('zoomAfter10')) {
+    $('zoomAfter10').hidden = false;
+    $('zoomFormBtn').href = withUtm(GOOGLE_FORM_LINK, 'utm_source=srs&utm_campaign=lop_0211&utm_content=after10');
+    if ($('zoomZaloBtn')) $('zoomZaloBtn').href = ZALO_LINK;
+  }
+}
+function showToast(html, ms) {
+  const stack = $('toastStack'); if (!stack) return;
+  const el = document.createElement('div');
+  el.style.cssText = 'background:rgba(0,0,0,.72);border:1px solid #FFD91F;color:#fff;padding:8px 12px;border-radius:12px;font-size:13px;font-weight:700;text-align:center;pointer-events:none';
+  el.innerHTML = html;
+  stack.appendChild(el);
+  setTimeout(() => el.remove(), ms || 1200);
+}
+function showTelegraph(ms, label) {
+  const t = $('telegraphToast');
+  if (t) {
+    t.style.display = 'block';
+    t.textContent = label || 'Boss sắp đánh! · 乱声 Luànshēng (tiếng loạn)';
+  }
+  if (battle && battle.telegraph) try { battle.telegraph(Math.max(0.8, (ms||1200)/1000)); } catch(e) {}
+  // Also pulse 3D telegraph if present
+  try {
+    if (battle && battle.state) battle.state.telegraphT = Math.max(0.8, (ms||1200)/1000);
+  } catch(e) {}
+  setTimeout(() => { if (t) t.style.display = 'none'; }, ms || 1200);
+}
+function grantTuVi(n) {
+  try {
+    ensureV5Prog();
+    prog.tuVi = (prog.tuVi || 0) + (n || 1);
+    lsSet(SAVE_KEY, JSON.stringify(prog));
+  } catch(e) {}
+  showToast('🏅 +' + (n||1) + ' 修为 (xiūwéi · tu vi)', 1200);
+}
+function checkBadgeF() {
+  if (!st || st._badgeF) return;
+  if (st.boss <= st.bossMax * (2/3)) {
+    st._badgeF = true;
+    if (!prog.badges.includes('🏅Bãi Cháy')) prog.badges.push('🏅Bãi Cháy');
+    grantTuVi(1);
+    showToast('🏅 Mở Bãi Cháy · Boss còn ≤ 2/3 HP', 1200);
+    save();
+  }
+}
+function checkCliffH() {
+  if (!st || st._cliffH) return;
+  // Near kill: boss HP low relative to atk
+  if (st.boss > 0 && st.boss <= st.atk * 1.2) {
+    st._cliffH = true;
+    showToast('Còn 1 câu nữa hạ boss!', 1400);
+    const z = $('zaloCliff'); if (z) z.style.display = 'block';
+  }
+}
+
+
+function ensureSkillState() {
+  if (!st) return;
+  if (!st._skillUsed) st._skillUsed = { hoi_xuan:false, dinh_ngon:false, lien_cu:false, dot_kich:false, giap_xuong:false, phan_am:false };
+  if (st.skillMult == null) st.skillMult = 1;
+  if (st._giapUntil == null) st._giapUntil = 0;
+  if (st._stunBossUntil == null) st._stunBossUntil = 0;
+  if (st._lienCuArmed == null) st._lienCuArmed = false;
+  if (st._phanAmArmed == null) st._phanAmArmed = false;
+}
+function applyIncomingMult(taken) {
+  ensureSkillState();
+  if (st && st._giapUntil > Date.now()) {
+    taken = Math.max(2, Math.floor(taken * 0.5));
+  }
+  return taken;
+}
+function maybePhanAm(taken) {
+  ensureSkillState();
+  if (!st || !st._phanAmArmed || taken <= 0 || st.boss <= 0) return;
+  st._phanAmArmed = false;
+  const reflect = 20;
+  st.boss = Math.max(0, st.boss - reflect);
+  floatDmg(reflect, { tag: 'Phản âm' });
+  showSkill('🛡️ Phản âm · −20');
+  playSfx('hit'); upd(); checkBadgeF(); checkCliffH();
+  if (st.boss <= 0) {
+    // defer end to pending if mid-resolve
+    setTimeout(() => {
+      if (!st || st._ended) return;
+      if (st.tutorial) promoteTutorialToStage1b();
+      else end(true);
+    }, 400);
+  }
+}
+function nextSkillDef() {
+  if (!st) return null;
+  ensureSkillState();
+  const list = CLASS_SKILLS[st.classId] || [];
+  for (const sk of list) {
+    if (!st._skillUsed[sk.id]) return sk;
+  }
+  return null;
+}
+function refreshSkillBtn() {
+  const btn = $('btnSkill');
+  if (!btn) return;
+  if (!st || st._ended) { btn.hidden = true; return; }
+  ensureSkillState();
+  const sk = nextSkillDef();
+  if (!sk) { btn.hidden = true; btn.textContent = '✨ Hết chiêu'; return; }
+  btn.hidden = false;
+  btn.disabled = false;
+  btn.textContent = '✨ ' + sk.name;
+  btn.title = (sk.py || '') + ' · ' + (sk.vi || '') + ' — ' + (sk.desc || '');
+}
+function castClassSkill(skillId) {
+  if (!st || st._ended) return false;
+  ensureSkillState();
+  const list = CLASS_SKILLS[st.classId] || [];
+  const sk = list.find(s => s.id === skillId) || nextSkillDef();
+  if (!sk || st._skillUsed[sk.id]) return false;
+  st._skillUsed[sk.id] = true;
+  if (sk.id === 'hoi_xuan') {
+    const before = st.hero;
+    st.hero = Math.min(st.heroMax, st.hero + 25);
+    showSkill('🦊 Hồi xuân quán · +' + (st.hero - before) + ' HP');
+    showToast('🦊 Hồi xuân quán (+25 HP)', 1100);
+    playSfx('ui'); upd();
+  } else if (sk.id === 'dinh_ngon') {
+    st._stunBossUntil = Date.now() + 3000;
+    showSkill('🔇 Đình ngôn · 3s');
+    showToast('🔇 Đình ngôn — boss choáng 3s', 1100);
+    playSfx('ui');
+  } else if (sk.id === 'lien_cu') {
+    st._lienCuArmed = true;
+    st.skillMult = 1.25;
+    showSkill('⚔️ Liên cú · ×1.25');
+    showToast('⚔️ Liên cú — câu đúng kế ×1.25', 1100);
+    playSfx('ui');
+  } else if (sk.id === 'dot_kich') {
+    const bonus = 15;
+    st.boss = Math.max(0, st.boss - bonus);
+    floatDmg(bonus, { nhanh: true, tag: 'Đột kích' });
+    showSkill('⚔️ Đột kích · −15');
+    showToast('⚔️ Đột kích!', 900);
+    playSfx('crit'); flash(); shakeMs(160); upd(); checkBadgeF(); checkCliffH();
+    if (st.boss <= 0) {
+      setTimeout(() => {
+        if (!st || st._ended) return;
+        if (st.tutorial) promoteTutorialToStage1b(); else end(true);
+      }, 450);
+    }
+  } else if (sk.id === 'giap_xuong') {
+    st._giapUntil = Date.now() + 4000;
+    showSkill('🛡️ Giáp xưởng · 4s');
+    showToast('🛡️ Giáp xưởng — nhận ×0.5 ST (4s)', 1100);
+    playSfx('ui');
+  } else if (sk.id === 'phan_am') {
+    st._phanAmArmed = true;
+    showSkill('🛡️ Phản âm sẵn');
+    showToast('🛡️ Phản âm — phản 20 sau đòn tới', 1100);
+    playSfx('ui');
+  }
+  refreshSkillBtn();
+  return true;
+}
+function useNextSkill() {
+  const sk = nextSkillDef();
+  if (!sk) { showToast('Hết chiêu stage này', 800); return false; }
+  return castClassSkill(sk.id);
+}
+
+function clearBossTick() {
+  if (bossTickId) { clearInterval(bossTickId); bossTickId = null; }
+}
+function startBossTick() {
+  clearBossTick();
+  const bal = STAGE_BALANCE[stageIdx] || STAGE_BALANCE[0];
+  const tick = bal.tickDmg || 10;
+  const TELE_MS = 1200; // ≥800ms telegraph
+  bossTickId = setInterval(() => {
+    if (!st || st._ended || st.boss <= 0) { clearBossTick(); return; }
+    if (locked) return; // đừng cắt lúc đang resolve
+    // Telegraph rồi mới đánh
+    showTelegraph(TELE_MS, '⚠️ Boss sắp đánh! · 乱声 (Luànshēng · tiếng loạn)');
+    setTimeout(() => {
+      if (!st || st._ended || st.boss <= 0) return;
+      // Phase II Nuốt chữ when ≤50%
+      let dmg = tick;
+      let tag = '乱声 · 10';
+      if (st.boss <= st.bossMax * 0.5) {
+        dmg = Math.max(tick, 16);
+        tag = '吞字 Tūnzì · 16';
+        if (st.streak > 0 && !(st._stunBossUntil > Date.now())) {
+          // đe combo nếu không đúng trong 3s — soft: chỉ hiện toast
+          showToast('Nuốt chữ! Giữ combo bằng câu đúng', 1000);
+        }
+      }
+      if (st._stunBossUntil && Date.now() < st._stunBossUntil) {
+        showToast('🔇 Đình ngôn — boss bỏ tick', 900);
+        return;
+      }
+      const armor = (st.armor || 0) + (st.classArmor || 0);
+      // Loạn thanh bỏ qua 50% giáp
+      const effArmor = Math.floor(armor * 0.5);
+      let taken = Math.max(4, dmg - effArmor);
+      taken = applyIncomingMult(taken);
+      st.hero = Math.max(0, st.hero - taken);
+      floatDmg(taken, { hurt: true, tag });
+      playSfx('hurt'); vib(40); showVignette();
+      upd();
+      maybePhanAm(taken);
+      if (st.hero <= 0) { clearBossTick(); end(false); }
+    }, TELE_MS);
+  }, BOSS_TICK_MS);
+}
+
+
+
+if ($('fs')) $('fs').textContent = FAST_SECONDS;
+$('zaloBtn').href = ZALO_LINK;
+applyHoldSeatVisibility();
+if ($('formBtn')) $('formBtn').href = withUtm(GOOGLE_FORM_LINK, botDiff==='hard' ? (FORM_UTM_GAME + '&utm_content=boss_hard') : FORM_UTM_GAME);
+if ($('progress')) $('progress').innerHTML = `🏆 Thắng: <b>${prog.wins||0}</b> · 修为: <b>${prog.tuVi||0}</b> · 🎖️ ${(prog.badges&&prog.badges.length)?prog.badges.join(' '):'—'} · ${QUESTIONS_V6.length} câu v6`;
+if ($('btnOpenHub')) $('btnOpenHub').onclick = () => { renderHub(); show('sHub'); };
+
+let battle = null, use3d = false, st, timerId, qStart, locked, bossTrail = 0, orderPicked = [];
+let stageIdx = 0; // 0 = stage1 hotel, 1 = stage2 factory
+let runScore = 0, runCorrect = 0, runAnswered = 0, runComboMax = 0, runQPool = 0;
+let audioReady = false, muted = lsGet('baokhua_mute', '0') === '1';
+let sfx = {}, bgm = null;
+let TWEEN = null;
+
+async function loadTween() {
+  try {
+    const mod = await import('@tweenjs/tween.js');
+    TWEEN = mod.default || mod;
+    (function tweenLoop(t){ if (TWEEN && TWEEN.update) TWEEN.update(t); requestAnimationFrame(tweenLoop); })(performance.now());
+  } catch (e) { console.warn('tween CDN fail', e); TWEEN = null; }
+}
+loadTween();
+
+function waChirp(freq, dur, type) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    if (!window.__bkAC) window.__bkAC = new AC();
+    const ctx = window.__bkAC; if (ctx.state === 'suspended') ctx.resume();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || 'square';
+    o.frequency.setValueAtTime(freq, ctx.currentTime);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.14, ctx.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (dur || 0.12));
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + (dur || 0.12) + 0.02);
+  } catch (e) {}
+}
+function initAudio() {
+  // WebAudio sẵn sàng ngay — Howler lazy (không chặn Start / Slow3G)
+  if (!audioReady) { audioReady = true; applyMute(); }
+  if (typeof Howl === 'undefined') {
+    if (typeof window.__loadHowler === 'function') window.__loadHowler(function(ok){ if (ok) initHowlerSfx(); });
+    return;
+  }
+  initHowlerSfx();
+}
+function initHowlerSfx() {
+  if (sfx && sfx.hit) return;
+  if (typeof Howl === 'undefined') return;
+  try {
+    const base = './v6/audio/';
+    sfx = {
+      hit: new Howl({ src:[base+'hit.ogg'], volume:0.55, preload:false }),
+      crit: new Howl({ src:[base+'crit.ogg'], volume:0.65, preload:false }),
+      hurt: new Howl({ src:[base+'hurt.ogg'], volume:0.55, preload:false }),
+      ui: new Howl({ src:[base+'ui.ogg'], volume:0.4, preload:false }),
+      win: new Howl({ src:[base+'win.ogg'], volume:0.7, preload:false })
+    };
+    bgm = new Howl({ src:[base+'bgm_loop.ogg'], loop:true, volume:0.22, preload:false });
+    applyMute();
+  } catch (e) { console.warn('howler init fail', e); }
+}
+function applyMute() {
+  muted = lsGet('baokhua_mute', '0') === '1';
+  const btn = $('muteBtn');
+  if (btn) btn.textContent = muted ? '🔇' : '🔊';
+  if (typeof Howler !== 'undefined') Howler.mute(muted);
+}
+function playSfx(name) {
+  if (muted) return;
+  if (sfx && sfx[name]) { try { sfx[name].play(); return; } catch(e) {} }
+  // WebAudio fallback (0đ) — luôn có khi CDN chậm
+  const map = { hit: 220, crit: 440, hurt: 110, ui: 330, win: 523 };
+  waChirp(map[name] || 260, name === 'win' ? 0.25 : 0.1, name === 'hurt' ? 'sawtooth' : 'square');
+}
+function ensureBgm() {
+  if (muted) return;
+  if (!bgm) { initAudio(); if (!bgm) return; }
+  try { if (!bgm.playing()) bgm.play(); } catch(e) {}
+}
+/** Xoay loại câu mỗi 3 câu theo thứ tự có trong bank (bat_loi → hai → nghe_nhanh). */
+function rotateTypesEvery3(pool, n) {
+  const prefer = ['bat_loi', 'hai', 'nghe_nhanh'];
+  const present = prefer.filter(t => pool.some(q => q.type === t));
+  const extra = [...new Set(pool.map(q => q.type))].filter(t => !present.includes(t));
+  const order = present.concat(extra);
+  if (!order.length) return shuffle(pool).slice(0, n);
+  const buckets = {};
+  order.forEach(t => { buckets[t] = shuffle(pool.filter(q => q.type === t)); });
+  const out = [];
+  let ti = 0, guard = 0;
+  while (out.length < n && guard++ < n * 4) {
+    const t = order[ti % order.length];
+    const b = buckets[t];
+    let took = 0;
+    while (took < 3 && out.length < n && b && b.length) {
+      out.push(b.shift());
+      took++;
+    }
+    ti++;
+    if (order.every(tt => !(buckets[tt] && buckets[tt].length))) break;
+  }
+  return out;
+}
+function questionsForStage(si) {
+  // Bank v6 (30): xoay loại mỗi 3 câu. Stage chỉ ưu tiên topic, không loại hết loại khác.
+  let pool = (typeof QUESTIONS_V6 !== 'undefined' ? QUESTIONS_V6.slice() : []);
+  if (si === 1) {
+    // Ưu tiên factory lên đầu bucket (vẫn giữ hotel để đủ 3 loại × nhiều câu)
+    pool.sort((a, b) => (b.topic === 'factory') - (a.topic === 'factory'));
+  } else {
+    pool.sort((a, b) => (a.topic === 'factory') - (b.topic === 'factory'));
+  }
+  const n = Math.min(12, pool.length || 12);
+  let rotated = rotateTypesEvery3(pool, n);
+  if (rotated.length < 8) {
+    // Fallback: trộn v5 + v6
+    const topics = new Set((STAGES[si] && STAGES[si].topics) || ['hotel']);
+    const mixed = QUESTIONS.filter(q => topics.has(q.topic) || String(q.id||'').startsWith('v6-'));
+    rotated = rotateTypesEvery3(mixed, n);
+  }
+  if (rotated.length < 8) rotated = shuffle(QUESTIONS).slice(0, n);
+  return rotated;
+}
+function refreshMapUI() {
+  const n1 = $('node1'), n2 = $('node2');
+  if (!n1 || !n2) return;
+  n1.className = 'stage-node' + (stageIdx > 0 ? ' done' : ' current');
+  n2.className = 'stage-node' + (stageIdx >= 1 ? (stageIdx > 1 ? ' done' : ' current') : ' lock');
+  const btn = $('btnEnterStage');
+  if (btn) btn.textContent = stageIdx >= STAGES.length ? '✓ Xong cả lộ trình' : ('▶ Vào: ' + STAGES[Math.min(stageIdx, STAGES.length-1)].name);
+  // Bicycle on QL18: 12% start → 50% mid → 88% end
+  const bike = $('bikeIcon');
+  if (bike) {
+    const pct = stageIdx <= 0 ? 12 : (stageIdx === 1 ? 50 : 88);
+    bike.style.left = pct + '%';
+  }
+}
+function openMap() {
+  refreshMapUI();
+  show('sMap');
+  playSfx('ui');
+}
+function tweenWidth(el, toPct, ms=280) {
+  if (!el) return;
+  if (!TWEEN || !TWEEN.Tween) { el.style.width = toPct + '%'; return; }
+  const cur = parseFloat(el.style.width) || 0;
+  const o = { w: cur };
+  new TWEEN.Tween(o).to({ w: toPct }, ms).easing(TWEEN.Easing.Quadratic.Out)
+    .onUpdate(() => { el.style.width = o.w + '%'; }).start();
+}
+
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  $(id).classList.add('on');
+}
+function shuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function vib(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+function flash(kind) {
+  const f = $('flash'); f.className = 'flash' + (kind === 'red' ? ' red' : '');
+  void f.offsetWidth; f.classList.add('go');
+}
+const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let hitStopUntil = 0;
+let timerPausedMs = 0;
+function shake() { shakeMs(200); }
+function showSkill(name) {
+  const t = $('skillTag'); t.textContent = name; t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
+}
+function floatDmg(amount, { crit=false, x2=false, hurt=false, nhanh=false, tag='' } = {}) {
+  const layer = $('floatLayer'); if (!layer) return;
+  const el = document.createElement('div');
+  el.className = 'fdmg'
+    + (crit ? ' crit' : '')
+    + (nhanh && !crit ? ' nhanh' : '')
+    + (x2 && !crit && !nhanh ? ' x2' : '')
+    + (hurt ? ' hurt' : '');
+  const tagCls = nhanh ? 'tag nhanh' : 'tag';
+  el.innerHTML = (hurt ? '-' : '-') + amount + (tag ? `<span class="${tagCls}">${tag}</span>` : '');
+  if (hurt) {
+    el.style.left = (18 + Math.random()*8) + '%';
+    el.style.top = (42 + Math.random()*10) + '%';
+  } else {
+    el.style.left = (66 + Math.random()*8) + '%';
+    el.style.top = (40 + Math.random()*12) + '%';
+  }
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+function shakeMs(ms) {
+  const dur = ms || 200;
+  document.body.classList.remove('shake','lite'); void document.body.offsetWidth;
+  document.body.classList.add('shake');
+  if (REDUCED_MOTION) document.body.classList.add('lite');
+  document.body.style.animationDuration = dur + 'ms';
+  setTimeout(() => {
+    document.body.style.animationDuration = '';
+    document.body.classList.remove('shake','lite');
+  }, dur + 20);
+}
+/** Freeze CSS anims + question timer for ~ms (hit-stop). */
+function uiHitStop(ms) {
+  const hold = Math.max(0, ms|0);
+  if (!hold) return;
+  hitStopUntil = Math.max(hitStopUntil, Date.now() + hold);
+  document.documentElement.classList.add('hitstop-freeze');
+  // Pause question timer by shifting qStart forward while frozen
+  const startFreeze = Date.now();
+  setTimeout(() => {
+    const froze = Date.now() - startFreeze;
+    timerPausedMs += froze;
+    if (Date.now() >= hitStopUntil) document.documentElement.classList.remove('hitstop-freeze');
+  }, hold);
+  if (battle && battle.hitStop) try { battle.hitStop(hold); } catch(e) {}
+}
+function showComboFloat(n, hot) {
+  const c = $('comboFloat');
+  if (!n) { c.className = 'combo-float'; applyComboTheme(0); return; }
+  const orange = n >= 3 && n < 5;
+  const hot5 = n >= 5;
+  c.textContent = 'COMBO x' + n + (hot5 ? ' · ×2' : (orange ? ' · ×1.5' : ''));
+  c.className = 'combo-float on' + (hot5 ? ' hot' : (orange ? ' orange' : ''));
+  applyComboTheme(n);
+}
+function applyComboTheme(n) {
+  const app = $('app'); if (!app) return;
+  app.classList.remove('combo-orange','combo-hot');
+  if (n >= 5) app.classList.add('combo-hot');
+  else if (n >= 3) app.classList.add('combo-orange');
+}
+function showComboMult(mult) {
+  const el = $('comboMult'); if (!el || !mult || mult <= 1) return;
+  el.textContent = '×' + mult;
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+}
+function playComboSfx(tier) {
+  // Prefer existing ogg (crit for 5+, hit layered for 3+); WebAudio chirp as fallback
+  if (!muted) {
+    if (tier >= 5) playSfx('crit');
+    else playSfx('hit');
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!window.__bkAC) window.__bkAC = new AC();
+      const ctx = window.__bkAC;
+      if (ctx.state === 'suspended') ctx.resume();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(tier >= 5 ? 880 : 660, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(tier >= 5 ? 1320 : 990, ctx.currentTime + 0.12);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + 0.2);
+    } catch(e) {}
+  }
+}
+function showVignette() {
+  const v = $('vignette'); v.classList.remove('on'); void v.offsetWidth; v.classList.add('on');
+}
+function showLevelBanner(statsText) {
+  $('lvlStats').textContent = statsText;
+  const b = $('lvlBanner'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
+  setTimeout(() => b.classList.remove('on'), 950);
+}
+function pop(txt, cls, side) {
+  const d = document.createElement('div'); d.className = 'dmg ' + (cls || '');
+  d.textContent = txt; d.style[side || 'right'] = '20px'; d.style.top = '24px';
+  $('arena').appendChild(d); setTimeout(() => d.remove(), 1000);
+}
+
+function hasZhVoice() {
+  try {
+    if (!window.speechSynthesis) return false;
+    return speechSynthesis.getVoices().some(v => /zh(-|_)?(CN|Hans)?|Chinese|中文/i.test((v.lang || '') + ' ' + (v.name || '')));
+  } catch (e) { return false; }
+}
+function showAmThanhFallback(text, reason) {
+  const box = $('qExtra'); if (!box) return;
+  const shown = text || '';
+  let note = box.querySelector('[data-am-fallback]');
+  if (!note) {
+    note = document.createElement('p');
+    note.className = 'note';
+    note.dataset.amFallback = '1';
+    box.appendChild(note);
+  }
+  note.innerHTML = (reason || 'Không nghe được — hiện chữ:') + ' <b class="zh" style="font-size:18px">' + shown + '</b>'
+    + (st && st.list && st.list[st.i] && st.list[st.i].py ? ('<br><i>' + st.list[st.i].py + '</i>') : '');
+  // Also surface in qZh so headless/smoke can assert
+  if ($('qZh') && shown) $('qZh').textContent = shown;
+}
+function speakZh(text, opts) {
+  opts = opts || {};
+  const box = $('qExtra');
+  const q = st && st.list ? st.list[st.i] : null;
+  const raw = text || (q && (q.am_thanh || q.speak || q.zh)) || '';
+  if (!window.speechSynthesis) {
+    showAmThanhFallback(raw, 'Máy không hỗ trợ đọc tiếng — hiện chữ:');
+    return false;
+  }
+  const voices = speechSynthesis.getVoices();
+  const zh = voices.find(v => /zh(-|_)?(CN|Hans)?|Chinese|中文/i.test((v.lang || '') + ' ' + (v.name || '')));
+  if (!zh && opts.requireZh !== false) {
+    // nghe_nhanh: nếu không có giọng zh → hiện am_thanh (không giả vờ đọc được)
+    if (opts.fallbackText) showAmThanhFallback(opts.fallbackText || raw, 'Không tìm thấy giọng zh-CN — hiện chữ:');
+    else showAmThanhFallback(raw, 'Không tìm thấy giọng zh-CN — hiện chữ:');
+    // Vẫn thử speak nếu caller muốn; với nghe_nhanh thì dừng
+    if (opts.strictZh) return false;
+  }
+  try {
+    const u = new SpeechSynthesisUtterance(raw);
+    u.lang = 'zh-CN'; u.rate = opts.rate != null ? opts.rate : 0.95;
+    if (zh) u.voice = zh;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch (e) {
+    showAmThanhFallback(raw, 'Lỗi đọc tiếng — hiện chữ:');
+    return false;
+  }
+  return true;
+}
+function speakNgheNhanh(q) {
+  const text = (q && (q.am_thanh || q.speak || q.zh)) || '';
+  return speakZh(text, { strictZh: true, requireZh: true, fallbackText: text, rate: 1.0 });
+}
+
+function show2dFallback(msgOn) {
+  use3d = false; battle = null;
+  if (msgOn) $('webglMsg').classList.add('on');
+  $('fallback').classList.add('on');
+  $('gl').style.display = 'none';
+}
+
+/** 2D ngay lập tức; lazy-load three CDN rồi swap 3D khi sẵn sàng (fail-safe nếu CDN lỗi). */
+async function lazyInit3d() {
+  // Luôn hiện 2D trước — không chặn câu hỏi
+  if (!battle) {
+    $('fallback').classList.add('on');
+  }
+  if (!webglAvailable()) {
+    show2dFallback(true);
+    return;
+  }
+  try {
+    const ok = await ensureBattle3d();
+    if (!ok || !createBattle) {
+      show2dFallback(true);
+      return;
+    }
+    // Đã có battle cũ → chỉ resize
+    if (battle) {
+      use3d = true;
+      try { battle.resize(); } catch (e) {}
+      $('fallback').classList.remove('on');
+      $('gl').style.display = '';
+      return;
+    }
+    battle = createBattle($('gl'));
+    if (!battle || !battle.ok) throw new Error('no ctx');
+    use3d = true;
+    $('webglMsg').classList.remove('on');
+    $('fallback').classList.remove('on');
+    $('gl').style.display = '';
+    if (st && battle.setStage) battle.setStage((STAGES[stageIdx] || STAGES[0]).key);
+    syncVisual();
+  } catch (e) {
+    window.__battleErr = String(e && e.stack || e);
+    console.error('battle3d init failed', e);
+    show2dFallback(true);
+  }
+}
+function init3d() {
+  // Đồng bộ shim: kick lazy, không await
+  void lazyInit3d();
+}
+
+function syncVisual() {
+  if (!st) return;
+  if (battle) battle.setVisual({ armor: st.armor, atk: st.atkTier, skillLv: st.skillLv });
+  const cls = CLASSES[st.classId];
+  const em = (cls && cls.emoji) || ['🥷', '🥷🛡️', '🥷⚔️', '🐉🥷'][Math.min(3, st.armor + (st.skillLv >= 2 ? 1 : 0))];
+  const he = $('heroEmoji'); if (he) he.textContent = em;
+}
+
+let selectedClass = 'kiem_khach'; // mặc định First 30s: Kiếm Khách
+function beginRun() {
+  // Spec A: 1 nút → vào trận ngay (không Hub/Map)
+  clearInterval(timerId); timerId = null;
+  applyComboTheme(0); hitStopUntil = 0; timerPausedMs = 0;
+  document.documentElement.classList.remove('hitstop-freeze');
+  clearBossTick();
+  stageIdx = 0; runScore = 0; runCorrect = 0; runAnswered = 0; runComboMax = 0; runQPool = 0;
+  stageLosses = prog.losses || 0;
+  weaponBuffAtk = 0;
+  ensureV5Prog();
+  initAudio(); ensureBgm();
+  startTutorialFight();
+}
+function startTutorialFight() {
+  // Mini-boss Lễ Tân 150 HP → rồi stage 1b còn lại
+  botDiff = 'normal';
+  const cls = CLASSES[selectedClass] || CLASSES.kiem_khach;
+  let list = questionsForStage(0);
+  // Q1 luôn 你好
+  const q1 = normalizeQ(Q1_NIHAO);
+  list = [q1].concat(list.filter(q => q.id !== q1.id)).slice(0, 12);
+  // đảm bảo xoay loại sau Q1
+  const rest = rotateTypesEvery3(list.slice(1), 11);
+  list = [q1].concat(rest).slice(0, 12);
+  const lossIdx = Math.min(stageLosses, RETRY_SCALE.length - 1);
+  const bossMax = Math.round(TUTORIAL_BOSS_HP * RETRY_SCALE[lossIdx]);
+  st = {
+    i: 0, boss: bossMax, bossMax, hero: cls.hp, heroMax: cls.hp,
+    streak: 0, comboMax: 0, score: 0, correct: 0, answered: 0,
+    atk: cls.atk, atkTier: 0, armor: 0, classArmor: cls.armor, skillLv: 0, level: 1,
+    list, pending: null, lastLearned: null, stageId: 1, stageName: 'Bãi Cháy – Tutorial',
+    bossName: 'Boss Lễ Tân', preview: false, qSeconds: QUESTION_SECONDS, wrongQueue: [],
+    tutorial: true, firstWrongForgiven: false, _badgeF: false, _cliffH: false,
+    classId: cls.id, className: cls.name,
+    _skillUsed: { hoi_xuan:false, dinh_ngon:false, lien_cu:false, dot_kich:false, giap_xuong:false, phan_am:false },
+    _lienCuArmed: false, _giapUntil: 0, _stunBossUntil: 0, _phanAmArmed: false, skillMult: 1
+  };
+  refreshSkillBtn();
+  bossTrail = bossMax;
+  runQPool = list.length;
+  const bn = $('bossName');
+  if (bn) bn.textContent = '👹 Boss Lễ Tân · Tutorial';
+  const he = $('heroEmoji');
+  if (he) he.textContent = cls.emoji;
+  // 2D portraits (official art in v6/art/)
+  try {
+    const fb = $('fallback');
+    if (fb) {
+      fb.innerHTML = `<img src="${cls.art}" alt="${cls.name}" style="height:72%;object-fit:contain" onerror="this.style.display='none'"><span style="font-size:42px">${cls.emoji}</span><img src="${ART.boss}" alt="boss" style="height:72%;object-fit:contain" onerror="this.style.display='none'">`;
+      fb.classList.add('on');
+    }
+  } catch(e) {}
+  show('sGame');
+  playSfx('ui');
+  clearBossTick();
+  startBossTick();
+  syncVisual(); upd(); ask();
+  requestAnimationFrame(() => { void lazyInit3d(); });
+}
+function startStage(si) {
+  clearInterval(timerId); timerId = null;
+  applyComboTheme(0); hitStopUntil = 0; timerPausedMs = 0;
+  document.documentElement.classList.remove('hitstop-freeze');
+  clearBossTick();
+  stageIdx = si;
+  const stage = STAGES[si];
+  ensureV5Prog();
+  // Unlock gate for stage 2+
+  if (si >= 1 && !isStageUnlocked(si)) {
+    show('sUnlock');
+    if ($('unlockErr')) $('unlockErr').hidden = true;
+    if ($('unlockInput')) $('unlockInput').value = '';
+    return;
+  }
+  let list = questionsForStage(si);
+  const preview = (si >= 1 && !prog.hasCard);
+  if (preview) list = list.slice(0, 1);
+  // Cap / allow room for wrong-repeat up to MAX_STAGE_QUESTIONS
+  if (list.length > MAX_STAGE_QUESTIONS) list = list.slice(0, MAX_STAGE_QUESTIONS);
+  const bal = STAGE_BALANCE[si] || STAGE_BALANCE[0];
+  const diff = DIFFS[botDiff] || DIFFS.normal;
+  const lossIdx = Math.min(stageLosses, RETRY_SCALE.length - 1);
+  let bossMax = Math.round(bal.bossHP * (diff.hpMult || 1) * RETRY_SCALE[lossIdx]);
+  const atk0 = Math.round((BASE_DMG + weaponBuffAtk) * realmAtkMult());
+  st = {
+    i: 0, boss: bossMax, bossMax, hero: HERO_BASE, heroMax: HERO_BASE,
+    streak: 0, comboMax: 0, score: runScore, correct: 0, answered: 0,
+    atk: atk0, atkTier: 0, armor: 0, skillLv: 0, level: 1 + si,
+    list, pending: null, lastLearned: null, stageId: stage.id, stageName: stage.name, bossName: stage.boss,
+    preview: !!preview, qSeconds: (diff.seconds || QUESTION_SECONDS), wrongQueue: []
+  };
+  bossTrail = bossMax;
+  runQPool += list.length;
+  const bn = $('bossName');
+  if (bn) bn.textContent = (si === 1 ? '🏭 ' : '👹 ') + stage.boss + ' · ' + (diff.label || '');
+  show('sGame');
+  initAudio(); ensureBgm(); playSfx('ui');
+  clearBossTick();
+  startBossTick();
+  requestAnimationFrame(() => {
+    if (!battle) init3d();
+    else battle.resize();
+    if (battle && battle.setStage) battle.setStage(stage.key);
+    syncVisual();
+  });
+  syncVisual();
+  upd();
+  ask();
+}
+function startGame() { beginRun(); }
+
+function upd() {
+  if (!st) return;
+  const bossHp = $('bossHp'); if (!bossHp) return;
+  const bp = Math.max(0, st.boss / st.bossMax * 100);
+  tweenWidth(bossHp.querySelector('i'), bp, 220);
+  bossTrail = Math.max(st.boss, bossTrail - st.bossMax * 0.025);
+  if (bossTrail < st.boss) bossTrail = st.boss;
+  tweenWidth($('bossHp').querySelector('.trail'), (bossTrail / st.bossMax * 100), 400);
+  tweenWidth($('heroHp').firstChild, Math.max(0, st.hero / st.heroMax * 100), 220);
+  $('bossTxt').textContent = Math.max(0, Math.ceil(st.boss)) + '/' + st.bossMax;
+  $('heroTxt').textContent = Math.max(0, Math.ceil(st.hero)) + '/' + st.heroMax;
+  $('heroLvl').textContent = 'Lv' + st.level;
+  const sk = SKILLS[Math.min(st.skillLv, 2)];
+  $('pwr').textContent = `ATK ${st.atk} · Giáp ${st.armor} · ${sk.emoji}${sk.name}`;
+  const c = $('combo');
+  const longHa = st.skillLv >= 2 && st.streak >= 3;
+  if (st.streak >= 5) {
+    c.classList.add('on');
+    c.innerHTML = `<span class="c hot">🔥 COMBO x${st.streak} · ×2${longHa ? ' — LONG HẠ' : ''}</span>`;
+  } else if (st.streak >= 3) {
+    c.classList.add('on');
+    c.innerHTML = `<span class="c orange">🔥 COMBO x${st.streak} · ×1.5${longHa ? ' — LONG HẠ' : ''}</span>`;
+  } else if (st.streak > 0) {
+    c.classList.add('on'); c.innerHTML = `<span class="c">🔥 COMBO x${st.streak}</span>`;
+  } else { c.classList.remove('on'); c.innerHTML = ''; }
+  applyComboTheme(st.streak || 0);
+}
+
+function ask() {
+  locked = false; orderPicked = [];
+  const q = st.list[st.i];
+  $('qNum').textContent = `Câu ${st.i + 1}/${st.list.length}`;
+  $('qType').innerHTML = `<span class="tag ${q.type}">${TYPE_LABEL[q.type] || q.type}</span> <span class="tag">${TOPIC_LABEL[q.topic] || q.topic || ''}</span>`;
+  $('qText').textContent = q.q || '';
+  // Stem: Hán có thể ẩn với situ/bat_loi/hai/listen; **pinyin stem luôn hiện** (QA §9.5)
+  // optionPy/optionVi trên nút vẫn ẩn đến khi .opts.revealed
+  if (q.type === 'situ' || q.type === 'bat_loi' || q.type === 'hai') {
+    $('qZh').textContent = '';
+    $('qPy').textContent = q.py || '';
+    $('qVi').textContent = q.type === 'hai'
+      ? 'Chọn câu đúng — tránh đọc nhầm / nói ' + "'toang'" + '.'
+      : (q.type === 'bat_loi' ? 'Chọn câu đúng (bắt lỗi).' : 'Chọn câu phù hợp.');
+  } else if (q.type === 'order') {
+    $('qZh').textContent = '';
+    $('qPy').textContent = q.py || '';
+    $('qVi').textContent = q.vi ? ('Nghĩa: ' + q.vi) : '';
+  } else if (q.type === 'listen' || q.type === 'nghe_nhanh') {
+    $('qZh').textContent = '';
+    $('qPy').textContent = q.py || '';
+    $('qVi').textContent = 'Bấm Nghe lại, rồi chọn nghĩa đúng.';
+  } else {
+    // mc / fill / Q1 你好 — hiện Hán + pinyin + VI ngay
+    $('qZh').textContent = q.zh || '';
+    $('qPy').textContent = q.py || '';
+    $('qVi').textContent = q.vi || '';
+  }
+  $('qExtra').innerHTML = '';
+  const o = $('opts'); o.innerHTML = '';
+
+  if (q.type === 'nghe_nhanh') {
+    const row = document.createElement('div');
+    row.style.display = 'flex'; row.style.gap = '8px'; row.style.marginTop = '8px';
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost'; b.style.flex = '1';
+    b.textContent = '🔊 Nghe lại';
+    b.onclick = () => speakNgheNhanh(q);
+    row.appendChild(b); $('qExtra').appendChild(row);
+    speakNgheNhanh(q);
+    renderOptions(q, o);
+  } else if (q.type === 'listen') {
+    const row = document.createElement('div');
+    row.style.display = 'flex'; row.style.gap = '8px'; row.style.marginTop = '8px';
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost'; b.style.flex = '1';
+    b.textContent = '🔊 Nghe lại'; b.onclick = () => speakZh(q.speak || q.zh);
+    row.appendChild(b); $('qExtra').appendChild(row);
+    speakZh(q.speak || q.zh);
+    renderOptions(q, o);
+  } else if (q.type === 'order') {
+    renderOrder(q, o);
+  } else {
+    // mc / fill / situ / bat_loi / hai — luôn xáo dap_an, giữ dung qua dataset.orig
+    renderOptions(q, o);
+  }
+
+  qStart = Date.now(); timerPausedMs = 0; hitStopUntil = 0;
+  document.documentElement.classList.remove('hitstop-freeze');
+  clearInterval(timerId);
+  const tBar = $('timer');
+  if (tBar) tBar.classList.remove('urgent');
+  timerId = setInterval(() => {
+    // Hit-stop: freeze countdown visually
+    if (Date.now() < hitStopUntil) return;
+    const qSec = (st && st.qSeconds) || QUESTION_SECONDS;
+    const left = qSec - (Date.now() - qStart - timerPausedMs) / 1000;
+    if (tBar) {
+      tBar.firstChild.style.width = Math.max(0, left / qSec * 100) + '%';
+      if (left <= 3) tBar.classList.add('urgent'); else tBar.classList.remove('urgent');
+    }
+    const tt = $('timerTxt'); if (tt) tt.textContent = Math.max(0, Math.ceil(left)) + 's';
+    if (left <= 0) onTimeout();
+  }, 50);
+}
+
+function hasHan(s) { return /[一-鿿]/.test(String(s || '')); }
+function renderOptions(q, o) {
+  o.classList.remove('revealed');
+  const n = (q.options || []).length;
+  const order = shuffle([...Array(n).keys()]);
+  order.forEach((origK) => {
+    const txt = q.options[origK];
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
+    b.dataset.orig = String(origK);
+    let html = `<span class="han">${txt}</span>`;
+    const py = q.optionPy && q.optionPy[origK];
+    const vi = q.optionVi && q.optionVi[origK];
+    if (hasHan(txt)) {
+      if (py) html += `<span class="py">${py}</span>`;
+      if (vi) html += `<span class="vi-ans">${vi}</span>`;
+    }
+    b.innerHTML = html;
+    b.onclick = () => answerChoice(origK, b);
+    o.appendChild(b);
+  });
+}
+
+function renderOrder(q, o) {
+  const slot = document.createElement('div'); slot.className = 'order-slot'; slot.id = 'orderSlot';
+  const chips = document.createElement('div'); chips.className = 'chips'; chips.id = 'orderChips';
+  const words = shuffle(q.words);
+  words.forEach((w, idx) => {
+    const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.w = w;
+    const pyIdx = (q.words || []).indexOf(w);
+    const py = (q.wordPy && pyIdx >= 0) ? q.wordPy[pyIdx] : '';
+    const viw = (q.wordVi && pyIdx >= 0) ? q.wordVi[pyIdx] : '';
+    c.innerHTML = w + (py || viw ? `<span class="py">${[py,viw].filter(Boolean).join(' · ')}</span>` : '');
+    c.onclick = () => {
+      if (c.classList.contains('used') || locked) return;
+      c.classList.add('used'); orderPicked.push(w);
+      const pill = document.createElement('span'); pill.className = 'chip'; pill.textContent = w;
+      pill.onclick = () => { /* undo last matching */ };
+      slot.appendChild(pill);
+    };
+    chips.appendChild(c);
+  });
+  const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'btn'; ok.style.marginTop = '8px';
+  ok.textContent = '✓ Kiểm tra'; ok.onclick = () => answerOrder(q);
+  const reset = document.createElement('button'); reset.type = 'button'; reset.className = 'btn alt'; reset.style.marginTop = '8px';
+  reset.textContent = '↺ Xóa'; reset.onclick = () => { orderPicked = []; slot.innerHTML = ''; chips.querySelectorAll('.chip').forEach(c => c.classList.remove('used')); };
+  o.appendChild(slot); o.appendChild(chips); o.appendChild(ok); o.appendChild(reset);
+}
+
+function onTimeout() {
+  if (locked) return;
+  const q = st.list[st.i];
+  const box = $('opts');
+  if (box) {
+    box.classList.add('revealed');
+    if (q && typeof q.answer === 'number') {
+      const btns = [...box.querySelectorAll('.opt')];
+      const correctBtn = btns.find(b => +b.dataset.orig === q.answer);
+      if (correctBtn) correctBtn.classList.add('ok');
+    }
+  }
+  revealQuestionMeta(q);
+  resolve(false, null);
+}
+
+function revealQuestionMeta(q) {
+  if (!q) return;
+  if (q.type === 'nghe_nhanh' || q.type === 'listen') {
+    if (q.am_thanh || q.zh) $('qZh').textContent = q.am_thanh || q.zh;
+    if (q.py) $('qPy').textContent = q.py;
+    if (q.vi) $('qVi').textContent = q.vi;
+  } else if (q.type === 'bat_loi' || q.type === 'hai' || q.type === 'situ') {
+    if (typeof q.answer === 'number' && q.options[q.answer]) $('qZh').textContent = q.options[q.answer];
+    if (q.py) $('qPy').textContent = q.py;
+    if (q.vi) $('qVi').textContent = q.vi;
+  } else if (q.py) {
+    $('qPy').textContent = q.py;
+  }
+}
+function answerChoice(k, btn) {
+  if (locked) return;
+  const q = st.list[st.i];
+  const ok = k === q.answer;
+  const btns = [...$('opts').querySelectorAll('.opt')];
+  const correctBtn = btns.find(b => +b.dataset.orig === q.answer);
+  if (correctBtn) correctBtn.classList.add('ok');
+  if (!ok && btn) btn.classList.add('no');
+  $('opts').classList.add('revealed');
+  revealQuestionMeta(q);
+  resolve(ok, btn);
+}
+
+function answerOrder(q) {
+  if (locked) return;
+  const ok = orderPicked.length === q.answer.length && orderPicked.every((w, i) => w === q.answer[i]);
+  $('opts')?.classList.add('revealed'); // hiện pinyin chip sau khi nộp
+  resolve(ok, null);
+}
+
+function pickSkill(willKill, fast) {
+  // Skills gated by unlocked skillLv; KẾT LIỄU (Long Hạ) only when this hit will kill boss
+  if (willKill && st.skillLv >= 2) return SKILLS[2];
+  if (st.skillLv >= 1) return fast ? SKILLS[1] : SKILLS[Math.random() < 0.55 ? 1 : 0];
+  return SKILLS[0];
+}
+
+function resolve(ok, btn) {
+  if (!st || st._ended || locked) return;
+  locked = true; clearInterval(timerId);
+  st.answered = (st.answered || 0) + 1;
+  const q = st.list[st.i];
+  const secs = (Date.now() - qStart) / 1000;
+  if (ok) {
+    st.streak++; st.correct++; st.comboMax = Math.max(st.comboMax, st.streak);
+    if (q && q.zh) st.lastLearned = { zh: q.zh, py: q.py || '', vi: q.vi || q.giai_thich || '' };
+    noteStreakOnCorrect();
+    addXp(1);
+    noteWeeklyScore(1);
+    showComboFloat(st.streak, st.streak >= 5);
+    if (st.streak === 2) showToast('🔥 2 liên tiếp!', 800);
+    else if (st.streak === 3) showToast('🔥 Combo ×1.5', 800);
+    else if (st.streak === 5) showToast('🔥 Combo ×2', 800);
+    const fast = secs <= FAST_SECONDS;
+    // Balance: BASE atk · combo 3=×1.5 / 5=×2 · nhanh +10 · skill mult nhẹ
+    let comboMult = 1;
+    if (st.streak >= 5) comboMult = COMBO_5;
+    else if (st.streak >= 3) comboMult = COMBO_3;
+    if (st.streak >= 3) {
+      playComboSfx(st.streak);
+      showComboMult(comboMult);
+    }
+    ensureSkillState();
+    const skillMult = (st.skillMult && st.skillMult > 1) ? st.skillMult : 1;
+    let previewDmg = Math.floor(st.atk * comboMult * skillMult);
+    if (fast) previewDmg += FAST_BONUS_FLAT;
+    const willKill = previewDmg >= st.boss && st.skillLv >= 2;
+    const sk = pickSkill(willKill, fast);
+    // Spec §5: floor(ATK * comboMult * skillMult) + fast bonus
+    let dmg = Math.floor(st.atk * (willKill ? sk.mult : 1) * comboMult * skillMult);
+    if (!willKill) dmg = Math.floor(st.atk * comboMult * skillMult);
+    let label = sk.emoji + ' ' + sk.name;
+    if (skillMult > 1) label += ' · Liên cú ×' + skillMult;
+    if (fast) { dmg += FAST_BONUS_FLAT; label += ' ⚡ NHANH +' + FAST_BONUS_FLAT; }
+    if (st.streak >= 5) label += ' · Combo×2';
+    else if (st.streak >= 3) label += ' · Combo×1.5';
+    // Consume Liên cú after this hit
+    if (st._lienCuArmed) { st._lienCuArmed = false; st.skillMult = 1; }
+    // Hit feel: CSS shake ~6px/200ms + 80ms hit-stop (freeze timer + anims)
+    uiHitStop(80);
+    if (willKill && st.skillLv >= 2) {
+      dmg = Math.max(dmg, st.boss);
+      label = '🐉 LONG HẠ · KẾT LIỄU';
+      flash('white'); shakeMs(200); vib([40, 30, 40, 30, 100]);
+    } else if (willKill) {
+      dmg = Math.max(dmg, st.boss);
+      label = sk.emoji + ' ' + sk.name + ' · KẾT LIỄU';
+      flash('white'); shakeMs(200); vib(40);
+    } else {
+      vib(30); if (fast) flash('white');
+      if (battle && battle.flashBoss) battle.flashBoss(150);
+      shakeMs(200);
+    }
+    showSkill(label);
+    const timing = battle ? battle.playHeroAttack(sk.id) : { impactAt: 180 };
+    const impactAt = (timing && timing.impactAt) || 180;
+    setTimeout(() => {
+      const tag = willKill ? 'KẾT LIỄU' : (fast ? 'NHANH!' : (comboMult > 1 ? ('×' + comboMult) : sk.name));
+      floatDmg(dmg, { crit: willKill || comboMult >= 2, x2: comboMult > 1 && !willKill, nhanh: fast, tag });
+      playSfx(willKill ? 'crit' : 'hit');
+      if (st.boss > 0) {
+        const dealt = Math.min(dmg, st.boss);
+        st.boss -= dealt;
+        st.score += dealt;
+        if (st.boss < 0) st.boss = 0;
+      }
+      upd();
+    }, impactAt);
+    checkBadgeF(); checkCliffH();
+    // Spec: KHÔNG modal upgrade mỗi câu — vào câu sau ngay (≤1s)
+    st.pending = () => {
+      if (!st || st._ended) return;
+      if (st.boss <= 0) {
+        if (st.tutorial) return promoteTutorialToStage1b();
+        return end(true);
+      }
+      // Micro-buff gộp im lặng mỗi 3 đúng (không modal)
+      if (st.correct > 0 && st.correct % 3 === 0) {
+        st.atk += 2; st.level++;
+        showToast('⬆️ Tu vi + · ATK ' + st.atk, 900);
+      }
+      afterRound();
+    };
+    setTimeout(() => { if (st.pending) st.pending(); }, Math.min(impactAt + 420, 900));
+  } else {
+    if (st.boss <= 0) {
+      st.pending = () => { if (st.tutorial) promoteTutorialToStage1b(); else end(true); };
+      setTimeout(() => { if (st.pending) st.pending(); }, 200);
+      return;
+    }
+    // G: sai lần đầu run → fail mềm (không trừ HP, không reset combo)
+    if (!st.firstWrongForgiven) {
+      st.firstWrongForgiven = true;
+      showToast('Hmm, thử lại nhé', 1200);
+      showSkill('💡 Thử lại');
+      if (q && st.list && st.list.length < MAX_STAGE_QUESTIONS) { st.list.push(q); runQPool += 1; }
+      st.pending = () => afterRound();
+      setTimeout(() => { if (st.pending) st.pending(); }, 700);
+      return;
+    }
+    if (q) pushSrsFromQuestion(q);
+    if (q && st.list && st.list.length < MAX_STAGE_QUESTIONS) {
+      st.list.push(q);
+      runQPool += 1;
+    }
+    st.streak = 0; showComboFloat(0); applyComboTheme(0);
+    showSkill('👹 Phản đòn · 乱声!');
+    const timing = battle ? battle.playBossAttack() : { impactAt: 320 };
+    const impactAt = (timing && timing.impactAt) || 320;
+    setTimeout(() => {
+      if (!st || st._ended) return;
+      if (st.boss <= 0) return; // race: boss chết trước impact
+      // Giáp upgrade (−6/cấp) + classArmor (QA); Giáp xưởng ×0.5 nếu active
+      let taken = Math.max(4, WRONG_DMG - (st.armor || 0) * 6 - Math.floor((st.classArmor || 0) * 0.5));
+      taken = applyIncomingMult(taken);
+      floatDmg(taken, { hurt: true, tag: (st.armor || st.classArmor) ? ('GIÁP −' + (WRONG_DMG - taken)) : 'TRÚNG ĐÒN' });
+      playSfx('hurt');
+      flash('red'); shakeMs(150); showVignette(); vib(160);
+      st.hero = Math.max(0, st.hero - taken); upd();
+      maybePhanAm(taken);
+    }, impactAt);
+    st.pending = () => {
+      if (!st || st._ended) return;
+      if (st.boss <= 0) return end(true);
+      if (st.hero <= 0) return end(false);
+      afterRound();
+    };
+    setTimeout(() => { if (st.pending) st.pending(); }, impactAt + 650);
+  }
+}
+
+function promoteTutorialToStage1b() {
+  // Tutorial 150 HP xong → tiếp stage1 còn 250 HP (tổng 400)
+  if (!st) return;
+  showToast('🏅 Qua tutorial · Vào Yêu ngôn Bãi Cháy!', 1200);
+  const cls = CLASSES[st.classId] || CLASSES.kiem_khach;
+  const lossIdx = Math.min(stageLosses, RETRY_SCALE.length - 1);
+  const full = Math.round((STAGE_BALANCE[0].bossHP || 400) * RETRY_SCALE[lossIdx]);
+  const remain = Math.max(1, full - (st.bossMax || TUTORIAL_BOSS_HP));
+  let list = questionsForStage(0).filter(q => q.id !== 'v6-q1-nihao');
+  list = rotateTypesEvery3(list, 10);
+  st.tutorial = false;
+  st.boss = remain; st.bossMax = remain;
+  st.list = list; st.i = 0;
+  st.hero = Math.min(st.heroMax, st.hero + 15);
+  // Skills remain 1×/Stage1 (tutorial+1b cùng stage) — không reset
+  bossTrail = remain;
+  refreshSkillBtn();
+  const bn = $('bossName'); if (bn) bn.textContent = '👹 Yêu ngôn Bãi Cháy';
+  upd(); ask();
+  clearBossTick(); startBossTick();
+}
+function openUpgrade() {
+  // Spec v6: không modal mỗi câu — chuyển tiếp
+  if (!st || st._ended) return;
+  if (st.boss <= 0) return st.tutorial ? promoteTutorialToStage1b() : end(true);
+  if (st.hero <= 0) return end(false);
+  afterRound(); return;
+  let upgradeLocked = false;
+  const choices = [
+    { id: 'atk', ico: '⚔️', title: '+ Sức đánh', desc: 'ATK +4 · vũ khí sáng / to hơn', apply: () => { st.atk += 4; st.atkTier++; } },
+    { id: 'armor', ico: '🛡️', title: '+ Giáp / Máu', desc: 'Hiện giáp 3D · HP +20 · −6 ST mỗi cấp', apply: () => { st.armor = Math.min(3, st.armor + 1); st.heroMax += 20; st.hero = Math.min(st.heroMax, st.hero + 20); } },
+    { id: 'skill', ico: '✨', title: st.skillLv === 0 ? 'Mở chiêu: Chém gió' : (st.skillLv === 1 ? 'Mở chiêu: Long Hạ' : 'Nâng chiêu (+15% dmg)'),
+      desc: st.skillLv < 2 ? 'Đổi vũ khí + hào quang trên sân 3D' : 'Vũ khí Long Hạ mạnh hơn',
+      apply: () => { if (st.skillLv < 2) st.skillLv++; else st.atk = Math.round(st.atk * 1.15); } }
+  ];
+  const order = shuffle(choices);
+  const sk = SKILLS[Math.min(st.skillLv, 2)];
+  $('upStats').innerHTML = `<span>Lv ${st.level}</span><span>ATK ${st.atk}</span><span>Giáp ${st.armor}</span><span>HP ${Math.ceil(st.hero)}/${st.heroMax}</span><span>${sk.emoji}${sk.name}</span>`;
+  const box = $('upOpts'); box.innerHTML = '';
+  order.forEach(c => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = `<span class="ico">${c.ico}</span><span><b>${c.title}</b><small>${c.desc}</small></span>`;
+    b.onclick = () => {
+      if (upgradeLocked || !st || st._ended) return;
+      upgradeLocked = true;
+      box.querySelectorAll('button').forEach(x => { x.disabled = true; x.onclick = null; });
+      c.apply(); st.level++;
+      $('upOverlay').classList.remove('on');
+      syncVisual(); upd();
+      const sk2 = SKILLS[Math.min(st.skillLv, 2)];
+      showLevelBanner(`Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor} · ${sk2.emoji}${sk2.name}`);
+      if (battle && battle.playLevelUp) battle.playLevelUp();
+      setTimeout(() => afterRound(), 700);
+    };
+    box.appendChild(b);
+  });
+  $('upOverlay').classList.add('on');
+}
+
+function afterRound() {
+  // Boss <= 0 → thắng chặng ngay; không thể thua sau khi đã hạ boss
+  if (!st || st._ended) return;
+  if (st.boss <= 0) return end(true);
+  if (st.hero <= 0) return end(false);
+  st.i++;
+  if (st.i >= st.list.length) return end(st.boss <= 0);
+  ask();
+}
+
+function end(win) {
+  if (!st || st._ended) return; // tránh cộng dồn 2 lần khi timer/upgrade race
+  st._ended = true;
+  st.pending = null;
+  clearInterval(timerId);
+  clearBossTick();
+  $('upOverlay').classList.remove('on');
+  if (!win) {
+    stageLosses = Math.min(2, (stageLosses || 0) + 1);
+    prog.losses = stageLosses; save();
+  } else if (botDiff === 'hard') {
+    if (!prog.badges.includes('👿Ác')) prog.badges.push('👿Ác');
+    save();
+  }
+  runScore = st.score;
+  runCorrect += st.correct;
+  runAnswered += (st.answered || 0);
+  runComboMax = Math.max(runComboMax, st.comboMax);
+  const stage = STAGES[stageIdx] || STAGES[0];
+  if (win) {
+    if (!prog.badges.includes(stage.badge)) prog.badges.push(stage.badge);
+    // More stages left?
+    if (stageIdx + 1 < STAGES.length) {
+      stageIdx += 1;
+      playSfx('win');
+      prog.best = Math.max(prog.best, runScore); save();
+      openMap();
+      const btn = $('btnEnterStage');
+      if (btn) { btn.textContent = '▶ Chặng tiếp: ' + STAGES[stageIdx].name; }
+      return;
+    }
+    // Full clear
+    prog.wins++;
+    playSfx('win');
+  }
+  show('sEnd');
+  if (win) {
+    $('badge').textContent = '🏅';
+    $('endTitle').textContent = 'Xong lộ trình Hạ Long–Cẩm Phả!';
+  } else {
+    $('badge').textContent = '💀';
+    $('endTitle').textContent = 'Thua ở ' + (st.stageName || stage.name) + ' — thử lại nhé!';
+  }
+  prog.best = Math.max(prog.best, runScore); save();
+  // Đúng/đã trả lời = cộng dồn 1 lần mỗi chặng; ngân hàng = QUESTIONS.length hiện tại
+  const routeQ = runQPool || (st.list ? st.list.length : 0);
+  const bankN = QUESTIONS.length;
+  const correctN = runCorrect;
+  const answeredN = runAnswered;
+  $('endInfo').innerHTML = `✅ Đúng ${correctN}/${answeredN} câu đã trả lời` +
+    ` <span style="opacity:.75">(lộ trình ${routeQ} · ngân hàng ${bankN})</span>` +
+    `<br>🗺️ ${win ? 'Hạ Long–Cẩm Phả' : (st.stageName || stage.name)}<br>⚔️ Điểm: ${runScore}<br>🆙 Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor} · ${SKILLS[Math.min(st.skillLv,2)].name}`;
+  const lc = $('learnCard');
+  if (st.lastLearned && st.lastLearned.zh) {
+    $('learnZh').textContent = st.lastLearned.zh;
+    $('learnPy').textContent = st.lastLearned.py || '';
+    $('learnVi').textContent = st.lastLearned.vi || '';
+    lc.hidden = false;
+  } else { lc.hidden = true; }
+  const priceEl = $('invitePrice');
+  if (priceEl) priceEl.textContent = INVITE_BLURB;
+  const shareLine = $('inviteShareLine');
+  if (shareLine) shareLine.textContent = INVITE_SHARE_LINE;
+  $('formBtn').href = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
+  $('zaloBtn').href = ZALO_LINK;
+  $('inviteCard').hidden = false;
+  $('shareBtn').style.display = '';
+}
+
+
+/* ===== v5 hub / unlock / diff wiring ===== */
+function openHub() { renderHub(); show('sHub'); playSfx('ui'); }
+if ($('btnHubBattle')) $('btnHubBattle').onclick = () => { show('sDiff'); playSfx('ui'); };
+if ($('btnHubBack')) $('btnHubBack').onclick = () => { show('sStart'); };
+if ($('btnHubWeapons')) $('btnHubWeapons').onclick = () => { renderWeapons(); show('sWeapons'); };
+if ($('btnWeaponsBack')) $('btnWeaponsBack').onclick = () => openHub();
+if ($('btnHubChest')) $('btnHubChest').onclick = () => { renderCosmetics(); show('sChest'); if ($('chestMsg')) $('chestMsg').textContent = 'Nhận rương hôm nay?'; };
+if ($('btnOpenChest')) $('btnOpenChest').onclick = () => openChest();
+if ($('btnChestBack')) $('btnChestBack').onclick = () => openHub();
+if ($('btnHubRealm')) $('btnHubRealm').onclick = () => { renderRealm(); show('sRealm'); };
+if ($('btnRealmBack')) $('btnRealmBack').onclick = () => openHub();
+if ($('btnHubBoard') && !$('btnHubBoard').hidden) $('btnHubBoard').onclick = () => { renderBoard(); show('sBoard'); };
+if ($('btnBoardBack')) $('btnBoardBack').onclick = () => openHub();
+if ($('btnRealmUpOk')) $('btnRealmUpOk').onclick = () => { $('realmUpFx').classList.remove('on'); };
+if ($('chkHasCard')) $('chkHasCard').onchange = () => { prog.hasCard = !!$('chkHasCard').checked; save(); renderRealm(); };
+document.querySelectorAll('.diff-row button[data-diff]').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.diff-row button[data-diff]').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    botDiff = b.getAttribute('data-diff') || 'normal';
+    if (botDiff === 'hard' && (prog.realm||0) < 2) {
+      alert('Bot Ác mạnh nhất khi đã Kim đan — vẫn thử được. Cẩn thận HP!');
+    }
+  };
+});
+if ($('btnDiffGo')) $('btnDiffGo').onclick = () => { openMap(); playSfx('ui'); };
+if ($('btnDiffBack')) $('btnDiffBack').onclick = () => openHub();
+if ($('btnUnlockSubmit')) $('btnUnlockSubmit').onclick = () => {
+  const raw = $('unlockInput') ? $('unlockInput').value : '';
+  if (tryUnlockCode(raw)) {
+    if ($('unlockErr')) $('unlockErr').hidden = true;
+    startStage(stageIdx >= 1 ? stageIdx : 1);
+  } else {
+    if ($('unlockErr')) $('unlockErr').hidden = false;
+  }
+};
+if ($('btnUnlockBack')) $('btnUnlockBack').onclick = () => openMap();
+if ($('btnUnlockZalo')) $('btnUnlockZalo').href = ZALO_LINK;
+
+$('btnStart').onclick = beginRun;
+if ($('btnSkill')) $('btnSkill').onclick = () => useNextSkill();
+
+$('btnAgain').onclick = beginRun;
+if ($('btnEnterStage')) $('btnEnterStage').onclick = () => {
+  if (stageIdx >= STAGES.length) { show('sEnd'); return; }
+  startStage(stageIdx);
+};
+if ($('btnMapBack')) $('btnMapBack').onclick = () => { openHub(); };
+if ($('muteBtn')) $('muteBtn').onclick = () => {
+  muted = !muted;
+  lsSet('baokhua_mute', muted ? '1' : '0');
+  applyMute();
+  if (!muted) { initAudio(); ensureBgm(); playSfx('ui'); }
+};
+// First tap unlocks audio on mobile
+document.body.addEventListener('pointerdown', () => { initAudio(); }, { once:true });
+applyMute();
+function buildShareCard() {
+  const W = 1080, H = 1920;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  // bg
+  g.fillStyle = '#1E5AA8'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#FFD91F'; g.fillRect(0, 0, W, 28); g.fillRect(0, H - 28, W, 28);
+  g.fillStyle = '#16171B';
+  g.font = 'bold 64px system-ui,sans-serif'; g.textAlign = 'center';
+  g.fillText('Bảo Khựa 阿宝', W/2, 160);
+  g.font = 'bold 48px system-ui,sans-serif'; g.fillStyle = '#FFD91F';
+  g.fillText(stageIdx >= 1 && st.boss <= 0 ? '🏅 Hạ Long–Cẩm Phả!' : (st.boss <= 0 ? '🏅 Hạ Boss!' : '🎮 Thành tích Bảo Khựa'), W/2, 260);
+  g.fillStyle = '#fff'; g.font = '36px system-ui,sans-serif';
+  const lines = [
+    `Đúng ${runCorrect}/${runAnswered} câu đã trả lời (NH ${QUESTIONS.length})`,
+    `Điểm: ${runScore || st.score}`,
+    `Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor}`,
+  ];
+  lines.forEach((ln, i) => g.fillText(ln, W/2, 380 + i * 70));
+  if (st.lastLearned && st.lastLearned.zh) {
+    g.fillStyle = '#FFD91F'; g.font = 'bold 32px system-ui,sans-serif';
+    g.fillText('Câu học được hôm nay', W/2, 640);
+    g.fillStyle = '#fff'; g.font = 'bold 56px "Noto Sans SC",serif';
+    g.fillText(st.lastLearned.zh, W/2, 730);
+    g.font = 'italic 30px system-ui,sans-serif'; g.fillStyle = '#cde';
+    g.fillText(st.lastLearned.py || '', W/2, 790);
+    g.font = '28px system-ui,sans-serif'; g.fillStyle = '#fff';
+    g.fillText(st.lastLearned.vi || '', W/2, 850);
+  }
+  // CTA box (+ offers)
+  g.fillStyle = '#FFD91F';
+  roundRect(g, 80, 1040, W - 160, 520, 28); g.fill();
+  g.fillStyle = '#16171B'; g.font = 'bold 40px system-ui,sans-serif';
+  g.fillText('Học tiếp với Bảo Khựa', W/2, 1120);
+  g.font = 'bold 32px system-ui,sans-serif';
+  wrapText(g, INVITE_SHARE_LINE, W/2, 1195, W - 220, 44);
+  g.font = 'bold 26px system-ui,sans-serif';
+  if (!holdSeatExpired()) wrapText(g, OFFER_HOLD, W/2, 1285, W - 220, 34);
+  if (!holdSeatExpired()) wrapText(g, OFFER_REFERRAL, W/2, 1360, W - 220, 34);
+  wrapText(g, OFFER_MINIGAME, W/2, 1445, W - 220, 34);
+  g.font = '24px system-ui,sans-serif';
+  const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
+  wrapText(g, /THAY_/.test(formUrl) ? 'Đăng ký thẻ · Zoom T2 T4 T6 20:00' : formUrl, W/2, 1500, W - 220, 34);
+  g.fillStyle = '#16171B'; g.font = '22px system-ui,sans-serif';
+  g.fillText('ngoquocgiabao-hy.github.io/Baokhua', W/2, 1860);
+  return c;
+}
+function roundRect(g, x, y, w, h, r) {
+  g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
+  g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath();
+}
+function wrapText(g, text, x, y, maxW, lineH) {
+  const words = String(text).split(/\s+/); let line = '', yy = y;
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (g.measureText(test).width > maxW && line) { g.fillText(line, x, yy); line = w; yy += lineH; }
+    else line = test;
+  }
+  if (line) g.fillText(line, x, yy);
+}
+$('shareBtn').onclick = async () => {
+  const answered = st.answered || Math.min(st.i + 1, st.list.length);
+  const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
+  const totalQ = runQPool || (st.list && st.list.length) || 0;
+  const text = `Mình chơi Bảo Khựa 3D (Hạ Long–Cẩm Phả), đúng ${runCorrect || st.correct}/${runAnswered || totalQ}! 🏅
+${INVITE_SHARE_LINE}
+${holdSeatExpired() ? "" : (OFFER_HOLD + "\n")}${holdSeatExpired() ? "" : OFFER_REFERRAL}
+${OFFER_MINIGAME}
+${/THAY_/.test(formUrl) ? '' : formUrl}`.trim();
+  const canvas = buildShareCard();
+  try {
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    const file = new File([blob], 'bao-khua-thanh-tich.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ title: 'Bảo Khựa 阿宝', text, files: [file] });
+      return;
+    }
+  } catch (e) { /* fall through */ }
+  try {
+    // Download PNG + copy text
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png'); a.download = 'bao-khua-thanh-tich.png'; a.click();
+  } catch (e) {}
+  try { await navigator.clipboard.writeText(text); alert('Đã tải ảnh 1080×1920 + copy chữ — dán Zalo/Facebook nhé!'); }
+  catch (e) { prompt('Copy:', text); }
+};
+
+// Pre-check WebGL message on load (don't init GL until start to save battery)
+if (!webglAvailable()) $('webglMsg').classList.add('on');
+// 3D chỉ lazy khi vào trận (lazyInit3d) — tránh Slow3G tải three CDN sớm
+if (window.speechSynthesis) speechSynthesis.getVoices();
+
+// Smoke / debug hooks (không ảnh hưởng chơi)
+window.__bao = {
+  end, beginRun, startStage, openMap, openHub, save, lsGet, lsSet,
+  tryUnlockCode, isStageUnlocked, UNLOCK_CODE,
+  get st(){ return st; }, get battle(){ return battle; },
+  get prog(){ return prog; }, set prog(v){ prog = v; },
+  get stageIdx(){ return stageIdx; },
+  get runCorrect(){ return runCorrect; }, get runAnswered(){ return runAnswered; },
+  get runQPool(){ return runQPool; }, get runScore(){ return runScore; }, get botDiff(){ return botDiff; }, set botDiff(v){ botDiff = v; },
+  buildShareCard, onTimeout, holdSeatExpired, applyHoldSeatVisibility,
+  get QUESTIONS(){ return QUESTIONS; }, get QUESTIONS_V6(){ return QUESTIONS_V6; }, get QUESTIONS_V5(){ return QUESTIONS_V5; }, speakNgheNhanh, hasZhVoice, rotateTypesEvery3,
+  get TOPIC_LABEL(){ return TOPIC_LABEL; },
+  get GOOGLE_FORM_LINK(){ return GOOGLE_FORM_LINK; },
+  startTutorialFight, showToast, showTelegraph, grantTuVi,
+  get selectedClass(){ return selectedClass; }, set selectedClass(v){ selectedClass = v; },
+  get CLASSES(){ return CLASSES; }, get CLASS_SKILLS(){ return CLASS_SKILLS; }, get ART(){ return ART; }, get QUESTION_SECONDS(){ return QUESTION_SECONDS; },
+  castClassSkill, useNextSkill, refreshSkillBtn, nextSkillDef,
+  get stageLosses(){ return stageLosses; }, set stageLosses(v){ stageLosses = v; },
+  get RETRY_SCALE(){ return RETRY_SCALE; },
+  forceCorrect(){
+    if (!st || st._ended || !st.list) return;
+    const q = st.list[st.i];
+    if (!q) return;
+    if (q.type === 'order') { orderPicked = q.answer.slice(); answerOrder(q); return; }
+    resolve(true, null);
+  },
+  forceWrong(){ if (!st || st._ended) return; resolve(false, null); },
+  // v6 juice helpers (smoke / record)
+  shakeMs, uiHitStop, playComboSfx, showComboMult, applyComboTheme, floatDmg,
+  
+  get FAST_SECONDS(){ return FAST_SECONDS; },
+  pickUpgrade(i){
+    const btns = document.querySelectorAll('#upOpts button');
+    if (btns[i||0]) btns[i||0].click();
+  }
+};
+
+</script>
+</body>
+</html>

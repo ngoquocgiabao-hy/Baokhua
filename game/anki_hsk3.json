@@ -1,0 +1,3614 @@
+{
+  "nguon": [
+    "https://raw.githubusercontent.com/plaktos/hsk_csv/master/hsk3.csv",
+    "https://raw.githubusercontent.com/becky82/mteh/main/sources/HSK2.0/HSK2.0_words_level3.txt",
+    "https://raw.githubusercontent.com/drkameleon/complete-hsk-vocabulary/main/wordlists/exclusive/old/3.json",
+    "https://www.hanzistroke.com/hsk/level-3",
+    "https://www.chinesetest.cn/userfiles/file/HSK/HSK-2012.xls"
+  ],
+  "phien_ban": "HSK 2.0 cấp 3",
+  "so_tu": 300,
+  "ghi_chu": "Nguồn plaktos có 299 mục (+只 hai cách đọc). Thêm cấu trúc 不但……而且…… (có trong syllabus HSK 2.0 / becky82) để đủ 300. Ví dụ tự viết.",
+  "the": [
+    {
+      "id": "hsk3-001",
+      "hanzi": "阿姨",
+      "pinyin": "āyí",
+      "nghia": "dì/cô",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "这是阿姨。",
+        "pinyin": "Zhè shì āyí.",
+        "nghia": "Đây là dì/cô."
+      }
+    },
+    {
+      "id": "hsk3-002",
+      "hanzi": "啊",
+      "pinyin": "a",
+      "nghia": "a",
+      "chu_de": "Phủ định / tiểu từ",
+      "cau_vi_du": {
+        "zh": "好啊！",
+        "pinyin": "Hǎo a!",
+        "nghia": "Được a!"
+      }
+    },
+    {
+      "id": "hsk3-003",
+      "hanzi": "矮",
+      "pinyin": "ǎi",
+      "nghia": "thấp",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：矮。",
+        "pinyin": "Qǐng kàn zhège zì: ǎi.",
+        "nghia": "Xin hãy xem chữ này: thấp."
+      }
+    },
+    {
+      "id": "hsk3-004",
+      "hanzi": "爱好",
+      "pinyin": "àihào",
+      "nghia": "sở thích",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是爱好。",
+        "pinyin": "Zhè shì àihào.",
+        "nghia": "Đây là sở thích."
+      }
+    },
+    {
+      "id": "hsk3-005",
+      "hanzi": "安静",
+      "pinyin": "ānjìng",
+      "nghia": "yên tĩnh",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是安静。",
+        "pinyin": "Zhè shì ānjìng.",
+        "nghia": "Đây là yên tĩnh."
+      }
+    },
+    {
+      "id": "hsk3-006",
+      "hanzi": "把",
+      "pinyin": "bǎ",
+      "nghia": "cầm; đưa",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请把门打开。",
+        "pinyin": "Qǐng bǎ mén dǎkāi.",
+        "nghia": "Xin hãy mở cửa."
+      }
+    },
+    {
+      "id": "hsk3-007",
+      "hanzi": "搬",
+      "pinyin": "bān",
+      "nghia": "chuyển",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：搬。",
+        "pinyin": "Qǐng kàn zhège zì: bān.",
+        "nghia": "Xin hãy xem chữ này: chuyển."
+      }
+    },
+    {
+      "id": "hsk3-008",
+      "hanzi": "班",
+      "pinyin": "bān",
+      "nghia": "lớp",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：班。",
+        "pinyin": "Qǐng kàn zhège zì: bān.",
+        "nghia": "Xin hãy xem chữ này: lớp."
+      }
+    },
+    {
+      "id": "hsk3-009",
+      "hanzi": "半",
+      "pinyin": "bàn",
+      "nghia": "nửa",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "请看这个字：半。",
+        "pinyin": "Qǐng kàn zhège zì: bàn.",
+        "nghia": "Xin hãy xem chữ này: nửa."
+      }
+    },
+    {
+      "id": "hsk3-010",
+      "hanzi": "办法",
+      "pinyin": "bànfǎ",
+      "nghia": "cách",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是办法。",
+        "pinyin": "Zhè shì bànfǎ.",
+        "nghia": "Đây là cách."
+      }
+    },
+    {
+      "id": "hsk3-011",
+      "hanzi": "办公室",
+      "pinyin": "bàngōngshì",
+      "nghia": "văn phòng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是办公室。",
+        "pinyin": "Zhè shì bàngōngshì.",
+        "nghia": "Đây là văn phòng."
+      }
+    },
+    {
+      "id": "hsk3-012",
+      "hanzi": "帮忙",
+      "pinyin": "bāngmáng",
+      "nghia": "giúp",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想帮忙。",
+        "pinyin": "Wǒ xiǎng bāngmáng.",
+        "nghia": "Tôi muốn giúp."
+      }
+    },
+    {
+      "id": "hsk3-013",
+      "hanzi": "包",
+      "pinyin": "bāo",
+      "nghia": "gói",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请看这个字：包。",
+        "pinyin": "Qǐng kàn zhège zì: bāo.",
+        "nghia": "Xin hãy xem chữ này: gói."
+      }
+    },
+    {
+      "id": "hsk3-014",
+      "hanzi": "饱",
+      "pinyin": "bǎo",
+      "nghia": "no",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请看这个字：饱。",
+        "pinyin": "Qǐng kàn zhège zì: bǎo.",
+        "nghia": "Xin hãy xem chữ này: no."
+      }
+    },
+    {
+      "id": "hsk3-015",
+      "hanzi": "北方",
+      "pinyin": "běifāng",
+      "nghia": "phía bắc",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "这是北方。",
+        "pinyin": "Zhè shì běifāng.",
+        "nghia": "Đây là phía bắc."
+      }
+    },
+    {
+      "id": "hsk3-016",
+      "hanzi": "被",
+      "pinyin": "bèi",
+      "nghia": "bị",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "杯子被他拿走了。",
+        "pinyin": "Bēizi bèi tā názǒu le.",
+        "nghia": "Cái cốc bị anh ấy lấy đi rồi."
+      }
+    },
+    {
+      "id": "hsk3-017",
+      "hanzi": "鼻子",
+      "pinyin": "bízi",
+      "nghia": "mũi",
+      "chu_de": "Sức khỏe / cơ thể",
+      "cau_vi_du": {
+        "zh": "这是鼻子。",
+        "pinyin": "Zhè shì bízi.",
+        "nghia": "Đây là mũi."
+      }
+    },
+    {
+      "id": "hsk3-018",
+      "hanzi": "比较",
+      "pinyin": "bǐjiào",
+      "nghia": "so sánh",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是比较。",
+        "pinyin": "Zhè shì bǐjiào.",
+        "nghia": "Đây là so sánh."
+      }
+    },
+    {
+      "id": "hsk3-019",
+      "hanzi": "比赛",
+      "pinyin": "bǐsài",
+      "nghia": "thi đấu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是比赛。",
+        "pinyin": "Zhè shì bǐsài.",
+        "nghia": "Đây là thi đấu."
+      }
+    },
+    {
+      "id": "hsk3-020",
+      "hanzi": "必须",
+      "pinyin": "bìxū",
+      "nghia": "phải",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是必须。",
+        "pinyin": "Zhè shì bìxū.",
+        "nghia": "Đây là phải."
+      }
+    },
+    {
+      "id": "hsk3-021",
+      "hanzi": "变化",
+      "pinyin": "biànhuà",
+      "nghia": "thay đổi",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是变化。",
+        "pinyin": "Zhè shì biànhuà.",
+        "nghia": "Đây là thay đổi."
+      }
+    },
+    {
+      "id": "hsk3-022",
+      "hanzi": "表示",
+      "pinyin": "biǎoshì",
+      "nghia": "biểu thị",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是表示。",
+        "pinyin": "Zhè shì biǎoshì.",
+        "nghia": "Đây là biểu thị."
+      }
+    },
+    {
+      "id": "hsk3-023",
+      "hanzi": "表演",
+      "pinyin": "biǎoyǎn",
+      "nghia": "biểu diễn",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是表演。",
+        "pinyin": "Zhè shì biǎoyǎn.",
+        "nghia": "Đây là biểu diễn."
+      }
+    },
+    {
+      "id": "hsk3-024",
+      "hanzi": "别人",
+      "pinyin": "biéren",
+      "nghia": "người khác",
+      "chu_de": "Đại từ",
+      "cau_vi_du": {
+        "zh": "这是别人。",
+        "pinyin": "Zhè shì biéren.",
+        "nghia": "Đây là người khác."
+      }
+    },
+    {
+      "id": "hsk3-025",
+      "hanzi": "宾馆",
+      "pinyin": "bīnguǎn",
+      "nghia": "nhà khách",
+      "chu_de": "Khách sạn / nhà hàng",
+      "cau_vi_du": {
+        "zh": "请问，宾馆在哪儿？",
+        "pinyin": "Qǐngwèn, bīnguǎn zài nǎr?",
+        "nghia": "Xin hỏi, nhà khách ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-026",
+      "hanzi": "冰箱",
+      "pinyin": "bīngxiāng",
+      "nghia": "tủ lạnh",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我想要冰箱。",
+        "pinyin": "Wǒ xiǎng yào bīngxiāng.",
+        "nghia": "Tôi muốn tủ lạnh."
+      }
+    },
+    {
+      "id": "hsk3-027",
+      "hanzi": "才",
+      "pinyin": "cái",
+      "nghia": "mới",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "他现在才来。",
+        "pinyin": "Tā xiànzài cái lái.",
+        "nghia": "Bây giờ anh ấy mới đến."
+      }
+    },
+    {
+      "id": "hsk3-028",
+      "hanzi": "菜单",
+      "pinyin": "càidān",
+      "nghia": "thực đơn",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请问，菜单在哪儿？",
+        "pinyin": "Qǐngwèn, càidān zài nǎr?",
+        "nghia": "Xin hỏi, thực đơn ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-029",
+      "hanzi": "参加",
+      "pinyin": "cānjiā",
+      "nghia": "tham gia",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我想参加。",
+        "pinyin": "Wǒ xiǎng cānjiā.",
+        "nghia": "Tôi muốn tham gia."
+      }
+    },
+    {
+      "id": "hsk3-030",
+      "hanzi": "草",
+      "pinyin": "cǎo",
+      "nghia": "cỏ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：草。",
+        "pinyin": "Qǐng kàn zhège zì: cǎo.",
+        "nghia": "Xin hãy xem chữ này: cỏ."
+      }
+    },
+    {
+      "id": "hsk3-031",
+      "hanzi": "层",
+      "pinyin": "céng",
+      "nghia": "tầng",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：层。",
+        "pinyin": "Qǐng kàn zhège zì: céng.",
+        "nghia": "Xin hãy xem chữ này: tầng."
+      }
+    },
+    {
+      "id": "hsk3-032",
+      "hanzi": "差",
+      "pinyin": "chà",
+      "nghia": "kém",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：差。",
+        "pinyin": "Qǐng kàn zhège zì: chà.",
+        "nghia": "Xin hãy xem chữ này: kém."
+      }
+    },
+    {
+      "id": "hsk3-033",
+      "hanzi": "超市",
+      "pinyin": "chāoshì",
+      "nghia": "siêu thị",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是超市。",
+        "pinyin": "Zhè shì chāoshì.",
+        "nghia": "Đây là siêu thị."
+      }
+    },
+    {
+      "id": "hsk3-034",
+      "hanzi": "衬衫",
+      "pinyin": "chènshān",
+      "nghia": "áo sơ mi",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是衬衫。",
+        "pinyin": "Zhè shì chènshān.",
+        "nghia": "Đây là áo sơ mi."
+      }
+    },
+    {
+      "id": "hsk3-035",
+      "hanzi": "成绩",
+      "pinyin": "chéngjì",
+      "nghia": "điểm số",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "我想成绩。",
+        "pinyin": "Wǒ xiǎng chéngjì.",
+        "nghia": "Tôi muốn điểm số."
+      }
+    },
+    {
+      "id": "hsk3-036",
+      "hanzi": "城市",
+      "pinyin": "chéngshì",
+      "nghia": "thành phố",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是城市。",
+        "pinyin": "Zhè shì chéngshì.",
+        "nghia": "Đây là thành phố."
+      }
+    },
+    {
+      "id": "hsk3-037",
+      "hanzi": "迟到",
+      "pinyin": "chídào",
+      "nghia": "đến muộn",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想迟到。",
+        "pinyin": "Wǒ xiǎng chídào.",
+        "nghia": "Tôi muốn đến muộn."
+      }
+    },
+    {
+      "id": "hsk3-038",
+      "hanzi": "出现",
+      "pinyin": "chūxiàn",
+      "nghia": "xuất hiện",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是出现。",
+        "pinyin": "Zhè shì chūxiàn.",
+        "nghia": "Đây là xuất hiện."
+      }
+    },
+    {
+      "id": "hsk3-039",
+      "hanzi": "除了",
+      "pinyin": "chúle",
+      "nghia": "ngoài",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "除了茶，我还喝水。",
+        "pinyin": "Chúle chá, wǒ hái hē shuǐ.",
+        "nghia": "Ngoài trà, tôi còn uống nước."
+      }
+    },
+    {
+      "id": "hsk3-040",
+      "hanzi": "厨房",
+      "pinyin": "chúfáng",
+      "nghia": "nhà bếp",
+      "chu_de": "Khách sạn / nhà hàng",
+      "cau_vi_du": {
+        "zh": "这是厨房。",
+        "pinyin": "Zhè shì chúfáng.",
+        "nghia": "Đây là nhà bếp."
+      }
+    },
+    {
+      "id": "hsk3-041",
+      "hanzi": "春",
+      "pinyin": "chūn",
+      "nghia": "mùa xuân",
+      "chu_de": "Thời tiết / mùa",
+      "cau_vi_du": {
+        "zh": "春天来旅游。",
+        "pinyin": "Chūntiān lái lǚyóu.",
+        "nghia": "Mùa xuân đến du lịch."
+      }
+    },
+    {
+      "id": "hsk3-042",
+      "hanzi": "词语",
+      "pinyin": "cíyǔ",
+      "nghia": "từ ngữ",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "这是词语。",
+        "pinyin": "Zhè shì cíyǔ.",
+        "nghia": "Đây là từ ngữ."
+      }
+    },
+    {
+      "id": "hsk3-043",
+      "hanzi": "聪明",
+      "pinyin": "cōngming",
+      "nghia": "thông minh",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "孩子很聪明。",
+        "pinyin": "Háizi hěn cōngming.",
+        "nghia": "Đứa trẻ rất thông minh."
+      }
+    },
+    {
+      "id": "hsk3-044",
+      "hanzi": "打扫",
+      "pinyin": "dǎsǎo",
+      "nghia": "dọn dẹp",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请打扫房间。",
+        "pinyin": "Qǐng dǎsǎo fángjiān.",
+        "nghia": "Xin hãy dọn phòng."
+      }
+    },
+    {
+      "id": "hsk3-045",
+      "hanzi": "打算",
+      "pinyin": "dǎsuàn",
+      "nghia": "dự định",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我打算去北京。",
+        "pinyin": "Wǒ dǎsuàn qù Běijīng.",
+        "nghia": "Tôi dự định đi Bắc Kinh."
+      }
+    },
+    {
+      "id": "hsk3-046",
+      "hanzi": "带",
+      "pinyin": "dài",
+      "nghia": "mang",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：带。",
+        "pinyin": "Qǐng kàn zhège zì: dài.",
+        "nghia": "Xin hãy xem chữ này: mang."
+      }
+    },
+    {
+      "id": "hsk3-047",
+      "hanzi": "担心",
+      "pinyin": "dānxīn",
+      "nghia": "lo",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是担心。",
+        "pinyin": "Zhè shì dānxīn.",
+        "nghia": "Đây là lo."
+      }
+    },
+    {
+      "id": "hsk3-048",
+      "hanzi": "蛋糕",
+      "pinyin": "dàngāo",
+      "nghia": "bánh kem",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想要蛋糕。",
+        "pinyin": "Wǒ xiǎng yào dàngāo.",
+        "nghia": "Tôi muốn bánh kem."
+      }
+    },
+    {
+      "id": "hsk3-049",
+      "hanzi": "当然",
+      "pinyin": "dāngrán",
+      "nghia": "dĩ nhiên",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是当然。",
+        "pinyin": "Zhè shì dāngrán.",
+        "nghia": "Đây là dĩ nhiên."
+      }
+    },
+    {
+      "id": "hsk3-050",
+      "hanzi": "地",
+      "pinyin": "de",
+      "nghia": "đất; trợ từ trạng ngữ",
+      "chu_de": "Phủ định / tiểu từ",
+      "cau_vi_du": {
+        "zh": "高兴地说。",
+        "pinyin": "Gāoxìng de shuō.",
+        "nghia": "Nói một cách vui vẻ."
+      }
+    },
+    {
+      "id": "hsk3-051",
+      "hanzi": "灯",
+      "pinyin": "dēng",
+      "nghia": "đèn",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：灯。",
+        "pinyin": "Qǐng kàn zhège zì: dēng.",
+        "nghia": "Xin hãy xem chữ này: đèn."
+      }
+    },
+    {
+      "id": "hsk3-052",
+      "hanzi": "低",
+      "pinyin": "dī",
+      "nghia": "thấp",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：低。",
+        "pinyin": "Qǐng kàn zhège zì: dī.",
+        "nghia": "Xin hãy xem chữ này: thấp."
+      }
+    },
+    {
+      "id": "hsk3-053",
+      "hanzi": "地方",
+      "pinyin": "dìfang",
+      "nghia": "nơi",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是地方。",
+        "pinyin": "Zhè shì dìfang.",
+        "nghia": "Đây là nơi."
+      }
+    },
+    {
+      "id": "hsk3-054",
+      "hanzi": "地铁",
+      "pinyin": "dìtiě",
+      "nghia": "metro",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "这是地铁。",
+        "pinyin": "Zhè shì dìtiě.",
+        "nghia": "Đây là metro."
+      }
+    },
+    {
+      "id": "hsk3-055",
+      "hanzi": "地图",
+      "pinyin": "dìtú",
+      "nghia": "bản đồ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是地图。",
+        "pinyin": "Zhè shì dìtú.",
+        "nghia": "Đây là bản đồ."
+      }
+    },
+    {
+      "id": "hsk3-056",
+      "hanzi": "电梯",
+      "pinyin": "diàntī",
+      "nghia": "thang máy",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "请问，电梯在哪儿？",
+        "pinyin": "Qǐngwèn, diàntī zài nǎr?",
+        "nghia": "Xin hỏi, thang máy ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-057",
+      "hanzi": "电子",
+      "pinyin": "diànzǐ",
+      "nghia": "điện tử",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想电子。",
+        "pinyin": "Wǒ xiǎng diànzǐ.",
+        "nghia": "Tôi muốn điện tử."
+      }
+    },
+    {
+      "id": "hsk3-058",
+      "hanzi": "冬",
+      "pinyin": "dōng",
+      "nghia": "đông (mùa)",
+      "chu_de": "Thời tiết / mùa",
+      "cau_vi_du": {
+        "zh": "冬天来旅游。",
+        "pinyin": "Dōngtiān lái lǚyóu.",
+        "nghia": "Mùa đông (mùa) đến du lịch."
+      }
+    },
+    {
+      "id": "hsk3-059",
+      "hanzi": "东",
+      "pinyin": "dōng",
+      "nghia": "đông",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "往东走。",
+        "pinyin": "Wǎng dōng zǒu.",
+        "nghia": "Đi về phía đông."
+      }
+    },
+    {
+      "id": "hsk3-060",
+      "hanzi": "动物",
+      "pinyin": "dòngwù",
+      "nghia": "động vật",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想动物。",
+        "pinyin": "Wǒ xiǎng dòngwù.",
+        "nghia": "Tôi muốn động vật."
+      }
+    },
+    {
+      "id": "hsk3-061",
+      "hanzi": "短",
+      "pinyin": "duǎn",
+      "nghia": "ngắn",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：短。",
+        "pinyin": "Qǐng kàn zhège zì: duǎn.",
+        "nghia": "Xin hãy xem chữ này: ngắn."
+      }
+    },
+    {
+      "id": "hsk3-062",
+      "hanzi": "段",
+      "pinyin": "duàn",
+      "nghia": "đoạn",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：段。",
+        "pinyin": "Qǐng kàn zhège zì: duàn.",
+        "nghia": "Xin hãy xem chữ này: đoạn."
+      }
+    },
+    {
+      "id": "hsk3-063",
+      "hanzi": "锻炼",
+      "pinyin": "duànliàn",
+      "nghia": "tập luyện",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我想锻炼。",
+        "pinyin": "Wǒ xiǎng duànliàn.",
+        "nghia": "Tôi muốn tập luyện."
+      }
+    },
+    {
+      "id": "hsk3-064",
+      "hanzi": "多么",
+      "pinyin": "duōme",
+      "nghia": "biết bao",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是多么。",
+        "pinyin": "Zhè shì duōme.",
+        "nghia": "Đây là biết bao."
+      }
+    },
+    {
+      "id": "hsk3-065",
+      "hanzi": "饿",
+      "pinyin": "è",
+      "nghia": "đói",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请看这个字：饿。",
+        "pinyin": "Qǐng kàn zhège zì: è.",
+        "nghia": "Xin hãy xem chữ này: đói."
+      }
+    },
+    {
+      "id": "hsk3-066",
+      "hanzi": "而且",
+      "pinyin": "érqiě",
+      "nghia": "hơn nữa",
+      "chu_de": "Liên từ",
+      "cau_vi_du": {
+        "zh": "又便宜而且好吃。",
+        "pinyin": "Yòu piányi érqiě hǎochī.",
+        "nghia": "Vừa rẻ vừa ngon."
+      }
+    },
+    {
+      "id": "hsk3-067",
+      "hanzi": "耳朵",
+      "pinyin": "ěrduo",
+      "nghia": "tai",
+      "chu_de": "Sức khỏe / cơ thể",
+      "cau_vi_du": {
+        "zh": "这是耳朵。",
+        "pinyin": "Zhè shì ěrduo.",
+        "nghia": "Đây là tai."
+      }
+    },
+    {
+      "id": "hsk3-068",
+      "hanzi": "发烧",
+      "pinyin": "fāshāo",
+      "nghia": "sốt",
+      "chu_de": "Sức khỏe / cơ thể",
+      "cau_vi_du": {
+        "zh": "这是发烧。",
+        "pinyin": "Zhè shì fāshāo.",
+        "nghia": "Đây là sốt."
+      }
+    },
+    {
+      "id": "hsk3-069",
+      "hanzi": "发现",
+      "pinyin": "fāxiàn",
+      "nghia": "phát hiện",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是发现。",
+        "pinyin": "Zhè shì fāxiàn.",
+        "nghia": "Đây là phát hiện."
+      }
+    },
+    {
+      "id": "hsk3-070",
+      "hanzi": "方便",
+      "pinyin": "fāngbiàn",
+      "nghia": "tiện",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是方便。",
+        "pinyin": "Zhè shì fāngbiàn.",
+        "nghia": "Đây là tiện."
+      }
+    },
+    {
+      "id": "hsk3-071",
+      "hanzi": "放",
+      "pinyin": "fàng",
+      "nghia": "đặt",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：放。",
+        "pinyin": "Qǐng kàn zhège zì: fàng.",
+        "nghia": "Xin hãy xem chữ này: đặt."
+      }
+    },
+    {
+      "id": "hsk3-072",
+      "hanzi": "放心",
+      "pinyin": "fàngxīn",
+      "nghia": "yên tâm",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是放心。",
+        "pinyin": "Zhè shì fàngxīn.",
+        "nghia": "Đây là yên tâm."
+      }
+    },
+    {
+      "id": "hsk3-073",
+      "hanzi": "分",
+      "pinyin": "fēn",
+      "nghia": "phút; điểm",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：分。",
+        "pinyin": "Qǐng kàn zhège zì: fēn.",
+        "nghia": "Xin hãy xem chữ này: phút; điểm."
+      }
+    },
+    {
+      "id": "hsk3-074",
+      "hanzi": "附近",
+      "pinyin": "fùjìn",
+      "nghia": "gần đây; vùng lân cận",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "饭店在附近。",
+        "pinyin": "Fànguǎn zài fùjìn.",
+        "nghia": "Nhà hàng ở gần đây."
+      }
+    },
+    {
+      "id": "hsk3-075",
+      "hanzi": "复习",
+      "pinyin": "fùxí",
+      "nghia": "ôn",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "这是复习。",
+        "pinyin": "Zhè shì fùxí.",
+        "nghia": "Đây là ôn."
+      }
+    },
+    {
+      "id": "hsk3-076",
+      "hanzi": "干净",
+      "pinyin": "gānjìng",
+      "nghia": "sạch",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "这是干净。",
+        "pinyin": "Zhè shì gānjìng.",
+        "nghia": "Đây là sạch."
+      }
+    },
+    {
+      "id": "hsk3-077",
+      "hanzi": "敢",
+      "pinyin": "gǎn",
+      "nghia": "dám",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：敢。",
+        "pinyin": "Qǐng kàn zhège zì: gǎn.",
+        "nghia": "Xin hãy xem chữ này: dám."
+      }
+    },
+    {
+      "id": "hsk3-078",
+      "hanzi": "感冒",
+      "pinyin": "gǎnmào",
+      "nghia": "cảm",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是感冒。",
+        "pinyin": "Zhè shì gǎnmào.",
+        "nghia": "Đây là cảm."
+      }
+    },
+    {
+      "id": "hsk3-079",
+      "hanzi": "刚才",
+      "pinyin": "gāngcái",
+      "nghia": "vừa nãy",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是刚才。",
+        "pinyin": "Zhè shì gāngcái.",
+        "nghia": "Đây là vừa nãy."
+      }
+    },
+    {
+      "id": "hsk3-080",
+      "hanzi": "根据",
+      "pinyin": "gēnjù",
+      "nghia": "căn cứ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "根据菜单点菜。",
+        "pinyin": "Gēnjù càidān diǎncài.",
+        "nghia": "Gọi món theo thực đơn."
+      }
+    },
+    {
+      "id": "hsk3-081",
+      "hanzi": "跟",
+      "pinyin": "gēn",
+      "nghia": "với",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：跟。",
+        "pinyin": "Qǐng kàn zhège zì: gēn.",
+        "nghia": "Xin hãy xem chữ này: với."
+      }
+    },
+    {
+      "id": "hsk3-082",
+      "hanzi": "更",
+      "pinyin": "gèng",
+      "nghia": "càng",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：更。",
+        "pinyin": "Qǐng kàn zhège zì: gèng.",
+        "nghia": "Xin hãy xem chữ này: càng."
+      }
+    },
+    {
+      "id": "hsk3-083",
+      "hanzi": "公园",
+      "pinyin": "gōngyuán",
+      "nghia": "công viên",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是公园。",
+        "pinyin": "Zhè shì gōngyuán.",
+        "nghia": "Đây là công viên."
+      }
+    },
+    {
+      "id": "hsk3-084",
+      "hanzi": "故事",
+      "pinyin": "gùshi",
+      "nghia": "truyện",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是故事。",
+        "pinyin": "Zhè shì gùshi.",
+        "nghia": "Đây là truyện."
+      }
+    },
+    {
+      "id": "hsk3-085",
+      "hanzi": "刮",
+      "pinyin": "guā",
+      "nghia": "thổi (gió); cạo",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：刮。",
+        "pinyin": "Qǐng kàn zhège zì: guā.",
+        "nghia": "Xin hãy xem chữ này: thổi (gió); cạo."
+      }
+    },
+    {
+      "id": "hsk3-086",
+      "hanzi": "关",
+      "pinyin": "guān",
+      "nghia": "đóng",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：关。",
+        "pinyin": "Qǐng kàn zhège zì: guān.",
+        "nghia": "Xin hãy xem chữ này: đóng."
+      }
+    },
+    {
+      "id": "hsk3-087",
+      "hanzi": "关系",
+      "pinyin": "guānxi",
+      "nghia": "quan hệ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "没有关系。",
+        "pinyin": "Méiyǒu guānxi.",
+        "nghia": "Không sao / không liên quan."
+      }
+    },
+    {
+      "id": "hsk3-088",
+      "hanzi": "关心",
+      "pinyin": "guānxīn",
+      "nghia": "quan tâm",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是关心。",
+        "pinyin": "Zhè shì guānxīn.",
+        "nghia": "Đây là quan tâm."
+      }
+    },
+    {
+      "id": "hsk3-089",
+      "hanzi": "关于",
+      "pinyin": "guānyú",
+      "nghia": "về",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "关于工作的问题。",
+        "pinyin": "Guānyú gōngzuò de wèntí.",
+        "nghia": "Về vấn đề công việc."
+      }
+    },
+    {
+      "id": "hsk3-090",
+      "hanzi": "国家",
+      "pinyin": "guójiā",
+      "nghia": "đất nước",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是国家。",
+        "pinyin": "Zhè shì guójiā.",
+        "nghia": "Đây là đất nước."
+      }
+    },
+    {
+      "id": "hsk3-091",
+      "hanzi": "果汁",
+      "pinyin": "guǒzhī",
+      "nghia": "nước ép",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想要果汁。",
+        "pinyin": "Wǒ xiǎng yào guǒzhī.",
+        "nghia": "Tôi muốn nước ép."
+      }
+    },
+    {
+      "id": "hsk3-092",
+      "hanzi": "过去",
+      "pinyin": "guòqu",
+      "nghia": "quá khứ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是过去。",
+        "pinyin": "Zhè shì guòqu.",
+        "nghia": "Đây là quá khứ."
+      }
+    },
+    {
+      "id": "hsk3-093",
+      "hanzi": "还是",
+      "pinyin": "háishi",
+      "nghia": "hay là",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "茶还是咖啡？",
+        "pinyin": "Chá háishi kāfēi?",
+        "nghia": "Trà hay cà phê?"
+      }
+    },
+    {
+      "id": "hsk3-094",
+      "hanzi": "害怕",
+      "pinyin": "hàipà",
+      "nghia": "sợ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是害怕。",
+        "pinyin": "Zhè shì hàipà.",
+        "nghia": "Đây là sợ."
+      }
+    },
+    {
+      "id": "hsk3-095",
+      "hanzi": "河",
+      "pinyin": "hé",
+      "nghia": "sông",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：河。",
+        "pinyin": "Qǐng kàn zhège zì: hé.",
+        "nghia": "Xin hãy xem chữ này: sông."
+      }
+    },
+    {
+      "id": "hsk3-096",
+      "hanzi": "黑板",
+      "pinyin": "hēibǎn",
+      "nghia": "bảng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是黑板。",
+        "pinyin": "Zhè shì hēibǎn.",
+        "nghia": "Đây là bảng."
+      }
+    },
+    {
+      "id": "hsk3-097",
+      "hanzi": "护照",
+      "pinyin": "hùzhào",
+      "nghia": "hộ chiếu",
+      "chu_de": "Khách sạn / nhà hàng",
+      "cau_vi_du": {
+        "zh": "请问，护照在哪儿？",
+        "pinyin": "Qǐngwèn, hùzhào zài nǎr?",
+        "nghia": "Xin hỏi, hộ chiếu ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-098",
+      "hanzi": "花",
+      "pinyin": "huā",
+      "nghia": "hoa; tiêu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：花。",
+        "pinyin": "Qǐng kàn zhège zì: huā.",
+        "nghia": "Xin hãy xem chữ này: hoa; tiêu."
+      }
+    },
+    {
+      "id": "hsk3-099",
+      "hanzi": "花园",
+      "pinyin": "huāyuán",
+      "nghia": "vườn hoa",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是花园。",
+        "pinyin": "Zhè shì huāyuán.",
+        "nghia": "Đây là vườn hoa."
+      }
+    },
+    {
+      "id": "hsk3-100",
+      "hanzi": "画",
+      "pinyin": "huà",
+      "nghia": "vẽ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：画。",
+        "pinyin": "Qǐng kàn zhège zì: huà.",
+        "nghia": "Xin hãy xem chữ này: vẽ."
+      }
+    },
+    {
+      "id": "hsk3-101",
+      "hanzi": "坏",
+      "pinyin": "huài",
+      "nghia": "hỏng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：坏。",
+        "pinyin": "Qǐng kàn zhège zì: huài.",
+        "nghia": "Xin hãy xem chữ này: hỏng."
+      }
+    },
+    {
+      "id": "hsk3-102",
+      "hanzi": "环境",
+      "pinyin": "huánjìng",
+      "nghia": "môi trường",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是环境。",
+        "pinyin": "Zhè shì huánjìng.",
+        "nghia": "Đây là môi trường."
+      }
+    },
+    {
+      "id": "hsk3-103",
+      "hanzi": "换",
+      "pinyin": "huàn",
+      "nghia": "đổi",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：换。",
+        "pinyin": "Qǐng kàn zhège zì: huàn.",
+        "nghia": "Xin hãy xem chữ này: đổi."
+      }
+    },
+    {
+      "id": "hsk3-104",
+      "hanzi": "黄",
+      "pinyin": "huáng",
+      "nghia": "vàng",
+      "chu_de": "Tính từ / màu sắc",
+      "cau_vi_du": {
+        "zh": "我喜欢黄色。",
+        "pinyin": "Wǒ xǐhuan huángsè.",
+        "nghia": "Tôi thích màu vàng."
+      }
+    },
+    {
+      "id": "hsk3-105",
+      "hanzi": "会议",
+      "pinyin": "huìyì",
+      "nghia": "cuộc họp",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "下午有会议。",
+        "pinyin": "Xiàwǔ yǒu huìyì.",
+        "nghia": "Buổi chiều có cuộc họp."
+      }
+    },
+    {
+      "id": "hsk3-106",
+      "hanzi": "或者",
+      "pinyin": "huòzhě",
+      "nghia": "hoặc",
+      "chu_de": "Liên từ",
+      "cau_vi_du": {
+        "zh": "今天或者明天。",
+        "pinyin": "Jīntiān huòzhě míngtiān.",
+        "nghia": "Hôm nay hoặc ngày mai."
+      }
+    },
+    {
+      "id": "hsk3-107",
+      "hanzi": "机会",
+      "pinyin": "jīhuì",
+      "nghia": "cơ hội",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是机会。",
+        "pinyin": "Zhè shì jīhuì.",
+        "nghia": "Đây là cơ hội."
+      }
+    },
+    {
+      "id": "hsk3-108",
+      "hanzi": "几乎",
+      "pinyin": "jīhū",
+      "nghia": "hầu như",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "我几乎忘了。",
+        "pinyin": "Wǒ jīhū wàng le.",
+        "nghia": "Tôi hầu như quên mất."
+      }
+    },
+    {
+      "id": "hsk3-109",
+      "hanzi": "极",
+      "pinyin": "jí",
+      "nghia": "cực",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：极。",
+        "pinyin": "Qǐng kàn zhège zì: jí.",
+        "nghia": "Xin hãy xem chữ này: cực."
+      }
+    },
+    {
+      "id": "hsk3-110",
+      "hanzi": "记得",
+      "pinyin": "jìde",
+      "nghia": "nhớ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是记得。",
+        "pinyin": "Zhè shì jìde.",
+        "nghia": "Đây là nhớ."
+      }
+    },
+    {
+      "id": "hsk3-111",
+      "hanzi": "季节",
+      "pinyin": "jìjié",
+      "nghia": "mùa",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是季节。",
+        "pinyin": "Zhè shì jìjié.",
+        "nghia": "Đây là mùa."
+      }
+    },
+    {
+      "id": "hsk3-112",
+      "hanzi": "检查",
+      "pinyin": "jiǎnchá",
+      "nghia": "kiểm tra",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是检查。",
+        "pinyin": "Zhè shì jiǎnchá.",
+        "nghia": "Đây là kiểm tra."
+      }
+    },
+    {
+      "id": "hsk3-113",
+      "hanzi": "简单",
+      "pinyin": "jiǎndān",
+      "nghia": "đơn giản",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是简单。",
+        "pinyin": "Zhè shì jiǎndān.",
+        "nghia": "Đây là đơn giản."
+      }
+    },
+    {
+      "id": "hsk3-114",
+      "hanzi": "见面",
+      "pinyin": "jiànmiàn",
+      "nghia": "gặp mặt",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "这是见面。",
+        "pinyin": "Zhè shì jiànmiàn.",
+        "nghia": "Đây là gặp mặt."
+      }
+    },
+    {
+      "id": "hsk3-115",
+      "hanzi": "健康",
+      "pinyin": "jiànkāng",
+      "nghia": "khỏe",
+      "chu_de": "Sức khỏe / cơ thể",
+      "cau_vi_du": {
+        "zh": "这是健康。",
+        "pinyin": "Zhè shì jiànkāng.",
+        "nghia": "Đây là khỏe."
+      }
+    },
+    {
+      "id": "hsk3-116",
+      "hanzi": "讲",
+      "pinyin": "jiǎng",
+      "nghia": "giảng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：讲。",
+        "pinyin": "Qǐng kàn zhège zì: jiǎng.",
+        "nghia": "Xin hãy xem chữ này: giảng."
+      }
+    },
+    {
+      "id": "hsk3-117",
+      "hanzi": "教",
+      "pinyin": "jiāo",
+      "nghia": "dạy",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：教。",
+        "pinyin": "Qǐng kàn zhège zì: jiāo.",
+        "nghia": "Xin hãy xem chữ này: dạy."
+      }
+    },
+    {
+      "id": "hsk3-118",
+      "hanzi": "脚",
+      "pinyin": "jiǎo",
+      "nghia": "bàn chân",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：脚。",
+        "pinyin": "Qǐng kàn zhège zì: jiǎo.",
+        "nghia": "Xin hãy xem chữ này: bàn chân."
+      }
+    },
+    {
+      "id": "hsk3-119",
+      "hanzi": "角",
+      "pinyin": "jiǎo",
+      "nghia": "góc",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：角。",
+        "pinyin": "Qǐng kàn zhège zì: jiǎo.",
+        "nghia": "Xin hãy xem chữ này: góc."
+      }
+    },
+    {
+      "id": "hsk3-120",
+      "hanzi": "接",
+      "pinyin": "jiē",
+      "nghia": "đón",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：接。",
+        "pinyin": "Qǐng kàn zhège zì: jiē.",
+        "nghia": "Xin hãy xem chữ này: đón."
+      }
+    },
+    {
+      "id": "hsk3-121",
+      "hanzi": "街道",
+      "pinyin": "jiēdào",
+      "nghia": "phố",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是街道。",
+        "pinyin": "Zhè shì jiēdào.",
+        "nghia": "Đây là phố."
+      }
+    },
+    {
+      "id": "hsk3-122",
+      "hanzi": "节目",
+      "pinyin": "jiémù",
+      "nghia": "chương trình",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是节目。",
+        "pinyin": "Zhè shì jiémù.",
+        "nghia": "Đây là chương trình."
+      }
+    },
+    {
+      "id": "hsk3-123",
+      "hanzi": "节日",
+      "pinyin": "jiérì",
+      "nghia": "ngày lễ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是节日。",
+        "pinyin": "Zhè shì jiérì.",
+        "nghia": "Đây là ngày lễ."
+      }
+    },
+    {
+      "id": "hsk3-124",
+      "hanzi": "结婚",
+      "pinyin": "jiéhūn",
+      "nghia": "kết hôn",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "这是结婚。",
+        "pinyin": "Zhè shì jiéhūn.",
+        "nghia": "Đây là kết hôn."
+      }
+    },
+    {
+      "id": "hsk3-125",
+      "hanzi": "结束",
+      "pinyin": "jiéshù",
+      "nghia": "kết thúc",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是结束。",
+        "pinyin": "Zhè shì jiéshù.",
+        "nghia": "Đây là kết thúc."
+      }
+    },
+    {
+      "id": "hsk3-126",
+      "hanzi": "解决",
+      "pinyin": "jiějué",
+      "nghia": "giải quyết",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是解决。",
+        "pinyin": "Zhè shì jiějué.",
+        "nghia": "Đây là giải quyết."
+      }
+    },
+    {
+      "id": "hsk3-127",
+      "hanzi": "借",
+      "pinyin": "jiè",
+      "nghia": "mượn",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：借。",
+        "pinyin": "Qǐng kàn zhège zì: jiè.",
+        "nghia": "Xin hãy xem chữ này: mượn."
+      }
+    },
+    {
+      "id": "hsk3-128",
+      "hanzi": "经常",
+      "pinyin": "jīngcháng",
+      "nghia": "thường",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是经常。",
+        "pinyin": "Zhè shì jīngcháng.",
+        "nghia": "Đây là thường."
+      }
+    },
+    {
+      "id": "hsk3-129",
+      "hanzi": "经过",
+      "pinyin": "jīngguò",
+      "nghia": "qua",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是经过。",
+        "pinyin": "Zhè shì jīngguò.",
+        "nghia": "Đây là qua."
+      }
+    },
+    {
+      "id": "hsk3-130",
+      "hanzi": "经理",
+      "pinyin": "jīnglǐ",
+      "nghia": "quản lý",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是经理。",
+        "pinyin": "Zhè shì jīnglǐ.",
+        "nghia": "Đây là quản lý."
+      }
+    },
+    {
+      "id": "hsk3-131",
+      "hanzi": "久",
+      "pinyin": "jiǔ",
+      "nghia": "lâu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：久。",
+        "pinyin": "Qǐng kàn zhège zì: jiǔ.",
+        "nghia": "Xin hãy xem chữ này: lâu."
+      }
+    },
+    {
+      "id": "hsk3-132",
+      "hanzi": "旧",
+      "pinyin": "jiù",
+      "nghia": "cũ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：旧。",
+        "pinyin": "Qǐng kàn zhège zì: jiù.",
+        "nghia": "Xin hãy xem chữ này: cũ."
+      }
+    },
+    {
+      "id": "hsk3-133",
+      "hanzi": "举行",
+      "pinyin": "jǔxíng",
+      "nghia": "tổ chức",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是举行。",
+        "pinyin": "Zhè shì jǔxíng.",
+        "nghia": "Đây là tổ chức."
+      }
+    },
+    {
+      "id": "hsk3-134",
+      "hanzi": "句子",
+      "pinyin": "jùzi",
+      "nghia": "câu",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "这是句子。",
+        "pinyin": "Zhè shì jùzi.",
+        "nghia": "Đây là câu."
+      }
+    },
+    {
+      "id": "hsk3-135",
+      "hanzi": "决定",
+      "pinyin": "juédìng",
+      "nghia": "quyết định",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是决定。",
+        "pinyin": "Zhè shì juédìng.",
+        "nghia": "Đây là quyết định."
+      }
+    },
+    {
+      "id": "hsk3-136",
+      "hanzi": "渴",
+      "pinyin": "kě",
+      "nghia": "khát",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请看这个字：渴。",
+        "pinyin": "Qǐng kàn zhège zì: kě.",
+        "nghia": "Xin hãy xem chữ này: khát."
+      }
+    },
+    {
+      "id": "hsk3-137",
+      "hanzi": "可爱",
+      "pinyin": "kěài",
+      "nghia": "đáng yêu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是可爱。",
+        "pinyin": "Zhè shì kěài.",
+        "nghia": "Đây là đáng yêu."
+      }
+    },
+    {
+      "id": "hsk3-138",
+      "hanzi": "刻",
+      "pinyin": "kè",
+      "nghia": "khắc; khắc giờ",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "请看这个字：刻。",
+        "pinyin": "Qǐng kàn zhège zì: kè.",
+        "nghia": "Xin hãy xem chữ này: khắc; khắc giờ."
+      }
+    },
+    {
+      "id": "hsk3-139",
+      "hanzi": "客人",
+      "pinyin": "kèrén",
+      "nghia": "khách",
+      "chu_de": "Khách sạn / nhà hàng",
+      "cau_vi_du": {
+        "zh": "请问，客人在哪儿？",
+        "pinyin": "Qǐngwèn, kèrén zài nǎr?",
+        "nghia": "Xin hỏi, khách ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-140",
+      "hanzi": "空调",
+      "pinyin": "kōngtiáo",
+      "nghia": "điều hòa",
+      "chu_de": "Khách sạn / nhà hàng",
+      "cau_vi_du": {
+        "zh": "请问，空调在哪儿？",
+        "pinyin": "Qǐngwèn, kōngtiáo zài nǎr?",
+        "nghia": "Xin hỏi, điều hòa ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-141",
+      "hanzi": "口",
+      "pinyin": "kǒu",
+      "nghia": "miệng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：口。",
+        "pinyin": "Qǐng kàn zhège zì: kǒu.",
+        "nghia": "Xin hãy xem chữ này: miệng."
+      }
+    },
+    {
+      "id": "hsk3-142",
+      "hanzi": "哭",
+      "pinyin": "kū",
+      "nghia": "khóc",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：哭。",
+        "pinyin": "Qǐng kàn zhège zì: kū.",
+        "nghia": "Xin hãy xem chữ này: khóc."
+      }
+    },
+    {
+      "id": "hsk3-143",
+      "hanzi": "裤子",
+      "pinyin": "kùzi",
+      "nghia": "quần",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是裤子。",
+        "pinyin": "Zhè shì kùzi.",
+        "nghia": "Đây là quần."
+      }
+    },
+    {
+      "id": "hsk3-144",
+      "hanzi": "筷子",
+      "pinyin": "kuàizi",
+      "nghia": "đũa",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想要筷子。",
+        "pinyin": "Wǒ xiǎng yào kuàizi.",
+        "nghia": "Tôi muốn đũa."
+      }
+    },
+    {
+      "id": "hsk3-145",
+      "hanzi": "蓝",
+      "pinyin": "lán",
+      "nghia": "xanh dương",
+      "chu_de": "Tính từ / màu sắc",
+      "cau_vi_du": {
+        "zh": "我喜欢蓝色。",
+        "pinyin": "Wǒ xǐhuan lánsè.",
+        "nghia": "Tôi thích màu xanh dương."
+      }
+    },
+    {
+      "id": "hsk3-146",
+      "hanzi": "老",
+      "pinyin": "lǎo",
+      "nghia": "già",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：老。",
+        "pinyin": "Qǐng kàn zhège zì: lǎo.",
+        "nghia": "Xin hãy xem chữ này: già."
+      }
+    },
+    {
+      "id": "hsk3-147",
+      "hanzi": "离开",
+      "pinyin": "líkāi",
+      "nghia": "rời",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "这是离开。",
+        "pinyin": "Zhè shì líkāi.",
+        "nghia": "Đây là rời."
+      }
+    },
+    {
+      "id": "hsk3-148",
+      "hanzi": "礼物",
+      "pinyin": "lǐwù",
+      "nghia": "quà",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是礼物。",
+        "pinyin": "Zhè shì lǐwù.",
+        "nghia": "Đây là quà."
+      }
+    },
+    {
+      "id": "hsk3-149",
+      "hanzi": "历史",
+      "pinyin": "lìshǐ",
+      "nghia": "lịch sử",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是历史。",
+        "pinyin": "Zhè shì lìshǐ.",
+        "nghia": "Đây là lịch sử."
+      }
+    },
+    {
+      "id": "hsk3-150",
+      "hanzi": "脸",
+      "pinyin": "liǎn",
+      "nghia": "mặt",
+      "chu_de": "Sức khỏe / cơ thể",
+      "cau_vi_du": {
+        "zh": "请看这个字：脸。",
+        "pinyin": "Qǐng kàn zhège zì: liǎn.",
+        "nghia": "Xin hãy xem chữ này: mặt."
+      }
+    },
+    {
+      "id": "hsk3-151",
+      "hanzi": "练习",
+      "pinyin": "liànxí",
+      "nghia": "luyện",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "这是练习。",
+        "pinyin": "Zhè shì liànxí.",
+        "nghia": "Đây là luyện."
+      }
+    },
+    {
+      "id": "hsk3-152",
+      "hanzi": "辆",
+      "pinyin": "liàng",
+      "nghia": "chiếc (xe)",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：辆。",
+        "pinyin": "Qǐng kàn zhège zì: liàng.",
+        "nghia": "Xin hãy xem chữ này: chiếc (xe)."
+      }
+    },
+    {
+      "id": "hsk3-153",
+      "hanzi": "了解",
+      "pinyin": "liǎojiě",
+      "nghia": "hiểu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是了解。",
+        "pinyin": "Zhè shì liǎojiě.",
+        "nghia": "Đây là hiểu."
+      }
+    },
+    {
+      "id": "hsk3-154",
+      "hanzi": "邻居",
+      "pinyin": "línjū",
+      "nghia": "hàng xóm",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是邻居。",
+        "pinyin": "Zhè shì línjū.",
+        "nghia": "Đây là hàng xóm."
+      }
+    },
+    {
+      "id": "hsk3-155",
+      "hanzi": "楼",
+      "pinyin": "lóu",
+      "nghia": "lầu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：楼。",
+        "pinyin": "Qǐng kàn zhège zì: lóu.",
+        "nghia": "Xin hãy xem chữ này: lầu."
+      }
+    },
+    {
+      "id": "hsk3-156",
+      "hanzi": "绿",
+      "pinyin": "lǜ",
+      "nghia": "xanh lá",
+      "chu_de": "Tính từ / màu sắc",
+      "cau_vi_du": {
+        "zh": "我喜欢绿色。",
+        "pinyin": "Wǒ xǐhuan lǜsè.",
+        "nghia": "Tôi thích màu xanh lá."
+      }
+    },
+    {
+      "id": "hsk3-157",
+      "hanzi": "马",
+      "pinyin": "mǎ",
+      "nghia": "ngựa",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我看见马了。",
+        "pinyin": "Wǒ kànjiàn mǎ le.",
+        "nghia": "Tôi nhìn thấy ngựa."
+      }
+    },
+    {
+      "id": "hsk3-158",
+      "hanzi": "马上",
+      "pinyin": "mǎshàng",
+      "nghia": "ngay",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "这是马上。",
+        "pinyin": "Zhè shì mǎshàng.",
+        "nghia": "Đây là ngay."
+      }
+    },
+    {
+      "id": "hsk3-159",
+      "hanzi": "满意",
+      "pinyin": "mǎnyì",
+      "nghia": "hài lòng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是满意。",
+        "pinyin": "Zhè shì mǎnyì.",
+        "nghia": "Đây là hài lòng."
+      }
+    },
+    {
+      "id": "hsk3-160",
+      "hanzi": "帽子",
+      "pinyin": "màozi",
+      "nghia": "mũ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是帽子。",
+        "pinyin": "Zhè shì màozi.",
+        "nghia": "Đây là mũ."
+      }
+    },
+    {
+      "id": "hsk3-161",
+      "hanzi": "米",
+      "pinyin": "mǐ",
+      "nghia": "mét",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "请看这个字：米。",
+        "pinyin": "Qǐng kàn zhège zì: mǐ.",
+        "nghia": "Xin hãy xem chữ này: mét."
+      }
+    },
+    {
+      "id": "hsk3-162",
+      "hanzi": "面包",
+      "pinyin": "miànbāo",
+      "nghia": "bánh mì",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想要面包。",
+        "pinyin": "Wǒ xiǎng yào miànbāo.",
+        "nghia": "Tôi muốn bánh mì."
+      }
+    },
+    {
+      "id": "hsk3-163",
+      "hanzi": "面条",
+      "pinyin": "miàntiáo",
+      "nghia": "mì sợi",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想要面条。",
+        "pinyin": "Wǒ xiǎng yào miàntiáo.",
+        "nghia": "Tôi muốn mì sợi."
+      }
+    },
+    {
+      "id": "hsk3-164",
+      "hanzi": "明白",
+      "pinyin": "míngbai",
+      "nghia": "hiểu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是明白。",
+        "pinyin": "Zhè shì míngbai.",
+        "nghia": "Đây là hiểu."
+      }
+    },
+    {
+      "id": "hsk3-165",
+      "hanzi": "拿",
+      "pinyin": "ná",
+      "nghia": "cầm",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：拿。",
+        "pinyin": "Qǐng kàn zhège zì: ná.",
+        "nghia": "Xin hãy xem chữ này: cầm."
+      }
+    },
+    {
+      "id": "hsk3-166",
+      "hanzi": "奶奶",
+      "pinyin": "nǎinai",
+      "nghia": "bà",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "这是奶奶。",
+        "pinyin": "Zhè shì nǎinai.",
+        "nghia": "Đây là bà."
+      }
+    },
+    {
+      "id": "hsk3-167",
+      "hanzi": "南",
+      "pinyin": "nán",
+      "nghia": "nam",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "往南走。",
+        "pinyin": "Wǎng nán zǒu.",
+        "nghia": "Đi về phía nam."
+      }
+    },
+    {
+      "id": "hsk3-168",
+      "hanzi": "难",
+      "pinyin": "nán",
+      "nghia": "khó",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：难。",
+        "pinyin": "Qǐng kàn zhège zì: nán.",
+        "nghia": "Xin hãy xem chữ này: khó."
+      }
+    },
+    {
+      "id": "hsk3-169",
+      "hanzi": "难过",
+      "pinyin": "nánguò",
+      "nghia": "buồn",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "这是难过。",
+        "pinyin": "Zhè shì nánguò.",
+        "nghia": "Đây là buồn."
+      }
+    },
+    {
+      "id": "hsk3-170",
+      "hanzi": "年级",
+      "pinyin": "niánjí",
+      "nghia": "khối",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是年级。",
+        "pinyin": "Zhè shì niánjí.",
+        "nghia": "Đây là khối."
+      }
+    },
+    {
+      "id": "hsk3-171",
+      "hanzi": "年轻",
+      "pinyin": "niánqīng",
+      "nghia": "trẻ",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "这是年轻。",
+        "pinyin": "Zhè shì niánqīng.",
+        "nghia": "Đây là trẻ."
+      }
+    },
+    {
+      "id": "hsk3-172",
+      "hanzi": "鸟",
+      "pinyin": "niǎo",
+      "nghia": "chim",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我看见鸟了。",
+        "pinyin": "Wǒ kànjiàn niǎo le.",
+        "nghia": "Tôi nhìn thấy chim."
+      }
+    },
+    {
+      "id": "hsk3-173",
+      "hanzi": "努力",
+      "pinyin": "nǔlì",
+      "nghia": "nỗ lực",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是努力。",
+        "pinyin": "Zhè shì nǔlì.",
+        "nghia": "Đây là nỗ lực."
+      }
+    },
+    {
+      "id": "hsk3-174",
+      "hanzi": "爬山",
+      "pinyin": "páshān",
+      "nghia": "leo núi",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是爬山。",
+        "pinyin": "Zhè shì páshān.",
+        "nghia": "Đây là leo núi."
+      }
+    },
+    {
+      "id": "hsk3-175",
+      "hanzi": "盘子",
+      "pinyin": "pánzi",
+      "nghia": "đĩa",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是盘子。",
+        "pinyin": "Zhè shì pánzi.",
+        "nghia": "Đây là đĩa."
+      }
+    },
+    {
+      "id": "hsk3-176",
+      "hanzi": "胖",
+      "pinyin": "pàng",
+      "nghia": "béo",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：胖。",
+        "pinyin": "Qǐng kàn zhège zì: pàng.",
+        "nghia": "Xin hãy xem chữ này: béo."
+      }
+    },
+    {
+      "id": "hsk3-177",
+      "hanzi": "啤酒",
+      "pinyin": "píjiǔ",
+      "nghia": "bia",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "我想要啤酒。",
+        "pinyin": "Wǒ xiǎng yào píjiǔ.",
+        "nghia": "Tôi muốn bia."
+      }
+    },
+    {
+      "id": "hsk3-178",
+      "hanzi": "葡萄",
+      "pinyin": "pútao",
+      "nghia": "nho",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我想要葡萄。",
+        "pinyin": "Wǒ xiǎng yào pútao.",
+        "nghia": "Tôi muốn nho."
+      }
+    },
+    {
+      "id": "hsk3-179",
+      "hanzi": "普通话",
+      "pinyin": "pǔtōnghuà",
+      "nghia": "tiếng phổ thông",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是普通话。",
+        "pinyin": "Zhè shì pǔtōnghuà.",
+        "nghia": "Đây là tiếng phổ thông."
+      }
+    },
+    {
+      "id": "hsk3-180",
+      "hanzi": "骑",
+      "pinyin": "qí",
+      "nghia": "đạp/cưỡi",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "请看这个字：骑。",
+        "pinyin": "Qǐng kàn zhège zì: qí.",
+        "nghia": "Xin hãy xem chữ này: đạp/cưỡi."
+      }
+    },
+    {
+      "id": "hsk3-181",
+      "hanzi": "其实",
+      "pinyin": "qíshí",
+      "nghia": "thực ra",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是其实。",
+        "pinyin": "Zhè shì qíshí.",
+        "nghia": "Đây là thực ra."
+      }
+    },
+    {
+      "id": "hsk3-182",
+      "hanzi": "其他",
+      "pinyin": "qítā",
+      "nghia": "khác",
+      "chu_de": "Đại từ",
+      "cau_vi_du": {
+        "zh": "这是其他。",
+        "pinyin": "Zhè shì qítā.",
+        "nghia": "Đây là khác."
+      }
+    },
+    {
+      "id": "hsk3-183",
+      "hanzi": "奇怪",
+      "pinyin": "qíguài",
+      "nghia": "lạ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是奇怪。",
+        "pinyin": "Zhè shì qíguài.",
+        "nghia": "Đây là lạ."
+      }
+    },
+    {
+      "id": "hsk3-184",
+      "hanzi": "铅笔",
+      "pinyin": "qiānbǐ",
+      "nghia": "bút chì",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是铅笔。",
+        "pinyin": "Zhè shì qiānbǐ.",
+        "nghia": "Đây là bút chì."
+      }
+    },
+    {
+      "id": "hsk3-185",
+      "hanzi": "清楚",
+      "pinyin": "qīngchu",
+      "nghia": "rõ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是清楚。",
+        "pinyin": "Zhè shì qīngchu.",
+        "nghia": "Đây là rõ."
+      }
+    },
+    {
+      "id": "hsk3-186",
+      "hanzi": "秋",
+      "pinyin": "qiū",
+      "nghia": "thu",
+      "chu_de": "Thời tiết / mùa",
+      "cau_vi_du": {
+        "zh": "秋天来旅游。",
+        "pinyin": "Qiūtiān lái lǚyóu.",
+        "nghia": "Mùa thu đến du lịch."
+      }
+    },
+    {
+      "id": "hsk3-187",
+      "hanzi": "裙子",
+      "pinyin": "qúnzi",
+      "nghia": "váy",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是裙子。",
+        "pinyin": "Zhè shì qúnzi.",
+        "nghia": "Đây là váy."
+      }
+    },
+    {
+      "id": "hsk3-188",
+      "hanzi": "然后",
+      "pinyin": "ránhòu",
+      "nghia": "sau đó",
+      "chu_de": "Liên từ",
+      "cau_vi_du": {
+        "zh": "先吃饭，然后休息。",
+        "pinyin": "Xiān chī fàn, ránhòu xiūxi.",
+        "nghia": "Ăn cơm trước, rồi nghỉ."
+      }
+    },
+    {
+      "id": "hsk3-189",
+      "hanzi": "热情",
+      "pinyin": "rèqíng",
+      "nghia": "nhiệt tình",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是热情。",
+        "pinyin": "Zhè shì rèqíng.",
+        "nghia": "Đây là nhiệt tình."
+      }
+    },
+    {
+      "id": "hsk3-190",
+      "hanzi": "认为",
+      "pinyin": "rènwéi",
+      "nghia": "cho rằng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是认为。",
+        "pinyin": "Zhè shì rènwéi.",
+        "nghia": "Đây là cho rằng."
+      }
+    },
+    {
+      "id": "hsk3-191",
+      "hanzi": "认真",
+      "pinyin": "rènzhēn",
+      "nghia": "nghiêm túc",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是认真。",
+        "pinyin": "Zhè shì rènzhēn.",
+        "nghia": "Đây là nghiêm túc."
+      }
+    },
+    {
+      "id": "hsk3-192",
+      "hanzi": "容易",
+      "pinyin": "róngyì",
+      "nghia": "dễ",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "这是容易。",
+        "pinyin": "Zhè shì róngyì.",
+        "nghia": "Đây là dễ."
+      }
+    },
+    {
+      "id": "hsk3-193",
+      "hanzi": "如果",
+      "pinyin": "rúguǒ",
+      "nghia": "nếu",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "如果下雨，我就不去。",
+        "pinyin": "Rúguǒ xiàyǔ, wǒ jiù bú qù.",
+        "nghia": "Nếu mưa, tôi không đi."
+      }
+    },
+    {
+      "id": "hsk3-194",
+      "hanzi": "伞",
+      "pinyin": "sǎn",
+      "nghia": "ô",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：伞。",
+        "pinyin": "Qǐng kàn zhège zì: sǎn.",
+        "nghia": "Xin hãy xem chữ này: ô."
+      }
+    },
+    {
+      "id": "hsk3-195",
+      "hanzi": "上网",
+      "pinyin": "shàngwǎng",
+      "nghia": "lên mạng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是上网。",
+        "pinyin": "Zhè shì shàngwǎng.",
+        "nghia": "Đây là lên mạng."
+      }
+    },
+    {
+      "id": "hsk3-196",
+      "hanzi": "生气",
+      "pinyin": "shēngqì",
+      "nghia": "tức",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是生气。",
+        "pinyin": "Zhè shì shēngqì.",
+        "nghia": "Đây là tức."
+      }
+    },
+    {
+      "id": "hsk3-197",
+      "hanzi": "声音",
+      "pinyin": "shēngyīn",
+      "nghia": "tiếng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是声音。",
+        "pinyin": "Zhè shì shēngyīn.",
+        "nghia": "Đây là tiếng."
+      }
+    },
+    {
+      "id": "hsk3-198",
+      "hanzi": "使",
+      "pinyin": "shǐ",
+      "nghia": "khiến; sử dụng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：使。",
+        "pinyin": "Qǐng kàn zhège zì: shǐ.",
+        "nghia": "Xin hãy xem chữ này: khiến; sử dụng."
+      }
+    },
+    {
+      "id": "hsk3-199",
+      "hanzi": "世界",
+      "pinyin": "shìjiè",
+      "nghia": "thế giới",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是世界。",
+        "pinyin": "Zhè shì shìjiè.",
+        "nghia": "Đây là thế giới."
+      }
+    },
+    {
+      "id": "hsk3-200",
+      "hanzi": "瘦",
+      "pinyin": "shòu",
+      "nghia": "gầy",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：瘦。",
+        "pinyin": "Qǐng kàn zhège zì: shòu.",
+        "nghia": "Xin hãy xem chữ này: gầy."
+      }
+    },
+    {
+      "id": "hsk3-201",
+      "hanzi": "舒服",
+      "pinyin": "shūfu",
+      "nghia": "dễ chịu",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "这是舒服。",
+        "pinyin": "Zhè shì shūfu.",
+        "nghia": "Đây là dễ chịu."
+      }
+    },
+    {
+      "id": "hsk3-202",
+      "hanzi": "叔叔",
+      "pinyin": "shūshu",
+      "nghia": "chú",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "这是叔叔。",
+        "pinyin": "Zhè shì shūshu.",
+        "nghia": "Đây là chú."
+      }
+    },
+    {
+      "id": "hsk3-203",
+      "hanzi": "树",
+      "pinyin": "shù",
+      "nghia": "cây",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：树。",
+        "pinyin": "Qǐng kàn zhège zì: shù.",
+        "nghia": "Xin hãy xem chữ này: cây."
+      }
+    },
+    {
+      "id": "hsk3-204",
+      "hanzi": "数学",
+      "pinyin": "shùxué",
+      "nghia": "toán",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "这是数学。",
+        "pinyin": "Zhè shì shùxué.",
+        "nghia": "Đây là toán."
+      }
+    },
+    {
+      "id": "hsk3-205",
+      "hanzi": "刷",
+      "pinyin": "shuā",
+      "nghia": "chải; quét",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：刷。",
+        "pinyin": "Qǐng kàn zhège zì: shuā.",
+        "nghia": "Xin hãy xem chữ này: chải; quét."
+      }
+    },
+    {
+      "id": "hsk3-206",
+      "hanzi": "双",
+      "pinyin": "shuāng",
+      "nghia": "đôi",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：双。",
+        "pinyin": "Qǐng kàn zhège zì: shuāng.",
+        "nghia": "Xin hãy xem chữ này: đôi."
+      }
+    },
+    {
+      "id": "hsk3-207",
+      "hanzi": "水平",
+      "pinyin": "shuǐpíng",
+      "nghia": "trình độ",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是水平。",
+        "pinyin": "Zhè shì shuǐpíng.",
+        "nghia": "Đây là trình độ."
+      }
+    },
+    {
+      "id": "hsk3-208",
+      "hanzi": "司机",
+      "pinyin": "sījī",
+      "nghia": "tài xế",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是司机。",
+        "pinyin": "Zhè shì sījī.",
+        "nghia": "Đây là tài xế."
+      }
+    },
+    {
+      "id": "hsk3-209",
+      "hanzi": "虽然",
+      "pinyin": "suīrán",
+      "nghia": "mặc dù",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "虽然很累，我还学习。",
+        "pinyin": "Suīrán hěn lèi, wǒ hái xuéxí.",
+        "nghia": "Dù mệt, tôi vẫn học."
+      }
+    },
+    {
+      "id": "hsk3-210",
+      "hanzi": "太阳",
+      "pinyin": "tàiyáng",
+      "nghia": "mặt trời",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "这是太阳。",
+        "pinyin": "Zhè shì tàiyáng.",
+        "nghia": "Đây là mặt trời."
+      }
+    },
+    {
+      "id": "hsk3-211",
+      "hanzi": "糖",
+      "pinyin": "táng",
+      "nghia": "đường (ngọt)",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请看这个字：糖。",
+        "pinyin": "Qǐng kàn zhège zì: táng.",
+        "nghia": "Xin hãy xem chữ này: đường (ngọt)."
+      }
+    },
+    {
+      "id": "hsk3-212",
+      "hanzi": "特别",
+      "pinyin": "tèbié",
+      "nghia": "đặc biệt",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "这是特别。",
+        "pinyin": "Zhè shì tèbié.",
+        "nghia": "Đây là đặc biệt."
+      }
+    },
+    {
+      "id": "hsk3-213",
+      "hanzi": "疼",
+      "pinyin": "téng",
+      "nghia": "đau",
+      "chu_de": "Sức khỏe / cơ thể",
+      "cau_vi_du": {
+        "zh": "请看这个字：疼。",
+        "pinyin": "Qǐng kàn zhège zì: téng.",
+        "nghia": "Xin hãy xem chữ này: đau."
+      }
+    },
+    {
+      "id": "hsk3-214",
+      "hanzi": "提高",
+      "pinyin": "tígāo",
+      "nghia": "nâng cao",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我想提高。",
+        "pinyin": "Wǒ xiǎng tígāo.",
+        "nghia": "Tôi muốn nâng cao."
+      }
+    },
+    {
+      "id": "hsk3-215",
+      "hanzi": "体育",
+      "pinyin": "tǐyù",
+      "nghia": "thể dục",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是体育。",
+        "pinyin": "Zhè shì tǐyù.",
+        "nghia": "Đây là thể dục."
+      }
+    },
+    {
+      "id": "hsk3-216",
+      "hanzi": "甜",
+      "pinyin": "tián",
+      "nghia": "ngọt",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请看这个字：甜。",
+        "pinyin": "Qǐng kàn zhège zì: tián.",
+        "nghia": "Xin hãy xem chữ này: ngọt."
+      }
+    },
+    {
+      "id": "hsk3-217",
+      "hanzi": "条",
+      "pinyin": "tiáo",
+      "nghia": "sợi/điều",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：条。",
+        "pinyin": "Qǐng kàn zhège zì: tiáo.",
+        "nghia": "Xin hãy xem chữ này: sợi/điều."
+      }
+    },
+    {
+      "id": "hsk3-218",
+      "hanzi": "同事",
+      "pinyin": "tóngshì",
+      "nghia": "đồng nghiệp",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是同事。",
+        "pinyin": "Zhè shì tóngshì.",
+        "nghia": "Đây là đồng nghiệp."
+      }
+    },
+    {
+      "id": "hsk3-219",
+      "hanzi": "同意",
+      "pinyin": "tóngyì",
+      "nghia": "đồng ý",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是同意。",
+        "pinyin": "Zhè shì tóngyì.",
+        "nghia": "Đây là đồng ý."
+      }
+    },
+    {
+      "id": "hsk3-220",
+      "hanzi": "头发",
+      "pinyin": "tóufa",
+      "nghia": "tóc",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是头发。",
+        "pinyin": "Zhè shì tóufa.",
+        "nghia": "Đây là tóc."
+      }
+    },
+    {
+      "id": "hsk3-221",
+      "hanzi": "突然",
+      "pinyin": "tūrán",
+      "nghia": "bỗng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是突然。",
+        "pinyin": "Zhè shì tūrán.",
+        "nghia": "Đây là bỗng."
+      }
+    },
+    {
+      "id": "hsk3-222",
+      "hanzi": "图书馆",
+      "pinyin": "túshūguǎn",
+      "nghia": "thư viện",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "这是图书馆。",
+        "pinyin": "Zhè shì túshūguǎn.",
+        "nghia": "Đây là thư viện."
+      }
+    },
+    {
+      "id": "hsk3-223",
+      "hanzi": "腿",
+      "pinyin": "tuǐ",
+      "nghia": "chân",
+      "chu_de": "Sức khỏe / cơ thể",
+      "cau_vi_du": {
+        "zh": "请看这个字：腿。",
+        "pinyin": "Qǐng kàn zhège zì: tuǐ.",
+        "nghia": "Xin hãy xem chữ này: chân."
+      }
+    },
+    {
+      "id": "hsk3-224",
+      "hanzi": "完成",
+      "pinyin": "wánchéng",
+      "nghia": "hoàn thành",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我想完成。",
+        "pinyin": "Wǒ xiǎng wánchéng.",
+        "nghia": "Tôi muốn hoàn thành."
+      }
+    },
+    {
+      "id": "hsk3-225",
+      "hanzi": "碗",
+      "pinyin": "wǎn",
+      "nghia": "bát",
+      "chu_de": "Ăn uống",
+      "cau_vi_du": {
+        "zh": "请看这个字：碗。",
+        "pinyin": "Qǐng kàn zhège zì: wǎn.",
+        "nghia": "Xin hãy xem chữ này: bát."
+      }
+    },
+    {
+      "id": "hsk3-226",
+      "hanzi": "万",
+      "pinyin": "wàn",
+      "nghia": "vạn",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "请看这个字：万。",
+        "pinyin": "Qǐng kàn zhège zì: wàn.",
+        "nghia": "Xin hãy xem chữ này: vạn."
+      }
+    },
+    {
+      "id": "hsk3-227",
+      "hanzi": "忘记",
+      "pinyin": "wàngjì",
+      "nghia": "quên",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想忘记。",
+        "pinyin": "Wǒ xiǎng wàngjì.",
+        "nghia": "Tôi muốn quên."
+      }
+    },
+    {
+      "id": "hsk3-228",
+      "hanzi": "为了",
+      "pinyin": "wèile",
+      "nghia": "để",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "为了学习汉语。",
+        "pinyin": "Wèile xuéxí Hànyǔ.",
+        "nghia": "Để học tiếng Trung."
+      }
+    },
+    {
+      "id": "hsk3-229",
+      "hanzi": "为什么",
+      "pinyin": "wèishénme",
+      "nghia": "tại sao",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是为什么。",
+        "pinyin": "Zhè shì wèishénme.",
+        "nghia": "Đây là tại sao."
+      }
+    },
+    {
+      "id": "hsk3-230",
+      "hanzi": "位",
+      "pinyin": "wèi",
+      "nghia": "vị",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：位。",
+        "pinyin": "Qǐng kàn zhège zì: wèi.",
+        "nghia": "Xin hãy xem chữ này: vị."
+      }
+    },
+    {
+      "id": "hsk3-231",
+      "hanzi": "文化",
+      "pinyin": "wénhuà",
+      "nghia": "văn hóa",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是文化。",
+        "pinyin": "Zhè shì wénhuà.",
+        "nghia": "Đây là văn hóa."
+      }
+    },
+    {
+      "id": "hsk3-232",
+      "hanzi": "西",
+      "pinyin": "xī",
+      "nghia": "tây",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "往西走。",
+        "pinyin": "Wǎng xī zǒu.",
+        "nghia": "Đi về phía tây."
+      }
+    },
+    {
+      "id": "hsk3-233",
+      "hanzi": "习惯",
+      "pinyin": "xíguàn",
+      "nghia": "thói quen",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是习惯。",
+        "pinyin": "Zhè shì xíguàn.",
+        "nghia": "Đây là thói quen."
+      }
+    },
+    {
+      "id": "hsk3-234",
+      "hanzi": "洗手间",
+      "pinyin": "xǐshǒujiān",
+      "nghia": "nhà vệ sinh",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请问，洗手间在哪儿？",
+        "pinyin": "Qǐngwèn, xǐshǒujiān zài nǎr?",
+        "nghia": "Xin hỏi, nhà vệ sinh ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-235",
+      "hanzi": "洗澡",
+      "pinyin": "xǐzǎo",
+      "nghia": "tắm",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是洗澡。",
+        "pinyin": "Zhè shì xǐzǎo.",
+        "nghia": "Đây là tắm."
+      }
+    },
+    {
+      "id": "hsk3-236",
+      "hanzi": "夏",
+      "pinyin": "xià",
+      "nghia": "hè",
+      "chu_de": "Thời tiết / mùa",
+      "cau_vi_du": {
+        "zh": "夏天来旅游。",
+        "pinyin": "Xiàtiān lái lǚyóu.",
+        "nghia": "Mùa hè đến du lịch."
+      }
+    },
+    {
+      "id": "hsk3-237",
+      "hanzi": "先",
+      "pinyin": "xiān",
+      "nghia": "trước",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：先。",
+        "pinyin": "Qǐng kàn zhège zì: xiān.",
+        "nghia": "Xin hãy xem chữ này: trước."
+      }
+    },
+    {
+      "id": "hsk3-238",
+      "hanzi": "香蕉",
+      "pinyin": "xiāngjiāo",
+      "nghia": "chuối",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "我想要香蕉。",
+        "pinyin": "Wǒ xiǎng yào xiāngjiāo.",
+        "nghia": "Tôi muốn chuối."
+      }
+    },
+    {
+      "id": "hsk3-239",
+      "hanzi": "相同",
+      "pinyin": "xiāngtóng",
+      "nghia": "giống nhau",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是相同。",
+        "pinyin": "Zhè shì xiāngtóng.",
+        "nghia": "Đây là giống nhau."
+      }
+    },
+    {
+      "id": "hsk3-240",
+      "hanzi": "相信",
+      "pinyin": "xiāngxìn",
+      "nghia": "tin",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想相信。",
+        "pinyin": "Wǒ xiǎng xiāngxìn.",
+        "nghia": "Tôi muốn tin."
+      }
+    },
+    {
+      "id": "hsk3-241",
+      "hanzi": "像",
+      "pinyin": "xiàng",
+      "nghia": "giống",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：像。",
+        "pinyin": "Qǐng kàn zhège zì: xiàng.",
+        "nghia": "Xin hãy xem chữ này: giống."
+      }
+    },
+    {
+      "id": "hsk3-242",
+      "hanzi": "小心",
+      "pinyin": "xiǎoxīn",
+      "nghia": "cẩn thận",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是小心。",
+        "pinyin": "Zhè shì xiǎoxīn.",
+        "nghia": "Đây là cẩn thận."
+      }
+    },
+    {
+      "id": "hsk3-243",
+      "hanzi": "校长",
+      "pinyin": "xiàozhǎng",
+      "nghia": "hiệu trưởng",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "这是校长。",
+        "pinyin": "Zhè shì xiàozhǎng.",
+        "nghia": "Đây là hiệu trưởng."
+      }
+    },
+    {
+      "id": "hsk3-244",
+      "hanzi": "鞋",
+      "pinyin": "xié",
+      "nghia": "giày",
+      "chu_de": "Tính từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：鞋。",
+        "pinyin": "Qǐng kàn zhège zì: xié.",
+        "nghia": "Xin hãy xem chữ này: giày."
+      }
+    },
+    {
+      "id": "hsk3-245",
+      "hanzi": "新闻",
+      "pinyin": "xīnwén",
+      "nghia": "tin tức",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想新闻。",
+        "pinyin": "Wǒ xiǎng xīnwén.",
+        "nghia": "Tôi muốn tin tức."
+      }
+    },
+    {
+      "id": "hsk3-246",
+      "hanzi": "新鲜",
+      "pinyin": "xīnxiān",
+      "nghia": "tươi",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是新鲜。",
+        "pinyin": "Zhè shì xīnxiān.",
+        "nghia": "Đây là tươi."
+      }
+    },
+    {
+      "id": "hsk3-247",
+      "hanzi": "信",
+      "pinyin": "xìn",
+      "nghia": "thư; tin",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：信。",
+        "pinyin": "Qǐng kàn zhège zì: xìn.",
+        "nghia": "Xin hãy xem chữ này: thư; tin."
+      }
+    },
+    {
+      "id": "hsk3-248",
+      "hanzi": "行李箱",
+      "pinyin": "xínglixiāng",
+      "nghia": "vali",
+      "chu_de": "Khách sạn / nhà hàng",
+      "cau_vi_du": {
+        "zh": "请问，行李箱在哪儿？",
+        "pinyin": "Qǐngwèn, xínglixiāng zài nǎr?",
+        "nghia": "Xin hỏi, vali ở đâu?"
+      }
+    },
+    {
+      "id": "hsk3-249",
+      "hanzi": "兴趣",
+      "pinyin": "xìngqù",
+      "nghia": "hứng thú",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是兴趣。",
+        "pinyin": "Zhè shì xìngqù.",
+        "nghia": "Đây là hứng thú."
+      }
+    },
+    {
+      "id": "hsk3-250",
+      "hanzi": "熊猫",
+      "pinyin": "xióngmāo",
+      "nghia": "gấu trúc",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是熊猫。",
+        "pinyin": "Zhè shì xióngmāo.",
+        "nghia": "Đây là gấu trúc."
+      }
+    },
+    {
+      "id": "hsk3-251",
+      "hanzi": "需要",
+      "pinyin": "xūyào",
+      "nghia": "cần",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想需要。",
+        "pinyin": "Wǒ xiǎng xūyào.",
+        "nghia": "Tôi muốn cần."
+      }
+    },
+    {
+      "id": "hsk3-252",
+      "hanzi": "选择",
+      "pinyin": "xuǎnzé",
+      "nghia": "chọn",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想选择。",
+        "pinyin": "Wǒ xiǎng xuǎnzé.",
+        "nghia": "Tôi muốn chọn."
+      }
+    },
+    {
+      "id": "hsk3-253",
+      "hanzi": "眼镜",
+      "pinyin": "yǎnjìng",
+      "nghia": "kính",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是眼镜。",
+        "pinyin": "Zhè shì yǎnjìng.",
+        "nghia": "Đây là kính."
+      }
+    },
+    {
+      "id": "hsk3-254",
+      "hanzi": "要求",
+      "pinyin": "yāoqiú",
+      "nghia": "yêu cầu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是要求。",
+        "pinyin": "Zhè shì yāoqiú.",
+        "nghia": "Đây là yêu cầu."
+      }
+    },
+    {
+      "id": "hsk3-255",
+      "hanzi": "爷爷",
+      "pinyin": "yéye",
+      "nghia": "ông (nội)",
+      "chu_de": "Gia đình",
+      "cau_vi_du": {
+        "zh": "这是爷爷。",
+        "pinyin": "Zhè shì yéye.",
+        "nghia": "Đây là ông (nội)."
+      }
+    },
+    {
+      "id": "hsk3-256",
+      "hanzi": "一定",
+      "pinyin": "yīdìng",
+      "nghia": "nhất định",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "这是一定。",
+        "pinyin": "Zhè shì yīdìng.",
+        "nghia": "Đây là nhất định."
+      }
+    },
+    {
+      "id": "hsk3-257",
+      "hanzi": "一共",
+      "pinyin": "yīgòng",
+      "nghia": "tổng cộng",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "这是一共。",
+        "pinyin": "Zhè shì yīgòng.",
+        "nghia": "Đây là tổng cộng."
+      }
+    },
+    {
+      "id": "hsk3-258",
+      "hanzi": "一会儿",
+      "pinyin": "yīhuìr",
+      "nghia": "một lúc",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "这是一会儿。",
+        "pinyin": "Zhè shì yīhuìr.",
+        "nghia": "Đây là một lúc."
+      }
+    },
+    {
+      "id": "hsk3-259",
+      "hanzi": "一样",
+      "pinyin": "yīyàng",
+      "nghia": "giống nhau",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "这是一样。",
+        "pinyin": "Zhè shì yīyàng.",
+        "nghia": "Đây là giống nhau."
+      }
+    },
+    {
+      "id": "hsk3-260",
+      "hanzi": "以后",
+      "pinyin": "yǐhòu",
+      "nghia": "sau này",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是以后。",
+        "pinyin": "Zhè shì yǐhòu.",
+        "nghia": "Đây là sau này."
+      }
+    },
+    {
+      "id": "hsk3-261",
+      "hanzi": "以前",
+      "pinyin": "yǐqián",
+      "nghia": "trước đây",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是以前。",
+        "pinyin": "Zhè shì yǐqián.",
+        "nghia": "Đây là trước đây."
+      }
+    },
+    {
+      "id": "hsk3-262",
+      "hanzi": "以为",
+      "pinyin": "yǐwéi",
+      "nghia": "cho rằng (nhầm)",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是以为。",
+        "pinyin": "Zhè shì yǐwéi.",
+        "nghia": "Đây là cho rằng (nhầm)."
+      }
+    },
+    {
+      "id": "hsk3-263",
+      "hanzi": "一般",
+      "pinyin": "yībān",
+      "nghia": "thông thường",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "这是一般。",
+        "pinyin": "Zhè shì yībān.",
+        "nghia": "Đây là thông thường."
+      }
+    },
+    {
+      "id": "hsk3-264",
+      "hanzi": "一边",
+      "pinyin": "yībiān",
+      "nghia": "một bên",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "一边喝茶，一边说话。",
+        "pinyin": "Yìbiān hē chá, yìbiān shuōhuà.",
+        "nghia": "Vừa uống trà vừa nói chuyện."
+      }
+    },
+    {
+      "id": "hsk3-265",
+      "hanzi": "一直",
+      "pinyin": "yīzhí",
+      "nghia": "suốt",
+      "chu_de": "Số / đo lường",
+      "cau_vi_du": {
+        "zh": "这是一直。",
+        "pinyin": "Zhè shì yīzhí.",
+        "nghia": "Đây là suốt."
+      }
+    },
+    {
+      "id": "hsk3-266",
+      "hanzi": "音乐",
+      "pinyin": "yīnyuè",
+      "nghia": "âm nhạc",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是音乐。",
+        "pinyin": "Zhè shì yīnyuè.",
+        "nghia": "Đây là âm nhạc."
+      }
+    },
+    {
+      "id": "hsk3-267",
+      "hanzi": "银行",
+      "pinyin": "yínháng",
+      "nghia": "ngân hàng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是银行。",
+        "pinyin": "Zhè shì yínháng.",
+        "nghia": "Đây là ngân hàng."
+      }
+    },
+    {
+      "id": "hsk3-268",
+      "hanzi": "应该",
+      "pinyin": "yīnggāi",
+      "nghia": "nên",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是应该。",
+        "pinyin": "Zhè shì yīnggāi.",
+        "nghia": "Đây là nên."
+      }
+    },
+    {
+      "id": "hsk3-269",
+      "hanzi": "影响",
+      "pinyin": "yǐngxiǎng",
+      "nghia": "ảnh hưởng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是影响。",
+        "pinyin": "Zhè shì yǐngxiǎng.",
+        "nghia": "Đây là ảnh hưởng."
+      }
+    },
+    {
+      "id": "hsk3-270",
+      "hanzi": "用",
+      "pinyin": "yòng",
+      "nghia": "dùng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：用。",
+        "pinyin": "Qǐng kàn zhège zì: yòng.",
+        "nghia": "Xin hãy xem chữ này: dùng."
+      }
+    },
+    {
+      "id": "hsk3-271",
+      "hanzi": "游戏",
+      "pinyin": "yóuxì",
+      "nghia": "trò chơi",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是游戏。",
+        "pinyin": "Zhè shì yóuxì.",
+        "nghia": "Đây là trò chơi."
+      }
+    },
+    {
+      "id": "hsk3-272",
+      "hanzi": "有名",
+      "pinyin": "yǒumíng",
+      "nghia": "nổi tiếng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是有名。",
+        "pinyin": "Zhè shì yǒumíng.",
+        "nghia": "Đây là nổi tiếng."
+      }
+    },
+    {
+      "id": "hsk3-273",
+      "hanzi": "又",
+      "pinyin": "yòu",
+      "nghia": "lại",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：又。",
+        "pinyin": "Qǐng kàn zhège zì: yòu.",
+        "nghia": "Xin hãy xem chữ này: lại."
+      }
+    },
+    {
+      "id": "hsk3-274",
+      "hanzi": "遇到",
+      "pinyin": "yùdào",
+      "nghia": "gặp",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "这是遇到。",
+        "pinyin": "Zhè shì yùdào.",
+        "nghia": "Đây là gặp."
+      }
+    },
+    {
+      "id": "hsk3-275",
+      "hanzi": "愿意",
+      "pinyin": "yuànyì",
+      "nghia": "muốn; bằng lòng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是愿意。",
+        "pinyin": "Zhè shì yuànyì.",
+        "nghia": "Đây là muốn; bằng lòng."
+      }
+    },
+    {
+      "id": "hsk3-276",
+      "hanzi": "越",
+      "pinyin": "yuè",
+      "nghia": "càng",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "越学越喜欢。",
+        "pinyin": "Yuè xué yuè xǐhuan.",
+        "nghia": "Càng học càng thích."
+      }
+    },
+    {
+      "id": "hsk3-277",
+      "hanzi": "月亮",
+      "pinyin": "yuèliang",
+      "nghia": "mặt trăng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是月亮。",
+        "pinyin": "Zhè shì yuèliang.",
+        "nghia": "Đây là mặt trăng."
+      }
+    },
+    {
+      "id": "hsk3-278",
+      "hanzi": "云",
+      "pinyin": "yún",
+      "nghia": "mây",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：云。",
+        "pinyin": "Qǐng kàn zhège zì: yún.",
+        "nghia": "Xin hãy xem chữ này: mây."
+      }
+    },
+    {
+      "id": "hsk3-279",
+      "hanzi": "站",
+      "pinyin": "zhàn",
+      "nghia": "đứng; trạm",
+      "chu_de": "Giao thông",
+      "cau_vi_du": {
+        "zh": "请看这个字：站。",
+        "pinyin": "Qǐng kàn zhège zì: zhàn.",
+        "nghia": "Xin hãy xem chữ này: đứng; trạm."
+      }
+    },
+    {
+      "id": "hsk3-280",
+      "hanzi": "着急",
+      "pinyin": "zháojí",
+      "nghia": "nóng ruột",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是着急。",
+        "pinyin": "Zhè shì zháojí.",
+        "nghia": "Đây là nóng ruột."
+      }
+    },
+    {
+      "id": "hsk3-281",
+      "hanzi": "照顾",
+      "pinyin": "zhàogu",
+      "nghia": "chăm sóc",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想照顾。",
+        "pinyin": "Wǒ xiǎng zhàogu.",
+        "nghia": "Tôi muốn chăm sóc."
+      }
+    },
+    {
+      "id": "hsk3-282",
+      "hanzi": "照片",
+      "pinyin": "zhàopiàn",
+      "nghia": "ảnh",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是照片。",
+        "pinyin": "Zhè shì zhàopiàn.",
+        "nghia": "Đây là ảnh."
+      }
+    },
+    {
+      "id": "hsk3-283",
+      "hanzi": "照相机",
+      "pinyin": "zhàoxiàngjī",
+      "nghia": "máy ảnh",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是照相机。",
+        "pinyin": "Zhè shì zhàoxiàngjī.",
+        "nghia": "Đây là máy ảnh."
+      }
+    },
+    {
+      "id": "hsk3-284",
+      "hanzi": "只",
+      "pinyin": "zhī",
+      "nghia": "con (lượng từ động vật)",
+      "chu_de": "Lượng từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：只。",
+        "pinyin": "Qǐng kàn zhège zì: zhī.",
+        "nghia": "Xin hãy xem chữ này: con (lượng từ động vật)."
+      }
+    },
+    {
+      "id": "hsk3-285",
+      "hanzi": "只",
+      "pinyin": "zhǐ",
+      "nghia": "chỉ",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "请看这个字：只。",
+        "pinyin": "Qǐng kàn zhège zì: zhǐ.",
+        "nghia": "Xin hãy xem chữ này: chỉ."
+      }
+    },
+    {
+      "id": "hsk3-286",
+      "hanzi": "终于",
+      "pinyin": "zhōngyú",
+      "nghia": "cuối cùng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是终于。",
+        "pinyin": "Zhè shì zhōngyú.",
+        "nghia": "Đây là cuối cùng."
+      }
+    },
+    {
+      "id": "hsk3-287",
+      "hanzi": "中间",
+      "pinyin": "zhōngjiān",
+      "nghia": "giữa",
+      "chu_de": "Vị trí",
+      "cau_vi_du": {
+        "zh": "这是中间。",
+        "pinyin": "Zhè shì zhōngjiān.",
+        "nghia": "Đây là giữa."
+      }
+    },
+    {
+      "id": "hsk3-288",
+      "hanzi": "种",
+      "pinyin": "zhǒng",
+      "nghia": "loại; trồng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "三种菜。",
+        "pinyin": "Sān zhǒng cài.",
+        "nghia": "Ba loại món."
+      }
+    },
+    {
+      "id": "hsk3-289",
+      "hanzi": "重要",
+      "pinyin": "zhòngyào",
+      "nghia": "quan trọng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是重要。",
+        "pinyin": "Zhè shì zhòngyào.",
+        "nghia": "Đây là quan trọng."
+      }
+    },
+    {
+      "id": "hsk3-290",
+      "hanzi": "周末",
+      "pinyin": "zhōumò",
+      "nghia": "cuối tuần",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是周末。",
+        "pinyin": "Zhè shì zhōumò.",
+        "nghia": "Đây là cuối tuần."
+      }
+    },
+    {
+      "id": "hsk3-291",
+      "hanzi": "主要",
+      "pinyin": "zhǔyào",
+      "nghia": "chủ yếu",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是主要。",
+        "pinyin": "Zhè shì zhǔyào.",
+        "nghia": "Đây là chủ yếu."
+      }
+    },
+    {
+      "id": "hsk3-292",
+      "hanzi": "祝",
+      "pinyin": "zhù",
+      "nghia": "chúc",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "请看这个字：祝。",
+        "pinyin": "Qǐng kàn zhège zì: zhù.",
+        "nghia": "Xin hãy xem chữ này: chúc."
+      }
+    },
+    {
+      "id": "hsk3-293",
+      "hanzi": "注意",
+      "pinyin": "zhùyì",
+      "nghia": "chú ý",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是注意。",
+        "pinyin": "Zhè shì zhùyì.",
+        "nghia": "Đây là chú ý."
+      }
+    },
+    {
+      "id": "hsk3-294",
+      "hanzi": "字典",
+      "pinyin": "zìdiǎn",
+      "nghia": "từ điển",
+      "chu_de": "Động từ thường dùng",
+      "cau_vi_du": {
+        "zh": "我想字典。",
+        "pinyin": "Wǒ xiǎng zìdiǎn.",
+        "nghia": "Tôi muốn từ điển."
+      }
+    },
+    {
+      "id": "hsk3-295",
+      "hanzi": "自己",
+      "pinyin": "zìjǐ",
+      "nghia": "tự mình",
+      "chu_de": "Đại từ",
+      "cau_vi_du": {
+        "zh": "这是自己。",
+        "pinyin": "Zhè shì zìjǐ.",
+        "nghia": "Đây là tự mình."
+      }
+    },
+    {
+      "id": "hsk3-296",
+      "hanzi": "总是",
+      "pinyin": "zǒngshì",
+      "nghia": "luôn",
+      "chu_de": "Phó từ",
+      "cau_vi_du": {
+        "zh": "这是总是。",
+        "pinyin": "Zhè shì zǒngshì.",
+        "nghia": "Đây là luôn."
+      }
+    },
+    {
+      "id": "hsk3-297",
+      "hanzi": "最近",
+      "pinyin": "zuìjìn",
+      "nghia": "gần đây",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是最近。",
+        "pinyin": "Zhè shì zuìjìn.",
+        "nghia": "Đây là gần đây."
+      }
+    },
+    {
+      "id": "hsk3-298",
+      "hanzi": "作业",
+      "pinyin": "zuòyè",
+      "nghia": "bài tập",
+      "chu_de": "Học tập",
+      "cau_vi_du": {
+        "zh": "我想作业。",
+        "pinyin": "Wǒ xiǎng zuòyè.",
+        "nghia": "Tôi muốn bài tập."
+      }
+    },
+    {
+      "id": "hsk3-299",
+      "hanzi": "作用",
+      "pinyin": "zuòyòng",
+      "nghia": "tác dụng",
+      "chu_de": "Từ HSK3 thường dùng",
+      "cau_vi_du": {
+        "zh": "这是作用。",
+        "pinyin": "Zhè shì zuòyòng.",
+        "nghia": "Đây là tác dụng."
+      }
+    },
+    {
+      "id": "hsk3-300",
+      "hanzi": "不但……而且……",
+      "pinyin": "búdàn…érqiě…",
+      "nghia": "không những… mà còn…",
+      "chu_de": "Cấu trúc ngữ pháp",
+      "cau_vi_du": {
+        "zh": "这个菜不但便宜而且好吃。",
+        "pinyin": "Zhège cài búdàn piányi érqiě hǎochī.",
+        "nghia": "Món này không những rẻ mà còn ngon."
+      }
+    }
+  ]
+}

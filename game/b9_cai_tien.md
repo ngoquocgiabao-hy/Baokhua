@@ -1,0 +1,12 @@
+# BẢN CHỐT CẢI TIẾN b9 (QA chủ trì, có ý kiến Dev + Tiếp thị, 30/10 14:40) – Tiêu chí: người lạ chơi được trong 10s không cần hướng dẫn
+1. ĐIỀU KHIỂN 1 ngón, điện thoại dọc. Hiện: joystick + 6 nút bên phải, phải đi vào tầm đánh 3–5m, không tự ngắm → phải dùng 2 tay. Sửa: chạm ở đâu cũng sinh joystick nổi tại chỗ đó; nhấc tay thì nhân vật tự đánh và tự ngắm quái gần nhất, tầm đánh 6m; camera cố định nhìn chéo 45° từ trên xuống, bỏ xoay và pinch; gộp S1–S3 thành 1 nút 'Chiêu' 80px + nút ULT; không cần màn hướng dẫn, chỉ hiện bàn tay động 'kéo để chạy' 3s đầu. Trả lời đúng thì nạp nội năng; câu hỏi hiện ở 1/3 dưới màn hình, chạm thẳng vào đáp án. Tham chiếu: Archero, Survivor.io.
+2. ĐỒ HỌA. Hiện: bầu trời chiếm 40% màn hình, chữ hướng dẫn bị che. Sửa: camera từ trên xuống, nền là mặt nước và núi đá viền 2 bên; tương phản cao, quái có viền đỏ; giao diện tối giản chỉ thanh máu + combo. Tham chiếu: Archero, Brawl Stars.
+3. NHÂN VẬT 3D. Hiện: nhân vật tạm, đứng cứng. Sửa: mô hình Quaternius CC0 có animation chạy/đánh/trúng đòn; mỗi lần trả lời đúng thì vung chiêu kèm số sát thương to. Tham chiếu: Survivor.io.
+4. QUÁI & BOSS. Hiện: 1 boss đứng yên. Sửa: 3 đợt quái nhỏ, mỗi đợt 20–30s, rồi boss; boss báo trước đòn đánh bằng vòng đỏ 1s, có thể chạy né. Trả lời đúng trong 3s thì tung chiêu lớn đánh trúng cả vùng. Tham chiếu: Archero, Vampire Survivors.
+5. LÊN CẤP. Hiện: chỉ tăng chỉ số ngầm. Sửa: trả lời đúng cho điểm kinh nghiệm; lên cấp thì chọn 1 trong 3 thẻ nâng cấp (tối đa 2s) (+sát thương, +máu, tên bắn đôi…); tu vi Anki giữ cho ngoài trận. Tham chiếu: Archero, Survivor.io.
+NGHIỆM THU: 5/5 người lạ di chuyển + trả lời câu đầu ≤10s không ai chỉ; FPS LOW p5 ≥24; màn 1 tỷ lệ thắng trong 3 lần thử 72–85%.
+GIỚI HẠN (Dev, chưa kiểm chứng): ≤100 draw call, ≤100k tam giác, 1 bóng đổ, tải ≤3MB. Game tham chiếu theo Tiếp thị (chưa kiểm chứng): Survivor.io là chuẩn chính.
+GIẢ ĐỊNH: chốt luôn để Dev làm b9; khi anh Bảo dán Gemini Deep Research vào thì chỉ chỉnh chi tiết, không đổi hướng.
+10 GIÂY ĐẦU (Tiếp thị): vào là đánh ngay, không có chữ hướng dẫn; giây 3 hiện câu 你好 nǐ hǎo (xin chào); trả lời đúng thì chiêu nổ to + rung máy (Android) + đọc tiếng Trung; giây 8–10 hạ quái đầu tiên, hiện "Tu vi +1".
+KỸ THUẬT (Dev): viền quái thay bằng vòng đỏ dưới chân; mức LOW tối đa 25 quái trên màn hình, vẽ gộp (instanced) và dùng lại quái cũ.
+CHIA BẢN: b9 = mục 1+2+3 + kịch bản 10 giây đầu (~6 giờ); b10 = mục 4+5 + cân bằng tỷ lệ thắng (~6 giờ).

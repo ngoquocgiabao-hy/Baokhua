@@ -1,0 +1,32 @@
+{
+  "linh_ho": {
+    "class": "linh_ho",
+    "n": 1000,
+    "accuracy": 0.6,
+    "winRate1st": 40.1,
+    "winRate3tries": 84.5,
+    "medianSessionSecWin": 100.8,
+    "win1": 401,
+    "win3": 845
+  },
+  "kiem_khach": {
+    "class": "kiem_khach",
+    "n": 1000,
+    "accuracy": 0.6,
+    "winRate1st": 31.2,
+    "winRate3tries": 75.1,
+    "medianSessionSecWin": 76.4,
+    "win1": 312,
+    "win3": 751
+  },
+  "thiet_ve": {
+    "class": "thiet_ve",
+    "n": 1000,
+    "accuracy": 0.6,
+    "winRate1st": 33.5,
+    "winRate3tries": 83.4,
+    "medianSessionSecWin": 104.1,
+    "win1": 335,
+    "win3": 834
+  }
+}

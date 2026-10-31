@@ -1,0 +1,162 @@
+[
+ {
+  "id": "bc-01",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 1,
+  "cau_hoi": "Khách Trung Quốc vừa bước vào sảnh. Lễ tân chào thế nào?",
+  "dap_an": [
+   "再见，欢迎再来！",
+   "谢谢，不客气！",
+   "您好，欢迎光临！",
+   "对不起，没关系！"
+  ],
+  "dung": 2,
+  "pinyin": "Nín hǎo, huānyíng guānglín!",
+  "giai_thich": "欢迎光临 (huānyíng guānglín) = hân hạnh đón tiếp, câu chào khách chuẩn. 再见 (zàijiàn) là tạm biệt khi khách về."
+ },
+ {
+  "id": "bc-02",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 1,
+  "cau_hoi": "Muốn hỏi khách đã đặt phòng trước chưa, nói câu nào?",
+  "dap_an": [
+   "请问您有预订吗？",
+   "请问您要退房吗？",
+   "请问您吃饭了吗？",
+   "请问您去哪儿？"
+  ],
+  "dung": 0,
+  "pinyin": "Qǐngwèn nín yǒu yùdìng ma?",
+  "giai_thich": "预订 (yùdìng) = đặt trước. 退房 (tuìfáng) = trả phòng, dùng khi khách rời đi."
+ },
+ {
+  "id": "bc-03",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 1,
+  "cau_hoi": "Xin khách cho xem hộ chiếu để làm thủ tục:",
+  "dap_an": [
+   "请注视一下您的护照。",
+   "请出示一下您的护照。",
+   "请收拾一下您的护照。",
+   "请打开一下您的房间。"
+  ],
+  "dung": 1,
+  "pinyin": "Qǐng chūshì yíxià nín de hùzhào.",
+  "giai_thich": "出示 (chūshì) = đưa ra cho xem. Dễ nhầm với 注视 (zhùshì) = nhìn chăm chú."
+ },
+ {
+  "id": "bc-04",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 2,
+  "cau_hoi": "Khách hỏi giờ ăn sáng. Khách sạn phục vụ từ 6:30 đến 9:30 sáng. Trả lời đúng:",
+  "dap_an": [
+   "早餐时间是晚上六点半到九点半。",
+   "早餐时间是早上六点半到九点半。",
+   "退房时间是早上六点半到九点半。",
+   "早餐是一百块。"
+  ],
+  "dung": 1,
+  "pinyin": "Zǎocān shíjiān shì zǎoshang liù diǎn bàn dào jiǔ diǎn bàn.",
+  "giai_thich": "早上 (zǎoshang) = buổi sáng; 晚上 (wǎnshang) = buổi tối. 点半 (diǎn bàn) = rưỡi."
+ },
+ {
+  "id": "bc-05",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 2,
+  "cau_hoi": "Giờ trả phòng là 12 giờ trưa. Báo khách:",
+  "dap_an": [
+   "入住时间是中午十二点。",
+   "退房时间是晚上十二点。",
+   "退房时间是中午十二点。",
+   "退房要十二块钱。"
+  ],
+  "dung": 2,
+  "pinyin": "Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.",
+  "giai_thich": "退房 (tuìfáng) = trả phòng, 入住 (rùzhù) = nhận phòng. 中午 (zhōngwǔ) = buổi trưa."
+ },
+ {
+  "id": "bc-06",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 2,
+  "cau_hoi": "Phòng của khách ở tầng 8, thang máy bên phải. Nói:",
+  "dap_an": [
+   "您的房间在八楼，电梯在左边。",
+   "您的房间在十八楼，电梯在右边。",
+   "您的房间在八号，楼梯在右边。",
+   "您的房间在八楼，电梯在右边。"
+  ],
+  "dung": 3,
+  "pinyin": "Nín de fángjiān zài bā lóu, diàntī zài yòubian.",
+  "giai_thich": "电梯 (diàntī) = thang máy, 楼梯 (lóutī) = cầu thang bộ. 右边 (yòubian) = bên phải, 左边 (zuǒbian) = bên trái."
+ },
+ {
+  "id": "bc-07",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 2,
+  "cau_hoi": "Khách muốn hỏi mật khẩu WiFi. Câu nào đúng?",
+  "dap_an": [
+   "WiFi密码是多少？",
+   "WiFi号码是多少钱？",
+   "WiFi密码是几点？",
+   "WiFi在哪儿吃？"
+  ],
+  "dung": 0,
+  "pinyin": "WiFi mìmǎ shì duōshao?",
+  "giai_thich": "密码 (mìmǎ) = mật khẩu. Hỏi số hoặc mã dùng 是多少 (shì duōshao), không dùng 多少钱 (duōshao qián) vì câu đó hỏi giá."
+ },
+ {
+  "id": "bc-08",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 3,
+  "cau_hoi": "Khi nhận phòng khách phải đặt cọc 500.000 đồng, trả lại lúc trả phòng. Giải thích đúng:",
+  "dap_an": [
+   "入住需要交五十万越南盾房费，退房时不退。",
+   "入住需要交五十万越南盾押金，退房时退还。",
+   "入住需要交五万越南盾押金，退房时退还。",
+   "入住需要交五十万越南盾押金，退房时不退。"
+  ],
+  "dung": 1,
+  "pinyin": "Rùzhù xūyào jiāo wǔshí wàn Yuènándùn yājīn, tuìfáng shí tuìhuán.",
+  "giai_thich": "押金 (yājīn) = tiền cọc, 房费 (fángfèi) = tiền phòng. 五十万 (wǔshí wàn) = 500.000, còn 五万 (wǔ wàn) chỉ là 50.000."
+ },
+ {
+  "id": "bc-09",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 3,
+  "cau_hoi": "Khách phàn nàn điều hòa trong phòng bị hỏng. Lễ tân đáp chuyên nghiệp:",
+  "dap_an": [
+   "没关系，空调坏了很正常。",
+   "对不起，您自己修一下吧。",
+   "非常抱歉，我马上安排工作人员去您房间检查。",
+   "不好意思，我们不负责空调。"
+  ],
+  "dung": 2,
+  "pinyin": "Fēicháng bàoqiàn, wǒ mǎshàng ānpái gōngzuò rényuán qù nín fángjiān jiǎnchá.",
+  "giai_thich": "抱歉 (bàoqiàn) = xin lỗi trang trọng; 马上安排 (mǎshàng ānpái) = sắp xếp ngay. Phải xin lỗi rồi đưa ra hành động cụ thể."
+ },
+ {
+  "id": "bc-10",
+  "chang": "Bãi Cháy – Lễ tân khách sạn",
+  "ngon_ngu": "zh",
+  "do_kho": 3,
+  "cau_hoi": "Khách xin trả phòng muộn. Chính sách là được ở đến 14:00 nhưng phụ thu 50% tiền phòng. Nói:",
+  "dap_an": [
+   "可以提前到下午两点退房，但需要另付一半房费。",
+   "可以延迟到下午两点退房，完全免费。",
+   "不可以，下午两点必须入住。",
+   "可以延迟到下午两点退房，但需要另付一半房费。"
+  ],
+  "dung": 3,
+  "pinyin": "Kěyǐ yánchí dào xiàwǔ liǎng diǎn tuìfáng, dàn xūyào lìng fù yíbàn fángfèi.",
+  "giai_thich": "延迟 (yánchí) = lùi lại, muộn hơn; 提前 (tíqián) = sớm hơn. 另付一半 (lìng fù yíbàn) = trả thêm một nửa."
+ }
+]

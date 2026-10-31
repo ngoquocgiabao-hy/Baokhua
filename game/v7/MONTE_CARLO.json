@@ -1,0 +1,18 @@
+{
+  "acc": 0.5,
+  "n": 1000,
+  "win_within_3": 0.797,
+  "target_band": [
+    0.72,
+    0.85
+  ],
+  "params": {
+    "bossMax": 320,
+    "dmgCorrect": 55,
+    "dmgWrong": 15,
+    "fastBonus": 12,
+    "bossAtkDmg": 8,
+    "bossAtkEvery": 8
+  },
+  "pass": true
+}

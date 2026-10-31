@@ -1,0 +1,12 @@
+{
+  "note": "Official hero battle sprites (webp for Slow3G). PNG kept as fallback.",
+  "bg": "bg_ha_long.webp",
+  "boss": "boss_hon_ngu.webp",
+  "heroes": {
+    "linh_ho": "linh_ho.webp",
+    "kiem_khach": "kiem_khach.webp",
+    "thiet_ve": "thiet_ve.webp"
+  },
+  "placeholder": false,
+  "updated": "2026-10-30T04:50+07"
+}

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "A_single_cta",
+    "ok": true,
+    "note": "{\"label\":\"⚔️ Thử hạ Boss Lễ Tân\",\"primaryCount\":1,\"qSec\":10,\"v6\":30,\"art\":{\"bg\":\"v6/art/bg_ha_long.jpg\",\"boss\":\"v6/art/boss_hon_ngu.jpg\",\"placeholder\":true}}"
+  },
+  {
+    "id": "Q_seconds_10",
+    "ok": true,
+    "note": "qSec=10"
+  },
+  {
+    "id": "Q_bank_30",
+    "ok": true,
+    "note": "v6=30"
+  },
+  {
+    "id": "ART_wired",
+    "ok": true,
+    "note": "{\"bg\":\"v6/art/bg_ha_long.jpg\",\"boss\":\"v6/art/boss_hon_ngu.jpg\",\"placeholder\":true}"
+  },
+  {
+    "id": "A_no_hub_map",
+    "ok": true,
+    "note": "{\"hubOn\":false,\"mapOn\":false,\"gameOn\":true,\"q1\":\"你好\",\"q1id\":\"v6-q1-nihao\",\"bossMax\":150,\"atk\":50,\"classId\":\"kiem_khach\",\"types\":[\"mc\",\"bat_loi\",\"bat_loi\",\"bat_loi\",\"hai\",\"hai\",\"hai\",\"nghe_nhanh\",\"nghe_nhanh\",\"nghe_nhanh\",\"bat_loi\",\"bat_loi\"],\"firstWrong\":false}"
+  },
+  {
+    "id": "A_to_q1_fast",
+    "ok": true,
+    "note": "ms=99"
+  },
+  {
+    "id": "B_q1_nihao",
+    "ok": true,
+    "note": "v6-q1-nihao 你好"
+  },
+  {
+    "id": "tutorial_hp_150",
+    "ok": true,
+    "note": "bossMax=150"
+  },
+  {
+    "id": "default_kiem_khach_atk50",
+    "ok": true,
+    "note": "atk=50"
+  },
+  {
+    "id": "type_rotate_every_3",
+    "ok": true,
+    "note": "[[\"bat_loi\",\"bat_loi\",\"bat_loi\"],[\"hai\",\"hai\",\"hai\"],[\"nghe_nhanh\",\"nghe_nhanh\",\"nghe_nhanh\"],[\"bat_loi\",\"bat_loi\"]]"
+  },
+  {
+    "id": "shuffle_remap_q1",
+    "ok": true,
+    "note": "{\"ok\":true,\"mode\":\"force\"}"
+  },
+  {
+    "id": "C_first_damage_le_10s",
+    "ok": true,
+    "note": "ms=415"
+  },
+  {
+    "id": "no_upgrade_modal",
+    "ok": true,
+    "note": "upOn=false"
+  },
+  {
+    "id": "D_combo2",
+    "ok": true,
+    "note": "streak=2"
+  },
+  {
+    "id": "G_soft_fail",
+    "ok": true,
+    "note": "{\"beforeHero\":{\"hp\":100,\"streak\":2,\"forgiven\":false},\"afterSoft\":{\"hp\":100,\"streak\":2,\"forgiven\":true}}"
+  },
+  {
+    "id": "F_badge_or_progress",
+    "ok": true,
+    "note": "{\"boss\":0,\"bossMax\":250,\"badgeF\":true,\"tuVi\":1,\"streak\":6,\"qSec\":10,\"appCombo\":\"combo-hot\"}"
+  },
+  {
+    "id": "timer_urgent_last3s",
+    "ok": true,
+    "note": "urgent=false"
+  },
+  {
+    "id": "E_telegraph_ge_800ms",
+    "ok": true,
+    "note": "{\"visible\":true,\"still\":true}"
+  },
+  {
+    "id": "nghe_fallback_text",
+    "ok": true,
+    "note": "{\"qZh\":\"您好，欢迎光临。\",\"extra\":\"Máy không hỗ trợ đọc tiếng — hiện chữ: 您好，欢迎光临。Qǐngwèn nín yǒu yùdìng ma?\",\"am\":\"您好，欢迎光临。\"}"
+  },
+  {
+    "id": "no_paywall",
+    "ok": true,
+    "note": ""
+  }
+]

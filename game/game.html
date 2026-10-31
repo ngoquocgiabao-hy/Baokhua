@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Bảo Khựa 阿宝 – Đánh Boss Học Tiếng Trung</title>
+<script>
+/* ===== CẤU HÌNH – anh sửa ở đây ===== */
+const ZALO_LINK = "https://zalo.me/g/THAY_LINK_NHOM_CUA_ANH";
+const FAST_SECONDS = 5;   // trả lời trong 5 giây -> sát thương x2
+const QUESTION_SECONDS = 15;
+/* ===== NGÂN HÀNG CÂU HỎI – thêm câu theo đúng mẫu ===== */
+const QUESTIONS = [
+ {q:"Khách nói: 我想办理入住。", py:"Wǒ xiǎng bànlǐ rùzhù.", vi:"Khách muốn làm gì?", options:["Nhận phòng","Trả phòng","Gọi taxi","Đặt bàn"], answer:0},
+ {q:"“Trả phòng” tiếng Trung là gì?", py:"", vi:"", options:["入住 (rùzhù)","退房 (tuìfáng)","早餐 (zǎocān)","护照 (hùzhào)"], answer:1},
+ {q:"请出示您的护照。", py:"Qǐng chūshì nín de hùzhào.", vi:"Lễ tân đang yêu cầu gì?", options:["Xin số điện thoại","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"], answer:1},
+ {q:"早餐几点开始？", py:"Zǎocān jǐ diǎn kāishǐ?", vi:"Khách hỏi gì?", options:["Mấy giờ ăn sáng","Phòng giá bao nhiêu","Wifi mật khẩu gì","Bể bơi ở đâu"], answer:0},
+ {q:"Chọn câu đúng: “Đây là thẻ phòng của anh.”", py:"", vi:"", options:["这是您的房卡。(Zhè shì nín de fángkǎ.)","这是您的护照。(Zhè shì nín de hùzhào.)","这是您的早餐。(Zhè shì nín de zǎocān.)","这是您的行李。(Zhè shì nín de xíngli.)"], answer:0},
+ {q:"WiFi密码是多少？", py:"WiFi mìmǎ shì duōshǎo?", vi:"Khách hỏi gì?", options:["Giờ trả phòng","Mật khẩu WiFi","Giá phòng","Số tầng"], answer:1},
+ {q:"“Thang máy” tiếng Trung là gì?", py:"", vi:"", options:["电梯 (diàntī)","房间 (fángjiān)","前台 (qiántái)","海边 (hǎibiān)"], answer:0},
+ {q:"您的房间在八楼。", py:"Nín de fángjiān zài bā lóu.", vi:"Phòng khách ở đâu?", options:["Tầng 1","Tầng 6","Tầng 8","Tầng 10"], answer:2},
+ {q:"退房时间是中午十二点。", py:"Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.", vi:"Giờ trả phòng là mấy giờ?", options:["10 giờ sáng","12 giờ trưa","2 giờ chiều","6 giờ tối"], answer:1},
+ {q:"Khách cảm ơn, lễ tân đáp lại thế nào?", py:"", vi:"", options:["不客气。(Bú kèqi. – Không có gì.)","对不起。(Duìbuqǐ. – Xin lỗi.)","再见。(Zàijiàn. – Tạm biệt.)","没有。(Méiyǒu. – Không có.)"], answer:0}
+];
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:linear-gradient(#0b3d5c,#1b7a8c 60%,#e8c27a);color:#fff;min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:480px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:100vh}
+.screen{display:none;flex-direction:column;gap:12px;flex:1}.screen.on{display:flex}
+h1{font-size:22px;text-align:center}h2{font-size:18px;text-align:center}
+.btn{border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:700;background:#ffd34d;color:#3a2600;box-shadow:0 4px 0 #b8901c;active:translateY(2px)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #b8901c}
+.btn.alt{background:#fff;color:#0b3d5c;box-shadow:0 4px 0 #9bb}
+.btn.zalo{background:#0068ff;color:#fff;box-shadow:0 4px 0 #0040a0}
+.card{background:rgba(0,0,0,.28);border-radius:16px;padding:14px}
+.bar{height:16px;background:rgba(0,0,0,.4);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;transition:width .4s}
+#bossHp i{background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}#heroHp i{background:linear-gradient(90deg,#3dff8a,#2bc4ff)}
+#timer i{background:#ffd34d;transition:width .1s linear}
+.arena{position:relative;height:170px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 14px}
+.unit{font-size:72px;transition:transform .15s}.boss{font-size:92px}
+.hit{animation:hit .35s}@keyframes hit{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.lunge{animation:lunge .3s}@keyframes lunge{50%{transform:translateX(120px) scale(1.15)}}
+.dmg{position:absolute;font-weight:900;font-size:30px;text-shadow:0 2px 4px #000;animation:fly 1s forwards;pointer-events:none}
+.dmg.big{font-size:44px;color:#ffd34d}.dmg.red{color:#ff5a5a}
+@keyframes fly{to{transform:translateY(-80px);opacity:0}}
+.q{font-size:22px;font-weight:700}.py{color:#ffe9a8;font-style:italic;margin-top:4px}.vi{opacity:.9;margin-top:4px}
+.opts{display:grid;gap:8px}.opt{text-align:left;font-size:16px;padding:13px;border-radius:12px;border:2px solid transparent;background:#fff;color:#123}
+.opt.ok{background:#3dd17a;color:#fff}.opt.no{background:#ff5a5a;color:#fff}
+.row{display:flex;justify-content:space-between;font-size:13px;opacity:.9}
+.combo{text-align:center;font-weight:800;color:#ffd34d;min-height:20px}
+.badge{font-size:110px;text-align:center;animation:pop .6s}@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none}.flash.go{animation:fl .5s}@keyframes fl{30%{opacity:.8}}
+</style>
+</head>
+<body>
+<div id="app">
+ <!-- MÀN HÌNH BẮT ĐẦU -->
+ <div class="screen on" id="sStart">
+  <h1>⚔️ Bảo Khựa 阿宝<br>Đánh Boss Học Tiếng Trung</h1>
+  <div class="card"><h2>📍 Chặng 1: Bãi Cháy – Lễ tân khách sạn</h2>
+   <p style="margin-top:8px">Trả lời đúng để tướng ra đòn. Trả lời nhanh trong <b id="fs"></b> giây được <b>x2 sát thương</b>. Đúng 3 câu liên tiếp tung <b>đòn kết liễu</b>. Sai thì tướng mất máu!</p></div>
+  <div class="card" id="progress"></div>
+  <button class="btn" onclick="startGame()">BẮT ĐẦU</button>
+ </div>
+ <!-- MÀN HÌNH CHIẾN ĐẤU -->
+ <div class="screen" id="sGame">
+  <div class="row"><span>👹 Boss Lễ Tân Khó Tính</span><span id="bossTxt"></span></div>
+  <div class="bar" id="bossHp"><i></i></div>
+  <div class="arena" id="arena"><div class="unit" id="hero">🥷</div><div class="unit boss" id="boss">👹</div></div>
+  <div class="row"><span>🥷 Tướng của bạn</span><span id="heroTxt"></span></div>
+  <div class="bar" id="heroHp"><i></i></div>
+  <div class="combo" id="combo"></div>
+  <div class="bar" id="timer"><i></i></div>
+  <div class="card"><div class="row"><span id="qNum"></span></div><div class="q" id="qText"></div><div class="py" id="qPy"></div><div class="vi" id="qVi"></div></div>
+  <div class="opts" id="opts"></div>
+ </div>
+ <!-- MÀN HÌNH KẾT THÚC -->
+ <div class="screen" id="sEnd">
+  <div class="badge" id="badge"></div>
+  <h1 id="endTitle"></h1>
+  <div class="card" id="endInfo"></div>
+  <button class="btn" id="shareBtn" onclick="share()">📤 Chia sẻ thành tích</button>
+  <a class="btn zalo" style="text-align:center;text-decoration:none" id="zaloBtn" target="_blank">💬 Vào nhóm Zalo học tiếp</a>
+  <button class="btn alt" onclick="startGame()">🔁 Chơi lại</button>
+ </div>
+</div>
+<div class="flash" id="flash"></div>
+<script>
+const SAVE_KEY="baokhua_game_v1";
+const BOSS_MAX=QUESTIONS.length*10, HERO_MAX=100, BASE_DMG=10, WRONG_DMG=25;
+let st, timerId, qStart, locked;
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem(SAVE_KEY,JSON.stringify(prog));
+let prog=JSON.parse(localStorage.getItem(SAVE_KEY)||'{"wins":0,"best":0,"badges":[]}');
+$("fs").textContent=FAST_SECONDS; $("zaloBtn").href=ZALO_LINK;
+function showProg(){$("progress").innerHTML=`🏆 Thắng: <b>${prog.wins}</b> lần · Điểm cao nhất: <b>${prog.best}</b><br>🎖️ Huy hiệu: ${prog.badges.length?prog.badges.join(" "):"chưa có"}`}
+showProg();
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$(id).classList.add("on")}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function startGame(){st={i:0,boss:BOSS_MAX,hero:HERO_MAX,streak:0,score:0,correct:0,list:shuffle(QUESTIONS)};show("sGame");upd();ask()}
+function upd(){$("bossHp").firstChild.style.width=Math.max(0,st.boss/BOSS_MAX*100)+"%";$("heroHp").firstChild.style.width=Math.max(0,st.hero/HERO_MAX*100)+"%";
+ $("bossTxt").textContent=Math.max(0,st.boss)+"/"+BOSS_MAX;$("heroTxt").textContent=Math.max(0,st.hero)+"/"+HERO_MAX;
+ $("combo").textContent=st.streak?("🔥 Chuỗi đúng: "+st.streak+(st.streak===2?" – thêm 1 câu là KẾT LIỄU!":"")):""}
+function ask(){locked=false;const q=st.list[st.i];$("qNum").textContent=`Câu ${st.i+1}/${st.list.length}`;
+ $("qText").textContent=q.q;$("qPy").textContent=q.py;$("qVi").textContent=q.vi;
+ const o=$("opts");o.innerHTML="";
+ q.options.forEach((t,k)=>{const b=document.createElement("button");b.className="opt";b.textContent=t;b.onclick=()=>answer(k,b);o.appendChild(b)});
+ qStart=Date.now();clearInterval(timerId);
+ timerId=setInterval(()=>{const left=QUESTION_SECONDS-(Date.now()-qStart)/1000;$("timer").firstChild.style.width=Math.max(0,left/QUESTION_SECONDS*100)+"%";if(left<=0)answer(-1,null)},100)}
+function pop(txt,cls,side){const d=document.createElement("div");d.className="dmg "+cls;d.textContent=txt;d.style[side]="20px";d.style.top="20px";$("arena").appendChild(d);setTimeout(()=>d.remove(),1000)}
+function anim(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c)}
+function vib(ms){if(navigator.vibrate)navigator.vibrate(ms)}
+function answer(k,btn){if(locked)return;locked=true;clearInterval(timerId);
+ const q=st.list[st.i],secs=(Date.now()-qStart)/1000,btns=$("opts").children;
+ btns[q.answer].classList.add("ok");
+ if(k===q.answer){st.streak++;st.correct++;let dmg=BASE_DMG,label="";
+  if(secs<=FAST_SECONDS){dmg*=2;label=" ⚡x2"}
+  anim($("hero"),"lunge");
+  if(st.streak>=3){dmg=st.boss;label=" 💥KẾT LIỄU!";st.streak=0;anim($("flash"),"go");vib([60,40,120])}else vib(40);
+  st.boss-=dmg;st.score+=dmg;
+  setTimeout(()=>{anim($("boss"),"hit");pop("-"+dmg+label,label?"big":"","right")},150)}
+ else{if(btn)btn.classList.add("no");st.streak=0;st.hero-=WRONG_DMG;anim($("hero"),"hit");pop("-"+WRONG_DMG,"red","left");vib(200)}
+ upd();
+ setTimeout(()=>{if(st.boss<=0)return end(true);if(st.hero<=0)return end(false);st.i++;if(st.i>=st.list.length)return end(st.boss<=0);ask()},1300)}
+function end(win){show("sEnd");
+ if(win){$("badge").textContent="🏅";$("endTitle").textContent="Chiến thắng Bãi Cháy!";prog.wins++;if(!prog.badges.includes("🏅Bãi Cháy"))prog.badges.push("🏅Bãi Cháy")}
+ else{$("badge").textContent="💀";$("endTitle").textContent="Thua rồi, thử lại nhé!"}
+ prog.best=Math.max(prog.best,st.score);save();showProg();
+ $("endInfo").innerHTML=`✅ Đúng ${st.correct}/${st.list.length} câu<br>⚔️ Sát thương: ${st.score}<br>🏆 Kỷ lục: ${prog.best}`;
+ $("shareBtn").style.display=win?"":"none"}
+async function share(){const text=`Mình vừa hạ Boss Lễ Tân ở Bãi Cháy, đúng ${st.correct}/${st.list.length} câu tiếng Trung! 🏅 Thử sức cùng Bảo Khựa 阿宝:`;
+ const url=location.href;
+ try{if(navigator.share){await navigator.share({title:"Bảo Khựa 阿宝",text,url});return}}catch(e){return}
+ try{await navigator.clipboard.writeText(text+" "+url);alert("Đã copy nội dung, dán vào Zalo/Facebook để chia sẻ nhé!")}catch(e){prompt("Copy nội dung này để chia sẻ:",text+" "+url)}}
+</script>
+</body>
+</html>
