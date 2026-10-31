@@ -3,34 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Bảo Khựa 阿宝 – Đánh Boss v4 (3D · 2 chặng)</title>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/",
-    "postprocessing": "https://cdn.jsdelivr.net/npm/postprocessing@6.39.5/build/index.js",
-    "@tweenjs/tween.js": "https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@25.0.0/dist/tween.esm.js"
-  }
-}
-</script>
-<script defer src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
-<script>
-/* Fallback howler từ unpkg nếu jsDelivr lỗi */
-(function(){
-  if (typeof Howler !== 'undefined') return;
-  var s = document.createElement('script');
-  s.src = 'https://unpkg.com/howler@2.2.4/dist/howler.min.js';
-  document.head.appendChild(s);
-})();
-</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Bảo Khựa 阿宝 – Đánh Boss học tiếng Trung</title>
+<meta name="description" content="Game học tiếng Trung thực chiến: trả lời đúng → tướng ra chiêu, hạ Boss Lễ Tân Bãi Cháy và Boss Tổ trưởng Cẩm Phả. Mỗi câu có pinyin + nghĩa Việt. Chơi ngay trên điện thoại.">
+<meta name="theme-color" content="#0b3d5c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bảo Khựa 阿宝">
+<meta property="og:title" content="Bảo Khựa 阿宝 – Đánh Boss học tiếng Trung">
+<meta property="og:description" content="Trả lời đúng → tướng ra chiêu. Hạ boss Bãi Cháy & Cẩm Phả, học câu khách sạn – nhà máy – HSK có pinyin + nghĩa Việt.">
+<meta property="og:url" content="https://ngoquocgiabao-hy.github.io/Baokhua/game.html">
+<meta property="og:image" content="https://ngoquocgiabao-hy.github.io/Baokhua/v4/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="modulepreload" href="v4/vendor/battle-vendor.min.js">
 <script>
 /* ===== CẤU HÌNH ===== */
+const GAME_URL = "https://ngoquocgiabao-hy.github.io/Baokhua/game.html";
 const ZALO_LINK = "https://zalo.me/g/16yx8ptwane8ggwrnyxl";
 const GOOGLE_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform";
 const FAST_SECONDS = 5;
 const QUESTION_SECONDS = 20;
+const UPGRADE_EVERY = 2;      // Nâng cấp ở câu đúng thứ 1, rồi cứ mỗi 2 câu đúng (1, 3, 5…). Đặt 1 = như v4 cũ.
+const OVERTIME_MAX = 6;       // Hiệp phụ: hết câu mà boss còn máu → ôn lại tối đa 6 câu sai
+const TIMER_WARN_SECONDS = 5; // còn ≤5s: thanh giờ đỏ + tiếng tích tắc
 const STAGES = [
   { id:1, key:'hotel', name:'Bãi Cháy – Khách sạn', boss:'Boss Lễ Tân', topics:['hotel','hsk'], badge:'🏅Bãi Cháy' },
   { id:2, key:'factory', name:'Cẩm Phả – Nhà máy', boss:'Boss Tổ trưởng', topics:['factory'], badge:'🏅Cẩm Phả' }
@@ -158,7 +154,9 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 .bar .trail{z-index:1;opacity:.5;transition:width .7s ease-out .12s;background:#ffb0b0}
 #bossHp i{background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
 #heroHp i{background:linear-gradient(90deg,#3dff8a,#2bc4ff)}
-#timer i{background:#ffd34d;transition:width .1s linear;position:relative}
+#timer i{background:#ffd34d;width:100%;transform-origin:left center;will-change:transform}
+#timer.low i{background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
+#timer.low{animation:pulse .5s infinite alternate}
 .arena-wrap{position:relative;height:max(234px,min(55vw,286px));min-height:234px;border-radius:16px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
 #gl{display:block;width:100%;height:100%}
 .arena-fallback{display:none;height:100%;align-items:center;justify-content:space-around;font-size:64px;padding:10px}
@@ -287,6 +285,59 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 .stage-node .dot{width:36px;height:36px;border-radius:50%;background:#FFD91F;color:#16171B;display:grid;place-items:center;font-weight:900}
 .stage-node.lock .dot{background:#666;color:#ccc}
 .stage-map .btn{margin-top:8px}
+
+/* ===== v4.1: juice + chiều sâu học ===== */
+.fx-layer{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.fx-dot{position:absolute;width:9px;height:9px;border-radius:50%;left:0;top:0;will-change:transform,opacity}
+.fx-dot.sq{border-radius:2px}
+.fx-plus{position:absolute;left:0;top:0;font-weight:900;font-size:20px;color:#FFD91F;text-shadow:0 2px 0 #16171B;will-change:transform,opacity;white-space:nowrap}
+.opt.ok{animation:okPop .32s ease-out}
+@keyframes okPop{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+.opt.no{animation:noShake .3s}
+@keyframes noShake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.score-pill{display:inline-block;font-weight:800;color:#FFD91F;font-variant-numeric:tabular-nums}
+.score-pill.bump{animation:bump .35s ease-out}
+@keyframes bump{40%{transform:scale(1.35)}}
+.explain{margin-top:10px;padding:12px;border-radius:14px;background:linear-gradient(180deg,rgba(255,90,90,.18),rgba(0,0,0,.32));border:2px solid rgba(255,120,120,.55);animation:slideUp .25s ease-out}
+.explain .lab{font-size:12px;font-weight:800;letter-spacing:.04em;color:#ffb4a8;text-transform:uppercase}
+.explain .zh{font-size:24px;margin-top:4px}
+.explain .row-btns{display:flex;gap:8px;margin-top:10px}
+.explain .row-btns .btn{flex:1;padding:12px 8px;font-size:15px}
+.order-hint{font-size:12px;opacity:.75;margin:2px 0 0}
+.order-slot .chip{cursor:pointer}
+.overlay.center{align-items:center}
+.clear-card{background:radial-gradient(circle at 50% 0%,#2a6d93,#0d2a3d 70%);border:3px solid #FFD91F;border-radius:22px;padding:18px 14px 14px;width:100%;max-width:420px;text-align:center;animation:clearIn .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes clearIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.clear-card h3{font-size:28px;font-weight:900;color:#FFD91F;text-shadow:0 3px 0 #16171B;letter-spacing:.04em}
+.clear-card .sub{font-size:13px;opacity:.85;margin-top:2px}
+.stars{display:flex;justify-content:center;gap:10px;margin:14px 0 10px}
+.stars span{font-size:46px;filter:grayscale(1) brightness(.5);transform:scale(.4);opacity:.4}
+.stars span.on{animation:starOn .45s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes starOn{0%{transform:scale(.3) rotate(-30deg);opacity:.3;filter:drop-shadow(0 0 0 #FFD91F)}70%{transform:scale(1.35) rotate(8deg);opacity:1;filter:drop-shadow(0 0 12px #FFD91F)}100%{transform:scale(1);opacity:1;filter:drop-shadow(0 0 6px #FFD91F)}}
+.arena-mute{position:absolute;left:8px;bottom:8px;z-index:11;width:36px;height:36px;border-radius:12px;border:2px solid #16171B;background:rgba(255,217,31,.92);font-size:16px;line-height:1;box-shadow:2px 2px 0 #16171B;pointer-events:auto}
+body.ingame .mute-btn{display:none}
+#app{padding-bottom:70px}
+.stars span.off{animation:starOff .3s forwards}
+@keyframes starOff{to{transform:scale(.85);opacity:.55}}
+.clear-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 12px}
+.clear-stats div{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 4px;font-size:11px;opacity:.95}
+.clear-stats b{display:block;font-size:20px;color:#fff;font-variant-numeric:tabular-nums}
+.clear-card .btn{width:100%}
+.meter{height:10px;border-radius:6px;background:rgba(0,0,0,.35);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#2ec4b6,#FFD91F);border-radius:6px;transition:width .6s ease-out}
+.streak-fire{font-weight:900;color:#ffb347}
+.node-stars{margin-left:auto;font-size:15px;letter-spacing:1px;color:#FFD91F;white-space:nowrap}
+.review-card{margin-top:2px}
+.review-card h4{margin:0 0 6px;font-size:14px}
+.rv-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.12)}
+.rv-item:first-of-type{border-top:0}
+.rv-item .t{flex:1;min-width:0}
+.rv-item .zh{font-size:18px;margin:0}
+.rv-item .py,.rv-item .vi{font-size:12px;margin:0}
+.rv-item button{border:0;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;font-size:18px;width:42px;height:42px;flex:none}
+.end-streak{text-align:center;font-size:14px;font-weight:700;margin-top:-2px}
+@media (prefers-reduced-motion:reduce){.stars span.on,.clear-card,.explain,.opt.ok,.opt.no,.score-pill.bump,#timer.low{animation:none!important}.stars span.on{opacity:1;filter:none;transform:none}}
+.stars span.on{opacity:1}
 </style>
 </head>
 <body>
@@ -297,12 +348,12 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
   <h1>⚔️ Bảo Khựa 阿宝<br>Đánh Boss 3D</h1>
   <div class="card">
    <h2>📍 Chặng 1: Bãi Cháy – Lễ tân</h2>
-   <p class="note" style="margin-top:6px">Trả lời đúng → chiêu 3D. Nhanh <b id="fs"></b>s → x2. Combo 3 → <b>Long Hạ</b>. Nâng giáp / ATK / chiêu đều đổi hình tướng (concept Media).</p>
+   <p class="note" style="margin-top:6px">Trả lời đúng → chiêu 3D. Nhanh <b id="fs"></b>s → x2. Combo 3 → <b>Long Hạ</b>. Nâng giáp / ATK / chiêu đều đổi hình tướng. Sai → xem đáp án + nghe mẫu; hết câu mà boss còn máu → <b>Hiệp phụ</b>. Mỗi chặng tối đa ⭐⭐⭐.</p>
    <div class="concept" style="margin-top:8px">
-    <img src="v4/ninja_tier1_phi_tieu.jpg" alt="Cấp 1 Phi tiêu" width="72" height="72">
-    <img src="v4/ninja_tier2_chem_gio.jpg" alt="Cấp 2 Chém gió" width="72" height="72">
-    <img src="v4/ninja_tier3_long_ha.jpg" alt="Cấp 3 Long Hạ" width="72" height="72">
-    <img src="v4/boss_le_tan_kho_tinh.jpg" alt="Boss lễ tân" width="72" height="72">
+    <img src="v4/thumb/ninja_tier1_phi_tieu.jpg" alt="Cấp 1 Phi tiêu" width="72" height="72" decoding="async">
+    <img src="v4/thumb/ninja_tier2_chem_gio.jpg" alt="Cấp 2 Chém gió" width="72" height="72" decoding="async">
+    <img src="v4/thumb/ninja_tier3_long_ha.jpg" alt="Cấp 3 Long Hạ" width="72" height="72" decoding="async">
+    <img src="v4/thumb/boss_le_tan_kho_tinh.jpg" alt="Boss lễ tân" width="72" height="72" decoding="async">
    </div>
   </div>
   <div class="card" id="progress"></div>
@@ -317,9 +368,9 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
   <h2>Bản đồ chặng</h2>
   <p class="lead" style="opacity:.85;font-size:14px">Đường Hạ Long–Cẩm Phả · 2 chặng boss. Mỗi câu Trung có pinyin + nghĩa Việt.</p>
   <div class="road">
-   <div class="stage-node" id="node1"><span class="dot">1</span><div><b>Bãi Cháy – Khách sạn</b><br><small>Boss Lễ Tân · nhận phòng / trả phòng</small></div></div>
+   <div class="stage-node" id="node1"><span class="dot">1</span><div><b>Bãi Cháy – Khách sạn</b><br><small>Boss Lễ Tân · nhận phòng / trả phòng</small></div><span class="node-stars" id="stars1"></span></div>
    <div style="text-align:center;opacity:.6;font-size:12px;margin:4px 0">QL18 · Hạ Long → Cẩm Phả</div>
-   <div class="stage-node lock" id="node2"><span class="dot">2</span><div><b>Cẩm Phả – Nhà máy</b><br><small>Boss Tổ trưởng · an toàn / tan ca</small></div></div>
+   <div class="stage-node lock" id="node2"><span class="dot">2</span><div><b>Cẩm Phả – Nhà máy</b><br><small>Boss Tổ trưởng · an toàn / tan ca</small></div><span class="node-stars" id="stars2"></span></div>
   </div>
   <div class="road-art" id="roadArt" aria-label="Bản đồ QL18 ven biển">
    <span class="bike-progress" id="bikeIcon">🚲</span>
@@ -357,6 +408,7 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
    <div class="combo-float" id="comboFloat"></div>
    <div class="lvl-banner" id="lvlBanner"><div class="pill">⬆ LÊN CẤP</div><div class="stats" id="lvlStats"></div></div>
    <div class="skill-tag" id="skillTag"></div>
+   <button type="button" class="arena-mute" id="muteBtn2" aria-label="Tắt/bật tiếng" title="Âm thanh">🔊</button>
   </div>
   <div class="hp-lab hero"><span class="nm">🥷 Tướng · <b id="heroLvl">Lv1</b></span><span class="hp-num" id="heroTxt">0/0</span></div>
   <div class="bar hero-bar" id="heroHp"><i></i></div>
@@ -364,7 +416,7 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
   <div class="bar-lab"><b>⏱ Thời gian trả lời</b><span id="timerTxt"></span></div>
   <div class="bar" id="timer"><i></i></div>
   <div class="card">
-   <div class="row"><span id="qNum"></span><span id="pwr"></span></div>
+   <div class="row"><span id="qNum"></span><span class="score-pill" id="scorePill">⭐ 0</span><span id="pwr"></span></div>
    <div id="qType"></div>
    <div class="q" id="qText"></div>
    <div class="zh" id="qZh"></div>
@@ -373,12 +425,19 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
    <div id="qExtra"></div>
   </div>
   <div class="opts" id="opts"></div>
+  <div id="explainSlot"></div>
  </div>
 
  <div class="screen" id="sEnd">
   <div class="badge" id="badge"></div>
   <h1 id="endTitle"></h1>
+  <div class="end-streak" id="endStreak"></div>
   <div class="card" id="endInfo"></div>
+  <div class="card review-card" id="reviewCard" hidden>
+   <h4>📒 Sổ ôn – câu sai lượt này</h4>
+   <div id="reviewList"></div>
+   <p class="note" style="margin-top:6px">Lượt sau game sẽ hỏi lại các câu này trước – trả lời đúng 2 lần là thuộc.</p>
+  </div>
   <div class="card learn-card" id="learnCard" hidden>
    <h4>📖 Câu học được hôm nay</h4>
    <div class="zh" id="learnZh"></div>
@@ -406,6 +465,21 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
  </div>
 </div>
 <div class="flash" id="flash"></div>
+<div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+<div class="overlay center" id="clearOverlay" role="dialog" aria-modal="true">
+ <div class="clear-card">
+  <h3 id="clearTitle">HẠ BOSS!</h3>
+  <div class="sub" id="clearSub"></div>
+  <div class="stars" id="clearStars"><span>⭐</span><span>⭐</span><span>⭐</span></div>
+  <div class="clear-stats">
+   <div><b id="clearAcc">0%</b>chính xác</div>
+   <div><b id="clearCombo">0</b>combo max</div>
+   <div><b id="clearScore">0</b>điểm</div>
+  </div>
+  <p class="note" id="clearTip" style="margin:-4px 0 10px"></p>
+  <button class="btn" type="button" id="clearBtn">▶ Tiếp</button>
+ </div>
+</div>
 <div class="overlay" id="upOverlay" role="dialog" aria-modal="true">
  <div class="up-card">
   <h3>✨ Nâng cấp tướng (đổi hình 3D)</h3>
@@ -428,17 +502,18 @@ let __battle3dPromise = null;
 function ensureBattle3d() {
   if (__battle3dPromise) return __battle3dPromise;
   __battle3dPromise = (async () => {
-    const THREE = await import('three');
+    // v4.1: tự host bản rút gọn (three r186 + bloom, ~148 KB gzip) thay vì ~2,7 MB từ CDN
+    const THREE = await import('./v4/vendor/battle-vendor.min.js');
 /**
  * Bảo Khựa battle scene — procedural low-poly (Media concept):
  * denim #1E5AA8 · sun #FFD91F · ink #16171B · teal aura Long Hạ
- * No GLB required; three.js from CDN import map in game_v4.html
+ * No GLB required; three.js + postprocessing gói trong v4/vendor/battle-vendor.min.js
  */
 let BloomEffect, EffectComposer, EffectPass, RenderPass;
 let postOk = false;
 async function loadPost() {
   try {
-    const pp = await import('postprocessing');
+    const pp = THREE;
     BloomEffect = pp.BloomEffect;
     EffectComposer = pp.EffectComposer;
     EffectPass = pp.EffectPass;
@@ -485,8 +560,12 @@ createBattle = function createBattle(canvas) {
     particles: [], shakeT: 0, shakeAmp: 0,
     atkAnim: 0, bossAnim: 0, hitFlash: 0,
     auraColor: new THREE.Color(TEAL),
-    running: true, reduced: matchMedia('(prefers-reduced-motion: reduce)').matches
+    running: true, active: true, rage: false, zoomT: 0,
+    reduced: matchMedia('(prefers-reduced-motion: reduce)').matches
   };
+  const baseBg = new THREE.Color(0x4a90b8);
+  const tmpCol = new THREE.Color();
+  let rafId = 0;
   let composer = null, bloomOn = false;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
@@ -679,7 +758,11 @@ createBattle = function createBattle(canvas) {
 
   bossParts.hitFlashMat = [];
   boss.traverse(ch => {
-    if (ch.isMesh && ch.material && ch.material.emissive) bossParts.hitFlashMat.push(ch.material);
+    if (ch.isMesh && ch.material && ch.material.emissive) {
+      ch.material.userData.baseEI = ch.material.emissiveIntensity;
+      ch.material.userData.baseEm = ch.material.emissive.getHex();
+      bossParts.hitFlashMat.push(ch.material);
+    }
   });
 
   state.hitStop = 0;
@@ -712,8 +795,10 @@ createBattle = function createBattle(canvas) {
     n = Math.min(n, Math.max(0, room));
     for (let i = 0; i < n; i++) {
       const p = acquireParticle();
-      p.material.color.setHex(color);
-      p.material.emissive.setHex(color);
+      // Đa sắc: lệch nhẹ hue/độ sáng quanh màu gốc → hạt lấp lánh không đơn điệu
+      tmpCol.setHex(color).offsetHSL((Math.random() - 0.5) * 0.09, 0, (Math.random() - 0.5) * 0.18);
+      p.material.color.copy(tmpCol);
+      p.material.emissive.copy(tmpCol);
       p.material.emissiveIntensity = 0.75;
       p.material.opacity = 1;
       p.position.set(x, y, z);
@@ -845,8 +930,9 @@ createBattle = function createBattle(canvas) {
 
   let last = performance.now();
   function tick(now) {
-    if (!state.running) return;
-    requestAnimationFrame(tick);
+    // v4.1: dừng hẳn vòng vẽ khi rời màn chơi / ẩn tab → mát máy, đỡ pin
+    if (!state.running || !state.active) { rafId = 0; return; }
+    rafId = requestAnimationFrame(tick);
     let dt = Math.min(0.05, (now - last) / 1000); last = now;
 
     // Hit-stop / freeze frames
@@ -863,7 +949,7 @@ createBattle = function createBattle(canvas) {
     if (state.knockT > 0) state.knockT -= dt * 2.2;
 
     hero.position.y = Math.sin(t * 2.2) * 0.03;
-    boss.position.y = Math.sin(t * 2.0 + 1) * 0.02;
+    boss.position.y = Math.sin(t * (state.rage ? 5.5 : 2.0) + 1) * (state.rage ? 0.035 : 0.02);
     if (heroParts.shuriken.visible) heroParts.shuriken.rotation.z += dt * (2.5 + state.atk * 0.4);
     if (heroParts.dragonStar.visible) heroParts.dragonStar.rotation.z += dt * 3.5;
     if (heroParts.aura.visible) {
@@ -902,17 +988,33 @@ createBattle = function createBattle(canvas) {
       bossParts.glow.material.opacity = k * 0.5;
     } else {
       boss.position.x = boss.userData.baseX + bossKnock;
-      bossParts.glow.material.opacity = 0;
+      // Boss sắp gục (máu < 30%) → hào quang đỏ phập phồng: báo hiệu "sắp thắng"
+      bossParts.glow.material.opacity = state.rage ? 0.12 + Math.sin(t * 7) * 0.08 : 0;
     }
 
-    // boss hit flash reaction
+    // boss hit flash reaction + squash & stretch
     if (state.bossHitT > 0) {
       state.bossHitT -= dt;
       const f = Math.min(1, state.bossHitT * 5);
       bossParts.hitFlashMat.forEach(m => { m.emissiveIntensity = 0.2 + f * 1.4; m.emissive.setHex(0xff2222); });
       boss.rotation.z = Math.sin(state.bossHitT * 40) * 0.08 * f;
+      boss.scale.set(1 + 0.13 * f, 1 - 0.13 * f, 1 + 0.13 * f);
+      state._bossFlashDirty = true;
     } else {
       boss.rotation.z = 0;
+      boss.scale.set(1, 1, 1);
+      if (state._bossFlashDirty) {
+        // trả màu gốc (v4 để boss đỏ ửng vĩnh viễn sau cú đánh đầu)
+        bossParts.hitFlashMat.forEach(m => { m.emissiveIntensity = m.userData.baseEI || 0; m.emissive.setHex(m.userData.baseEm || 0); });
+        state._bossFlashDirty = false;
+      }
+    }
+
+    // camera punch-zoom khi tung chiêu kết liễu
+    if (state.zoomT > 0) {
+      state.zoomT = Math.max(0, state.zoomT - dt);
+      camera.fov = 48 - Math.sin(Math.min(1, state.zoomT / 0.5) * Math.PI) * 7;
+      camera.updateProjectionMatrix();
     }
 
     // level-up pillar local
@@ -931,7 +1033,12 @@ createBattle = function createBattle(canvas) {
         pr.userData.trailAcc = 0;
         spawnParticle(pr.position.x, pr.position.y, pr.position.z, pr.userData.trailColor || SUN, 2, 0.04);
       }
-      if (pr.userData.life <= 0) { scene.remove(pr); projectiles.splice(i, 1); }
+      if (pr.userData.life <= 0) {
+        scene.remove(pr);
+        if (pr.geometry) pr.geometry.dispose();
+        if (pr.material) pr.material.dispose();
+        projectiles.splice(i, 1);
+      }
     }
 
     // fx meshes (slash, rings, pillars)
@@ -949,6 +1056,7 @@ createBattle = function createBattle(canvas) {
       if (m.userData.life <= 0) {
         scene.remove(m);
         if (m.geometry) m.geometry.dispose();
+        if (m.material) m.material.dispose();
         fxMeshes.splice(i, 1);
       }
     }
@@ -977,13 +1085,13 @@ createBattle = function createBattle(canvas) {
       camera.position.copy(camBase);
     }
 
+    // v4.1: chớp màu nền thật (v4 đặt clearColor nhưng bị scene.background che → không thấy)
     if (state.hitFlash > 0) {
       state.hitFlash -= dt;
-      const a = Math.min(0.4, state.hitFlash * 1.5);
-      renderer.setClearColor(state.hitFlashColor || 0xffffff, 1);
-      // blend via scene fog-ish: temporarily tint lights
+      const a = Math.min(0.5, Math.max(0, state.hitFlash) * 2.2);
+      scene.background.copy(baseBg).lerp(tmpCol.setHex(state.hitFlashColor || 0xffffff), a);
     } else {
-      renderer.setClearColor(0x4a90b8, 1);
+      scene.background.copy(baseBg);
     }
 
     if (composer && bloomOn) composer.render();
@@ -994,7 +1102,8 @@ createBattle = function createBattle(canvas) {
     state.stageKey = key || 'hotel';
     const factory = state.stageKey === 'factory';
     // Minimal palette swap — không beautify model
-    scene.background.setHex(factory ? 0x5a6a72 : 0x4a90b8);
+    baseBg.setHex(factory ? 0x5a6a72 : 0x4a90b8);
+    scene.background.copy(baseBg);
     renderer.setClearColor(factory ? 0x5a6a72 : 0x4a90b8, 1);
     try {
       // hard-hat tint on boss hair-ish / band if present
@@ -1045,7 +1154,7 @@ createBattle = function createBattle(canvas) {
   resize();
   applyVisuals();
   applyStageTheme('hotel');
-  requestAnimationFrame(tick);
+  rafId = requestAnimationFrame(tick);
   window.addEventListener('resize', resize, { passive: true });
 
   // wrap resize to sync composer
@@ -1062,7 +1171,13 @@ createBattle = function createBattle(canvas) {
 
   return {
     resize: resizeWithComposer,
-    setStage(key) { applyStageTheme(key); },
+    setStage(key) { applyStageTheme(key); state.rage = false; },
+    /** Bật/tắt vòng vẽ (tắt khi không ở màn chơi hoặc tab ẩn) */
+    setActive(on) {
+      state.active = !!on;
+      if (state.active && state.running && !rafId) { last = performance.now(); rafId = requestAnimationFrame(tick); }
+    },
+    setRage(on) { state.rage = !!on; },
     setVisual({ armor = 0, atk = 0, skillLv = 0 } = {}) {
       state.armor = armor; state.atk = atk; state.skillLv = skillLv; applyVisuals();
     },
@@ -1117,6 +1232,7 @@ createBattle = function createBattle(canvas) {
           spawnParticle(target.x, target.y + 0.4, target.z, 0xffffff, 14, 0.12);
           state.bossHitT = 0.5;
           state.knockT = 0.7; state.knockDir = 1;
+          state.zoomT = 0.5;
           hitStop(90);
           state.shakeT = 0.4; state.shakeAmp = 0.32;
           state.hitFlash = 0.22; state.hitFlashColor = TEAL;
@@ -1210,60 +1326,229 @@ try {
 } catch (e) {
   prog = { wins: 0, best: 0, badges: [] };
 }
+// v4.1: sổ ôn (Leitner 0–4), sao từng chặng, chuỗi ngày học
+if (!prog.mem || typeof prog.mem !== 'object') prog.mem = {};
+if (!prog.stars || typeof prog.stars !== 'object') prog.stars = {};
+if (!prog.streak || typeof prog.streak !== 'object') prog.streak = { last: '', n: 0 };
 const save = () => { try { lsSet(SAVE_KEY, JSON.stringify(prog)); } catch (e) {} };
+
+function localDay(offsetDays = 0) {
+  const d = new Date(Date.now() + offsetDays * 86400000);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+/** Chuỗi còn sống nếu học hôm nay hoặc hôm qua */
+function streakAlive() {
+  const s = prog.streak;
+  return s && s.n > 0 && (s.last === localDay(0) || s.last === localDay(-1)) ? s.n : 0;
+}
+function markPlayedToday() {
+  const today = localDay(0);
+  const s = prog.streak;
+  if (s.last === today) return false;
+  s.n = s.last === localDay(-1) ? (s.n || 0) + 1 : 1;
+  s.last = today;
+  save();
+  return true;
+}
+function masteredCount() {
+  return QUESTIONS.reduce((n, q) => n + ((prog.mem[q.id] || 0) >= 2 ? 1 : 0), 0);
+}
+/** Đã trả lời đúng ít nhất 1 lần (hộp ≥1) */
+function learnedCount() {
+  return QUESTIONS.reduce((n, q) => n + ((prog.mem[q.id] || 0) >= 1 ? 1 : 0), 0);
+}
+function learnText() {
+  const l = learnedCount(), m = masteredCount(), total = QUESTIONS.length;
+  return `📚 Đã học <b>${l}/${total}</b> câu` + (m ? ` · thuộc chắc <b>${m}</b>` : '');
+}
+function starsText(n) { return n ? '★'.repeat(n) + '☆'.repeat(3 - n) : ''; }
+function renderProgress() {
+  const l = learnedCount(), total = QUESTIONS.length, sk = streakAlive();
+  const s1 = prog.stars.hotel || 0, s2 = prog.stars.factory || 0;
+  $('progress').innerHTML =
+    `${sk ? `<span class="streak-fire">🔥 Chuỗi học: ${sk} ngày</span>` : '🔥 Chơi 1 chặng hôm nay để bắt đầu chuỗi ngày học'}` +
+    `<br>🏆 Thắng: <b>${prog.wins}</b> · Điểm cao: <b>${prog.best}</b>${(s1 || s2) ? ` · ⭐ Bãi Cháy ${starsText(s1) || '–'} · Cẩm Phả ${starsText(s2) || '–'}` : ''}` +
+    `<br>${learnText()}` +
+    `<div class="meter"><i style="width:${Math.round(l / Math.max(1, total) * 100)}%"></i></div>` +
+    `<div style="margin-top:6px;font-size:12px;opacity:.85">🎖️ ${prog.badges.length ? prog.badges.join(' ') : 'chưa có huy hiệu'} · ${total} câu · 2 chặng</div>`;
+}
 
 $('fs').textContent = FAST_SECONDS;
 $('zaloBtn').href = ZALO_LINK;
 applyHoldSeatVisibility();
 if ($('formBtn')) $('formBtn').href = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
-$('progress').innerHTML = `🏆 Thắng: <b>${prog.wins}</b> · Điểm cao: <b>${prog.best}</b><br>🎖️ ${prog.badges.length ? prog.badges.join(' ') : 'chưa có huy hiệu'} · ${QUESTIONS.length} câu · 2 chặng`;
+renderProgress();
 
 let battle = null, use3d = false, st, timerId, qStart, locked, bossTrail = 0, orderPicked = [];
 let stageIdx = 0; // 0 = stage1 hotel, 1 = stage2 factory
 let runScore = 0, runCorrect = 0, runAnswered = 0, runComboMax = 0, runQPool = 0;
+let runWrong = []; // câu sai trong lượt (cho Sổ ôn ở màn kết)
 let audioReady = false, muted = lsGet('baokhua_mute', '0') === '1';
-let sfx = {}, bgm = null;
-let TWEEN = null;
+let lastTickSec = -1;
 
-async function loadTween() {
-  try {
-    const mod = await import('@tweenjs/tween.js');
-    TWEEN = mod.default || mod;
-    (function tweenLoop(t){ if (TWEEN && TWEEN.update) TWEEN.update(t); requestAnimationFrame(tweenLoop); })(performance.now());
-  } catch (e) { console.warn('tween CDN fail', e); TWEEN = null; }
-}
-loadTween();
+/* ===== Âm thanh v4.1: Web Audio thuần, không CDN =====
+   - Tải 6 file .ogg sẵn có; máy nào không giải mã được ogg (iPhone đời cũ) → tự tổng hợp tiếng bằng oscillator.
+   - Combo càng cao, tiếng "ting" càng cao (thang ngũ cung) → não nhận thưởng tăng dần. */
+const Snd = (() => {
+  let ctx = null, master = null, loading = null, bgmSrc = null, bgmGain = null, bgmWanted = false;
+  const buffers = {};
+  const FILES = { hit:'hit.ogg', crit:'crit.ogg', hurt:'hurt.ogg', ui:'ui.ogg', win:'win.ogg', bgm:'bgm_loop.ogg' };
+  const VOL = { hit:.55, crit:.7, hurt:.55, ui:.4, win:.7, bgm:.2 };
+  const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+  function ensureCtx() {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try {
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = muted ? 0 : 1;
+      master.connect(ctx.destination);
+    } catch (e) { ctx = null; }
+    return ctx;
+  }
+  function decode(ab) {
+    return new Promise((res, rej) => {
+      try { const p = ctx.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); } catch (e) { rej(e); }
+    });
+  }
+  function load() {
+    if (loading || !ensureCtx()) return loading;
+    loading = Promise.all(Object.keys(FILES).map(async k => {
+      try {
+        const r = await fetch('./v4/audio/' + FILES[k]);
+        buffers[k] = await decode(await r.arrayBuffer());
+      } catch (e) { buffers[k] = null; }
+    })).then(() => { if (bgmWanted) startBgm(); });
+    return loading;
+  }
+  function tone(type, f0, f1, dur, vol, when = 0) {
+    const t = ctx.currentTime + when;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(f0, t);
+    if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+  function noise(dur, vol, when = 0) {
+    const t = ctx.currentTime + when;
+    const len = Math.max(1, Math.floor(ctx.sampleRate * dur));
+    const b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const s = ctx.createBufferSource(), g = ctx.createGain();
+    s.buffer = b; g.gain.value = vol;
+    s.connect(g); g.connect(master); s.start(t);
+  }
+  const SYNTH = {
+    hit:  r => { noise(0.06, 0.25); tone('square', 520 * r, 170 * r, 0.1, 0.18); },
+    crit: r => { noise(0.12, 0.3); tone('sawtooth', 330 * r, 990 * r, 0.16, 0.16); tone('square', 660 * r, 1320 * r, 0.22, 0.12, 0.08); },
+    hurt: r => { tone('sawtooth', 240 * r, 70 * r, 0.22, 0.22); noise(0.1, 0.18); },
+    ui:   r => tone('sine', 880 * r, 880 * r, 0.06, 0.12),
+    win:  r => [523, 659, 784, 1047].forEach((f, i) => tone('triangle', f * r, f * r, 0.16, 0.2, i * 0.09))
+  };
+  function play(name, { rate = 1, vol = 1 } = {}) {
+    if (muted || !ensureCtx()) return;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    try {
+      const b = buffers[name];
+      if (b) {
+        const s = ctx.createBufferSource(), g = ctx.createGain();
+        s.buffer = b; s.playbackRate.value = rate; g.gain.value = (VOL[name] || .5) * vol;
+        s.connect(g); g.connect(master); s.start();
+      } else if (SYNTH[name]) SYNTH[name](rate);
+    } catch (e) {}
+  }
+  /** Tiếng "ting" thưởng: n = combo hiện tại → nốt cao dần */
+  function chime(n) {
+    if (muted || !ensureCtx()) return;
+    try {
+      const semi = PENTA[Math.min(PENTA.length - 1, Math.max(0, n - 1))];
+      const f = 784 * Math.pow(2, semi / 12);
+      tone('triangle', f, f, 0.22, 0.14, 0.05);
+      tone('sine', f * 2, f * 2, 0.16, 0.05, 0.05);
+    } catch (e) {}
+  }
+  function star(i) { if (!muted && ensureCtx()) try { const f = [880, 1109, 1319][i] || 1319; tone('triangle', f, f * 1.5, 0.3, 0.18); tone('sine', f * 2, f * 2, 0.25, 0.06); } catch (e) {} }
+  function tick(urgent) { if (!muted && ensureCtx()) try { tone('square', urgent ? 1500 : 1200, urgent ? 1500 : 1200, 0.03, 0.05); } catch (e) {} }
+  function startBgm() {
+    bgmWanted = true;
+    if (muted || !ensureCtx() || bgmSrc || !buffers.bgm) return;
+    try {
+      bgmGain = ctx.createGain(); bgmGain.gain.value = VOL.bgm;
+      bgmSrc = ctx.createBufferSource(); bgmSrc.buffer = buffers.bgm; bgmSrc.loop = true;
+      bgmSrc.connect(bgmGain); bgmGain.connect(master); bgmSrc.start();
+    } catch (e) { bgmSrc = null; }
+  }
+  function setMuted(m) {
+    if (!master || !ctx) return;
+    try { master.gain.setTargetAtTime(m ? 0 : 1, ctx.currentTime, 0.02); } catch (e) { master.gain.value = m ? 0 : 1; }
+  }
+  function unlock() {
+    if (!ensureCtx()) return;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    load();
+  }
+  function suspend() { if (ctx && ctx.state === 'running') try { ctx.suspend(); } catch (e) {} }
+  function resume() { if (ctx && ctx.state === 'suspended') try { ctx.resume(); } catch (e) {} }
+  return { play, chime, star, tick, startBgm, setMuted, unlock, suspend, resume };
+})();
 
 function initAudio() {
-  if (audioReady || typeof Howl === 'undefined') return;
-  try {
-    const base = './v4/audio/';
-    sfx = {
-      hit: new Howl({ src:[base+'hit.ogg'], volume:0.55 }),
-      crit: new Howl({ src:[base+'crit.ogg'], volume:0.65 }),
-      hurt: new Howl({ src:[base+'hurt.ogg'], volume:0.55 }),
-      ui: new Howl({ src:[base+'ui.ogg'], volume:0.4 }),
-      win: new Howl({ src:[base+'win.ogg'], volume:0.7 })
-    };
-    bgm = new Howl({ src:[base+'bgm_loop.ogg'], loop:true, volume:0.22 });
-    audioReady = true;
-    applyMute();
-  } catch (e) { console.warn('audio init fail', e); }
+  Snd.unlock();
+  audioReady = true;
 }
 function applyMute() {
   muted = lsGet('baokhua_mute', '0') === '1';
-  const btn = $('muteBtn');
-  if (btn) btn.textContent = muted ? '🔇' : '🔊';
-  if (typeof Howler !== 'undefined') Howler.mute(muted);
+  ['muteBtn', 'muteBtn2'].forEach(id => { const b = $(id); if (b) b.textContent = muted ? '🔇' : '🔊'; });
+  Snd.setMuted(muted);
+  if (muted && window.speechSynthesis) { try { speechSynthesis.cancel(); } catch (e) {} }
 }
-function playSfx(name) {
-  if (muted || !audioReady) return;
-  try { sfx[name] && sfx[name].play(); } catch(e) {}
+function playSfx(name, opts) { Snd.play(name, opts); }
+function ensureBgm() { Snd.startBgm(); }
+
+/* ===== Hiệu ứng DOM (chạy cả khi máy không có 3D) ===== */
+const FX_COLORS = ['#FFD91F', '#2ec4b6', '#ff9a3d', '#60a5fa', '#a78bfa', '#3dff8a', '#ff6b9a'];
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function burstFrom(el, { n = 14, colors = FX_COLORS, spread = 90, plus = '' } = {}) {
+  const layer = $('fxLayer');
+  if (!layer || !el || REDUCED || !el.getBoundingClientRect) return;
+  const r = el.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('span');
+    d.className = 'fx-dot' + (i % 3 === 0 ? ' sq' : '');
+    d.style.background = colors[(Math.random() * colors.length) | 0];
+    layer.appendChild(d);
+    const a = Math.random() * Math.PI * 2, dist = spread * (0.45 + Math.random() * 0.75);
+    const dx = Math.cos(a) * dist, dy = Math.sin(a) * dist - 20;
+    const anim = d.animate([
+      { transform: `translate(${cx}px,${cy}px) scale(1) rotate(0deg)`, opacity: 1 },
+      { transform: `translate(${cx + dx}px,${cy + dy + 40}px) scale(.3) rotate(${(Math.random() * 360) | 0}deg)`, opacity: 0 }
+    ], { duration: 520 + Math.random() * 260, easing: 'cubic-bezier(.15,.7,.3,1)' });
+    anim.onfinish = () => d.remove();
+  }
+  if (plus) {
+    const p = document.createElement('span');
+    p.className = 'fx-plus'; p.textContent = plus;
+    layer.appendChild(p);
+    const anim = p.animate([
+      { transform: `translate(${cx - 20}px,${cy - 10}px) scale(.6)`, opacity: 0 },
+      { transform: `translate(${cx - 20}px,${cy - 30}px) scale(1.2)`, opacity: 1, offset: .25 },
+      { transform: `translate(${cx - 20}px,${cy - 80}px) scale(1)`, opacity: 0 }
+    ], { duration: 900, easing: 'ease-out' });
+    anim.onfinish = () => p.remove();
+  }
 }
-function ensureBgm() {
-  if (muted || !audioReady || !bgm) return;
-  try { if (!bgm.playing()) bgm.play(); } catch(e) {}
+function bumpScore() {
+  const s = $('scorePill'); if (!s) return;
+  s.textContent = '⭐ ' + st.score;
+  s.classList.remove('bump'); void s.offsetWidth; s.classList.add('bump');
 }
+
 function questionsForStage(si) {
   const stage = STAGES[si];
   const topics = new Set(stage.topics);
@@ -1276,11 +1561,18 @@ function questionsForStage(si) {
     pool = pool.filter(q => q.stage !== 2);
   }
   if (pool.length < 8) pool = QUESTIONS.filter(q => topics.has(q.topic));
-  return shuffle(pool).slice(0, Math.min(12, Math.max(8, pool.length)));
+  const n = Math.min(12, Math.max(8, pool.length));
+  // v4.1 Sổ ôn: ưu tiên tối đa 4 câu từng sai / chưa chắc (hộp 0–1), còn lại ngẫu nhiên, rồi trộn đều
+  const weak = shuffle(pool.filter(q => prog.mem[q.id] != null && prog.mem[q.id] <= 1)).slice(0, 4);
+  const weakIds = new Set(weak.map(q => q.id));
+  const rest = shuffle(pool.filter(q => !weakIds.has(q.id))).slice(0, n - weak.length);
+  return shuffle(weak.concat(rest));
 }
 function refreshMapUI() {
   const n1 = $('node1'), n2 = $('node2');
   if (!n1 || !n2) return;
+  if ($('stars1')) $('stars1').textContent = starsText(prog.stars.hotel || 0);
+  if ($('stars2')) $('stars2').textContent = starsText(prog.stars.factory || 0);
   n1.className = 'stage-node' + (stageIdx > 0 ? ' done' : ' current');
   n2.className = 'stage-node' + (stageIdx >= 1 ? (stageIdx > 1 ? ' done' : ' current') : ' lock');
   const btn = $('btnEnterStage');
@@ -1297,20 +1589,25 @@ function openMap() {
   show('sMap');
   playSfx('ui');
 }
-function tweenWidth(el, toPct, ms=280) {
+/** v4.1: bỏ tween.js — CSS transition (.bar i) tự làm mượt */
+function tweenWidth(el, toPct) {
   if (!el) return;
-  if (!TWEEN || !TWEEN.Tween) { el.style.width = toPct + '%'; return; }
-  const cur = parseFloat(el.style.width) || 0;
-  const o = { w: cur };
-  new TWEEN.Tween(o).to({ w: toPct }, ms).easing(TWEEN.Easing.Quadratic.Out)
-    .onUpdate(() => { el.style.width = o.w + '%'; }).start();
+  el.style.width = Math.max(0, Math.min(100, toPct)) + '%';
 }
 
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
   $(id).classList.add('on');
+  document.body.classList.toggle('ingame', id === 'sGame');
+  if (battle && battle.setActive) battle.setActive(id === 'sGame' && !document.hidden);
+  window.scrollTo(0, 0);
 }
+document.addEventListener('visibilitychange', () => {
+  const inGame = $('sGame').classList.contains('on');
+  if (battle && battle.setActive) battle.setActive(inGame && !document.hidden);
+  if (document.hidden) Snd.suspend(); else Snd.resume();
+});
 function shuffle(a) {
   a = a.slice();
   for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; }
@@ -1358,7 +1655,9 @@ function showComboFloat(n, hot) {
 function showVignette() {
   const v = $('vignette'); v.classList.remove('on'); void v.offsetWidth; v.classList.add('on');
 }
-function showLevelBanner(statsText) {
+function showLevelBanner(statsText, pillText = '⬆ LÊN CẤP') {
+  const pill = $('lvlBanner').querySelector('.pill');
+  if (pill) pill.textContent = pillText;
   $('lvlStats').textContent = statsText;
   const b = $('lvlBanner'); b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
   setTimeout(() => b.classList.remove('on'), 950);
@@ -1369,6 +1668,17 @@ function pop(txt, cls, side) {
   $('arena').appendChild(d); setTimeout(() => d.remove(), 1000);
 }
 
+/** Đọc mẫu câu đúng khi lộ đáp án (tôn trọng nút tắt tiếng; im lặng nếu máy không có giọng) */
+function speakQuiet(text) {
+  if (muted || !text || !window.speechSynthesis) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN'; u.rate = 0.85;
+    const zh = speechSynthesis.getVoices().find(v => /zh(-|_)?CN|Chinese/i.test(v.lang + v.name));
+    if (zh) u.voice = zh;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) {}
+}
 function speakZh(text) {
   const box = $('qExtra');
   const q = st && st.list ? st.list[st.i] : null;
@@ -1448,9 +1758,67 @@ function syncVisual() {
 }
 
 function beginRun() {
-  stageIdx = 0; runScore = 0; runCorrect = 0; runAnswered = 0; runComboMax = 0; runQPool = 0;
+  stageIdx = 0; runScore = 0; runCorrect = 0; runAnswered = 0; runComboMax = 0; runQPool = 0; runWrong = [];
   initAudio(); ensureBgm();
   openMap();
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+function correctText(q) {
+  if (!q) return '';
+  if (q.type === 'order') return (q.answer || []).join('');
+  return (typeof q.answer === 'number' && q.options) ? (q.options[q.answer] || '') : '';
+}
+/** Câu Hán hoàn chỉnh (điền chỗ trống bằng đáp án đúng) */
+function fullZh(q) {
+  const ans = correctText(q);
+  let zh = q.zh || '';
+  if (!zh && hasHan(ans)) zh = ans;
+  return zh.includes('____') ? zh.replace('____', ans) : zh;
+}
+function fullPy(q) {
+  let py = q.py || '';
+  if (py.includes('____') && q.optionPy && typeof q.answer === 'number') py = py.replace('____', q.optionPy[q.answer] || '…');
+  return py;
+}
+function rememberWrong(q) {
+  if (!q) return;
+  prog.mem[q.id] = 0;
+  if (!st.wrong.some(x => x.id === q.id)) st.wrong.push(q);
+  if (!runWrong.some(x => x.id === q.id)) runWrong.push(q);
+  save();
+}
+function rememberRight(q) {
+  if (!q) return;
+  prog.mem[q.id] = Math.min(4, (prog.mem[q.id] || 0) + 1);
+  save();
+}
+function freezeTimer() {
+  const ti = $('timer').firstChild;
+  const m = getComputedStyle(ti).transform;
+  ti.style.transition = 'none';
+  ti.style.transform = (m && m !== 'none') ? m : 'scaleX(0)';
+  $('timer').classList.remove('low');
+}
+/** Sai / hết giờ → dừng lại cho học: hiện câu đúng + pinyin + nghĩa + nút nghe, bấm Tiếp mới đi tiếp */
+function showExplain(q, onNext) {
+  const slot = $('explainSlot'); if (!slot) { onNext(); return; }
+  const ans = correctText(q), zh = fullZh(q), py = fullPy(q);
+  const dead = st && st.hero <= 0;
+  slot.innerHTML = `<div class="explain">
+    <div class="lab">✗ Đáp án đúng</div>
+    ${ans && !hasHan(ans) ? `<div style="font-weight:800;margin-top:4px">${esc(ans)}</div>` : ''}
+    ${zh ? `<div class="zh">${esc(zh)}</div>` : ''}
+    ${py ? `<div class="py">${esc(py)}</div>` : ''}
+    ${q.vi ? `<div class="vi">${esc(q.vi)}</div>` : ''}
+    <div class="row-btns">
+      ${zh ? '<button type="button" class="btn ghost" id="exSpeak">🔊 Nghe</button>' : ''}
+      <button type="button" class="btn" id="exNext">${dead ? 'Xem kết quả' : 'Tiếp ▶'}</button>
+    </div></div>`;
+  if ($('exSpeak')) $('exSpeak').onclick = () => { initAudio(); speakZh(zh); };
+  let done = false;
+  $('exNext').onclick = () => { if (done) return; done = true; slot.innerHTML = ''; playSfx('ui'); onNext(); };
+  try { slot.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' }); } catch (e) {}
+  if (zh) speakQuiet(zh);
 }
 function startStage(si) {
   stageIdx = si;
@@ -1461,8 +1829,12 @@ function startStage(si) {
     i: 0, boss: bossMax, bossMax, hero: HERO_BASE, heroMax: HERO_BASE,
     streak: 0, comboMax: 0, score: runScore, correct: 0, answered: 0,
     atk: BASE_DMG + si * 2, atkTier: 0, armor: 0, skillLv: 0, level: 1 + si,
-    list, pending: null, lastLearned: null, stageId: stage.id, stageName: stage.name, bossName: stage.boss
+    list, baseLen: list.length, wrong: [], overtime: false,
+    pending: null, lastLearned: null, stageId: stage.id, stageName: stage.name, bossName: stage.boss
   };
+  if ($('explainSlot')) $('explainSlot').innerHTML = '';
+  if ($('scorePill')) $('scorePill').textContent = '⭐ ' + st.score;
+  if (battle && battle.setRage) battle.setRage(false);
   bossTrail = bossMax;
   runQPool += list.length; // tổng mẫu số khớp kiểu Câu X/Y (Y = số câu chặng)
   const bn = $('bossName');
@@ -1493,6 +1865,7 @@ function upd() {
   $('heroLvl').textContent = 'Lv' + st.level;
   const sk = SKILLS[Math.min(st.skillLv, 2)];
   $('pwr').textContent = `ATK ${st.atk} · Giáp ${st.armor} · ${sk.emoji}${sk.name}`;
+  if (battle && battle.setRage) battle.setRage(st.boss > 0 && st.boss / st.bossMax < 0.3);
   const c = $('combo');
   if (st.streak >= 3) { c.classList.add('on'); c.innerHTML = `<span class="c hot">🔥 COMBO x${st.streak} — LONG HẠ!</span>`; }
   else if (st.streak > 0) { c.classList.add('on'); c.innerHTML = `<span class="c">🔥 COMBO x${st.streak}</span>`; }
@@ -1502,7 +1875,10 @@ function upd() {
 function ask() {
   locked = false; orderPicked = [];
   const q = st.list[st.i];
-  $('qNum').textContent = `Câu ${st.i + 1}/${st.list.length}`;
+  if ($('explainSlot')) $('explainSlot').innerHTML = '';
+  $('qNum').textContent = st.i >= st.baseLen
+    ? `⏱ Hiệp phụ ${st.i - st.baseLen + 1}/${st.list.length - st.baseLen}`
+    : `Câu ${st.i + 1}/${st.baseLen}`;
   $('qType').innerHTML = `<span class="tag ${q.type}">${TYPE_LABEL[q.type] || q.type}</span> <span class="tag">${TOPIC_LABEL[q.topic] || q.topic || ''}</span>`;
   $('qText').textContent = q.q || '';
   // situ/order: không hiện sẵn câu Hán đúng (tránh lộ đáp án); vẫn giữ nghĩa Việt làm gợi ý
@@ -1518,6 +1894,21 @@ function ask() {
     $('qZh').textContent = ''; // nghe trước; fallback hiện sau nếu không có voice
     $('qPy').textContent = '';
     $('qVi').textContent = 'Bấm Nghe lại, rồi chọn nghĩa đúng.';
+  } else if (q.type === 'mc' && hasHan(correctText(q))) {
+    // v4.1 chống lộ đáp án: hỏi Việt → Trung thì không hiện chữ Hán/pinyin của đáp án
+    $('qZh').textContent = '';
+    $('qPy').textContent = '';
+    $('qVi').textContent = '';
+  } else if (q.type === 'mc') {
+    // hỏi Trung → Việt: hiện chữ Hán + pinyin, giấu nghĩa Việt (chính là đáp án)
+    $('qZh').textContent = q.zh || '';
+    $('qPy').textContent = q.py || '';
+    $('qVi').textContent = '';
+  } else if (q.type === 'fill') {
+    $('qZh').textContent = q.zh && q.zh !== '____' ? q.zh : '';
+    // pinyin không có chỗ trống = pinyin của đáp án → giấu
+    $('qPy').textContent = (q.py && q.py.includes('____')) ? q.py : '';
+    $('qVi').textContent = q.vi || '';
   } else {
     $('qZh').textContent = q.zh || '';
     $('qPy').textContent = q.py || '';
@@ -1540,13 +1931,23 @@ function ask() {
     renderOptions(q, o);
   }
 
-  qStart = Date.now(); clearInterval(timerId);
+  // v4.1: thanh giờ chạy bằng GPU (transform) → mượt 60fps, JS chỉ cập nhật số giây
+  const ti = $('timer').firstChild;
+  $('timer').classList.remove('low');
+  ti.style.transition = 'none'; ti.style.transform = 'scaleX(1)'; void ti.offsetWidth;
+  ti.style.transition = `transform ${QUESTION_SECONDS}s linear`; ti.style.transform = 'scaleX(0)';
+  qStart = Date.now(); clearInterval(timerId); lastTickSec = -1;
+  const tt0 = $('timerTxt'); if (tt0) tt0.textContent = QUESTION_SECONDS + 's';
   timerId = setInterval(() => {
     const left = QUESTION_SECONDS - (Date.now() - qStart) / 1000;
-    $('timer').firstChild.style.width = Math.max(0, left / QUESTION_SECONDS * 100) + '%';
-    const tt = $('timerTxt'); if (tt) tt.textContent = Math.max(0, Math.ceil(left)) + 's';
+    const sec = Math.max(0, Math.ceil(left));
+    const tt = $('timerTxt'); if (tt) tt.textContent = sec + 's';
+    if (left > 0 && left <= TIMER_WARN_SECONDS) {
+      $('timer').classList.add('low');
+      if (sec !== lastTickSec) { lastTickSec = sec; Snd.tick(sec <= 2); }
+    }
     if (left <= 0) onTimeout();
-  }, 100);
+  }, 200);
 }
 
 function hasHan(s) { return /[一-鿿]/.test(String(s || '')); }
@@ -1558,12 +1959,12 @@ function renderOptions(q, o) {
     const txt = q.options[origK];
     const b = document.createElement('button'); b.type = 'button'; b.className = 'opt';
     b.dataset.orig = String(origK);
-    let html = `<span class="han">${txt}</span>`;
+    let html = `<span class="han">${esc(txt)}</span>`;
     const py = q.optionPy && q.optionPy[origK];
     const vi = q.optionVi && q.optionVi[origK];
     if (hasHan(txt)) {
-      if (py) html += `<span class="py">${py}</span>`;
-      if (vi) html += `<span class="vi-ans">${vi}</span>`;
+      if (py) html += `<span class="py">${esc(py)}</span>`;
+      if (vi) html += `<span class="vi-ans">${esc(vi)}</span>`;
     }
     b.innerHTML = html;
     b.onclick = () => answerChoice(origK, b);
@@ -1573,28 +1974,39 @@ function renderOptions(q, o) {
 
 function renderOrder(q, o) {
   const slot = document.createElement('div'); slot.className = 'order-slot'; slot.id = 'orderSlot';
+  const hint = document.createElement('p'); hint.className = 'order-hint';
+  hint.textContent = 'Chạm từ theo đúng thứ tự · chạm từ trong ô trên để bỏ · đủ từ là tự kiểm tra';
   const chips = document.createElement('div'); chips.className = 'chips'; chips.id = 'orderChips';
   const words = shuffle(q.words);
-  words.forEach((w, idx) => {
+  const total = (q.words || []).length;
+  words.forEach((w) => {
     const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.w = w;
     const pyIdx = (q.words || []).indexOf(w);
     const py = (q.wordPy && pyIdx >= 0) ? q.wordPy[pyIdx] : '';
     const viw = (q.wordVi && pyIdx >= 0) ? q.wordVi[pyIdx] : '';
-    c.innerHTML = w + (py || viw ? `<span class="py">${[py,viw].filter(Boolean).join(' · ')}</span>` : '');
+    c.innerHTML = esc(w) + (py || viw ? `<span class="py">${esc([py,viw].filter(Boolean).join(' · '))}</span>` : '');
     c.onclick = () => {
       if (c.classList.contains('used') || locked) return;
       c.classList.add('used'); orderPicked.push(w);
-      const pill = document.createElement('span'); pill.className = 'chip'; pill.textContent = w;
-      pill.onclick = () => { /* undo last matching */ };
+      playSfx('ui', { rate: 1 + orderPicked.length * 0.1 });
+      const pill = document.createElement('button'); pill.type = 'button'; pill.className = 'chip'; pill.textContent = w;
+      // v4.1: chạm để bỏ đúng từ đó (v4 không làm gì)
+      pill.onclick = () => {
+        if (locked) return;
+        const idx = [...slot.children].indexOf(pill);
+        if (idx >= 0) orderPicked.splice(idx, 1);
+        pill.remove(); c.classList.remove('used');
+      };
       slot.appendChild(pill);
+      if (orderPicked.length === total) {
+        setTimeout(() => { if (!locked && orderPicked.length === total) answerOrder(q); }, 200);
+      }
     };
     chips.appendChild(c);
   });
-  const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'btn'; ok.style.marginTop = '8px';
-  ok.textContent = '✓ Kiểm tra'; ok.onclick = () => answerOrder(q);
   const reset = document.createElement('button'); reset.type = 'button'; reset.className = 'btn alt'; reset.style.marginTop = '8px';
-  reset.textContent = '↺ Xóa'; reset.onclick = () => { orderPicked = []; slot.innerHTML = ''; chips.querySelectorAll('.chip').forEach(c => c.classList.remove('used')); };
-  o.appendChild(slot); o.appendChild(chips); o.appendChild(ok); o.appendChild(reset);
+  reset.textContent = '↺ Xóa hết'; reset.onclick = () => { if (locked) return; orderPicked = []; slot.innerHTML = ''; chips.querySelectorAll('.chip').forEach(c => c.classList.remove('used')); };
+  o.appendChild(slot); o.appendChild(hint); o.appendChild(chips); o.appendChild(reset);
 }
 
 function onTimeout() {
@@ -1627,7 +2039,13 @@ function answerChoice(k, btn) {
 function answerOrder(q) {
   if (locked) return;
   const ok = orderPicked.length === q.answer.length && orderPicked.every((w, i) => w === q.answer[i]);
-  resolve(ok, null);
+  const slot = $('orderSlot');
+  if (slot) {
+    slot.style.borderStyle = 'solid';
+    slot.style.borderColor = ok ? '#3dd17a' : '#ff5a5a';
+    slot.style.background = ok ? 'rgba(61,209,122,.18)' : 'rgba(255,90,90,.15)';
+  }
+  resolve(ok, ok ? slot : null);
 }
 
 function pickSkill(willKill, fast) {
@@ -1639,14 +2057,23 @@ function pickSkill(willKill, fast) {
 
 function resolve(ok, btn) {
   if (!st || st._ended || locked) return;
-  locked = true; clearInterval(timerId);
+  locked = true; clearInterval(timerId); freezeTimer();
   st.answered = (st.answered || 0) + 1;
   const q = st.list[st.i];
+  // Trả lời xong → hiện đủ câu Hán + pinyin + nghĩa trên thẻ đề để học
+  if (q) {
+    $('qZh').textContent = fullZh(q);
+    $('qPy').textContent = fullPy(q);
+    $('qVi').textContent = q.vi || '';
+  }
   const secs = (Date.now() - qStart) / 1000;
   if (ok) {
     st.streak++; st.correct++; st.comboMax = Math.max(st.comboMax, st.streak);
-    if (q && q.zh) st.lastLearned = { zh: q.zh, py: q.py || '', vi: q.vi || '' };
+    rememberRight(q);
+    if (q) { const z = fullZh(q); if (z) st.lastLearned = { zh: z, py: fullPy(q), vi: q.vi || '' }; }
     showComboFloat(st.streak, st.streak >= 3);
+    Snd.chime(st.streak);
+    if (q && q.type !== 'listen') speakQuiet(fullZh(q));
     const fast = secs <= FAST_SECONDS;
     // Preview damage with current skill tier (no Long Hạ yet)
     let previewSk = pickSkill(false, fast);
@@ -1670,22 +2097,29 @@ function resolve(ok, btn) {
       shakeMs(150);
     }
     showSkill(label);
+    // Pháo hoa màu từ nút đúng (hoặc ô sắp xếp) + số sát thương bay lên
+    const hitEl = btn || [...$('opts').querySelectorAll('.opt')].find(b => q && +b.dataset.orig === q.answer);
+    burstFrom(hitEl, { n: willKill ? 26 : (st.streak >= 3 ? 20 : 14), spread: willKill ? 140 : 95, plus: '+' + dmg });
     const timing = battle ? battle.playHeroAttack(sk.id) : { impactAt: 180 };
     const impactAt = (timing && timing.impactAt) || 180;
     setTimeout(() => {
       floatDmg(dmg, { crit: willKill, x2: fast && !willKill, tag: willKill ? 'KẾT LIỄU' : (fast ? 'x2' : sk.name) });
-      playSfx(willKill ? 'crit' : 'hit');
+      // combo càng cao, tiếng đánh càng cao
+      playSfx(willKill ? 'crit' : 'hit', { rate: Math.min(1.45, 1 + (st.streak - 1) * 0.06) });
       if (st.boss > 0) {
         const dealt = Math.min(dmg, st.boss);
         st.boss -= dealt;
         st.score += dealt;
         if (st.boss < 0) st.boss = 0;
       }
-      upd();
+      upd(); bumpScore();
     }, impactAt);
-    st.pending = () => openUpgrade();
-    setTimeout(() => { if (st.pending) st.pending(); }, impactAt + 720);
+    // v4.1: nâng cấp ở câu đúng 1, 3, 5… (đỡ ngắt nhịp); câu đúng còn lại đi tiếp luôn
+    const giveUpgrade = UPGRADE_EVERY <= 1 || (st.correct - 1) % UPGRADE_EVERY === 0;
+    st.pending = giveUpgrade ? () => openUpgrade() : () => afterRound();
+    setTimeout(() => { if (st.pending) st.pending(); }, impactAt + (giveUpgrade ? 720 : 620));
   } else {
+    rememberWrong(q);
     // Đã hạ boss → không thể thua nữa
     if (st.boss <= 0) {
       st.pending = () => end(true);
@@ -1693,7 +2127,7 @@ function resolve(ok, btn) {
       return;
     }
     st.streak = 0; showComboFloat(0);
-    showSkill('👹 Phản đòn lễ tân!');
+    showSkill(stageIdx === 1 ? '🏭 Tổ trưởng phản đòn!' : '👹 Lễ tân phản đòn!');
     const timing = battle ? battle.playBossAttack() : { impactAt: 320 };
     const impactAt = (timing && timing.impactAt) || 320;
     setTimeout(() => {
@@ -1712,7 +2146,12 @@ function resolve(ok, btn) {
       if (st.hero <= 0) return end(false);
       afterRound();
     };
-    setTimeout(() => { if (st.pending) st.pending(); }, impactAt + 650);
+    // v4.1: sai thì chậm lại để học — hiện đáp án đúng, bấm Tiếp mới sang câu
+    const pendingNow = st.pending;
+    setTimeout(() => {
+      if (!st || st._ended || st.pending !== pendingNow) return;
+      showExplain(q, () => { if (st && st.pending === pendingNow) st.pending(); });
+    }, impactAt + 380);
   }
 }
 
@@ -1759,8 +2198,74 @@ function afterRound() {
   if (st.boss <= 0) return end(true);
   if (st.hero <= 0) return end(false);
   st.i++;
-  if (st.i >= st.list.length) return end(st.boss <= 0);
+  if (st.i >= st.list.length) {
+    // v4.1 HIỆP PHỤ: hết câu mà boss còn máu, tướng còn sống → ôn lại câu sai thay vì xử thua ngay
+    if (st.boss > 0 && st.hero > 0 && !st.overtime) {
+      st.overtime = true;
+      let extra = st.wrong.slice();
+      if (extra.length < 3) {
+        const ids = new Set(extra.map(x => x.id));
+        extra = extra.concat(questionsForStage(stageIdx).filter(x => !ids.has(x.id)).slice(0, 3 - extra.length));
+      }
+      extra = shuffle(extra).slice(0, OVERTIME_MAX);
+      st.list = st.list.concat(extra);
+      showLevelBanner(`Ôn lại ${extra.length} câu – hạ boss trước khi hết câu!`, '⏱ HIỆP PHỤ');
+      playSfx('ui');
+      setTimeout(() => { if (st && !st._ended) ask(); }, 950);
+      return;
+    }
+    return end(st.boss <= 0);
+  }
   ask();
+}
+
+function calcStars() {
+  const acc = st.answered ? st.correct / st.answered : 0;
+  const hp = st.heroMax ? st.hero / st.heroMax : 0;
+  if (acc >= 0.9 && hp >= 0.5 && !st.overtime) return 3;
+  if (acc >= 0.7) return 2;
+  return 1;
+}
+function countUp(el, to, ms = 700) {
+  if (!el) return;
+  if (REDUCED) { el.textContent = to; return; }
+  const t0 = performance.now();
+  (function step(now) {
+    const k = Math.min(1, (now - t0) / ms);
+    el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) requestAnimationFrame(step);
+  })(t0);
+}
+/** Màn "HẠ BOSS!" — sao bật lần lượt + số liệu chạy → khoảnh khắc thưởng rõ ràng */
+function showClear(stage, stars, onNext, isFinal) {
+  const acc = st.answered ? Math.round(st.correct / st.answered * 100) : 0;
+  $('clearTitle').textContent = isFinal ? 'XONG LỘ TRÌNH!' : 'HẠ BOSS!';
+  $('clearSub').textContent = `${stage.boss} · ${stage.name}`;
+  $('clearAcc').textContent = acc + '%';
+  $('clearCombo').textContent = st.comboMax;
+  $('clearScore').textContent = '0';
+  const tips = {
+    3: 'Hoàn hảo! Chia sẻ để rủ bạn thử thách.',
+    2: 'Đúng ≥90% và còn ≥50% máu (không cần hiệp phụ) để được 3 sao.',
+    1: 'Đúng ≥70% để được 2 sao – xem Sổ ôn ở cuối lượt.'
+  };
+  $('clearTip').textContent = tips[stars];
+  $('clearBtn').textContent = isFinal ? '🏆 Xem kết quả' : ('▶ Chặng tiếp: ' + (STAGES[stageIdx] ? STAGES[stageIdx].name : ''));
+  const spans = [...$('clearStars').children];
+  spans.forEach(s => { s.className = ''; });
+  $('clearOverlay').classList.add('on');
+  countUp($('clearScore'), runScore, 900);
+  spans.forEach((s, i) => setTimeout(() => {
+    if (i < stars) { s.className = 'on'; Snd.star(i); burstFrom(s, { n: 12, spread: 70 }); vib(25); }
+    else s.className = 'off';
+  }, 380 + i * 380));
+  let done = false;
+  $('clearBtn').onclick = () => {
+    if (done) return; done = true;
+    $('clearOverlay').classList.remove('on');
+    playSfx('ui');
+    onNext();
+  };
 }
 
 function end(win) {
@@ -1773,23 +2278,38 @@ function end(win) {
   runCorrect += st.correct;
   runAnswered += (st.answered || 0);
   runComboMax = Math.max(runComboMax, st.comboMax);
+  if (window.speechSynthesis) { try { speechSynthesis.cancel(); } catch (e) {} }
+  if ($('explainSlot')) $('explainSlot').innerHTML = '';
+  if ((st.answered || 0) >= 5 || win) markPlayedToday();
   const stage = STAGES[stageIdx] || STAGES[0];
   if (win) {
     if (!prog.badges.includes(stage.badge)) prog.badges.push(stage.badge);
+    const stars = calcStars();
+    prog.stars[stage.key] = Math.max(prog.stars[stage.key] || 0, stars);
+    prog.best = Math.max(prog.best, runScore);
     // More stages left?
     if (stageIdx + 1 < STAGES.length) {
       stageIdx += 1;
+      save();
       playSfx('win');
-      prog.best = Math.max(prog.best, runScore); save();
-      openMap();
-      const btn = $('btnEnterStage');
-      if (btn) { btn.textContent = '▶ Chặng tiếp: ' + STAGES[stageIdx].name; }
+      showClear(stage, stars, () => {
+        openMap();
+        const btn = $('btnEnterStage');
+        if (btn) { btn.textContent = '▶ Chặng tiếp: ' + STAGES[stageIdx].name; }
+      }, false);
       return;
     }
     // Full clear
     prog.wins++;
+    save();
     playSfx('win');
+    showClear(stage, stars, () => renderEnd(true, stage), true);
+    return;
   }
+  renderEnd(false, stage);
+}
+
+function renderEnd(win, stage) {
   show('sEnd');
   if (win) {
     $('badge').textContent = '🏅';
@@ -1814,6 +2334,26 @@ function end(win) {
     $('learnVi').textContent = st.lastLearned.vi || '';
     lc.hidden = false;
   } else { lc.hidden = true; }
+  // v4.1: chuỗi ngày học + Sổ ôn
+  const sk = streakAlive();
+  $('endStreak').innerHTML = sk
+    ? `<span class="streak-fire">🔥 Chuỗi học ${sk} ngày</span> · ${learnText()}<br><small style="opacity:.8">Mai chơi tiếp 1 chặng để giữ chuỗi!</small>`
+    : learnText();
+  const rc = $('reviewCard');
+  if (runWrong.length) {
+    $('reviewList').innerHTML = runWrong.slice(0, 8).map((q, i) => {
+      const zh = fullZh(q), ans = correctText(q);
+      return `<div class="rv-item"><div class="t">
+        ${ans && !hasHan(ans) ? `<div class="vi" style="font-weight:700">${esc(ans)}</div>` : ''}
+        ${zh ? `<div class="zh">${esc(zh)}</div>` : ''}
+        <div class="py">${esc(fullPy(q))}</div><div class="vi">${esc(q.vi)}</div></div>
+        ${zh ? `<button type="button" data-rv="${i}" aria-label="Nghe">🔊</button>` : ''}</div>`;
+    }).join('');
+    $('reviewList').querySelectorAll('button[data-rv]').forEach(b => {
+      b.onclick = () => { initAudio(); speakZh(fullZh(runWrong[+b.dataset.rv])); };
+    });
+    rc.hidden = false;
+  } else { rc.hidden = true; }
   const priceEl = $('invitePrice');
   if (priceEl) priceEl.textContent = INVITE_BLURB;
   const shareLine = $('inviteShareLine');
@@ -1830,15 +2370,16 @@ if ($('btnEnterStage')) $('btnEnterStage').onclick = () => {
   if (stageIdx >= STAGES.length) { show('sEnd'); return; }
   startStage(stageIdx);
 };
-if ($('btnMapBack')) $('btnMapBack').onclick = () => { show('sStart'); playSfx('ui'); };
-if ($('muteBtn')) $('muteBtn').onclick = () => {
+if ($('btnMapBack')) $('btnMapBack').onclick = () => { renderProgress(); show('sStart'); playSfx('ui'); };
+function toggleMute() {
   muted = !muted;
   lsSet('baokhua_mute', muted ? '1' : '0');
   applyMute();
   if (!muted) { initAudio(); ensureBgm(); playSfx('ui'); }
-};
-// First tap unlocks audio on mobile
-document.body.addEventListener('pointerdown', () => { initAudio(); }, { once:true });
+}
+['muteBtn', 'muteBtn2'].forEach(id => { if ($(id)) $(id).onclick = toggleMute; });
+// Chạm đầu tiên mở khóa âm thanh trên điện thoại; các lần sau tự resume nếu iOS tạm ngắt
+document.body.addEventListener('pointerdown', () => { initAudio(); }, { passive: true });
 applyMute();
 function buildShareCard() {
   const W = 1080, H = 1920;
@@ -1883,6 +2424,13 @@ function buildShareCard() {
   g.font = '24px system-ui,sans-serif';
   const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
   wrapText(g, /THAY_/.test(formUrl) ? 'Đăng ký thẻ · Zoom T2 T4 T6 20:00' : formUrl, W/2, 1500, W - 220, 34);
+  const s1 = prog.stars.hotel || 0, s2 = prog.stars.factory || 0;
+  if (s1 || s2) {
+    g.fillStyle = '#FFD91F'; g.font = 'bold 40px system-ui,sans-serif';
+    g.fillText(`Bãi Cháy ${starsText(s1) || '–'}   Cẩm Phả ${starsText(s2) || '–'}`, W/2, 950);
+  }
+  g.fillStyle = '#fff'; g.font = 'bold 34px system-ui,sans-serif';
+  g.fillText('▶ Chơi thử: ' + GAME_URL.replace(/^https?:\/\//, ''), W/2, 1660);
   g.fillStyle = '#16171B'; g.font = '22px system-ui,sans-serif';
   g.fillText('ngoquocgiabao-hy.github.io/Baokhua', W/2, 1860);
   return c;
@@ -1904,7 +2452,9 @@ $('shareBtn').onclick = async () => {
   const answered = st.answered || Math.min(st.i + 1, st.list.length);
   const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
   const totalQ = runQPool || (st.list && st.list.length) || 0;
-  const text = `Mình chơi Bảo Khựa 3D (Hạ Long–Cẩm Phả), đúng ${runCorrect || st.correct}/${runAnswered || totalQ}! 🏅
+  const starLine = (prog.stars.hotel || prog.stars.factory) ? ` ⭐ Bãi Cháy ${starsText(prog.stars.hotel || 0) || '–'} · Cẩm Phả ${starsText(prog.stars.factory || 0) || '–'}` : '';
+  const text = `Mình chơi Bảo Khựa 3D (Hạ Long–Cẩm Phả), đúng ${runCorrect || st.correct}/${runAnswered || totalQ}! 🏅${starLine}
+👉 Thử hạ boss xem bạn được mấy sao: ${GAME_URL}
 ${INVITE_SHARE_LINE}
 ${holdSeatExpired() ? "" : (OFFER_HOLD + "\n")}${holdSeatExpired() ? "" : OFFER_REFERRAL}
 ${OFFER_MINIGAME}
@@ -1935,7 +2485,7 @@ if (window.speechSynthesis) speechSynthesis.getVoices();
 
 // Smoke / debug hooks (không ảnh hưởng chơi)
 window.__bao = {
-  end, beginRun, startStage, openMap, save, lsGet, lsSet,
+  end, beginRun, startStage, openMap, save, lsGet, lsSet, ask,
   get st(){ return st; }, get battle(){ return battle; },
   get prog(){ return prog; }, set prog(v){ prog = v; },
   get stageIdx(){ return stageIdx; },
