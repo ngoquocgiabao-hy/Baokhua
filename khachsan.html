@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Khách sạn Bảo Khựa 阿宝 – Xây khách sạn, học tiếng Trung</title>
+<meta name="description" content="Phục vụ khách Trung Quốc ở quầy lễ tân Bãi Cháy: trả lời đúng tiếng Trung để có xu, xây khách sạn từ 1 sao lên 5 sao. Mỗi câu có pinyin + nghĩa Việt.">
+<meta name="theme-color" content="#0b3d5c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bảo Khựa 阿宝">
+<meta property="og:title" content="Khách sạn Bảo Khựa 阿宝 – xây khách sạn 5 sao bằng tiếng Trung">
+<meta property="og:description" content="Phục vụ khách Trung Quốc, kiếm xu, xây tầng, bể bơi, vòng quay. Học câu khách sạn – nhà hàng – nhà máy có pinyin + nghĩa Việt.">
+<meta property="og:url" content="https://ngoquocgiabao-hy.github.io/Baokhua/khachsan.html">
+<meta property="og:image" content="https://ngoquocgiabao-hy.github.io/Baokhua/v4/og-hotel.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#0b3d5c;color:#fff;display:flex;justify-content:center;overscroll-behavior-y:none}
+#app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column;gap:8px;padding:8px 8px 28px}
+.hud{display:flex;gap:6px;align-items:stretch;position:sticky;top:0;z-index:30;padding-top:2px;background:linear-gradient(#0b3d5c 70%,rgba(11,61,92,0))}
+.pill{display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:6px 10px;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.coin{color:#FFD91F;min-width:86px}
+.pill.coin.bump{animation:bump .35s ease-out}
+@keyframes bump{40%{transform:scale(1.18)}}
+.pill.star{flex:1;flex-direction:column;align-items:stretch;gap:3px;padding:5px 10px}
+.pill.star .top{display:flex;justify-content:space-between;font-size:12px}
+#starTxt{color:#FFD91F;letter-spacing:1px;font-size:14px}
+.mini{height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden}
+.mini i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2ec4b6,#FFD91F);transition:width .6s ease-out}
+.btn-ico{border:1px solid rgba(255,255,255,.16);color:#fff;font-size:17px;width:42px;justify-content:center;cursor:pointer}
+.scene-wrap{position:relative;border-radius:18px;overflow:hidden;border:2px solid rgba(255,217,31,.55);box-shadow:0 6px 0 rgba(0,0,0,.28);aspect-ratio:360/300;background:#5fb8f0}
+#scene{display:block;width:100%;height:100%;touch-action:manipulation}
+.scene-tip{position:absolute;left:8px;top:8px;font-size:11px;font-weight:700;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:999px;pointer-events:none}
+.serve-btn{border:0;border-radius:16px;padding:14px;font-size:18px;font-weight:900;background:linear-gradient(180deg,#FFE97A,#FFD91F);color:#3a2600;box-shadow:0 5px 0 #b8901c;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.serve-btn small{font-size:12px;font-weight:700;opacity:.8}
+.serve-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #b8901c}
+.serve-btn.pulse{animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.025)}}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;border:0;border-radius:12px;padding:10px 4px;font-weight:800;font-size:13px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+.tabs button.on{background:#fff;color:#0b3d5c}
+.panel{display:none;flex-direction:column;gap:8px}.panel.on{display:flex}
+.item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.08);border-radius:14px;padding:10px;border:1px solid rgba(255,255,255,.1)}
+.item .ic{font-size:30px;width:42px;text-align:center;flex:none}
+.item .t{flex:1;min-width:0}
+.item .zh{font-size:18px;font-weight:800;line-height:1.2}
+.item .py{font-size:12px;color:#ffe9a8;font-style:italic}
+.item .vi{font-size:12px;opacity:.88;line-height:1.35}
+.item .eff{font-size:11px;color:#9eecff;margin-top:2px}
+.item .buy{border:0;border-radius:12px;padding:10px 6px;min-width:84px;font-weight:900;font-size:14px;background:#FFD91F;color:#3a2600;box-shadow:0 3px 0 #b8901c;cursor:pointer}
+.item .buy:disabled{background:#4d5f6c;color:#c7d2da;box-shadow:none;cursor:default}
+.item.lock{opacity:.5}
+.item.maxed .buy{background:#2ec4b6;color:#033}
+.item.can{border-color:rgba(255,217,31,.6);box-shadow:inset 0 0 0 1px rgba(255,217,31,.25)}
+.section-lab{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.7;margin:4px 2px 0}
+.card{background:rgba(0,0,0,.28);border-radius:14px;padding:12px}
+.note{font-size:12px;opacity:.85;line-height:1.45}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stats div{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 4px;text-align:center;font-size:11px}
+.stats b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.btn{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:800;background:#FFD91F;color:#3a2600;box-shadow:0 4px 0 #b8901c;text-align:center;text-decoration:none;display:block;cursor:pointer}
+.btn.ghost{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.btn.zalo{background:#0068ff;color:#fff;box-shadow:0 4px 0 #0040a0}
+.btn.dark{background:#16171B;color:#FFD91F;box-shadow:0 4px 0 #000}
+.row-btns{display:flex;gap:8px}.row-btns .btn{flex:1}
+.rv-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.12)}
+.rv-item:first-child{border-top:0}
+.rv-item .t{flex:1;min-width:0}
+.rv-item .zh{font-size:18px;font-weight:800}
+.rv-item .py{font-size:12px;color:#ffe9a8;font-style:italic}
+.rv-item .vi{font-size:12px;opacity:.88}
+.rv-item button{border:0;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;font-size:18px;width:42px;height:42px;flex:none}
+/* sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,10,20,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
+.sheet-bg.on{display:flex}
+.sheet{width:100%;max-width:480px;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#174f6f,#0d2a3d);border-top:3px solid #FFD91F;border-radius:22px 22px 0 0;padding:12px 12px 22px;animation:slideUp .28s ease-out}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sh-head{display:flex;gap:10px;align-items:center}
+.sh-head .av{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:28px;flex:none;overflow:hidden}
+.sh-head .nm{flex:1;min-width:0}
+.sh-head .nm b{display:block;font-size:15px}
+.sh-head .nm small{font-size:12px;opacity:.8}
+.sh-close{border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:12px;width:38px;height:38px;font-size:16px;flex:none}
+.combo-tag{font-weight:900;color:#FFD91F;font-size:13px;white-space:nowrap}
+.tipbar{height:5px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden;margin:10px 0 2px}
+.tipbar i{display:block;height:100%;width:100%;background:#FFD91F;transform-origin:left center}
+.tiplab{font-size:11px;opacity:.75}
+.qcard{background:rgba(0,0,0,.25);border-radius:14px;padding:12px;margin-top:8px}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#ffd34d;color:#3a2600;margin-right:4px}
+.tag.listen{background:#2ec4b6;color:#042}.tag.order{background:#a78bfa;color:#1a0a3a}.tag.fill{background:#fb923c;color:#3a1600}.tag.situ{background:#60a5fa;color:#0a1a3a}.tag.buy{background:#3dff8a;color:#043}
+.q{font-size:17px;font-weight:700;line-height:1.35;margin-top:6px}
+.qzh{font-size:24px;font-weight:800;margin-top:6px}
+.qpy{color:#ffe9a8;font-style:italic;font-size:14px;margin-top:2px}
+.qvi{opacity:.9;font-size:14px;margin-top:2px}
+.opts{display:grid;gap:7px;margin-top:10px}
+.opt{text-align:left;font-size:15px;padding:12px;border-radius:12px;border:2px solid transparent;background:#fff;color:#123;font-weight:700;cursor:pointer}
+.opt:active{transform:scale(.98)}
+.opt .py,.opt .vi-ans{display:none;font-size:12px;font-weight:500;margin-top:2px}
+.opt .py{font-style:italic;color:#1e5aa8}
+.opts.revealed .opt .py,.opts.revealed .opt .vi-ans{display:block}
+.opt.ok{background:#3dd17a;color:#fff;animation:okPop .32s ease-out}
+.opt.no{background:#ff5a5a;color:#fff;animation:noShake .3s}
+.opt.ok .py,.opt.no .py{color:#fff}
+@keyframes okPop{40%{transform:scale(1.04)}}
+@keyframes noShake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:0;border-radius:999px;padding:8px 12px;font-weight:800;font-size:15px;background:#fff;color:#123;cursor:pointer}
+.chip.used{opacity:.3}
+.chip .py{display:block;font-size:10px;font-weight:500;opacity:.75;font-style:italic}
+.order-slot{min-height:46px;border:2px dashed rgba(255,255,255,.35);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.order-slot .chip{background:#ffd34d;color:#3a2600}
+.order-hint{font-size:12px;opacity:.75;margin-top:4px}
+.explain{margin-top:10px;padding:12px;border-radius:14px;background:linear-gradient(180deg,rgba(255,90,90,.18),rgba(0,0,0,.3));border:2px solid rgba(255,120,120,.55);animation:slideUp .25s ease-out}
+.explain .lab{font-size:12px;font-weight:800;color:#ffb4a8;text-transform:uppercase}
+.explain .qzh{font-size:22px}
+.explain .row-btns{margin-top:10px}
+/* overlays */
+.overlay{position:fixed;inset:0;background:rgba(0,10,20,.72);display:none;align-items:center;justify-content:center;z-index:70;padding:16px;backdrop-filter:blur(3px)}
+.overlay.on{display:flex}
+.ov-card{background:radial-gradient(circle at 50% 0%,#2a6d93,#0d2a3d 72%);border:3px solid #FFD91F;border-radius:22px;padding:18px 14px 14px;width:100%;max-width:400px;text-align:center;animation:clearIn .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes clearIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.ov-card h3{font-size:26px;font-weight:900;color:#FFD91F;text-shadow:0 3px 0 #16171B}
+.ov-card .big{font-size:56px;margin:6px 0;animation:spinIn .8s cubic-bezier(.2,1.5,.4,1)}
+@keyframes spinIn{from{transform:scale(.2) rotate(-200deg)}to{transform:none}}
+.ov-card p{font-size:14px;opacity:.92;line-height:1.45;margin:6px 0}
+.ov-card .btn{margin-top:10px}
+.unlock-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+.unlock-list span{background:rgba(255,255,255,.12);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700}
+.fx-layer{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
+.fx-dot{position:absolute;left:0;top:0;width:9px;height:9px;border-radius:50%;will-change:transform,opacity}
+.fx-txt{position:absolute;left:0;top:0;font-weight:900;font-size:20px;color:#FFD91F;text-shadow:0 2px 0 #16171B;white-space:nowrap;will-change:transform,opacity}
+.fx-coin{position:absolute;left:0;top:0;font-size:20px;will-change:transform,opacity}
+.toast{position:absolute;left:50%;bottom:10px;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.72);padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;transition:.25s;white-space:nowrap;pointer-events:none;max-width:94%;overflow:hidden;text-overflow:ellipsis}
+.toast.on{opacity:1;transform:translateX(-50%)}
+/* SVG animation */
+#scene .wave{animation:wave 7s linear infinite}
+#scene .wave.w2{animation-duration:11s;animation-direction:reverse}
+@keyframes wave{to{transform:translateX(-80px)}}
+#scene .bob{animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(2.5px) rotate(.6deg)}}
+#scene .spin{transform-box:view-box;transform-origin:306px 112px;animation:spin 30s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#scene .sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 4s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(3deg)}}
+#scene .twinkle{animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{50%{opacity:.2}}
+#scene .liftcab{animation:lift 7s ease-in-out infinite}
+@keyframes lift{0%,12%{transform:translateY(0)}50%,62%{transform:translateY(var(--h))}100%{transform:translateY(0)}}
+#scene .pop{transform-box:fill-box;transform-origin:50% 100%;animation:popIn .7s cubic-bezier(.2,1.7,.4,1)}
+@keyframes popIn{0%{transform:scale(0,.2)}60%{transform:scale(1.08,1.12)}100%{transform:scale(1)}}
+#scene .fw{transform-box:fill-box;transform-origin:center;animation:fw 3.2s ease-out infinite;opacity:0}
+@keyframes fw{0%{transform:scale(.1);opacity:0}8%{opacity:1}55%{transform:scale(1);opacity:.9}80%,100%{transform:scale(1.15);opacity:0}}
+#scene .ripple{animation:rip 2.6s ease-in-out infinite}
+@keyframes rip{50%{opacity:.25}}
+#scene .win{transition:fill .5s}
+#scene .guest{transition:transform 1s linear}
+#scene .guest .bubble{transition:opacity .2s}
+#scene .guest.walk .l1{transform-box:fill-box;transform-origin:50% 0;animation:legA .3s ease-in-out infinite alternate}
+#scene .guest.walk .l2{transform-box:fill-box;transform-origin:50% 0;animation:legA .3s ease-in-out infinite alternate-reverse}
+@keyframes legA{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+#scene .guest.front{cursor:pointer}
+#scene .guest.front .bubble{animation:bubbleBob 1.2s ease-in-out infinite}
+@keyframes bubbleBob{50%{transform:translateY(-2px)}}
+#scene .guest.gone{opacity:0;transition:transform 1s linear,opacity .5s .5s}
+@media (prefers-reduced-motion:reduce){#scene *{animation:none!important}.pill.coin.bump,.serve-btn.pulse,.ov-card,.sheet{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+ <header class="hud">
+  <div class="pill coin" id="coinPill"><span>🪙</span><b id="coinTxt">0</b></div>
+  <div class="pill star"><div class="top"><span id="starTxt">★☆☆☆☆</span><span id="starNext" style="opacity:.8"></span></div><div class="mini"><i id="starBar"></i></div></div>
+  <div class="pill" id="streakPill" title="Chuỗi ngày học">🔥 0</div>
+  <button class="pill btn-ico" id="muteBtn" type="button" aria-label="Tắt/bật tiếng">🔊</button>
+ </header>
+ <div class="scene-wrap" id="sceneWrap">
+  <svg id="scene" viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Khách sạn Bảo Khựa ở Bãi Cháy">
+   <g id="world"></g>
+   <g id="guestLayer"></g>
+  </svg>
+  <div class="scene-tip" id="sceneTip">Chạm khách đang chờ để phục vụ</div>
+  <div class="toast" id="toast"></div>
+ </div>
+ <button class="serve-btn pulse" id="serveBtn" type="button">🛎️ Phục vụ khách <small id="queueTxt"></small></button>
+ <nav class="tabs">
+  <button type="button" data-tab="build" class="on">🏗️ Xây dựng</button>
+  <button type="button" data-tab="review">📒 Sổ ôn</button>
+  <button type="button" data-tab="me">🏆 Thành tích</button>
+ </nav>
+ <section class="panel on" id="tab-build"></section>
+ <section class="panel" id="tab-review"></section>
+ <section class="panel" id="tab-me"></section>
+</div>
+
+<div class="sheet-bg" id="sheet" role="dialog" aria-modal="true">
+ <div class="sheet">
+  <div class="sh-head">
+   <div class="av" id="shAv"></div>
+   <div class="nm"><b id="shName"></b><small id="shSub"></small></div>
+   <span class="combo-tag" id="shCombo"></span>
+   <button class="sh-close" id="shClose" type="button" aria-label="Đóng">✕</button>
+  </div>
+  <div id="tipWrap"><div class="tipbar"><i id="tipBar"></i></div><div class="tiplab" id="tipLab">⚡ Trả lời trong 5 giây → khách boa thêm 50%</div></div>
+  <div class="qcard">
+   <div id="qTags"></div>
+   <div class="q" id="qText"></div>
+   <div class="qzh" id="qZh"></div>
+   <div class="qpy" id="qPy"></div>
+   <div class="qvi" id="qVi"></div>
+   <div id="qExtra"></div>
+  </div>
+  <div class="opts" id="opts"></div>
+  <div id="explainSlot"></div>
+ </div>
+</div>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true">
+ <div class="ov-card">
+  <div class="big" id="ovBig">⭐</div>
+  <h3 id="ovTitle"></h3>
+  <div id="ovBody"></div>
+  <button class="btn" type="button" id="ovBtn">Tiếp tục</button>
+ </div>
+</div>
+<div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+
+<script>
+(() => {
+'use strict';
+/* ===== CẤU HÌNH ===== */
+const GAME_URL = 'https://ngoquocgiabao-hy.github.io/Baokhua/khachsan.html';
+const ZALO_LINK = 'https://zalo.me/g/16yx8ptwane8ggwrnyxl';
+const GOOGLE_FORM_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform';
+const FORM_UTM = 'utm_source=game_khachsan&utm_campaign=lop_0211';
+const SAVE_KEY = 'baokhua_hotel_v1';
+const FAST_SECONDS = 5;
+const STAR_PTS = [0, 50, 160, 400, 750];       // điểm khách sạn cần cho 1★…5★
+const IDLE_EVERY_MS = 15000;                   // mỗi nhân viên +1 xu / 15 giây
+const OFFLINE_CAP_MIN = 60;                    // thu khi vắng tối đa 60 phút, 50%
+
+/* ===== NGÂN HÀNG CÂU HỎI (dùng chung với game Đánh Boss) ===== */
+/** Schema bắt buộc (9 field) → runtime. Field phụ: type/topic/zh/optionPy/optionVi/words/... */
+function normalizeQ(raw) {
+  if (!raw) return raw;
+  if (raw.cau_hoi == null && (raw.q != null || raw.options != null)) return raw;
+  const type = raw.type || 'mc';
+  const topic = raw.topic || (String(raw.chang||'').includes('Cẩm') ? 'factory' : 'hotel');
+  const answer = (type === 'order' && raw.answerOrder) ? raw.answerOrder : (raw.dung != null ? raw.dung : 0);
+  const q = {
+    id: raw.id, chang: raw.chang, ngon_ngu: raw.ngon_ngu || 'zh', do_kho: raw.do_kho || 1,
+    type, topic,
+    q: raw.cau_hoi,
+    options: raw.dap_an || [],
+    answer,
+    py: raw.pinyin || '',
+    vi: raw.giai_thich || '',
+    zh: raw.zh || '',
+    optionPy: raw.optionPy, optionVi: raw.optionVi,
+    words: raw.words, wordPy: raw.wordPy, wordVi: raw.wordVi,
+    speak: raw.speak, blankHint: raw.blankHint, stage: raw.stage
+  };
+  if (!q.zh) {
+    if (type === 'order' && q.options[0]) q.zh = q.options[0];
+    else if (typeof answer === 'number' && q.options[answer]) q.zh = q.options[answer];
+  }
+  return q;
+}
+function normalizeQuestions(arr) { return (arr || []).map(normalizeQ); }
+
+const QUESTIONS_RAW = [
+  {id:"bc-01",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách đến quầy lễ tân — câu nào hỏi số người trong đoàn?",dap_an:["请问您几位？","请问您住几天？","请问您贵姓？","请问您有预订吗？"],dung:0,pinyin:"Qǐngwèn nín jǐ wèi?",giai_thich:"Xin hỏi quý khách có mấy vị?",type:"situ",topic:"hotel",zh:"请问您几位？",optionPy:["Qǐngwèn nín jǐ wèi?","Qǐngwèn nín zhù jǐ tiān?","Qǐngwèn nín guìxìng?","Qǐngwèn nín yǒu yùdìng ma?"],optionVi:["Xin hỏi mấy vị?","Quý khách ở mấy ngày?","Quý khách họ gì?","Quý khách đặt phòng trước chưa?"]},
+  {id:"bc-02",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách muốn làm gì?",dap_an:["Nhận phòng","Trả phòng","Gọi taxi","Đặt bàn"],dung:0,pinyin:"Wǒ xiǎng bànlǐ rùzhù.",giai_thich:"Tôi muốn làm thủ tục nhận phòng.",type:"mc",topic:"hotel",zh:"我想办理入住。"},
+  {id:"bc-03",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Trả phòng” tiếng Trung là gì?",dap_an:["入住","退房","早餐","护照"],dung:1,pinyin:"tuìfáng",giai_thich:"Trả phòng / check-out",type:"mc",topic:"hotel",zh:"退房",optionPy:["rùzhù","tuìfáng","zǎocān","hùzhào"],optionVi:["Nhận phòng","Trả phòng","Bữa sáng","Hộ chiếu"]},
+  {id:"bc-04",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Lễ tân đang yêu cầu gì?",dap_an:["Xin số điện thoại","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"],dung:1,pinyin:"Qǐng chūshì nín de hùzhào.",giai_thich:"Xin xuất trình hộ chiếu của anh/chị.",type:"mc",topic:"hotel",zh:"请出示您的护照。"},
+  {id:"bc-05",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi gì?",dap_an:["Mấy giờ ăn sáng","Phòng giá bao nhiêu","Wifi mật khẩu gì","Bể bơi ở đâu"],dung:0,pinyin:"Zǎocān jǐ diǎn kāishǐ?",giai_thich:"Bữa sáng bắt đầu lúc mấy giờ?",type:"mc",topic:"hotel",zh:"早餐几点开始？"},
+  {id:"bc-06",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Phòng khách ở đâu?",dap_an:["Tầng 1","Tầng 6","Tầng 8","Tầng 10"],dung:2,pinyin:"Nín de fángjiān zài bā lóu.",giai_thich:"Phòng của anh/chị ở tầng tám.",type:"mc",topic:"hotel",zh:"您的房间在八楼。"},
+  {id:"bc-07",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Giờ trả phòng là mấy giờ?",dap_an:["10 giờ sáng","12 giờ trưa","2 giờ chiều","6 giờ tối"],dung:1,pinyin:"Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.",giai_thich:"Giờ trả phòng là 12 giờ trưa.",type:"mc",topic:"hotel",zh:"退房时间是中午十二点。"},
+  {id:"bc-08",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Thang máy ở bên kia","Xin xem hộ chiếu","Mời uống trà","Hỏi số phòng"],dung:0,pinyin:"Diàntī zài nàbiān.",giai_thich:"Thang máy ở bên kia.",type:"listen",topic:"hotel",zh:"电梯在那边。",speak:"电梯在那边。"},
+  {id:"bc-09",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe câu khách nói — họ cần gì?",dap_an:["Giờ trả phòng","Mật khẩu WiFi","Giá phòng","Số tầng"],dung:1,pinyin:"WiFi mìmǎ shì duōshǎo?",giai_thich:"Mật khẩu WiFi là bao nhiêu?",type:"listen",topic:"hotel",zh:"WiFi密码是多少？",speak:"WiFi密码是多少？"},
+  {id:"cp-01",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe — công nhân hỏi gì?",dap_an:["洗手间在哪里？","几点下班？","机器坏了。","今天加班。"],dung:0,pinyin:"Xǐshǒujiān zài nǎlǐ?",giai_thich:"Nhà vệ sinh ở đâu?",type:"listen",topic:"factory",zh:"洗手间在哪里？",optionPy:["Xǐshǒujiān zài nǎlǐ?","Jǐ diǎn xiàbān?","Jīqì huài le.","Jīntiān jiābān."],optionVi:["Nhà vệ sinh ở đâu?","Mấy giờ tan ca?","Máy hỏng rồi","Hôm nay làm thêm"],speak:"洗手间在哪里？"},
+  {id:"bc-10",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa.",dap_an:["Đi xe buýt đi làm","Đi bộ về nhà","Ăn cơm trưa","Học tiếng Trung"],dung:0,pinyin:"Wǒ měitiān zuò gōngjiāochē qù shàngbān.",giai_thich:"Tôi mỗi ngày đi xe buýt đi làm.",type:"listen",topic:"hsk",zh:"我每天坐公交车去上班。",speak:"我每天坐公交车去上班。"},
+  {id:"bc-11",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp thành câu khi đưa thẻ phòng.",dap_an:["这是您的房卡。","请出示护照。","我要退房。","电梯在那边。"],dung:0,pinyin:"Zhè shì nín de fángkǎ.",giai_thich:"Đây là thẻ phòng của anh/chị.",type:"order",topic:"hotel",zh:"这是您的房卡。",words:["这是","您的","房卡"],wordPy:["Zhè shì","nín de","fángkǎ"],wordVi:["Đây là","của quý khách","thẻ phòng"],answerOrder:["这是","您的","房卡"]},
+  {id:"bc-12",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp lời đáp khi khách cảm ơn.",dap_an:["不客气。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Bú kèqi.",giai_thich:"Không có gì.",type:"order",topic:"hotel",zh:"不客气。",words:["不","客气"],wordPy:["Bú","kèqi"],wordVi:["không","khách sáo"],answerOrder:["不","客气"]},
+  {id:"cp-02",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp: “Xin đeo kính bảo hộ.”",dap_an:["请戴护目镜。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Qǐng dài hùmùjìng.",giai_thich:"Xin hãy đeo kính bảo hộ.",type:"order",topic:"factory",zh:"请戴护目镜。",words:["请","戴","护目镜"],wordPy:["Qǐng","dài","hùmùjìng"],wordVi:["xin","đeo","kính bảo hộ"],answerOrder:["请","戴","护目镜"]},
+  {id:"bc-13",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp câu (HSK 1 · luyện tập, không phải đề chính thức): Tôi muốn học tiếng Trung.",dap_an:["我想学汉语。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Wǒ xiǎng xué Hànyǔ.",giai_thich:"Tôi muốn học tiếng Trung.",type:"order",topic:"hsk",zh:"我想学汉语。",words:["我","想","学","汉语"],wordPy:["Wǒ","xiǎng","xué","Hànyǔ"],wordVi:["tôi","muốn","học","tiếng Hán"],answerOrder:["我","想","学","汉语"]},
+  {id:"bc-14",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền từ: Thang máy tiếng Trung là ____.",dap_an:["电梯","房间","前台","海边"],dung:0,pinyin:"diàntī",giai_thich:"Thang máy",type:"fill",topic:"hotel",zh:"____",optionPy:["diàntī","fángjiān","qiántái","hǎibiān"],optionVi:["Thang máy","Phòng","Quầy lễ tân","Bờ biển"],blankHint:"thang máy"},
+  {id:"bc-15",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống.",dap_an:["八","六","七","九"],dung:0,pinyin:"Nín de fángjiān zài ____ lóu.",giai_thich:"Phòng anh/chị ở tầng …",type:"fill",topic:"hotel",zh:"您的房间在____楼。",optionPy:["bā","liù","qī","jiǔ"],optionVi:["Tám","Sáu","Bảy","Chín"],blankHint:"số tầng"},
+  {id:"cp-03",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền: Chúng tôi tan ca lúc ____ giờ.",dap_an:["五","三","九","零"],dung:0,pinyin:"Wǒmen ____ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc … giờ.",type:"fill",topic:"factory",zh:"我们____点下班。",optionPy:["wǔ","sān","jiǔ","líng"],optionVi:["Năm","Ba","Chín","Không"],blankHint:"giờ"},
+  {id:"bc-16",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["坐公交车","睡觉","游泳","唱歌"],dung:0,pinyin:"Wǒ ____ qù shàngbān.",giai_thich:"Tôi đi … đi làm.",type:"fill",topic:"hsk",zh:"我____去上班。",optionPy:["zuò gōngjiāochē","shuìjiào","yóuyǒng","chànggē"],optionVi:["Đi xe buýt","Ngủ","Bơi","Hát"],blankHint:"phương tiện"},
+  {id:"bc-17",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách cảm ơn sau khi nhận phòng. Bạn đáp?",dap_an:["不用谢。","对不起。","再见。","没有。"],dung:0,pinyin:"Bú yòng xiè.",giai_thich:"Không cần cảm ơn.",type:"situ",topic:"hotel",zh:"不用谢。",optionPy:["Bú yòng xiè.","Duìbuqǐ.","Zàijiàn.","Méiyǒu."],optionVi:["Không cần cảm ơn","Xin lỗi","Tạm biệt","Không có"]},
+  {id:"bc-18",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi đường ra biển. Câu nào tự nhiên?",dap_an:["往海边走。","请出示护照。","电梯在那边。","前台在这里。"],dung:0,pinyin:"Wǎng hǎibiān zǒu.",giai_thich:"Đi về phía biển.",type:"situ",topic:"hotel",zh:"往海边走。",optionPy:["Wǎng hǎibiān zǒu.","Qǐng chūshì hùzhào.","Diàntī zài nàbiān.","Qiántái zài zhèlǐ."],optionVi:["Đi về phía biển","Xin hộ chiếu","Thang máy bên kia","Quầy lễ tân ở đây"]},
+  {id:"cp-04",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Công nhân hỏi giờ tan ca. Bạn đáp?",dap_an:["我们五点下班。","我们五点上班。","今天加班。","请去打卡。"],dung:0,pinyin:"Wǒmen wǔ diǎn xiàbān.",giai_thich:"Chúng tôi tan ca lúc 5 giờ.",type:"situ",topic:"factory",zh:"我们五点下班。",optionPy:["Wǒmen wǔ diǎn xiàbān.","Wǒmen wǔ diǎn shàngbān.","Jīntiān jiābān.","Qǐng qù dǎkǎ."],optionVi:["Tan ca lúc 5 giờ","Đi làm lúc 5 giờ","Hôm nay làm thêm","Xin đi chấm công"]},
+  {id:"cp-05",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nhắc an toàn trước khi vào xưởng — câu nào đúng?",dap_an:["请戴安全帽。","请去打卡。","这是次品。","仓库在那边。"],dung:0,pinyin:"Qǐng dài ānquánmào.",giai_thich:"Xin hãy đội mũ bảo hộ.",type:"situ",topic:"factory",zh:"请戴安全帽。",optionPy:["Qǐng dài ānquánmào.","Qǐng qù dǎkǎ.","Zhè shì cìpǐn.","Cāngkù zài nàbiān."],optionVi:["Xin đội mũ bảo hộ","Xin đi chấm công","Đây là hàng kém","Kho ở bên kia"]},
+  {id:"cp-06",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Máy dừng — bạn báo tổ trưởng thế nào?",dap_an:["机器坏了。","机器在仓库。","我要加班。","质量有问题。"],dung:0,pinyin:"Jīqì huài le.",giai_thich:"Máy hỏng rồi.",type:"situ",topic:"factory",zh:"机器坏了。",optionPy:["Jīqì huài le.","Jīqì zài cāngkù.","Wǒ yào jiābān.","Zhìliàng yǒu wèntí."],optionVi:["Máy hỏng rồi","Máy ở trong kho","Tôi muốn làm thêm","Chất lượng có vấn đề"]},
+  {id:"bc-19",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bạn tự giới thiệu trong lớp (HSK 1 · luyện tập, không phải đề chính thức).",dap_an:["我叫宝，我是越南人。","我要办理入住。","请戴安全帽。","退房时间是十二点。"],dung:0,pinyin:"Wǒ jiào Bǎo, wǒ shì Yuènán rén.",giai_thich:"Tôi tên Bảo, tôi là người Việt Nam.",type:"situ",topic:"hsk",zh:"我叫宝，我是越南人。",optionPy:["Wǒ jiào Bǎo, wǒ shì Yuènán rén.","Wǒ yào bànlǐ rùzhù.","Qǐng dài ānquánmào.","Tuìfáng shíjiān shì shí'èr diǎn."],optionVi:["Tôi tên Bảo, người Việt","Tôi muốn nhận phòng","Đội mũ bảo hộ","Trả phòng 12h"]},
+  {id:"bc-20",chang:"Bãi Cháy – Lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi giá món ăn ở quán — câu nào đúng?",dap_an:["这个多少钱？","洗手间在哪里？","请出示护照。","机器坏了。"],dung:0,pinyin:"Zhège duōshǎo qián?",giai_thich:"Cái này bao nhiêu tiền?",type:"situ",topic:"hsk",zh:"这个多少钱？",optionPy:["Zhège duōshǎo qián?","Xǐshǒujiān zài nǎlǐ?","Qǐng chūshì hùzhào.","Jīqì huài le."],optionVi:["Bao nhiêu tiền?","WC ở đâu?","Xin hộ chiếu","Máy hỏng"]},
+  {id:"bc-21",chang:"HSK (luyện tập)",ngon_ngu:"zh",do_kho:1,cau_hoi:"Chọn nghĩa đúng của 学习",dap_an:["Học tập","Ngủ","Chạy","Ăn"],dung:0,pinyin:"xuéxí",giai_thich:"Học / học tập",type:"mc",topic:"hsk",zh:"学习"},
+  {id:"cp-07",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Tan ca” tiếng Trung là?",dap_an:["上班","下班","加班","仓库"],dung:1,pinyin:"xiàbān",giai_thich:"Tan ca / hết giờ làm",type:"mc",topic:"factory",zh:"下班",optionPy:["shàngbān","xiàbān","jiābān","cāngkù"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Kho hàng"]},
+  {id:"cp-08",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Mũ bảo hộ” tiếng Trung là?",dap_an:["安全帽","次品","打卡","加班"],dung:0,pinyin:"ānquánmào",giai_thich:"Mũ bảo hộ",type:"mc",topic:"factory",zh:"安全帽",optionPy:["ānquánmào","cìpǐn","dǎkǎ","jiābān"],optionVi:["Mũ bảo hộ","Hàng kém / phế phẩm","Chấm công","Làm thêm giờ"],stage:2},
+  {id:"cp-09",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Công nhân hỏi phân xưởng. Câu nào đúng?",dap_an:["车间在哪里？","仓库在哪里？","今天加班吗？","机器坏了吗？"],dung:0,pinyin:"Chējiān zài nǎlǐ?",giai_thich:"Phân xưởng ở đâu?",type:"mc",topic:"factory",zh:"车间在哪里？",optionPy:["Chējiān zài nǎlǐ?","Cāngkù zài nǎlǐ?","Jīntiān jiābān ma?","Jīqì huài le ma?"],optionVi:["Phân xưởng ở đâu?","Kho ở đâu?","Hôm nay tăng ca không?","Máy hỏng rồi phải không?"],stage:2},
+  {id:"cp-10",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nghe — QC nói gì về sản phẩm?",dap_an:["这个有质量问题。","请戴安全帽。","今天加班。","机器坏了。"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"listen",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Qǐng dài ānquánmào.","Jīntiān jiābān.","Jīqì huài le."],optionVi:["Cái này có vấn đề chất lượng","Xin đội mũ bảo hộ","Hôm nay làm thêm","Máy hỏng rồi"],speak:"这个有质量问题。",stage:2},
+  {id:"cp-11",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Sắp xếp: Cần sửa chữa.",dap_an:["需要维修。","请出示护照。","我要退房。","今天加班。"],dung:0,pinyin:"Xūyào wéixiū.",giai_thich:"Cần sửa chữa.",type:"order",topic:"factory",zh:"需要维修。",words:["需要","维修"],wordPy:["Xūyào","wéixiū"],wordVi:["cần","sửa chữa"],answerOrder:["需要","维修"],stage:2},
+  {id:"cp-12",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Điền: Xin ____ mũ bảo hộ.",dap_an:["戴","吃","看","睡"],dung:0,pinyin:"Qǐng ____ ānquánmào.",giai_thich:"Xin … mũ bảo hộ.",type:"fill",topic:"factory",zh:"请____安全帽。",optionPy:["dài","chī","kàn","shuì"],optionVi:["Đội/mang","Ăn","Nhìn","Ngủ"],blankHint:"động từ",stage:2},
+  {id:"cp-13",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"QC kiểm hàng — câu nào đúng?",dap_an:["这个有质量问题。","请去打卡。","请去仓库。","今天打卡了吗？"],dung:0,pinyin:"Zhège yǒu zhìliàng wèntí.",giai_thich:"Cái này có vấn đề chất lượng.",type:"situ",topic:"factory",zh:"这个有质量问题。",optionPy:["Zhège yǒu zhìliàng wèntí.","Qǐng qù dǎkǎ.","Qǐng qù cāngkù.","Jīntiān dǎkǎ le ma?"],optionVi:["Cái này có vấn đề chất lượng","Xin đi chấm công","Xin đến kho","Hôm nay đã chấm công chưa?"],stage:2},
+  {id:"cp-14",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Đi làm / vào ca” là?",dap_an:["上班","下班","加班","打卡"],dung:0,pinyin:"shàngbān",giai_thich:"Đi làm / vào ca",type:"mc",topic:"factory",zh:"上班",optionPy:["shàngbān","xiàbān","jiābān","dǎkǎ"],optionVi:["Đi làm / vào ca","Tan ca","Làm thêm giờ","Chấm công"],stage:2},
+  {id:"cp-15",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Báo hàng lỗi cho QC — câu nào đúng?",dap_an:["这是不良品。","这是合格品。","请去打卡。","仓库在那边。"],dung:0,pinyin:"Zhè shì bùliángpǐn.",giai_thich:"Đây là hàng lỗi.",type:"situ",topic:"factory",zh:"这是不良品。",optionPy:["Zhè shì bùliángpǐn.","Zhè shì hégépǐn.","Qǐng qù dǎkǎ.","Cāngkù zài nàbiān."],optionVi:["Đây là hàng lỗi","Đây là hàng đạt chuẩn","Xin đi chấm công","Kho ở bên kia"],stage:2},
+  {id:"cp-16",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Trước khi vào xưởng, nhắc công nhân 'Xin đeo kính bảo hộ' nói thế nào?",dap_an:["请戴护目镜","请戴安全帽","请穿工作服","请去打卡"],dung:0,pinyin:"Qǐng dài hùmùjìng",giai_thich:"护目镜 (hùmùjìng) = kính bảo hộ; 安全帽 (ānquánmào) = mũ bảo hộ.",type:"situ",topic:"factory",zh:"请戴护目镜",optionPy:["Qǐng dài hùmùjìng","Qǐng dài ānquánmào","Qǐng chuān gōngzuòfú","Qǐng qù dǎkǎ"],optionVi:["Xin đeo kính bảo hộ","Xin đội mũ bảo hộ","Xin mặc đồ bảo hộ","Xin đi chấm công"]},
+  {id:"cp-17",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bảo công nhân đi chấm công đầu ca nói thế nào?",dap_an:["请去仓库","请去下班","请去打卡","请去加班"],dung:2,pinyin:"Qǐng qù dǎkǎ",giai_thich:"打卡 (dǎkǎ) = chấm công.",type:"situ",topic:"factory",zh:"请去打卡",optionPy:["Qǐng qù cāngkù","Qǐng qù xiàbān","Qǐng qù dǎkǎ","Qǐng qù jiābān"],optionVi:["Xin đến kho","Xin đi tan ca","Xin đi chấm công","Xin đi tăng ca"]},
+  {id:"cp-18",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi đồng nghiệp 'Hôm nay có tăng ca không?' nói thế nào?",dap_an:["今天上班吗？","今天加班吗？","今天下班吗？","今天打卡了吗？"],dung:1,pinyin:"Jīntiān jiābān ma?",giai_thich:"加班 (jiābān) = làm thêm, tăng ca.",type:"situ",topic:"factory",zh:"今天加班吗？",optionPy:["Jīntiān shàngbān ma?","Jīntiān jiābān ma?","Jīntiān xiàbān ma?","Jīntiān dǎkǎ le ma?"],optionVi:["Hôm nay đi làm không?","Hôm nay tăng ca không?","Hôm nay tan ca không?","Hôm nay đã chấm công chưa?"]},
+  {id:"cp-19",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Chỉ đường cho khách: 'Kho hàng ở bên kia' nói thế nào?",dap_an:["车间在那边","办公室在那边","仓库在那边","洗手间在那边"],dung:2,pinyin:"Cāngkù zài nàbiān",giai_thich:"仓库 (cāngkù) = kho; 车间 (chējiān) = phân xưởng.",type:"situ",topic:"factory",zh:"仓库在那边",stage:2,optionPy:["Chējiān zài nàbiān","Bàngōngshì zài nàbiān","Cāngkù zài nàbiān","Xǐshǒujiān zài nàbiān"],optionVi:["Phân xưởng bên kia","Văn phòng bên kia","Kho bên kia","WC bên kia"]},
+  {id:"cp-20",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"QC lấy hàng để đối chiếu, nói 'Đây là hàng mẫu' thế nào?",dap_an:["这是次品","这是样品","这是成品","这是原料"],dung:1,pinyin:"Zhè shì yàngpǐn",giai_thich:"样品 (yàngpǐn) = hàng mẫu; 成品 (chéngpǐn) = thành phẩm; 原料 (yuánliào) = nguyên liệu.",type:"situ",topic:"factory",zh:"这是样品",stage:2,optionPy:["Zhè shì cìpǐn","Zhè shì yàngpǐn","Zhè shì chéngpǐn","Zhè shì yuánliào"],optionVi:["Đây là hàng kém","Đây là hàng mẫu","Đây là thành phẩm","Đây là nguyên liệu"]},
+  {id:"cp-21",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nói với đoàn kiểm tra: 'Xin đợi một chút, giám đốc đến ngay' thế nào?",dap_an:["请稍等，工人马上到","请稍等，机器马上修好","请稍等，仓库马上开门","请稍等，老板马上到"],dung:3,pinyin:"Qǐng shāo děng, lǎobǎn mǎshàng dào",giai_thich:"老板 (lǎobǎn) = sếp, giám đốc; 马上 (mǎshàng) = ngay.",type:"situ",topic:"factory",zh:"请稍等，老板马上到",stage:2,optionPy:["Qǐng shāo děng, gōngrén mǎshàng dào","Qǐng shāo děng, jīqì mǎshàng xiū hǎo","Qǐng shāo děng, cāngkù mǎshàng kāimén","Qǐng shāo děng, lǎobǎn mǎshàng dào"],optionVi:["Xin đợi, công nhân đến ngay","Xin đợi, máy sửa xong ngay","Xin đợi, kho mở ngay","Xin đợi, giám đốc đến ngay"]},
+  {id:"cp-22",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Đoàn PCCC sắp vào. Nhắc tổ trưởng 'Hãy chuẩn bị bình chữa cháy' nói thế nào?",dap_an:["请准备安全帽","请准备灭火器","请准备打卡机","请准备样品"],dung:1,pinyin:"Qǐng zhǔnbèi mièhuǒqì",giai_thich:"灭火器 (mièhuǒqì) = bình chữa cháy.",type:"situ",topic:"factory",zh:"请准备灭火器",stage:2,optionPy:["Qǐng zhǔnbèi ānquánmào","Qǐng zhǔnbèi mièhuǒqì","Qǐng zhǔnbèi dǎkǎjī","Qǐng zhǔnbèi yàngpǐn"],optionVi:["Xin chuẩn bị mũ bảo hộ","Xin chuẩn bị bình chữa cháy","Xin chuẩn bị máy chấm công","Xin chuẩn bị hàng mẫu"]},
+  {id:"cp-23",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Báo sếp Trung Quốc: 'Lô hàng này đã đạt kiểm tra chất lượng' nói thế nào?",dap_an:["这批货有质量问题","这批货是次品","这批货已通过质检","这批货还没生产"],dung:2,pinyin:"Zhè pī huò yǐ tōngguò zhìjiǎn",giai_thich:"这批货 (zhè pī huò) = lô hàng này; 通过 (tōngguò) = đạt; 质检 (zhìjiǎn) = kiểm tra chất lượng.",type:"situ",topic:"factory",zh:"这批货已通过质检",stage:2,optionPy:["Zhè pī huò yǒu zhìliàng wèntí","Zhè pī huò shì cìpǐn","Zhè pī huò yǐ tōngguò zhìjiǎn","Zhè pī huò hái méi shēngchǎn"],optionVi:["Lô này có vấn đề chất lượng","Lô này là hàng kém","Lô này đã đạt QC","Lô này chưa sản xuất"]},
+  {id:"cp-24",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Dẫn đoàn kiểm tra: 'Mời đi theo tôi vào phân xưởng' nói thế nào?",dap_an:["请跟我来车间","请跟我去办公室","请在门口等一下","请先去打卡"],dung:0,pinyin:"Qǐng gēn wǒ lái chējiān",giai_thich:"跟我来 (gēn wǒ lái) = đi theo tôi; 车间 (chējiān) = phân xưởng.",type:"situ",topic:"factory",zh:"请跟我来车间",stage:2,optionPy:["Qǐng gēn wǒ lái chējiān","Qǐng gēn wǒ qù bàngōngshì","Qǐng zài ménkǒu děng yīxià","Qǐng xiān qù dǎkǎ"],optionVi:["Mời theo tôi vào phân xưởng","Mời theo tôi đến văn phòng","Xin đợi ở cửa","Xin chấm công trước"]},
+  {id:"cp-25",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Khi diễn tập PCCC, hô 'Mọi người ra điểm tập kết khẩn cấp!' nói thế nào?",dap_an:["大家去食堂集合！","大家去紧急集合点！","大家回车间加班！","大家去仓库盘点！"],dung:1,pinyin:"Dàjiā qù jǐnjí jíhé diǎn!",giai_thich:"紧急集合点 (jǐnjí jíhé diǎn) = điểm tập kết khẩn cấp.",type:"situ",topic:"factory",zh:"大家去紧急集合点！",stage:2,optionPy:["Dàjiā qù shítáng jíhé!","Dàjiā qù jǐnjí jíhé diǎn!","Dàjiā huí chējiān jiābān!","Dàjiā qù cāngkù pándiǎn!"],optionVi:["Mọi người tập hợp ở nhà ăn!","Mọi người ra điểm tập kết khẩn cấp!","Mọi người về xưởng tăng ca!","Mọi người đến kho kiểm kê!"]}
+];
+const QUESTIONS = normalizeQuestions(QUESTIONS_RAW);
+
+/* ===== ĐỒ XÂY DỰNG – mỗi món là 1 từ vựng ===== */
+const ITEMS = [
+  { id:'desk',       zh:'前台',   py:'qiántái',    vi:'Quầy lễ tân',      ico:'🛎️', price:25,  pts:15, star:1, fare:2, eff:'Quầy gỗ viền vàng · +2 xu mỗi khách' },
+  { id:'palm',       zh:'椰子树', py:'yēzishù',    vi:'Cây dừa',          ico:'🌴', price:20,  pts:10, star:1, fare:1, eff:'Hai cây dừa ven biển · +1 xu mỗi khách' },
+  { id:'floor',      zh:'楼层',   py:'lóucéng',    vi:'Tầng lầu',         ico:'🏢', prices:[40,110,260,520], max:4, pts:40, star:1, fare:3, eff:'Thêm 1 tầng · thêm khách xếp hàng · +3 xu' },
+  { id:'umbrella',   zh:'遮阳伞', py:'zhēyángsǎn', vi:'Ô che nắng',       ico:'⛱️', price:35,  pts:15, star:1, fare:1, eff:'Ô và ghế trên bãi cát · +1 xu' },
+  { id:'sign',       zh:'招牌',   py:'zhāopai',    vi:'Biển hiệu',        ico:'🪧', price:60,  pts:30, star:2, fare:3, eff:'Biển neon 宝 HOTEL trên mái · +3 xu' },
+  { id:'lantern',    zh:'灯笼',   py:'dēnglong',   vi:'Đèn lồng',         ico:'🏮', price:50,  pts:25, star:2, fare:2, eff:'Đèn lồng đỏ, sáng về đêm · +2 xu' },
+  { id:'staff',      zh:'员工',   py:'yuángōng',   vi:'Nhân viên',        ico:'🧑‍💼', prices:[80,200,450], max:3, pts:30, star:2, fare:0, idle:1, eff:'+1 xu mỗi 15 giây, kể cả khi bạn vắng' },
+  { id:'lift',       zh:'电梯',   py:'diàntī',     vi:'Thang máy',        ico:'🛗', price:120, pts:50, star:2, fare:2, eff:'Cần để xây từ tầng 4 trở lên · +2 xu' },
+  { id:'pool',       zh:'游泳池', py:'yóuyǒngchí', vi:'Bể bơi',           ico:'🏊', price:200, pts:80, star:3, fare:5, eff:'Bể bơi nhìn ra vịnh · +5 xu' },
+  { id:'restaurant', zh:'餐厅',   py:'cāntīng',    vi:'Nhà hàng',         ico:'🍜', price:240, pts:90, star:3, fare:4, unlock:'hsk', eff:'Mở khách nhà hàng (câu HSK) · +4 xu' },
+  { id:'meeting',    zh:'会议室', py:'huìyìshì',   vi:'Phòng họp',        ico:'🏭', price:260, pts:100, star:3, fare:4, unlock:'factory', eff:'Đón đoàn kỹ sư nhà máy Cẩm Phả · +4 xu' },
+  { id:'boat',       zh:'游船',   py:'yóuchuán',   vi:'Du thuyền',        ico:'🛥️', price:420, pts:150, star:4, fare:6, eff:'Du thuyền đón khách ra vịnh · +6 xu' },
+  { id:'wheel',      zh:'摩天轮', py:'mótiānlún',  vi:'Vòng quay',        ico:'🎡', price:650, pts:220, star:4, fare:6, eff:'Vòng quay khổng lồ, sáng đèn ban đêm · +6 xu' },
+  { id:'fireworks',  zh:'烟花',   py:'yānhuā',     vi:'Pháo hoa',         ico:'🎆', price:900, pts:300, star:5, fare:8, eff:'Pháo hoa mỗi tối trên vịnh · +8 xu' }
+];
+const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+
+const GUEST_TYPES = {
+  hotel:   [{ n:'Khách du lịch Quảng Tây', a:'🧳' }, { n:'Cặp đôi Nam Ninh', a:'💑' }, { n:'Gia đình Thượng Hải', a:'👨‍👩‍👧' }, { n:'Anh Lý – doanh nhân', a:'💼' }, { n:'Chị Vương – blogger du lịch', a:'📸' }],
+  hsk:     [{ n:'Thực khách nhà hàng', a:'🍜' }, { n:'Bạn sinh viên học tiếng Trung', a:'📚' }],
+  factory: [{ n:'Kỹ sư nhà máy Cẩm Phả', a:'👷' }, { n:'Đoàn kiểm tra QC', a:'🔍' }, { n:'Tổ trưởng xưởng', a:'🏭' }]
+};
+const TOPIC_LABEL = { hotel:'Khách sạn', factory:'Nhà máy', hsk:'Nhà hàng · HSK' };
+const TYPE_LABEL = { mc:'Trắc nghiệm', listen:'Nghe', order:'Sắp xếp', fill:'Điền từ', situ:'Tình huống' };
+
+/* ===== tiện ích ===== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const hasHan = s => /[一-鿿]/.test(String(s || ''));
+const pick = a => a[(Math.random() * a.length) | 0];
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function vib(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+function localDay(off = 0) { const d = new Date(Date.now() + off * 86400000); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function withUtm(u, qs) { return u + (u.includes('?') ? '&' : '?') + qs; }
+
+/* ===== lưu tiến độ ===== */
+const DEFAULT = { coins: 30, pts: 0, own: {}, mem: {}, streak: { last: '', n: 0 }, served: 0, correct: 0, bestCombo: 0, lastSeen: 0, intro: false, vipDay: '', star: 1, muted: false };
+let S;
+try { S = Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { S = Object.assign({}, DEFAULT); }
+['own', 'mem', 'streak'].forEach(k => { if (!S[k] || typeof S[k] !== 'object') S[k] = JSON.parse(JSON.stringify(DEFAULT[k])); });
+function save() { S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+
+const owned = id => S.own[id] || 0;
+function starOf(pts) { let s = 0; STAR_PTS.forEach(t => { if (pts >= t) s++; }); return Math.max(1, s); }
+const star = () => starOf(S.pts);
+const floors = () => owned('floor');
+function fare() { let f = 8 + 2 * star(); ITEMS.forEach(it => { f += (it.fare || 0) * owned(it.id); }); return f; }
+const queueCap = () => Math.min(4, 2 + floors());
+function topics() { const t = ['hotel']; if (owned('restaurant')) t.push('hsk'); if (owned('meeting')) t.push('factory'); return t; }
+function priceOf(it) { return it.prices ? it.prices[Math.min(owned(it.id), it.prices.length - 1)] : it.price; }
+function maxOf(it) { return it.max || 1; }
+function needOf(it) { if (it.id === 'floor' && floors() >= 2 && !owned('lift')) return 'lift'; return null; }
+
+/* ===== âm thanh (Web Audio, không CDN; tự tổng hợp nếu không giải mã được .ogg) ===== */
+const Snd = (() => {
+  let ctx = null, master = null, loading = null, bgm = null;
+  const buf = {};
+  const FILES = { hit:'hit.ogg', ui:'ui.ogg', win:'win.ogg', hurt:'hurt.ogg', bgm:'bgm_loop.ogg' };
+  const VOL = { hit:.45, ui:.35, win:.6, hurt:.45, bgm:.16 };
+  const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+  function ens() {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+    try { ctx = new AC(); master = ctx.createGain(); master.gain.value = S.muted ? 0 : 1; master.connect(ctx.destination); } catch (e) { ctx = null; }
+    return ctx;
+  }
+  function decode(ab) { return new Promise((res, rej) => { try { const p = ctx.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); } catch (e) { rej(e); } }); }
+  function load() {
+    if (loading || !ens()) return loading;
+    loading = Promise.all(Object.keys(FILES).map(async k => { try { const r = await fetch('v4/audio/' + FILES[k]); buf[k] = await decode(await r.arrayBuffer()); } catch (e) { buf[k] = null; } })).then(() => startBgm());
+    return loading;
+  }
+  function tone(type, f0, f1, dur, vol, when = 0) {
+    const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t);
+    if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
+  }
+  const SYN = {
+    hit: r => tone('square', 520 * r, 200 * r, .09, .14),
+    ui: r => tone('sine', 880 * r, 880 * r, .06, .1),
+    win: r => [523, 659, 784, 1047].forEach((f, i) => tone('triangle', f * r, f * r, .16, .18, i * .09)),
+    hurt: r => tone('sawtooth', 240 * r, 80 * r, .2, .16)
+  };
+  function ok() { if (S.muted || !ens()) return false; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } return true; }
+  function play(n, rate = 1) {
+    if (!ok()) return;
+    try {
+      if (buf[n]) { const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = buf[n]; s.playbackRate.value = rate; g.gain.value = VOL[n] || .4; s.connect(g); g.connect(master); s.start(); }
+      else if (SYN[n]) SYN[n](rate);
+    } catch (e) {}
+  }
+  function coin(n = 1) { if (!ok()) return; try { const semi = PENTA[Math.min(PENTA.length - 1, Math.max(0, n - 1))]; const f = 988 * Math.pow(2, semi / 12); tone('triangle', f, f, .09, .13); tone('triangle', f * 1.335, f * 1.335, .2, .12, .07); } catch (e) {} }
+  function build() { if (!ok()) return; try { tone('square', 140, 90, .12, .14); tone('square', 160, 100, .12, .12, .14); [659, 784, 988, 1319].forEach((f, i) => tone('triangle', f, f, .14, .14, .3 + i * .08)); } catch (e) {} }
+  function starUp() { if (!ok()) return; try { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone('triangle', f, f * 1.01, .22, .16, i * .1)); } catch (e) {} }
+  function startBgm() { if (S.muted || !ctx || bgm || !buf.bgm) return; try { const g = ctx.createGain(); g.gain.value = VOL.bgm; bgm = ctx.createBufferSource(); bgm.buffer = buf.bgm; bgm.loop = true; bgm.connect(g); g.connect(master); bgm.start(); } catch (e) { bgm = null; } }
+  function setMuted(m) { if (master && ctx) { try { master.gain.setTargetAtTime(m ? 0 : 1, ctx.currentTime, .02); } catch (e) { master.gain.value = m ? 0 : 1; } } if (!m) startBgm(); }
+  function unlock() { if (!ens()) return; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } load(); }
+  function suspend() { if (ctx && ctx.state === 'running') try { ctx.suspend(); } catch (e) {} }
+  function resume() { if (ctx && ctx.state === 'suspended') try { ctx.resume(); } catch (e) {} }
+  return { play, coin, build, starUp, unlock, setMuted, suspend, resume };
+})();
+function speak(text, force) {
+  if ((!force && S.muted) || !text || !window.speechSynthesis) return false;
+  try {
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = .85;
+    const v = speechSynthesis.getVoices().find(v => /zh(-|_)?CN|Chinese/i.test(v.lang + v.name)); if (v) u.voice = v;
+    speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
+  } catch (e) { return false; }
+}
+
+/* ===== hiệu ứng DOM ===== */
+const FX_COLORS = ['#FFD91F', '#2ec4b6', '#ff9a3d', '#60a5fa', '#a78bfa', '#3dff8a', '#ff6b9a'];
+function rectOf(el) { try { return el.getBoundingClientRect(); } catch (e) { return null; } }
+function burstAt(x, y, n = 14, spread = 90, colors = FX_COLORS) {
+  const L = $('fxLayer'); if (!L || REDUCED) return;
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('span'); d.className = 'fx-dot'; d.style.background = pick(colors);
+    if (i % 3 === 0) d.style.borderRadius = '2px';
+    L.appendChild(d);
+    const a = Math.random() * Math.PI * 2, r = spread * (.4 + Math.random() * .8);
+    const an = d.animate([{ transform: `translate(${x}px,${y}px) scale(1)`, opacity: 1 }, { transform: `translate(${x + Math.cos(a) * r}px,${y + Math.sin(a) * r + 30}px) scale(.3) rotate(200deg)`, opacity: 0 }], { duration: 550 + Math.random() * 300, easing: 'cubic-bezier(.15,.7,.3,1)' });
+    an.onfinish = () => d.remove();
+  }
+}
+function floatText(x, y, txt, color) {
+  const L = $('fxLayer'); if (!L) return;
+  const d = document.createElement('span'); d.className = 'fx-txt'; d.textContent = txt; if (color) d.style.color = color;
+  L.appendChild(d);
+  const an = d.animate([{ transform: `translate(${x - 20}px,${y}px) scale(.6)`, opacity: 0 }, { transform: `translate(${x - 20}px,${y - 18}px) scale(1.2)`, opacity: 1, offset: .2 }, { transform: `translate(${x - 20}px,${y - 70}px) scale(1)`, opacity: 0 }], { duration: REDUCED ? 600 : 1100, easing: 'ease-out' });
+  an.onfinish = () => d.remove();
+}
+/** Xu bay từ (x,y) về ô xu, rồi mới cộng số → thấy rõ "kiếm được" */
+function coinFly(x, y, amount, onDone) {
+  const L = $('fxLayer'), tr = rectOf($('coinPill'));
+  const n = Math.max(3, Math.min(10, Math.round(amount / 6)));
+  if (!L || !tr || REDUCED) { onDone && onDone(); return; }
+  const tx = tr.left + 18, ty = tr.top + tr.height / 2 - 10;
+  let left = n;
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('span'); c.className = 'fx-coin'; c.textContent = '🪙'; L.appendChild(c);
+    const sx = x + (Math.random() - .5) * 40, sy = y + (Math.random() - .5) * 20;
+    const mx = (sx + tx) / 2 + (Math.random() - .5) * 80, my = Math.min(sy, ty) - 40 - Math.random() * 60;
+    const an = c.animate([
+      { transform: `translate(${sx}px,${sy}px) scale(.4)`, opacity: 0 },
+      { transform: `translate(${sx}px,${sy - 14}px) scale(1.1)`, opacity: 1, offset: .15 },
+      { transform: `translate(${mx}px,${my}px) scale(1)`, opacity: 1, offset: .55 },
+      { transform: `translate(${tx}px,${ty}px) scale(.6)`, opacity: .9 }
+    ], { duration: 650 + i * 55, easing: 'cubic-bezier(.4,0,.6,1)' });
+    an.onfinish = () => { c.remove(); left--; if (i === 0) Snd.coin(1); if (left === 0 && onDone) onDone(); };
+  }
+}
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2200); }
+
+/* ===== HUD ===== */
+let shownCoins = S.coins;
+function countTo(to) {
+  const el = $('coinTxt'), from = shownCoins; shownCoins = to;
+  if (REDUCED || from === to) { el.textContent = to; return; }
+  const t0 = performance.now(), ms = 450;
+  (function st(now) { const k = Math.min(1, (now - t0) / ms); el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(st); })(t0);
+  const p = $('coinPill'); p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump');
+}
+function streakAlive() { const s = S.streak; return s.n > 0 && (s.last === localDay(0) || s.last === localDay(-1)) ? s.n : 0; }
+function markToday() { const t = localDay(0), s = S.streak; if (s.last === t) return; s.n = s.last === localDay(-1) ? (s.n || 0) + 1 : 1; s.last = t; }
+function renderHud() {
+  countTo(S.coins);
+  const st = star();
+  $('starTxt').innerHTML = '★'.repeat(st) + `<span style="opacity:.28">${'★'.repeat(5 - st)}</span>`;
+  if (st >= 5) { $('starBar').style.width = '100%'; $('starNext').textContent = 'Tối đa'; }
+  else {
+    const a = STAR_PTS[st - 1], b = STAR_PTS[st];
+    $('starBar').style.width = Math.round((S.pts - a) / (b - a) * 100) + '%';
+    $('starNext').textContent = `${S.pts}/${b} điểm`;
+  }
+  $('streakPill').textContent = '🔥 ' + streakAlive();
+  $('muteBtn').textContent = S.muted ? '🔇' : '🔊';
+  $('queueTxt').textContent = queue.length ? `(${queue.length} khách đang chờ)` : '(khách đang tới…)';
+}
+
+/* ===== CẢNH KHÁCH SẠN (SVG vẽ bằng code) ===== */
+const X0 = 26, BW = 138, G = 262;           // vị trí, bề ngang, mặt đất của toà nhà
+const FLOOR_H = 33, LOBBY_H = 44;
+const STARS_XY = [[20,20],[48,58],[88,30],[120,62],[150,18],[188,44],[214,14],[236,70],[262,34],[330,22],[346,60],[12,84],[70,90],[170,86]];
+function phase() { const h = new Date().getHours(); if (h >= 6 && h < 17) return 'day'; if (h >= 17 && h < 19) return 'dusk'; return 'night'; }
+let forcedPhase = null;
+const curPhase = () => forcedPhase || phase();
+const FACADE = ['#efe3cc', '#f3e4c3', '#f6efe1', '#fbf5e8', '#ffffff'];
+const TRIM = ['#8a6d4b', '#1e5aa8', '#1e5aa8', '#b8902a', '#c9a227'];
+const UNIFORM = ['#5a6b78', '#1e5aa8', '#1e5aa8', '#16171B', '#f4f1e8'];
+let litTimers = {};
+
+function hotelTopY() { return G - LOBBY_H - floors() * FLOOR_H; }
+function worldSVG(newId) {
+  const P = curPhase(), night = P === 'night', dusk = P === 'dusk', st = star() - 1, f = floors();
+  const o = [];
+  const skyStops = night ? ['#081330', '#23356b'] : dusk ? ['#3b3d7a', '#f6a46b'] : ['#5fb8f0', '#d4f0ff'];
+  o.push(`<defs>
+    <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${skyStops[0]}"/><stop offset="1" stop-color="${skyStops[1]}"/></linearGradient>
+    <linearGradient id="gSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night ? '#16406a' : dusk ? '#3d6f99' : '#2a9fd0'}"/><stop offset="1" stop-color="${night ? '#0a2440' : '#176c92'}"/></linearGradient>
+    <linearGradient id="gGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night ? '#ffe8a3' : '#bfe6ff'}"/><stop offset="1" stop-color="${night ? '#ffc65c' : '#7fbfe6'}"/></linearGradient>
+    <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>`);
+  o.push(`<rect width="360" height="300" fill="url(#gSky)"/>`);
+  if (night) {
+    STARS_XY.forEach(([x, y], i) => o.push(`<circle class="twinkle" style="animation-delay:${(i * .37) % 2.4}s" cx="${x}" cy="${y}" r="${i % 3 ? .9 : 1.4}" fill="#fff"/>`));
+    o.push(`<circle cx="64" cy="40" r="12" fill="#f6f1cf"/><circle cx="70" cy="36" r="11" fill="${skyStops[0]}"/>`);
+  } else if (dusk) {
+    o.push(`<circle cx="70" cy="150" r="20" fill="#ffb36b" opacity=".95"/>`);
+  } else {
+    o.push(`<circle cx="292" cy="44" r="26" fill="#fff6c9" opacity=".35"/><circle cx="292" cy="44" r="15" fill="#fff3b0"/>`);
+    o.push(`<g opacity=".85" fill="#fff"><ellipse cx="80" cy="46" rx="22" ry="7"/><ellipse cx="96" cy="41" rx="14" ry="7"/><ellipse cx="200" cy="30" rx="18" ry="5.5"/></g>`);
+  }
+  // vòng quay (sau núi gần, trước núi xa)
+  const farK = night ? '#253a63' : dusk ? '#6b5d86' : '#88b3c6';
+  const nearK = night ? '#1a2c4d' : dusk ? '#4f4a6e' : '#5f8f86';
+  o.push(`<path fill="${farK}" d="M0 172 Q10 128 24 150 Q34 112 50 172Z M60 172 Q74 120 86 146 Q96 104 116 172Z M130 172 Q148 134 160 160 Q170 128 186 172Z"/>`);
+  if (owned('wheel')) {
+    const cx = 306, cy = 112, r = 44;
+    o.push(`<g data-item="wheel"><path d="M${cx} ${cy} L${cx - 22} 172 M${cx} ${cy} L${cx + 22} 172" stroke="${night ? '#8da2c9' : '#e9eef5'}" stroke-width="3"/>`);
+    let spokes = '', cabins = '';
+    for (let i = 0; i < 12; i++) {
+      const a = i * Math.PI / 6, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+      spokes += `M${cx} ${cy} L${x.toFixed(1)} ${y.toFixed(1)} `;
+      cabins += `<rect x="${(x - 3).toFixed(1)}" y="${(y - 3).toFixed(1)}" width="6" height="6" rx="1.5" fill="${night ? ['#ff6bd6', '#ffd34d', '#5be7ff'][i % 3] : ['#e63946', '#ffd34d', '#2a9fd0'][i % 3]}"/>`;
+    }
+    o.push(`<g class="spin"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${night ? '#ff8ee6' : '#ffffff'}" stroke-width="2.2" ${night ? 'filter="url(#fGlow)"' : ''}/><path d="${spokes}" stroke="${night ? '#c9b6ff' : '#f2f5fa'}" stroke-width=".9"/>${cabins}</g>`);
+    o.push(`<circle cx="${cx}" cy="${cy}" r="4" fill="#ffd34d"/></g>`);
+  }
+  o.push(`<path fill="${nearK}" d="M196 174 Q212 122 228 152 Q240 116 262 174Z M268 176 Q286 140 300 164 Q312 146 330 176Z"/>`);
+  // biển + sóng
+  o.push(`<rect y="168" width="360" height="74" fill="url(#gSea)"/>`);
+  const wave = y => { let d = `M-10 ${y}`; for (let x = -10; x < 470; x += 20) d += ` q5 -3 10 0 t10 0`; return d; };
+  o.push(`<path class="wave" d="${wave(186)}" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none"/>`);
+  o.push(`<path class="wave w2" d="${wave(204)}" stroke="#fff" stroke-opacity=".25" stroke-width="1.2" fill="none"/>`);
+  o.push(`<path class="wave" style="animation-duration:9s" d="${wave(224)}" stroke="#fff" stroke-opacity=".2" stroke-width="1" fill="none"/>`);
+  // du thuyền + cầu tàu
+  if (owned('boat')) {
+    o.push(`<g data-item="boat"><rect x="306" y="226" width="9" height="18" fill="#7a5230"/><g class="bob">
+      <path d="M244 222 L320 222 L310 236 L254 236Z" fill="${night ? '#e8e8f0' : '#ffffff'}" stroke="#16171B" stroke-width="1"/>
+      <rect x="262" y="210" width="38" height="12" rx="2" fill="#1e5aa8"/>
+      <rect x="268" y="213" width="7" height="5" fill="${night ? '#ffd86b' : '#bfe6ff'}"/><rect x="279" y="213" width="7" height="5" fill="${night ? '#ffd86b' : '#bfe6ff'}"/><rect x="290" y="213" width="7" height="5" fill="${night ? '#ffd86b' : '#bfe6ff'}"/>
+      <path d="M281 210 L281 196 L294 202 L281 206" fill="#e63946" stroke="#7a5230" stroke-width="1"/></g></g>`);
+  }
+  // bờ + lối đi
+  o.push(`<rect y="240" width="360" height="60" fill="${night ? '#7d6e52' : '#ecd29a'}"/>`);
+  o.push(`<rect y="240" width="360" height="3" fill="${night ? '#a8977a' : '#fff1cc'}" opacity=".7"/>`);
+  o.push(`<rect y="278" width="360" height="22" fill="${night ? '#6a5d45' : '#d9b97a'}"/>`);
+  let tiles = ''; for (let x = 6; x < 360; x += 18) tiles += `M${x} 280 l-6 20 `;
+  o.push(`<path d="${tiles}" stroke="${night ? '#5b4f3a' : '#c7a565'}" stroke-width="1"/>`);
+  // nhà hàng + phòng họp (bên phải toà nhà)
+  const RX = X0 + BW + 6;
+  if (owned('restaurant')) {
+    o.push(`<g data-item="restaurant"><rect x="${RX}" y="${G - 46}" width="58" height="46" fill="${night ? '#d9c7a4' : '#f4e3c3'}" stroke="#7a5230" stroke-width="1"/>
+      <path d="M${RX - 3} ${G - 34} h64 l-5 -10 h-54z" fill="#e63946"/><path d="M${RX + 4} ${G - 44} v10 M${RX + 16} ${G - 44} v10 M${RX + 28} ${G - 44} v10 M${RX + 40} ${G - 44} v10 M${RX + 52} ${G - 44} v10" stroke="#fff" stroke-width="5" opacity=".9"/>
+      <rect x="${RX + 6}" y="${G - 28}" width="22" height="16" fill="url(#gGlass)"/><rect x="${RX + 34}" y="${G - 28}" width="18" height="28" fill="#7a5230"/>
+      <text x="${RX + 29}" y="${G - 49}" font-size="9" font-weight="800" text-anchor="middle" fill="${night ? '#ffd34d' : '#e63946'}" ${night ? 'filter="url(#fGlow)"' : ''}>餐厅</text></g>`);
+  }
+  if (owned('meeting')) {
+    const my = owned('restaurant') ? G - 46 - 26 : G - 26;
+    o.push(`<g data-item="meeting"><rect x="${RX + 4}" y="${my}" width="50" height="26" rx="2" fill="${night ? '#5be7ff' : '#9fd8f5'}" opacity=".85" stroke="#1e5aa8" stroke-width="1.2"/>
+      <path d="M${RX + 16} ${my} v26 M${RX + 29} ${my} v26 M${RX + 42} ${my} v26" stroke="#1e5aa8" stroke-width=".8"/>
+      <text x="${RX + 29}" y="${my + 16}" font-size="7.5" font-weight="800" text-anchor="middle" fill="#0b3d5c">会议室</text></g>`);
+  }
+  // bể bơi
+  if (owned('pool')) {
+    o.push(`<g data-item="pool"><rect x="240" y="247" width="82" height="17" rx="7" fill="#e9f6ff" stroke="#fff" stroke-width="1.5"/>
+      <rect x="243" y="249.5" width="76" height="12" rx="5" fill="${night ? '#2fb7e6' : '#55d3f5'}"/>
+      <path class="ripple" d="M250 255 q5 -2 10 0 t10 0 M280 257 q5 -2 10 0 t10 0" stroke="#fff" stroke-width="1" fill="none"/>
+      <path d="M314 245 v8 M318 245 v8 M314 248 h4 M314 251 h4" stroke="#c0c6cc" stroke-width="1"/></g>`);
+  }
+  // ô che nắng
+  if (owned('umbrella')) {
+    o.push(`<g data-item="umbrella">
+      <path d="M334 270 V250" stroke="#7a5230" stroke-width="1.6"/><path d="M318 252 Q334 236 350 252Z" fill="#e63946"/><path d="M326 252 Q334 240 342 252Z" fill="#fff" opacity=".85"/>
+      <path d="M324 270 l14 -6 h10" stroke="#2a9fd0" stroke-width="2" fill="none"/></g>`);
+  }
+  // cây dừa
+  if (owned('palm')) {
+    const palm = (x, s) => `<g class="sway" style="animation-delay:${s}s"><path d="M${x} ${G + 6} Q${x + 4} ${G - 22} ${x - 2} ${G - 46}" stroke="#8b5a2b" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <g fill="${night ? '#2f6b4a' : '#2fa36b'}"><path d="M${x - 2} ${G - 46} q-18 -2 -24 10 q12 -8 24 -10z"/><path d="M${x - 2} ${G - 46} q18 -4 24 8 q-12 -8 -24 -8z"/><path d="M${x - 2} ${G - 46} q-8 -16 -22 -14 q14 2 22 14z"/><path d="M${x - 2} ${G - 46} q10 -16 22 -12 q-14 0 -22 12z"/></g>
+      <circle cx="${x - 2}" cy="${G - 43}" r="2.4" fill="#6b4a1f"/></g>`;
+    o.push(`<g data-item="palm">${palm(12, 0)}${palm(232, .8)}</g>`);
+  }
+  // ===== toà nhà =====
+  const top = hotelTopY();
+  const fac = FACADE[st], trim = TRIM[st];
+  if (owned('lift')) {
+    const h = G - top;
+    o.push(`<g data-item="lift"><rect x="${X0 + BW}" y="${top}" width="12" height="${h}" fill="#bfe6ff" opacity=".55" stroke="${trim}" stroke-width="1"/>
+      <rect class="liftcab" style="--h:${-(h - 16)}px" x="${X0 + BW + 1.5}" y="${G - 15}" width="9" height="12" rx="1.5" fill="#FFD91F" stroke="#16171B" stroke-width=".8"/></g>`);
+  }
+  for (let i = 1; i <= f; i++) {
+    const y = G - LOBBY_H - i * FLOOR_H;
+    let w = '';
+    for (let j = 0; j < 3; j++) {
+      const wx = X0 + 14 + j * 42, id = `w-${i}-${j}`;
+      const lit = night ? ((i * 3 + j) % 4 !== 1) : !!litTimers[id];
+      w += `<rect class="win" id="${id}" x="${wx}" y="${y + 7}" width="26" height="16" rx="2" fill="${lit ? '#ffd86b' : 'url(#gGlass)'}" stroke="${trim}" stroke-width="1"/>
+            <path d="M${wx + 13} ${y + 7} v16" stroke="${trim}" stroke-width=".8"/>`;
+    }
+    o.push(`<g data-item="floor-${i}"><rect x="${X0}" y="${y}" width="${BW}" height="${FLOOR_H}" fill="${i % 2 ? fac : shade(fac)}" stroke="${trim}" stroke-width="1"/>${w}
+      <rect x="${X0 + 8}" y="${y + 26}" width="${BW - 16}" height="2.5" fill="${trim}" opacity=".8"/></g>`);
+  }
+  // sảnh
+  const ly = G - LOBBY_H;
+  o.push(`<rect x="${X0}" y="${ly}" width="${BW}" height="${LOBBY_H}" fill="${fac}" stroke="${trim}" stroke-width="1.2"/>`);
+  o.push(`<rect x="${X0 + 8}" y="${ly + 7}" width="74" height="31" rx="2" fill="url(#gGlass)" stroke="${trim}" stroke-width="1.2"/>`);
+  // lễ tân Bảo sau quầy – đồng phục đổi theo sao
+  const uni = UNIFORM[st];
+  o.push(`<g><rect x="${X0 + 39}" y="${ly + 17}" width="12" height="13" rx="3" fill="${uni}"/>
+     ${st >= 2 ? `<path d="M${X0 + 45} ${ly + 18} l-1.5 6 l1.5 2 l1.5 -2z" fill="#FFD91F"/>` : ''}
+     <circle cx="${X0 + 45}" cy="${ly + 13}" r="5" fill="#f0c9a0"/>
+     <path d="M${X0 + 40} ${ly + 12} q5 -9 10 0 l-1 -4 l-2 2 l-2 -4 l-2 3 l-2 -3z" fill="#16171B"/>
+     <rect x="${X0 + 40}" y="${ly + 10.5}" width="10" height="2" fill="#FFD91F"/>
+     ${st >= 3 ? `<rect x="${X0 + 41}" y="${ly + 21}" width="3" height="3" fill="#FFD91F"/>` : ''}</g>`);
+  const deskTop = owned('desk') ? '#FFD91F' : '#a07850';
+  o.push(`<rect x="${X0 + 14}" y="${ly + 27}" width="62" height="11" fill="${owned('desk') ? '#6b4423' : '#8a6a48'}"/><rect x="${X0 + 12}" y="${ly + 25}" width="66" height="3" fill="${deskTop}"/>
+    ${owned('desk') ? `<g data-item="desk"><circle cx="${X0 + 24}" cy="${ly + 23.5}" r="2.6" fill="#FFD91F" stroke="#7a5230" stroke-width=".6"/><text x="${X0 + 62}" y="${ly + 35}" font-size="6" font-weight="800" fill="#FFD91F" text-anchor="middle">前台</text></g>` : ''}`);
+  // cửa
+  o.push(`<rect x="${X0 + 92}" y="${ly + 9}" width="34" height="35" fill="url(#gGlass)" stroke="${trim}" stroke-width="1.4"/><path d="M${X0 + 109} ${ly + 9} v35" stroke="${trim}" stroke-width="1.2"/>
+    <rect x="${X0 + 105}" y="${ly + 24}" width="1.6" height="7" fill="${owned('desk') ? '#FFD91F' : '#555'}"/><rect x="${X0 + 111.5}" y="${ly + 24}" width="1.6" height="7" fill="${owned('desk') ? '#FFD91F' : '#555'}"/>
+    <rect x="${X0 + 88}" y="${ly + 4}" width="42" height="5" fill="${trim}"/>`);
+  // đèn lồng
+  if (owned('lantern')) {
+    let l = '';
+    [X0 + 10, X0 + 40, X0 + 70, X0 + 100, X0 + 128].forEach((x, i) => { l += `<path d="M${x} ${ly} v4" stroke="#7a5230" stroke-width=".8"/><ellipse class="${night ? 'twinkle' : ''}" style="animation-delay:${i * .3}s" cx="${x}" cy="${ly + 8}" rx="3.6" ry="4.6" fill="#e63946" ${night ? 'filter="url(#fGlow)"' : ''}/><rect x="${x - 1.6}" y="${ly + 12.4}" width="3.2" height="1.4" fill="#FFD91F"/>`; });
+    o.push(`<g data-item="lantern">${l}</g>`);
+  }
+  // mái + biển hiệu
+  o.push(`<rect x="${X0 - 4}" y="${top - 6}" width="${BW + 8}" height="6" fill="${trim}"/>`);
+  if (owned('sign')) {
+    o.push(`<g data-item="sign"><path d="M${X0 + 40} ${top - 6} v-4 M${X0 + 98} ${top - 6} v-4" stroke="#555" stroke-width="1.5"/>
+      <rect x="${X0 + 26}" y="${top - 28}" width="86" height="19" rx="5" fill="#16171B" stroke="#FFD91F" stroke-width="1.5"/>
+      <text x="${X0 + 69}" y="${top - 14.5}" font-size="11" font-weight="900" text-anchor="middle" fill="${night ? '#ff8ee6' : '#FFD91F'}" ${night ? 'filter="url(#fGlow)"' : ''}>宝 HOTEL ${'★'.repeat(star())}</text></g>`);
+  }
+  // nhân viên đứng cửa
+  for (let i = 0; i < owned('staff'); i++) {
+    const sx = X0 + 84 - i * 13, sy = 276;
+    o.push(`<g data-item="staff-${i + 1}" class="staffman"><rect x="${sx - 3}" y="${sy - 12}" width="2.6" height="12" fill="#16171B"/><rect x="${sx + .4}" y="${sy - 12}" width="2.6" height="12" fill="#16171B"/>
+      <rect x="${sx - 5}" y="${sy - 26}" width="10" height="15" rx="3" fill="${uni === '#f4f1e8' ? '#1e5aa8' : uni}"/><circle cx="${sx}" cy="${sy - 31}" r="5" fill="#e6b98f"/><path d="M${sx - 5} ${sy - 32} a5 5 0 0 1 10 0z" fill="#2b1d12"/>
+      <rect x="${sx - 2}" y="${sy - 23}" width="4" height="2" fill="#FFD91F"/></g>`);
+  }
+  // pháo hoa (tối)
+  if (owned('fireworks') && night) {
+    const burst = (cx, cy, c, d) => { let s = ''; for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6; s += `M${cx} ${cy} L${(cx + Math.cos(a) * 18).toFixed(1)} ${(cy + Math.sin(a) * 18).toFixed(1)} `; } return `<path class="fw" style="animation-delay:${d}s" d="${s}" stroke="${c}" stroke-width="1.6" stroke-linecap="round" filter="url(#fGlow)"/>`; };
+    o.push(`<g data-item="fireworks">${burst(200, 52, '#ff6bd6', 0)}${burst(250, 34, '#FFD91F', 1.1)}${burst(160, 40, '#5be7ff', 2.1)}</g>`);
+  } else if (owned('fireworks')) {
+    o.push(`<g data-item="fireworks"><rect x="190" y="104" width="92" height="14" rx="7" fill="rgba(0,0,0,.35)"/><text x="236" y="114" font-size="8" font-weight="700" text-anchor="middle" fill="#fff">🎆 pháo hoa từ 19:00</text></g>`);
+  }
+  return o.join('');
+}
+function shade(hex) { const n = parseInt(hex.slice(1), 16); const r = Math.max(0, (n >> 16) - 14), g = Math.max(0, ((n >> 8) & 255) - 14), b = Math.max(0, (n & 255) - 14); return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0'); }
+
+let lastPhase = curPhase();
+function renderWorld(newKey) {
+  $('world').innerHTML = worldSVG();
+  lastPhase = curPhase();
+  if (newKey) {
+    const el = document.querySelector(`#world [data-item="${newKey}"]`);
+    if (el) {
+      el.classList.add('pop');
+      const r = rectOf(el); if (r) { burstAt(r.left + r.width / 2, r.top + r.height * .7, 22, 110, ['#d6c3a3', '#FFD91F', '#ffffff', '#c9a227']); }
+    }
+  }
+}
+/** Khách nhận phòng → 1 cửa sổ sáng lên 20 giây */
+function lightWindow() {
+  const f = floors();
+  if (!f) { flashLobby(); return; }
+  const ids = []; for (let i = 1; i <= f; i++) for (let j = 0; j < 3; j++) ids.push(`w-${i}-${j}`);
+  const free = ids.filter(id => !litTimers[id]);
+  const id = pick(free.length ? free : ids);
+  clearTimeout(litTimers[id]);
+  litTimers[id] = setTimeout(() => { delete litTimers[id]; const e = $(id); if (e && curPhase() !== 'night') e.setAttribute('fill', 'url(#gGlass)'); }, 20000);
+  const e = $(id); if (e) e.setAttribute('fill', '#ffd86b');
+}
+function flashLobby() { /* tầng trệt: không có cửa sổ phòng → chỉ hiệu ứng ở cửa */ }
+
+/* ===== KHÁCH XẾP HÀNG ===== */
+const SKIN = ['#f1c9a5', '#e7bb92', '#d29b72', '#f6d8c0'];
+const SHIRT = ['#e63946', '#2a9d8f', '#e9c46a', '#8e7dbe', '#f4a261', '#3a86ff', '#ff006e', '#06d6a0', '#ffffff'];
+const HAIR = ['#1b1b1b', '#3b2a1f', '#5a3d22', '#111827', '#7b4b2a'];
+const SLOT_X = [158, 186, 214, 242], WALK_Y = 292, DOOR_X = X0 + 109;
+let queue = [], gid = 0, spawning = 0;
+function guestMarkup(g) {
+  return `<g class="gbody">
+    <rect class="l1" x="-5" y="-13" width="4" height="13" rx="1.6" fill="#2b2d42"/>
+    <rect class="l2" x="1" y="-13" width="4" height="13" rx="1.6" fill="#2b2d42"/>
+    <rect x="-8" y="-30" width="16" height="19" rx="4.5" fill="${g.shirt}" stroke="rgba(0,0,0,.25)" stroke-width=".6"/>
+    <circle cx="0" cy="-36.5" r="6.6" fill="${g.skin}"/>
+    <path d="M-6.8 -37 A6.8 6.8 0 0 1 6.8 -37 Q3 -40 -6.8 -37Z" fill="${g.hair}"/>
+    ${g.hat ? `<ellipse cx="0" cy="-42.5" rx="9.5" ry="2.2" fill="${g.hatC}"/><rect x="-5.5" y="-48" width="11" height="6" rx="2.5" fill="${g.hatC}"/>` : ''}
+    ${g.glasses ? `<path d="M-4.6 -36.5 h3 M1.6 -36.5 h3 M-1.6 -36.5 h3.2" stroke="#16171B" stroke-width="1.1"/>` : `<circle cx="-2.4" cy="-36.3" r=".95" fill="#222"/><circle cx="2.4" cy="-36.3" r=".95" fill="#222"/>`}
+    ${g.bag ? `<rect x="9" y="-14" width="8.5" height="12.5" rx="2" fill="${g.bagC}" stroke="rgba(0,0,0,.3)" stroke-width=".6"/><path d="M11 -14 v-3.5 h4.5 v3.5" stroke="#333" fill="none" stroke-width="1"/>` : ''}
+  </g>
+  <g class="bubble" opacity="0"><rect x="-15" y="-68" width="30" height="16" rx="7" fill="#fff" stroke="#16171B" stroke-width=".8"/><path d="M-3 -52.4 l3 4.4 l3 -4.4z" fill="#fff"/><text class="btxt" x="0" y="-56.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#16171B">你好</text></g>`;
+}
+function makeGuest() {
+  const tp = pick(topics());
+  const ty = pick(GUEST_TYPES[tp]);
+  return { id: ++gid, topic: tp, name: ty.n, av: ty.a, skin: pick(SKIN), shirt: pick(SHIRT), hair: pick(HAIR), hat: Math.random() < .35, hatC: pick(['#f4f1de', '#e63946', '#16171B', '#2a9fd0']), glasses: Math.random() < .25, bag: Math.random() < .75, bagC: pick(['#ff9a3d', '#3a86ff', '#6d597a', '#e63946', '#2a9d8f']) };
+}
+function setPos(g, x, y, ms, walk = true) {
+  const el = g.el; if (!el) return;
+  el.style.transition = ms ? `transform ${ms}ms linear` : 'none';
+  el.style.transform = `translate(${x}px,${y}px)`;
+  if (walk && ms) { el.classList.add('walk'); clearTimeout(g._w); g._w = setTimeout(() => el.classList.remove('walk'), ms); }
+}
+function setBubble(g, txt, on) {
+  if (!g.el) return;
+  const b = g.el.querySelector('.bubble'); b.setAttribute('opacity', on ? '1' : '0');
+  if (txt != null) g.el.querySelector('.btxt').textContent = txt;
+}
+function layoutQueue() {
+  queue.forEach((g, i) => {
+    setPos(g, SLOT_X[i], WALK_Y, 700);
+    g.el.classList.toggle('front', i === 0);
+    setBubble(g, i === 0 ? pick(['你好', '您好', '请问', '?']) : null, i === 0);
+  });
+  renderHud();
+  $('serveBtn').classList.toggle('pulse', queue.length > 0);
+}
+function spawnGuest() {
+  if (queue.length + spawning >= queueCap()) return;
+  spawning++;
+  setTimeout(() => {
+    spawning--;
+    if (queue.length >= queueCap()) return;
+    const g = makeGuest();
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    el.setAttribute('class', 'guest'); el.innerHTML = guestMarkup(g);
+    el.addEventListener('click', () => { if (queue[0] === g) openServe(); });
+    $('guestLayer').appendChild(el); g.el = el;
+    setPos(g, 390, WALK_Y, 0, false);
+    queue.push(g);
+    requestAnimationFrame(() => requestAnimationFrame(() => layoutQueue()));
+  }, 350 + Math.random() * 500);
+}
+function refillQueue() { const need = queueCap() - queue.length - spawning; for (let i = 0; i < need; i++) setTimeout(spawnGuest, i * 700); }
+function guestLeaves(g, happy) {
+  queue = queue.filter(x => x !== g);
+  if (g.el) g.el.classList.remove('front');
+  if (happy) {
+    setBubble(g, pick(['谢谢!', '很好!', '😊']), true);
+    setPos(g, DOOR_X, 268, 650);
+    setTimeout(() => { if (g.el) g.el.classList.add('gone'); setPos(g, DOOR_X, 262, 500); }, 680);
+    setTimeout(() => { g.el && g.el.remove(); }, 1700);
+  } else {
+    setBubble(g, '😠', true);
+    setTimeout(() => setPos(g, -30, WALK_Y, 2000), 300);
+    setTimeout(() => { g.el && g.el.remove(); }, 2500);
+  }
+  setTimeout(() => { layoutQueue(); refillQueue(); }, 300);
+}
+
+/* ===== CHỌN CÂU HỎI (Sổ ôn: ưu tiên câu từng sai) ===== */
+let recent = [];
+function pickQuestion(topic) {
+  let pool = QUESTIONS.filter(q => q.topic === topic);
+  if (!pool.length) pool = QUESTIONS.filter(q => topics().includes(q.topic));
+  const fresh = pool.filter(q => !recent.includes(q.id));
+  if (fresh.length) pool = fresh;
+  const weak = pool.filter(q => S.mem[q.id] != null && S.mem[q.id] <= 1);
+  const unseen = pool.filter(q => S.mem[q.id] == null);
+  let q;
+  if (weak.length && Math.random() < .4) q = pick(weak);
+  else if (unseen.length && Math.random() < .7) q = pick(unseen);
+  else {
+    // trọng số: câu chưa thuộc chắc ra nhiều hơn
+    const w = pool.map(x => 5 - Math.min(4, S.mem[x.id] || 0));
+    let r = Math.random() * w.reduce((a, b) => a + b, 0); q = pool[0];
+    for (let i = 0; i < pool.length; i++) { r -= w[i]; if (r <= 0) { q = pool[i]; break; } }
+  }
+  recent.push(q.id); if (recent.length > 6) recent.shift();
+  return q;
+}
+/** Câu hỏi khi mua đồ: hỏi đúng tên tiếng Trung của món đó */
+function itemQuestion(it) {
+  const others = shuffle(ITEMS.filter(x => x.id !== it.id)).slice(0, 3);
+  const all = shuffle([it].concat(others));
+  const ans = all.indexOf(it);
+  if (Math.random() < .5) {
+    return { id: 'it-' + it.id, type: 'mc', topic: 'buy', q: `“${it.vi}” tiếng Trung là gì?`, options: all.map(x => x.zh), answer: ans, optionPy: all.map(x => x.py), optionVi: all.map(x => x.vi), zh: it.zh, py: it.py, vi: it.vi };
+  }
+  return { id: 'it-' + it.id, type: 'mc', topic: 'buy', q: `${it.zh} nghĩa là gì?`, options: all.map(x => x.vi), answer: ans, zh: it.zh, py: it.py, vi: it.vi };
+}
+
+/* ===== BẢNG HỎI–ĐÁP ===== */
+let Q = null, combo = 0, orderPicked = [], tipT = 0;
+function correctText(q) { if (q.type === 'order') return (q.answer || []).join(''); return typeof q.answer === 'number' ? (q.options[q.answer] || '') : ''; }
+function fullZh(q) { const a = correctText(q); let z = q.zh || ''; if (!z && hasHan(a)) z = a; return z.includes('____') ? z.replace('____', a) : z; }
+function fullPy(q) { let p = q.py || ''; if (p.includes('____') && q.optionPy && typeof q.answer === 'number') p = p.replace('____', q.optionPy[q.answer] || '…'); return p; }
+function openSheet() { $('sheet').classList.add('on'); }
+function closeSheet() { $('sheet').classList.remove('on'); Q = null; if (window.speechSynthesis) try { speechSynthesis.cancel(); } catch (e) {} }
+
+function openServe() {
+  if (Q) return;
+  const g = queue[0];
+  if (!g) { toast('Khách đang tới…'); return; }
+  Snd.unlock();
+  const q = pickQuestion(g.topic);
+  Q = { kind: 'serve', q, g, t0: Date.now(), locked: false };
+  $('shAv').innerHTML = esc(g.av);
+  $('shName').textContent = g.name;
+  $('shSub').textContent = `${TOPIC_LABEL[g.topic]} · trả phòng ${fare()} 🪙`;
+  $('tipWrap').hidden = false;
+  renderQuestion(q);
+  openSheet();
+  startTipBar();
+}
+function openBuy(it) {
+  if (Q) return;
+  Snd.unlock();
+  const q = itemQuestion(it);
+  Q = { kind: 'buy', q, it, t0: Date.now(), locked: false };
+  $('shAv').textContent = it.ico;
+  $('shName').textContent = `Mua: ${it.vi} – ${priceOf(it)} 🪙`;
+  $('shSub').textContent = 'Trả lời đúng tên món để chốt đơn';
+  $('tipWrap').hidden = true;
+  renderQuestion(q);
+  openSheet();
+}
+function startTipBar() {
+  const i = $('tipBar');
+  i.style.transition = 'none'; i.style.transform = 'scaleX(1)'; void i.offsetWidth;
+  i.style.transition = `transform ${FAST_SECONDS}s linear`; i.style.transform = 'scaleX(0)';
+}
+function renderQuestion(q) {
+  orderPicked = [];
+  $('shCombo').textContent = combo >= 2 ? `🔥 x${(1 + .1 * Math.min(10, combo)).toFixed(1)}` : '';
+  const tags = q.topic === 'buy' ? '<span class="tag buy">Mua đồ</span>' : `<span class="tag ${q.type}">${TYPE_LABEL[q.type] || q.type}</span>`;
+  $('qTags').innerHTML = tags;
+  $('qText').textContent = q.q || '';
+  let zh = '', py = '', vi = '';
+  if (q.type === 'situ') vi = 'Chọn câu phù hợp — mỗi đáp án có pinyin + nghĩa Việt.';
+  else if (q.type === 'order') { py = q.py ? 'Gợi ý pinyin: ' + q.py : ''; vi = q.vi ? 'Nghĩa: ' + q.vi : ''; }
+  else if (q.type === 'listen') vi = 'Bấm 🔊 Nghe, rồi chọn đáp án đúng.';
+  else if (q.type === 'mc' && hasHan(correctText(q))) { /* hỏi Việt → Trung: không lộ chữ Hán */ }
+  else if (q.type === 'mc') { zh = q.zh || ''; py = q.py || ''; }
+  else if (q.type === 'fill') { zh = q.zh && q.zh !== '____' ? q.zh : ''; py = (q.py && q.py.includes('____')) ? q.py : ''; vi = q.vi || ''; }
+  else { zh = q.zh || ''; py = q.py || ''; vi = q.vi || ''; }
+  $('qZh').textContent = zh; $('qPy').textContent = py; $('qVi').textContent = vi;
+  $('qExtra').innerHTML = ''; $('explainSlot').innerHTML = '';
+  const o = $('opts'); o.innerHTML = ''; o.classList.remove('revealed');
+  if (q.type === 'listen') {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost'; b.style.marginTop = '8px'; b.textContent = '🔊 Nghe';
+    b.onclick = () => { if (!speak(q.speak || q.zh, true)) { $('qZh').textContent = q.zh; $('qPy').textContent = q.py; } };
+    $('qExtra').appendChild(b);
+    if (!speak(q.speak || q.zh, true)) { $('qZh').textContent = q.zh; $('qPy').textContent = q.py; $('qVi').textContent = 'Máy không có giọng đọc tiếng Trung — đọc theo chữ.'; }
+  }
+  if (q.type === 'order') renderOrder(q, o); else renderOptions(q, o);
+}
+function renderOptions(q, o) {
+  shuffle([...Array(q.options.length).keys()]).forEach(k => {
+    const t = q.options[k], b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.dataset.orig = k;
+    let h = `<span>${esc(t)}</span>`;
+    if (hasHan(t)) { if (q.optionPy && q.optionPy[k]) h += `<span class="py">${esc(q.optionPy[k])}</span>`; if (q.optionVi && q.optionVi[k]) h += `<span class="vi-ans">${esc(q.optionVi[k])}</span>`; }
+    b.innerHTML = h;
+    b.onclick = () => choose(k, b);
+    o.appendChild(b);
+  });
+}
+function renderOrder(q, o) {
+  const slot = document.createElement('div'); slot.className = 'order-slot'; slot.id = 'orderSlot';
+  const hint = document.createElement('p'); hint.className = 'order-hint'; hint.textContent = 'Chạm từ theo đúng thứ tự · chạm từ ở ô trên để bỏ · đủ từ là tự kiểm tra';
+  const chips = document.createElement('div'); chips.className = 'chips'; chips.id = 'orderChips';
+  const total = q.words.length;
+  shuffle(q.words).forEach(w => {
+    const idx = q.words.indexOf(w), py = q.wordPy ? q.wordPy[idx] : '', vi = q.wordVi ? q.wordVi[idx] : '';
+    const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.w = w;
+    c.innerHTML = esc(w) + (py || vi ? `<span class="py">${esc([py, vi].filter(Boolean).join(' · '))}</span>` : '');
+    c.onclick = () => {
+      if (c.classList.contains('used') || !Q || Q.locked) return;
+      c.classList.add('used'); orderPicked.push(w); Snd.play('ui', 1 + orderPicked.length * .1);
+      const p = document.createElement('button'); p.type = 'button'; p.className = 'chip'; p.textContent = w;
+      p.onclick = () => { if (!Q || Q.locked) return; const i = [...slot.children].indexOf(p); if (i >= 0) orderPicked.splice(i, 1); p.remove(); c.classList.remove('used'); };
+      slot.appendChild(p);
+      if (orderPicked.length === total) setTimeout(() => {
+        if (!Q || Q.locked || orderPicked.length !== total) return;
+        const ok = orderPicked.every((x, i) => x === q.answer[i]);
+        slot.style.borderStyle = 'solid'; slot.style.borderColor = ok ? '#3dd17a' : '#ff5a5a';
+        resolve(ok, slot);
+      }, 200);
+    };
+    chips.appendChild(c);
+  });
+  const reset = document.createElement('button'); reset.type = 'button'; reset.className = 'btn ghost'; reset.style.marginTop = '8px'; reset.textContent = '↺ Xóa hết';
+  reset.onclick = () => { if (!Q || Q.locked) return; orderPicked = []; slot.innerHTML = ''; chips.querySelectorAll('.chip').forEach(c => c.classList.remove('used')); };
+  o.append(slot, hint, chips, reset);
+}
+function choose(k, btn) {
+  if (!Q || Q.locked) return;
+  const q = Q.q, ok = k === q.answer;
+  const btns = [...$('opts').querySelectorAll('.opt')];
+  const good = btns.find(b => +b.dataset.orig === q.answer); if (good) good.classList.add('ok');
+  if (!ok) btn.classList.add('no');
+  $('opts').classList.add('revealed');
+  resolve(ok, ok ? btn : good);
+}
+function remember(id, ok) { S.mem[id] = ok ? Math.min(4, (S.mem[id] || 0) + 1) : 0; }
+
+function resolve(ok, el) {
+  if (!Q || Q.locked) return;
+  Q.locked = true;
+  const q = Q.q, secs = (Date.now() - Q.t0) / 1000;
+  // hiện đủ câu Hán + pinyin + nghĩa để học
+  $('qZh').textContent = fullZh(q); $('qPy').textContent = fullPy(q); $('qVi').textContent = q.vi || '';
+  const ti = $('tipBar'); const m = getComputedStyle(ti).transform; ti.style.transition = 'none'; ti.style.transform = m === 'none' ? 'scaleX(0)' : m;
+  remember(q.id, ok);
+  const r = rectOf(el) || rectOf($('opts'));
+  const cx = r ? r.left + r.width / 2 : innerWidth / 2, cy = r ? r.top + r.height / 2 : innerHeight / 2;
+  if (Q.kind === 'serve') {
+    const g = Q.g;
+    S.served++;
+    if (ok) {
+      combo++; S.correct++; S.bestCombo = Math.max(S.bestCombo, combo);
+      const fast = secs <= FAST_SECONDS, vip = S.vipDay !== localDay(0);
+      let earn = Math.round(fare() * (1 + .1 * Math.min(10, combo - 1)) * (fast ? 1.5 : 1) * (vip ? 3 : 1));
+      if (vip) S.vipDay = localDay(0);
+      markToday();
+      vib(25); Snd.coin(combo); Snd.play('hit', Math.min(1.5, 1 + combo * .05));
+      burstAt(cx, cy, combo >= 5 ? 24 : 14, combo >= 5 ? 130 : 90);
+      floatText(cx, cy - 10, `+${earn}${fast ? ' ⚡' : ''}${vip ? ' 👑VIP' : ''}`);
+      if (q.type !== 'listen') speak(fullZh(q));
+      S.coins += earn; save();
+      coinFly(cx, cy, earn, () => { renderHud(); renderBuild(); });
+      setTimeout(() => { closeSheet(); guestLeaves(g, true); lightWindow(); }, 900);
+      if (combo === 5 || combo === 10) setTimeout(() => toast(`🔥 Combo ${combo}! Xu nhân x${(1 + .1 * Math.min(10, combo - 1)).toFixed(1)}`), 950);
+    } else {
+      combo = 0; markToday();
+      const pity = 2; S.coins += pity; save();
+      Snd.play('hurt'); vib(120);
+      floatText(cx, cy - 10, `+${pity}`, '#ffb4a8');
+      explain(q, () => { closeSheet(); guestLeaves(g, false); renderHud(); renderBuild(); });
+    }
+  } else {
+    const it = Q.it;
+    if (ok) {
+      const price = priceOf(it);
+      if (S.coins < price) { closeSheet(); toast('Không đủ xu'); return; }
+      S.coins -= price; S.own[it.id] = owned(it.id) + 1; S.pts += it.pts;
+      const before = S.star || 1, after = star(); S.star = after;
+      save();
+      Snd.coin(3); vib([20, 30, 20]);
+      burstAt(cx, cy, 16, 90);
+      speak(it.zh);
+      setTimeout(() => {
+        closeSheet();
+        const key = it.id === 'floor' ? `floor-${floors()}` : it.id === 'staff' ? `staff-${owned('staff')}` : it.id;
+        renderWorld(key); Snd.build();
+        toast(`Đã xây ${it.zh} (${it.py}) – ${it.vi}`);
+        renderHud(); renderBuild();
+        refillQueue();
+        if (after > before) setTimeout(() => starUp(after), 900);
+      }, 650);
+    } else {
+      Snd.play('hurt');
+      save();
+      explain(q, () => { closeSheet(); toast('Chưa trừ xu – ôn từ này rồi mua lại nhé'); renderReview(); });
+    }
+  }
+  renderReview();
+}
+function explain(q, onNext) {
+  const ans = correctText(q), zh = fullZh(q), py = fullPy(q);
+  $('explainSlot').innerHTML = `<div class="explain"><div class="lab">✗ Đáp án đúng</div>
+    ${ans && !hasHan(ans) ? `<div style="font-weight:800;margin-top:4px">${esc(ans)}</div>` : ''}
+    ${zh ? `<div class="qzh">${esc(zh)}</div>` : ''}${py ? `<div class="qpy">${esc(py)}</div>` : ''}${q.vi ? `<div class="qvi">${esc(q.vi)}</div>` : ''}
+    <div class="row-btns">${zh ? '<button type="button" class="btn ghost" id="exSpeak">🔊 Nghe</button>' : ''}<button type="button" class="btn" id="exNext">Tiếp ▶</button></div></div>`;
+  if ($('exSpeak')) $('exSpeak').onclick = () => speak(zh, true);
+  let done = false;
+  $('exNext').onclick = () => { if (done) return; done = true; Snd.play('ui'); onNext(); };
+  try { $('explainSlot').scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' }); } catch (e) {}
+  if (zh) speak(zh);
+}
+
+/* ===== LÊN SAO ===== */
+function starUp(s) {
+  Snd.starUp(); vib([30, 40, 30, 40, 80]);
+  const un = ITEMS.filter(i => i.star === s);
+  showOv('⭐'.repeat(Math.min(s, 5)), `Khách sạn đạt ${s} sao!`,
+    `<p>Lễ tân Bảo được đồng phục mới, giá phòng tăng. Mở khoá:</p>
+     <div class="unlock-list">${un.map(i => `<span>${i.ico} ${esc(i.zh)} · ${esc(i.vi)}</span>`).join('') || '<span>Toàn bộ công trình!</span>'}</div>
+     ${s >= 3 ? `<p>Bạn đã phục vụ được khách thật rồi đấy. Muốn nói trôi chảy ở quầy lễ tân thật?</p><a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo học cùng Bảo</a>` : ''}`, 'Tiếp tục xây');
+  const r = rectOf($('ovBig')); if (r) setTimeout(() => burstAt(r.left + r.width / 2, r.top + r.height / 2, 30, 150), 300);
+}
+function showOv(big, title, body, btn, onClose) {
+  $('ovBig').textContent = big; $('ovTitle').textContent = title; $('ovBody').innerHTML = body; $('ovBtn').textContent = btn || 'Tiếp tục';
+  $('ov').classList.add('on');
+  $('ovBtn').onclick = () => { $('ov').classList.remove('on'); Snd.unlock(); Snd.play('ui'); onClose && onClose(); };
+}
+
+/* ===== TAB XÂY DỰNG / SỔ ÔN / THÀNH TÍCH ===== */
+function renderBuild() {
+  const st = star();
+  const rows = ITEMS.map(it => {
+    const n = owned(it.id), mx = maxOf(it), maxed = n >= mx, lock = st < it.star, need = needOf(it), price = priceOf(it);
+    const can = !maxed && !lock && !need && S.coins >= price;
+    let btn;
+    if (maxed) btn = `<button class="buy" disabled>✓ Đã xây</button>`;
+    else if (lock) btn = `<button class="buy" disabled>🔒 ${it.star}★</button>`;
+    else if (need) btn = `<button class="buy" disabled>Cần ${ITEM[need].zh}</button>`;
+    else btn = `<button class="buy" data-buy="${it.id}" ${S.coins >= price ? '' : 'disabled'}>${price} 🪙</button>`;
+    return { it, html: `<div class="item ${lock ? 'lock' : ''} ${maxed ? 'maxed' : ''} ${can ? 'can' : ''}"><div class="ic">${it.ico}</div>
+      <div class="t"><div class="zh">${esc(it.zh)} ${mx > 1 ? `<small style="font-size:12px;opacity:.75">${n}/${mx}</small>` : ''}</div><div class="py">${esc(it.py)}</div><div class="vi">${esc(it.vi)}</div><div class="eff">${esc(it.eff)}</div></div>${btn}</div>`, order: maxed ? 2 : lock ? 1 : 0 };
+  });
+  rows.sort((a, b) => a.order - b.order || a.it.star - b.it.star || priceOf(a.it) - priceOf(b.it));
+  $('tab-build').innerHTML = `<div class="section-lab">Mua đồ = trả lời đúng tên tiếng Trung của món đó</div>` + rows.map(r => r.html).join('');
+  $('tab-build').querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { const it = ITEM[b.dataset.buy]; if (S.coins < priceOf(it)) return toast('Chưa đủ xu – phục vụ thêm khách nhé'); openBuy(it); });
+}
+function reviewEntries() {
+  const list = [];
+  Object.keys(S.mem).forEach(id => {
+    if (S.mem[id] > 0) return;
+    if (id.startsWith('it-')) { const it = ITEM[id.slice(3)]; if (it) list.push({ zh: it.zh, py: it.py, vi: it.vi }); }
+    else { const q = QUESTIONS.find(x => x.id === id); if (q) list.push({ zh: fullZh(q), py: fullPy(q), vi: q.vi, ans: hasHan(correctText(q)) ? '' : correctText(q) }); }
+  });
+  return list;
+}
+function renderReview() {
+  const L = reviewEntries();
+  const learned = QUESTIONS.filter(q => (S.mem[q.id] || 0) >= 1).length, mastered = QUESTIONS.filter(q => (S.mem[q.id] || 0) >= 2).length;
+  $('tab-review').innerHTML = `<div class="card"><b>📚 Đã học ${learned}/${QUESTIONS.length} câu</b> · thuộc chắc ${mastered}
+      <div class="mini" style="margin-top:6px;height:8px"><i style="width:${Math.round(learned / QUESTIONS.length * 100)}%"></i></div>
+      <p class="note" style="margin-top:6px">Câu sai được khách hỏi lại sớm hơn. Trả lời đúng 2 lần là thuộc chắc.</p></div>
+    <div class="card">${L.length ? L.slice(0, 30).map((e, i) => `<div class="rv-item"><div class="t">${e.ans ? `<div class="vi" style="font-weight:700">${esc(e.ans)}</div>` : ''}<div class="zh">${esc(e.zh)}</div><div class="py">${esc(e.py)}</div><div class="vi">${esc(e.vi)}</div></div><button type="button" data-say="${i}" aria-label="Nghe">🔊</button></div>`).join('') : '<p class="note">Chưa có câu sai nào. Giỏi lắm! 🎉</p>'}</div>`;
+  $('tab-review').querySelectorAll('[data-say]').forEach(b => b.onclick = () => speak(L[+b.dataset.say].zh, true));
+}
+function renderMe() {
+  const acc = S.served ? Math.round(S.correct / S.served * 100) : 0;
+  const built = ITEMS.reduce((n, i) => n + owned(i.id), 0), total = ITEMS.reduce((n, i) => n + maxOf(i), 0);
+  $('tab-me').innerHTML = `<div class="stats"><div><b>${S.served}</b>khách đã phục vụ</div><div><b>${acc}%</b>trả lời đúng</div><div><b>${S.bestCombo}</b>combo cao nhất</div>
+      <div><b>${built}/${total}</b>công trình</div><div><b>${streakAlive()}</b>ngày liên tiếp</div><div><b>${fare()}</b>xu mỗi khách</div></div>
+    <div class="card" style="background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B">
+      <b style="font-size:17px">🎓 Học thật với Bảo Khựa 阿宝</b>
+      <p style="font-size:13px;margin:6px 0 10px">Lớp Zoom tiếng Trung thực chiến 20:00 thứ Hai, Tư, Sáu · Thẻ hội viên 99k/3 tháng, 299k/năm.</p>
+      <div style="display:flex;flex-direction:column;gap:8px"><a class="btn dark" href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM)}" target="_blank" rel="noopener">📝 Đăng ký thẻ</a>
+      <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a></div></div>
+    <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button><a class="btn ghost" href="game.html">⚔️ Chế độ Đánh Boss</a></div>`;
+  $('shareBtn').onclick = share;
+}
+async function share() {
+  const text = `Khách sạn Bảo Khựa của mình đạt ${star()}★, phục vụ ${S.served} khách bằng tiếng Trung! 🏨\nXây khách sạn của bạn: ${GAME_URL}`;
+  try { if (navigator.share) { await navigator.share({ title: 'Khách sạn Bảo Khựa 阿宝', text, url: GAME_URL }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text); toast('Đã copy – dán vào Zalo/Facebook nhé'); } catch (e) { toast(GAME_URL); }
+}
+function switchTab(t) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'tab-' + t));
+  if (t === 'review') renderReview(); if (t === 'me') renderMe(); if (t === 'build') renderBuild();
+  Snd.play('ui');
+}
+
+/* ===== THU NHẬP NHÂN VIÊN ===== */
+function idleTick() {
+  const n = owned('staff'); if (!n || document.hidden) return;
+  S.coins += n; save(); renderHud(); renderBuild();
+  const el = document.querySelector('#world [data-item="staff-1"]'), r = rectOf(el);
+  if (r) floatText(r.left + r.width / 2, r.top, `+${n}`);
+}
+
+/* ===== KHỞI ĐỘNG ===== */
+/** Xu nhân viên thu được khi bạn vắng (50%, tối đa OFFLINE_CAP_MIN phút) */
+function awayEarnings(since) {
+  if (!since || !owned('staff')) return 0;
+  const mins = Math.min(OFFLINE_CAP_MIN, Math.max(0, (Date.now() - since) / 60000));
+  return mins < 1 ? 0 : Math.floor(mins * (60000 / IDLE_EVERY_MS) * owned('staff') * .5);
+}
+let hiddenAt = 0;
+function init() {
+  // thu nhập khi vắng (mở lại trang)
+  const away = awayEarnings(S.lastSeen);
+  S.star = star();
+  renderWorld(); renderHud(); renderBuild();
+  refillQueue();
+  $('serveBtn').onclick = openServe;
+  $('shClose').onclick = () => { if (Q && Q.locked && Q.kind === 'serve') return; closeSheet(); };
+  $('muteBtn').onclick = () => { S.muted = !S.muted; save(); Snd.unlock(); Snd.setMuted(S.muted); renderHud(); if (!S.muted) Snd.play('ui'); };
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  document.body.addEventListener('pointerdown', () => Snd.unlock(), { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); save(); Snd.suspend(); return; }
+    Snd.resume();
+    // quay lại từ ứng dụng khác (trang vẫn mở) → cũng nhận xu nhân viên
+    const got = awayEarnings(hiddenAt); hiddenAt = 0;
+    if (got > 0) { S.coins += got; save(); renderHud(); renderBuild(); toast(`🧑‍💼 Nhân viên thu được +${got} 🪙 khi bạn vắng`); }
+    if (curPhase() !== lastPhase) renderWorld();
+  });
+  setInterval(idleTick, IDLE_EVERY_MS);
+  setInterval(() => { if (curPhase() !== lastPhase) renderWorld(); }, 60000);
+  if (window.speechSynthesis) speechSynthesis.getVoices();
+  if (!S.intro) {
+    showOv('🏨', 'Khách sạn Bảo Khựa', `<p>Bạn là lễ tân ở Bãi Cháy. Khách Trung Quốc xếp hàng chờ:</p>
+      <p>🛎️ <b>Trả lời đúng tiếng Trung</b> → khách vui, trả xu (nhanh dưới 5 giây được boa thêm).</p>
+      <p>🏗️ <b>Dùng xu xây khách sạn</b>: tầng lầu, bể bơi, nhà hàng, vòng quay… mua món nào phải nói đúng tên tiếng Trung món đó.</p>
+      <p>⭐ Lên đủ <b>5 sao</b> để mở pháo hoa trên vịnh!</p>`, 'Mở cửa đón khách', () => { S.intro = true; save(); });
+  } else if (away > 0) {
+    S.coins += away; save();
+    showOv('🧑‍💼', 'Chào mừng trở lại!', `<p>Khi bạn vắng, nhân viên đã thu <b>+${away} 🪙</b>.</p><p>Khách mới đang chờ ở quầy.</p>`, 'Nhận xu', () => renderHud());
+  }
+  save();
+}
+init();
+
+/* hook kiểm thử (không ảnh hưởng chơi) */
+window.__hotel = {
+  get S() { return S; }, get Q() { return Q; }, get queue() { return queue; }, ITEMS, QUESTIONS, star, fare, renderWorld, openServe, openBuy: id => openBuy(ITEM[id]),
+  setPhase(p) { forcedPhase = p; renderWorld(); },
+  answer(correct) {
+    if (!Q || Q.locked) return false;
+    const q = Q.q;
+    if (q.type === 'order') { const seq = correct ? q.answer : q.answer.slice().reverse(); seq.forEach(w => { const c = document.querySelector(`#orderChips .chip[data-w="${w}"]:not(.used)`); c && c.click(); }); return true; }
+    const btn = [...document.querySelectorAll('#opts .opt')].find(b => correct ? +b.dataset.orig === q.answer : +b.dataset.orig !== q.answer);
+    btn && btn.click(); return true;
+  }
+};
+})();
+</script>
+</body>
+</html>
