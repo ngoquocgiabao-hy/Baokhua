@@ -178,8 +178,8 @@ const BANK_HOLDER = "NGO QUOC BAO";
             <div class="step-m"><b>Vào nhóm Zalo</b><p>Bảo xác nhận và gửi lịch Zoom + tài liệu.</p></div>
           </div>
           <div class="mem__offers" id="memOffers">
-            <p data-offer-hold>⏰ Giữ chỗ đến 18:00 ngày 01/11.</p>
-            <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 18:00 ngày 01/11 → bạn được cộng thêm 7 ngày.</p>
+            <p data-offer-hold>⏰ Giữ chỗ đến 20:00 thứ Ba 03/11.</p>
+            <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 20:00 thứ Ba 03/11 → bạn được cộng thêm 7 ngày.</p>
             <p>🎯 Mini game đoán nghĩa trong nhóm Zalo: đoán đúng → giảm đến 20k khi mua thẻ.</p>
           </div>
           <div class="mem__draft" id="memDraftNote">
@@ -214,7 +214,7 @@ const BANK_HOLDER = "NGO QUOC BAO";
 </section>
 <script>
 (function(){
-  function holdSeatExpired(){ return Date.now() >= Date.parse('2026-11-01T11:00:00Z'); }
+  function holdSeatExpired(){ return Date.now() >= Date.parse('2026-11-03T13:00:00Z'); }
   document.querySelectorAll('[data-offer-hold],[data-offer-referral]').forEach(function(el){ el.hidden = holdSeatExpired(); });
   var form=document.getElementById("memFormBtn");
   var zalo=document.getElementById("memZaloBtn");
