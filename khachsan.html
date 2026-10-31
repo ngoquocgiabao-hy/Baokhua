@@ -23,10 +23,22 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 #app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column;gap:8px;padding:8px 8px 28px}
 .hud{display:flex;gap:6px;align-items:stretch;position:sticky;top:0;z-index:30;padding-top:2px;background:linear-gradient(#0b3d5c 70%,rgba(11,61,92,0))}
 .pill{display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:6px 10px;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pill.coin{color:#FFD91F;min-width:86px}
+.pill.coin{color:#FFD91F;min-width:0}
+@media (max-width:400px){.hud .pill{padding:6px 7px;font-size:14px}#starTxt{font-size:12px!important;letter-spacing:0!important}.lock10{font-size:9px;padding:1px 3px}.btn-ico{width:36px}#starNext{font-size:10.5px}}
 .pill.coin.bump{animation:bump .35s ease-out}
 @keyframes bump{40%{transform:scale(1.18)}}
-.pill.star{flex:1;flex-direction:column;align-items:stretch;gap:3px;padding:5px 10px}
+.pill.star{flex:1;min-width:0;flex-direction:column;align-items:stretch;gap:3px;padding:5px 10px;cursor:pointer}
+.pill.star .top{white-space:nowrap;overflow:hidden}
+.lock10{font-size:10px;background:#16171B;color:#FFD91F;border-radius:6px;padding:1px 5px;margin-left:4px;letter-spacing:0}
+.perks{list-style:none;text-align:left;margin:8px 0;display:flex;flex-direction:column;gap:6px}
+.perks li{background:rgba(255,255,255,.1);border-radius:10px;padding:7px 9px;font-size:13px;line-height:1.35}
+.price-tag{font-size:26px;font-weight:900;color:#FFD91F;margin:6px 0 0}
+.price-sub{font-size:12px;opacity:.85;margin-bottom:6px}
+.ov-card .btn+.btn{margin-top:8px}
+.item.vip{background:linear-gradient(135deg,rgba(255,217,31,.14),rgba(255,255,255,.05));border-color:rgba(255,217,31,.35)}
+.item.vip .buy{background:#16171B;color:#FFD91F;box-shadow:0 3px 0 #000}
+.member-card{background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B}
+.member-card .perks li{background:rgba(22,23,27,.07)}
 .pill.star .top{display:flex;justify-content:space-between;font-size:12px}
 #starTxt{color:#FFD91F;letter-spacing:1px;font-size:14px}
 .mini{height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden}
@@ -221,7 +233,11 @@ const GOOGLE_FORM_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhh
 const FORM_UTM = 'utm_source=game_khachsan&utm_campaign=lop_0211';
 const SAVE_KEY = 'baokhua_hotel_v1';
 const FAST_SECONDS = 5;
-const STAR_PTS = [0, 50, 160, 400, 750];
+const STAR_PTS = [0, 50, 160, 400, 750, 1200, 1800, 2600, 3600, 5000];   // thang 10 sao
+const FREE_MAX_STAR = 5;                          // bản hiện tại: tối đa 5★, 6★–10★ khoá
+const MEMBER_PRICE = '299.000đ', MEMBER_3M = '99.000đ', SVIP_PRICE = '5.000.000đ';
+const FORM_UTM_MEMBER = 'utm_source=game_khachsan&utm_campaign=hoivien_nam';
+const PITCH_AFTER_SERVES = 12;                    // mỗi ngày nhắc hội viên 1 lần sau 12 khách
 const IDLE_EVERY_MS = 15000;
 const OFFLINE_CAP_MIN = 60;
 const GAME_DAY_MS = 12 * 60 * 1000;          // chế độ nhanh: 1 ngày game = 12 phút thật
@@ -307,7 +323,7 @@ const QUESTIONS = normalizeQuestions(QUESTIONS_RAW);
 
 /* ===== CÔNG TRÌNH – mỗi món là 1 từ vựng ===== */
 const ITEMS = [
-  { id:'floor',      zh:'楼层',     py:'lóucéng',        vi:'Tầng lầu',        ico:'🏢', prices:[40,110,240,450,800], max:5, pts:40, star:1, fare:3, eff:'Thêm 1 tầng, 3 phòng · khách ở lại qua đêm' },
+  { id:'floor',      zh:'楼层',     py:'lóucéng',        vi:'Tầng lầu',        ico:'🏢', prices:[0,60,160,320,600], max:5, pts:40, star:1, fare:3, eff:'Thêm 1 tầng = 3 phòng · khách ở lại qua đêm' },
   { id:'desk',       zh:'前台',     py:'qiántái',        vi:'Quầy lễ tân',     ico:'🛎️', price:25,  pts:15, star:1, fare:2, eff:'Quầy viền vàng, sảnh sang hơn · +2 xu mỗi khách' },
   { id:'palm',       zh:'椰子树',   py:'yēzishù',        vi:'Cây dừa',         ico:'🌴', price:20,  pts:10, star:1, fare:1, eff:'Hàng dừa dọc bờ biển · +1 xu' },
   { id:'umbrella',   zh:'遮阳伞',   py:'zhēyángsǎn',     vi:'Ô che nắng',      ico:'⛱️', price:35,  pts:15, star:1, fare:1, eff:'Ô và ghế trên bãi cát, có người tắm nắng · +1 xu' },
@@ -326,6 +342,19 @@ const ITEMS = [
   { id:'fireworks',  zh:'烟花',     py:'yānhuā',         vi:'Pháo hoa',        ico:'🎆', price:900, pts:300, star:5, fare:8, eff:'Pháo hoa trên vịnh 20:00–21:30 mỗi tối · +8 xu' }
 ];
 const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+/* 6★–10★: hiện để người chơi thấy trước (và học từ), chưa mua được */
+const VIP_ITEMS = [
+  { star:6,  zh:'水疗中心',     py:'shuǐliáo zhōngxīn',     vi:'Trung tâm spa',            ico:'💆' },
+  { star:6,  zh:'酒吧',         py:'jiǔbā',                 vi:'Quầy bar',                 ico:'🍸' },
+  { star:7,  zh:'高层客房',     py:'gāocéng kèfáng',        vi:'Phòng tầng cao (tầng 6–10)', ico:'🏙️' },
+  { star:7,  zh:'宴会厅',       py:'yànhuìtīng',            vi:'Sảnh tiệc cưới',           ico:'💒' },
+  { star:8,  zh:'无边泳池',     py:'wúbiān yǒngchí',        vi:'Bể bơi vô cực',            ico:'🌊' },
+  { star:8,  zh:'直升机停机坪', py:'zhíshēngjī tíngjīpíng', vi:'Bãi đáp trực thăng',       ico:'🚁' },
+  { star:9,  zh:'私人海滩',     py:'sīrén hǎitān',          vi:'Bãi biển riêng',           ico:'🏝️' },
+  { star:9,  zh:'游艇码头',     py:'yóutǐng mǎtóu',         vi:'Bến du thuyền hạng sang',  ico:'🛳️' },
+  { star:10, zh:'总统套房',     py:'zǒngtǒng tàofáng',      vi:'Phòng tổng thống',         ico:'👑' },
+  { star:10, zh:'机器人管家',   py:'jīqìrén guǎnjiā',       vi:'Robot quản gia',           ico:'🤖' }
+];
 
 /* Từ vựng khi chạm vào phố */
 const WORDS = {
@@ -363,14 +392,15 @@ function localDay(off = 0) { const d = new Date(Date.now() + off * 86400000); re
 function withUtm(u, qs) { return u + (u.includes('?') ? '&' : '?') + qs; }
 
 /* ===== lưu tiến độ ===== */
-const DEFAULT = { coins: 30, pts: 0, own: {}, mem: {}, found: {}, streak: { last: '', n: 0 }, served: 0, correct: 0, bestCombo: 0, lastSeen: 0, intro: false, vipDay: '', star: 1, muted: false, clock: 'fast', lowPower: false, checkouts: 0 };
+const DEFAULT = { coins: 30, pts: 0, own: { floor: 1 }, mem: {}, found: {}, streak: { last: '', n: 0 }, served: 0, correct: 0, bestCombo: 0, lastSeen: 0, intro: false, vipDay: '', star: 1, muted: false, clock: 'fast', lowPower: false, checkouts: 0 };
 let S;
 try { S = Object.assign({}, DEFAULT, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { S = Object.assign({}, DEFAULT); }
 ['own', 'mem', 'found', 'streak'].forEach(k => { if (!S[k] || typeof S[k] !== 'object') S[k] = JSON.parse(JSON.stringify(DEFAULT[k])); });
+if (!S.own.floor) S.own.floor = 1;   // khách sạn 1★ luôn có sẵn 1 tầng = 3 phòng
 function save() { S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
 
 const owned = id => S.own[id] || 0;
-function starOf(pts) { let s = 0; STAR_PTS.forEach(t => { if (pts >= t) s++; }); return Math.max(1, s); }
+function starOf(pts) { let s = 0; STAR_PTS.forEach(t => { if (pts >= t) s++; }); return Math.max(1, Math.min(S.vip ? 10 : FREE_MAX_STAR, s)); }
 const star = () => starOf(S.pts);
 const floors = () => owned('floor');
 function fare() { let f = 8 + 2 * star(); ITEMS.forEach(it => { f += (it.fare || 0) * owned(it.id); }); return f; }
@@ -529,9 +559,9 @@ function markToday() { const t = localDay(0), s = S.streak; if (s.last === t) re
 function renderHud() {
   countTo(S.coins);
   const st = star();
-  $('starTxt').innerHTML = '★'.repeat(st) + `<span style="opacity:.28">${'★'.repeat(5 - st)}</span>`;
-  if (st >= 5) { $('starBar').style.width = '100%'; $('starNext').textContent = 'Tối đa'; }
-  else { const a = STAR_PTS[st - 1], b = STAR_PTS[st]; $('starBar').style.width = Math.round((S.pts - a) / (b - a) * 100) + '%'; $('starNext').textContent = `${S.pts}/${b} điểm`; }
+  $('starTxt').innerHTML = '★'.repeat(st) + `<span style="opacity:.28">${'★'.repeat(5 - st)}</span><span class="lock10">🔒10</span>`;
+  if (st >= FREE_MAX_STAR) { $('starBar').style.width = '100%'; $('starNext').textContent = '👑 6★'; }
+  else { const a = STAR_PTS[st - 1], b = STAR_PTS[st]; $('starBar').style.width = Math.round((S.pts - a) / (b - a) * 100) + '%'; $('starNext').textContent = `${S.pts}/${b}`; }
   $('streakPill').textContent = '🔥 ' + streakAlive();
   $('muteBtn').textContent = S.muted ? '🔇' : '🔊';
   const q = Scene.queue.length;
@@ -837,6 +867,17 @@ const Scene = (() => {
         box(g, HX + HW, roofY - 4, 11, BASE - roofY + 4, 'rgba(180,225,255,.4)');
         g.strokeStyle = trim; g.lineWidth = .9; g.strokeRect(HX + HW, roofY - 4, 11, BASE - roofY + 4);
         for (let y = roofY + 6; y < BASE; y += 10) box(g, HX + HW, y, 11, .6, trim);
+      }
+      if (star() >= FREE_MAX_STAR) {
+        // cần cẩu chờ xây tầng 6–10 (chạm để xem hội viên năm)
+        const mx = HX + 6, top = Math.max(4, roofY - 58);
+        g.strokeStyle = '#e9a400'; g.lineWidth = 1.2;
+        g.strokeRect(mx, top, 6, roofY - top);
+        for (let y = top; y < roofY - 6; y += 6) { g.beginPath(); g.moveTo(mx, y); g.lineTo(mx + 6, y + 6); g.stroke(); }
+        box(g, mx - 4, top - 3, 92, 3, '#e9a400'); box(g, mx - 12, top - 3, 8, 6, '#555');
+        box(g, mx + 70, top, .6, 12, '#333');
+        rbox(g, mx + 46, top + 12, 50, 13, 2, '#16171B'); g.strokeStyle = '#FFD91F'; g.lineWidth = .8; rr(g, mx + 46, top + 12, 50, 13, 2); g.stroke();
+        text(g, '6★–10★ SẮP MỞ', mx + 71, top + 18.5, 4.6, '#FFD91F');
       }
       if (owned('lights')) for (let y = roofY; y < BASE - 6; y += 6) { dot(g, HX + 1, y, .9, FX_COLORS[(y / 6 | 0) % 7]); dot(g, HX + HW - 1, y + 3, .9, FX_COLORS[(y / 6 + 3 | 0) % 7]); }
       // cột đèn đường
@@ -1427,6 +1468,7 @@ const Scene = (() => {
     const w = toWorld(cx, cy), x = w.x, y = w.y, sx = w.sx, sy = w.sy;
     // khách đầu hàng
     if (queue[0] && hit(x, y, queue[0].x - 7, queue[0].y - 24, 16, 26)) { openServe(); return; }
+    if (star() >= FREE_MAX_STAR) { const roofY = BASE - LOBBY_H - floors() * FLOOR_H, top = Math.max(4, roofY - 58); if (hit(x, y, HX - 6, top - 4, 110, roofY - top + 4)) { memberPitch('crane'); return; } }
     for (const g of queue) if (hit(x, y, g.x - 7, g.y - 24, 14, 26)) return word('guest', cx, cy);
     if (sunPos && Math.hypot(sx - sunPos[0], sy - sunPos[1]) < 14) return word('sun', cx, cy);
     if (moonPos && Math.hypot(sx - moonPos[0], sy - moonPos[1]) < 12) return word('moon', cx, cy);
@@ -1530,7 +1572,7 @@ function itemQuestion(it) {
 }
 
 /* ===== BẢNG HỎI–ĐÁP ===== */
-let Q = null, combo = 0, orderPicked = [];
+let Q = null, combo = 0, orderPicked = [], sessionServed = 0;
 function correctText(q) { if (q.type === 'order') return (q.answer || []).join(''); return typeof q.answer === 'number' ? (q.options[q.answer] || '') : ''; }
 function fullZh(q) { const a = correctText(q); let z = q.zh || ''; if (!z && hasHan(a)) z = a; return z.includes('____') ? z.replace('____', a) : z; }
 function fullPy(q) { let p = q.py || ''; if (p.includes('____') && q.optionPy && typeof q.answer === 'number') p = p.replace('____', q.optionPy[q.answer] || '…'); return p; }
@@ -1643,7 +1685,8 @@ function resolve(ok, el) {
   const r = rectOf(el) || rectOf($('opts'));
   const cx = r ? r.left + r.width / 2 : innerWidth / 2, cy = r ? r.top + r.height / 2 : innerHeight / 2;
   if (Q.kind === 'serve') {
-    const g = Q.g; S.served++;
+    const g = Q.g; S.served++; sessionServed++;
+    if (sessionServed >= PITCH_AFTER_SERVES && S.pitchDay !== localDay(0) && star() >= 2) { S.pitchDay = localDay(0); setTimeout(() => { if (!Q && !$('ov').classList.contains('on')) memberPitch('daily'); }, 2600); }
     if (ok) {
       combo++; S.correct++; S.bestCombo = Math.max(S.bestCombo, combo);
       const fast = secs <= FAST_SECONDS, vip = S.vipDay !== localDay(0);
@@ -1704,15 +1747,40 @@ function explain(q, onNext) {
 /* ===== LÊN SAO ===== */
 function starUp(s) {
   Snd.starUp(); vib([30, 40, 30, 40, 80]);
+  if (s >= FREE_MAX_STAR) {
+    // chạm trần bản hiện tại → giới thiệu hội viên năm
+    S.pitchDay = localDay(0); save();
+    showOv('⭐⭐⭐⭐⭐', 'Khách sạn đạt 5 sao!', `<p>Bạn vừa chạm mức cao nhất của <b>bản hiện tại</b>. Khách sạn còn 5 hạng sao nữa đang được Bảo hoàn thiện:</p>${perksHtml(true)}`, 'Để sau', null);
+    const r = rectOf($('ovBig')); if (r) setTimeout(() => burstAt(r.left + r.width / 2, r.top + r.height / 2, 34, 160), 300);
+    return;
+  }
   const un = ITEMS.filter(i => i.star === s);
   showOv('⭐'.repeat(Math.min(s, 5)), `Khách sạn đạt ${s} sao!`,
     `<p>Lễ tân Bảo được đồng phục mới, mặt tiền đổi màu, giá phòng tăng. Mở khoá:</p>
      <div class="unlock-list">${un.map(i => `<span>${i.ico} ${esc(i.zh)} · ${esc(i.vi)}</span>`).join('') || '<span>Toàn bộ công trình!</span>'}</div>
-     ${s >= 3 ? `<p>Bạn đã phục vụ được khách thật rồi đấy. Muốn nói trôi chảy ở quầy lễ tân thật?</p><a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo học cùng Bảo</a>` : ''}`, 'Tiếp tục xây');
+     ${s >= 3 ? `<p>Bạn đã phục vụ được khách thật rồi đấy. Muốn nói trôi chảy ở quầy lễ tân thật?</p><a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo học cùng Bảo</a><button type="button" class="btn dark" id="ovPerks">👑 Xem đặc quyền hội viên năm</button>` : `<p class="note">Lên ${s + 1}★ để mở thêm công trình. Đích đến: 10★ 👑</p>`}`, 'Tiếp tục xây');
+  if ($('ovPerks')) $('ovPerks').onclick = () => memberPitch('star' + s);
   const r = rectOf($('ovBig')); if (r) setTimeout(() => burstAt(r.left + r.width / 2, r.top + r.height / 2, 30, 150), 300);
 }
+/* ===== HỘI VIÊN NĂM (câu dẫn) ===== */
+function perksHtml(withCta) {
+  return `<ul class="perks">
+      <li>🏙️ <b>Mở khoá 6★ → 10★</b> ngay khi ra mắt: tầng 6–10, spa, bar, sảnh tiệc, bể bơi vô cực, bãi đáp trực thăng, phòng tổng thống… mỗi công trình là một từ mới</li>
+      <li>🔄 <b>Cải tiến liên tục cả năm</b>: thêm khách, thêm câu hỏi, thêm phố</li>
+      <li>📘 <b>Giáo trình học cá nhân</b> theo mục tiêu của bạn</li>
+      <li>💎 <b>Cơ hội nâng cấp S-VIP</b>: app học riêng cho ngành nghề đặc thù của bạn – ${SVIP_PRICE}</li>
+    </ul>
+    <div class="price-tag">${MEMBER_PRICE} / năm</div>
+    <div class="price-sub">Chưa tới 1.000đ mỗi ngày · rẻ hơn 97.000đ so với mua 4 lần thẻ 3 tháng (${MEMBER_3M})</div>
+    ${withCta ? `<a class="btn dark" href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM_MEMBER)}" target="_blank" rel="noopener">👑 Đăng ký hội viên năm</a>
+    <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo – được báo ngày mở khoá</a>` : ''}`;
+}
+function memberPitch(src) {
+  S.pitchN = (S.pitchN || 0) + 1; S.pitchSrc = src; save();
+  showOv('👑', 'Hội viên năm Bảo Khựa', `<p>Bản hiện tại chơi được tới <b>5★</b>. Hạng <b>6★ → 10★</b> đang được Bảo hoàn thiện, hội viên năm được mở đầu tiên.</p>${perksHtml(true)}`, 'Để sau', null);
+}
 function showOv(big, title, body, btn, onClose) {
-  $('ovBig').textContent = big; $('ovTitle').textContent = title; $('ovBody').innerHTML = body; $('ovBtn').textContent = btn || 'Tiếp tục';
+  $('ovBig').textContent = big; $('ovBig').style.fontSize = [...big].length > 3 ? '36px' : ''; $('ovTitle').textContent = title; $('ovBody').innerHTML = body; $('ovBtn').textContent = btn || 'Tiếp tục';
   $('ov').classList.add('on');
   $('ovBtn').onclick = () => { $('ov').classList.remove('on'); Snd.unlock(); Snd.play('ui'); onClose && onClose(); };
 }
@@ -1732,8 +1800,15 @@ function renderBuild() {
       <div class="t"><div class="zh">${esc(it.zh)} ${mx > 1 ? `<small style="font-size:12px;opacity:.75">${n}/${mx}</small>` : ''}</div><div class="py">${esc(it.py)}</div><div class="vi">${esc(it.vi)}</div><div class="eff">${esc(it.eff)}</div></div>${btn}</div>`, order: maxed ? 2 : lock ? 1 : 0 };
   });
   rows.sort((a, b) => a.order - b.order || a.it.star - b.it.star || priceOf(a.it) - priceOf(b.it));
-  $('tab-build').innerHTML = `<div class="section-lab">Mua đồ = trả lời đúng tên tiếng Trung của món đó</div>` + rows.map(r => r.html).join('');
+  const vip = VIP_ITEMS.map((v, i) => `<div class="item vip lock" data-vip="${i}"><div class="ic">${v.ico}</div>
+      <div class="t"><div class="zh">${esc(v.zh)}</div><div class="py">${esc(v.py)}</div><div class="vi">${esc(v.vi)}</div><div class="eff">Hạng ${v.star}★ · chạm để nghe từ</div></div><button class="buy" data-pitch="${i}">🔒 ${v.star}★</button></div>`).join('');
+  $('tab-build').innerHTML = `<div class="section-lab">Mua đồ = trả lời đúng tên tiếng Trung của món đó</div>` + rows.map(r => r.html).join('') +
+    `<div class="section-lab" style="margin-top:8px">👑 6★ → 10★ · dành cho hội viên năm (sắp ra mắt)</div>${vip}
+     <button type="button" class="btn dark" id="vipCta">👑 Xem đặc quyền hội viên năm</button>`;
   $('tab-build').querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { const it = ITEM[b.dataset.buy]; if (S.coins < priceOf(it)) return toast('Chưa đủ xu – phục vụ thêm khách nhé'); openBuy(it); });
+  $('tab-build').querySelectorAll('[data-vip]').forEach(el => el.onclick = e => { if (e.target.closest('[data-pitch]')) return; speak(VIP_ITEMS[+el.dataset.vip].zh, true); });
+  $('tab-build').querySelectorAll('[data-pitch]').forEach(b => b.onclick = () => memberPitch('item'));
+  $('vipCta').onclick = () => memberPitch('build');
 }
 function reviewEntries() {
   const list = [];
@@ -1762,11 +1837,12 @@ function renderMe() {
   const built = ITEMS.reduce((n, i) => n + owned(i.id), 0), total = ITEMS.reduce((n, i) => n + maxOf(i), 0);
   $('tab-me').innerHTML = `<div class="stats"><div><b>${S.served}</b>khách đã phục vụ</div><div><b>${acc}%</b>trả lời đúng</div><div><b>${S.bestCombo}</b>combo cao nhất</div>
       <div><b>${built}/${total}</b>công trình</div><div><b>${streakAlive()}</b>ngày liên tiếp</div><div><b>${S.checkouts || 0}</b>lượt trả phòng</div></div>
-    <div class="card" style="background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B">
-      <b style="font-size:17px">🎓 Học thật với Bảo Khựa 阿宝</b>
-      <p style="font-size:13px;margin:6px 0 10px">Lớp Zoom tiếng Trung thực chiến 20:00 thứ Hai, Tư, Sáu · Thẻ hội viên 99k/3 tháng, 299k/năm.</p>
-      <div style="display:flex;flex-direction:column;gap:8px"><a class="btn dark" href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM)}" target="_blank" rel="noopener">📝 Đăng ký thẻ</a>
-      <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a></div></div>
+    <div class="card member-card">
+      <b style="font-size:17px">👑 Hội viên năm Bảo Khựa 阿宝</b>
+      ${perksHtml(false)}
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><a class="btn dark" href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM_MEMBER)}" target="_blank" rel="noopener">👑 Đăng ký hội viên năm</a>
+      <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a></div>
+      <p style="font-size:12px;margin-top:8px;opacity:.8">Lớp Zoom tiếng Trung thực chiến 20:00 thứ Hai, Tư, Sáu · <a href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM)}" target="_blank" rel="noopener" style="color:#16171B">thẻ 3 tháng ${MEMBER_3M}</a></p></div>
     <div class="card"><label class="toggle"><span>🔋 Chế độ mượt cho máy yếu (30 khung hình/giây, ít người xe hơn)</span><input type="checkbox" id="lowChk" ${Scene.low ? 'checked' : ''}></label></div>
     <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button><a class="btn ghost" href="game.html">⚔️ Chế độ Đánh Boss</a></div>`;
   $('shareBtn').onclick = share;
@@ -1803,6 +1879,11 @@ function init() {
   Scene.init();
   renderHud(); renderBuild();
   $('serveBtn').onclick = openServe;
+  document.querySelector('.pill.star').onclick = () => {
+    const st = star();
+    if (st >= FREE_MAX_STAR) return memberPitch('hud');
+    toast(`Còn ${STAR_PTS[st] - S.pts} điểm nữa lên ${st + 1}★ · đích đến 10★ 👑`);
+  };
   $('shClose').onclick = () => { if (Q && Q.locked && Q.kind === 'serve') return; closeSheet(); };
   $('muteBtn').onclick = () => { S.muted = !S.muted; save(); Snd.unlock(); Snd.setMuted(S.muted); renderHud(); if (!S.muted) Snd.play('ui'); };
   $('zoomBtn').onclick = () => { const z = Scene.zoom > 1 ? 1 : 1.75; Scene.setZoom(z); $('zoomBtn').classList.toggle('on', z > 1); $('zoomBtn').textContent = z > 1 ? '↙' : '🔍'; Snd.play('ui'); if (z > 1) toast('Kéo theo mọi hướng để xem từng phòng'); };
@@ -1823,7 +1904,7 @@ function init() {
   setInterval(idleTick, IDLE_EVERY_MS);
   if (window.speechSynthesis) speechSynthesis.getVoices();
   if (!S.intro) {
-    showOv('🏨', 'Khách sạn Bảo Khựa', `<p>Bạn là lễ tân ở Bãi Cháy. Khách Trung Quốc xếp hàng chờ ở cửa:</p>
+    showOv('🏨', 'Khách sạn Bảo Khựa', `<p>Bạn vừa nhận một khách sạn <b>1★ nhỏ, 3 phòng</b> ở Bãi Cháy. Mục tiêu: <b>10★</b>. Khách Trung Quốc đang xếp hàng ở cửa:</p>
       <p>🛎️ <b>Trả lời đúng tiếng Trung</b> → khách vui, trả xu, lên phòng bật đèn.</p>
       <p>🏗️ <b>Dùng xu xây khách sạn</b>: tầng lầu, gym, bể bơi, nhà hàng… mua món nào phải nói đúng tên tiếng Trung món đó.</p>
       <p>🔎 <b>Chạm vào mọi thứ trên phố</b> (xe máy, quán, khách đang ngủ…) để học từ mới.</p>
