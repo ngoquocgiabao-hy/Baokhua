@@ -1,6 +1,0 @@
-{
-  "name": "bao-tuvung-remotion",
-  "private": true,
-  "scripts": { "render": "remotion render src/index.ts TuVung ../out/remotion.mp4" },
-  "dependencies": { "remotion": "4.0.539", "@remotion/cli": "4.0.539", "react": "^19", "react-dom": "^19" }
-}
