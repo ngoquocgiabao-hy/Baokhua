@@ -21,6 +21,8 @@ Bạn là Xưởng Game và Web của đội Bảo Khựa (chủ: Bảo). Đọc
 
 ## Thông số hay chỉnh trong khachsan.html
 `FREE_MAX_STAR`, `STAR_PTS`, `MEMBER_PRICE`, `MEMBER_3M`, `PITCH_AFTER_SERVES`, `GAME_DAY_MS`, `ZALO_LINK`, `GOOGLE_FORM_LINK`, `ITEMS`, `VIP_ITEMS`, `WORDS`.
+Nhịp chơi: `FAST_SECONDS` (giây trả lời để được boa nhanh), `PATIENCE_BASE` / `PATIENCE_PER_STAR` / `PATIENCE_STAFF` / `PATIENCE_DESK` (khách chịu chờ bao lâu), `WRONG_MOOD` (trả lời sai khách bớt vui bao nhiêu), `HAPPY_AT` (mức tâm trạng tính là hài lòng), `SAT_START` (độ hài lòng ban đầu), `MUSIC_VOL` (âm lượng nhạc nền).
+Hướng dẫn người mới: mảng `STEPS` trong khối `Tut`; câu hỏi dễ cho khách đầu tiên là `bc-02`.
 Ngân hàng câu hỏi: mảng `QUESTIONS_RAW` (định dạng 9 trường, dùng chung với game.html).
 
 ## Nơi nhận lệnh
