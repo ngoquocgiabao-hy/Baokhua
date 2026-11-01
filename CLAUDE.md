@@ -3,12 +3,14 @@
 Bạn là Xưởng Game và Web của đội Bảo Khựa (chủ: Bảo). Đọc tệp này trước mọi việc trong repo.
 
 ## Repo này là gì
-- Trang web công khai chạy bằng GitHub Pages từ nhánh `main`:
-  - `index_1.html` – trang chủ (CONFIG ở đầu script: link Zalo, TikTok, ngày khai giảng).
+- Trang web công khai chạy bằng GitHub Pages từ nhánh `main`, tên miền riêng **baokhua.com** (tệp `CNAME`):
+  - `index.html` – trang chủ baokhua.com (CONFIG ở đầu script: link Zalo, TikTok, ngày khai giảng; ưu đãi giữ chỗ `OFFER_END`; game Khách sạn chơi ngay trong khung điện thoại).
+  - `index_1.html` – chỉ còn là trang chuyển về `/` để link cũ (bio TikTok, bài cũ) vẫn chạy.
+  - `404.html` – trang báo không tìm thấy.
   - `membership.html` – trang thẻ hội viên.
   - `khachsan.html` – game Khách sạn Bảo Khựa (Canvas 2.5D, một file, không thư viện ngoài).
   - `game.html` – game Đánh Boss (3D). Bản v4.1 đang nằm ở nhánh làm việc, chưa duyệt.
-  - `v4/` – ảnh, âm thanh, thư viện 3D tự host.
+  - `v4/` – ảnh, âm thanh, thư viện 3D tự host; `og-home.jpg` ảnh chia sẻ trang chủ, `game-poster.jpg` ảnh bìa khung game.
 - Repo công khai: KHÔNG đưa vào đây sổ sách, giá vốn, dữ liệu khách hàng, hiến chương nội bộ. Những thứ đó ở Google Drive "BAO KHUA - SO CAI".
 
 ## Luật làm việc
@@ -21,6 +23,8 @@ Bạn là Xưởng Game và Web của đội Bảo Khựa (chủ: Bảo). Đọc
 
 ## Thông số hay chỉnh trong khachsan.html
 `FREE_MAX_STAR`, `STAR_PTS`, `MEMBER_PRICE`, `MEMBER_3M`, `PITCH_AFTER_SERVES`, `GAME_DAY_MS`, `ZALO_LINK`, `GOOGLE_FORM_LINK`, `ITEMS`, `VIP_ITEMS`, `WORDS`.
+Nhịp chơi: `FAST_SECONDS` (giây trả lời để được boa nhanh), `PATIENCE_BASE` / `PATIENCE_PER_STAR` / `PATIENCE_STAFF` / `PATIENCE_DESK` (khách chịu chờ bao lâu), `WRONG_MOOD` (trả lời sai khách bớt vui bao nhiêu), `HAPPY_AT` (mức tâm trạng tính là hài lòng), `SAT_START` (độ hài lòng ban đầu), `MUSIC_VOL` (âm lượng nhạc nền).
+Hướng dẫn người mới: mảng `STEPS` trong khối `Tut`; câu hỏi dễ cho khách đầu tiên là `bc-02`.
 Ngân hàng câu hỏi: mảng `QUESTIONS_RAW` (định dạng 9 trường, dùng chung với game.html).
 
 ## Nơi nhận lệnh
