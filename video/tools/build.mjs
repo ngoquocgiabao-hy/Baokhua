@@ -1,4 +1,4 @@
-// Xưởng video Bảo Khựa: dựng hàng loạt video dọc 9:16 bằng HyperFrames.
+// Xưởng video Bảo Khựa (v2 – 3D): dựng hàng loạt video dọc 9:16 bằng HyperFrames + three.js.
 //   node tools/build.mjs              dựng tất cả
 //   node tools/build.mjs tv01 hn-hotel-1   chỉ dựng các mã này
 //   node tools/build.mjs --list       liệt kê mã video
@@ -43,56 +43,194 @@ function card(q) {
   return { id: q.id, topic: q.topic, zh, py: q.pinyin, vi: vi.replace(/\.$/, '') };
 }
 
-/* ---------- khung trang chung ---------- */
+/* ================= NGÔN NGỮ HÌNH ẢNH v2 =================
+   - Cảnh game là "thế giới": phủ kín khung, máy quay nghiêng, kéo, trôi; không khung nhỏ trên nền phẳng.
+   - Chữ Hán là quân bài 3D thật (three.js, tools/engine3d.js): rơi, lật, xoay lên, đập vào; bị đánh bay khi đổi từ.
+   - Pinyin, nghĩa, tiêu đề là "花字" (chữ phồng nhiều lớp viền) và băng dính vàng đen kiểu show tạp kỹ.
+   - Mỗi nhịp một kiểu vào, chuyển cảnh có nguyên nhân, kết thúc bằng một hành động (máy thu thành điện thoại, quân 阿宝 đập xuống).
+*/
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const r2 = x => +x.toFixed(2);
+const FONT_VI = "'Inter Display','Inter',sans-serif", FONT_ZH = "'WenQuanYi Zen Hei','Noto Sans CJK SC',sans-serif";
+
+function wrap(text, max) {
+  const words = String(text).split(/\s+/), lines = []; let cur = '';
+  for (const w of words) { if ((cur + ' ' + w).trim().length > max && cur) { lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); }
+  if (cur) lines.push(cur); return lines;
+}
+
+/* 花字: các lớp đùn nổi → viền màu → viền trắng → ruột tô chuyển sắc */
+let gid = 0;
+function hz(lines, o) {
+  lines = [].concat(lines);
+  const size = o.size, lh = size * (o.lh || 1.12), sw = 2 * ((o.white || 0) + (o.outerW || 0));
+  const padY = sw / 2 + (o.ext || 0) + size * .12, Wd = o.w || 1040, Hd = Math.round(lh * lines.length + padY * 2);
+  const id = 'hzg' + (++gid);
+  const fam = o.zh ? FONT_ZH : FONT_VI, wt = o.zh ? 400 : (o.weight || 900);
+  let s = `<svg class="hz" width="${Wd}" height="${Hd}" viewBox="0 0 ${Wd} ${Hd}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${o.fill[0]}"/><stop offset="1" stop-color="${o.fill[1]}"/></linearGradient></defs>`;
+  lines.forEach((ln, i) => {
+    const y = r2(padY + lh * i + lh / 2), t = esc(ln);
+    const base = `x="${Wd / 2}" text-anchor="middle" dominant-baseline="central" font-family="${fam}" font-size="${size}" font-weight="${wt}" stroke-linejoin="round" paint-order="stroke"${o.italic ? ' font-style="italic"' : ''}${o.ls ? ` letter-spacing="${o.ls}"` : ''}`;
+    if (o.ext) for (const d of [o.ext, o.ext * .5]) s += `<text ${base} y="${r2(y + d)}" fill="${o.extColor}" stroke="${o.extColor}" stroke-width="${sw}">${t}</text>`;
+    if (o.outerW) s += `<text ${base} y="${y}" fill="${o.outer}" stroke="${o.outer}" stroke-width="${sw}">${t}</text>`;
+    if (o.white) s += `<text ${base} y="${y}" fill="#fff" stroke="#fff" stroke-width="${2 * o.white}">${t}</text>`;
+    s += `<text ${base} y="${y}" fill="url(#${id})">${t}</text>`;
+  });
+  return { svg: s + '</svg>', h: Hd, w: Wd };
+}
+const HZ = {
+  title: (l, size = 122) => hz(l, { size, fill: ['#FFF7D6', '#FFD91F'], outer: '#1E5AA8', outerW: 13, white: 9, ext: 15, extColor: '#0F3468' }),
+  cream: (l, size = 96) => hz(l, { size, fill: ['#FFFFFF', '#FFF7D6'], outer: '#1E5AA8', outerW: 11, white: 0, ext: 12, extColor: '#0F3468' }),
+  py: (l, size = 112) => hz(l, { size, fill: ['#FFF15A', '#F2B200'], outer: '#16171B', outerW: 10, white: 8, ext: 12, extColor: '#0F3468', italic: true, weight: 800 }),
+  zh: (l, size = 150) => hz(l, { size, zh: true, fill: ['#FFFFFF', '#FFF7D6'], outer: '#16171B', outerW: 12, white: 0, ext: 14, extColor: '#1E5AA8' }),
+};
+const tape = (txt, cls = '') => `<div class="tape ${cls}"><span>${esc(txt)}</span></div>`;
+
 const CSS = `
 @font-face{font-family:'Inter Display';src:local('Inter Display'),local('Inter Display Black'),local('Inter Display ExtraBold')}
 @font-face{font-family:'Inter';src:local('Inter')}
 @font-face{font-family:'WenQuanYi Zen Hei';src:local('WenQuanYi Zen Hei')}
 @font-face{font-family:'Noto Sans CJK SC';src:local('Noto Sans CJK SC')}
-:root{--deep:#0F3468;--denim:#1E5AA8;--sun:#FFD91F;--amber:#F2B200;--ink:#16171B;--cream:#FFF7D6;
-  --vi:"Inter Display","Inter",sans-serif;--zh:"WenQuanYi Zen Hei","Noto Sans CJK SC",sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:1080px;height:1920px;overflow:hidden;background:var(--deep)}
-#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:var(--vi);color:var(--cream)}
-.bg{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 30%,#1E5AA8 0%,#0F3468 55%,#081a36 100%)}
-.full{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 80px;text-align:center}
-.brand{position:absolute;top:120px;left:0;right:0;display:flex;justify-content:center}
-.brand span{font:800 40px var(--vi);letter-spacing:.12em;color:var(--ink);background:var(--sun);padding:12px 34px;border-radius:999px}
-.brand span b{font-family:var(--zh);font-weight:400;letter-spacing:0}
-.win{position:absolute;left:90px;width:900px;height:799px;border:8px solid var(--sun);border-radius:44px;overflow:hidden;box-shadow:0 30px 0 rgba(0,0,0,.35)}
-.win video{width:100%;height:100%;object-fit:cover;display:block}
-.bar{position:absolute;left:0;bottom:0;height:16px;width:1080px;background:var(--sun);transform-origin:left center}
-.h1{font:900 92px/1.12 var(--vi);letter-spacing:-.02em;text-shadow:0 8px 0 rgba(0,0,0,.35)}
-.kicker{font:800 44px var(--vi);color:var(--sun);letter-spacing:.06em;text-transform:uppercase;margin-bottom:26px}
-.zh{font-family:var(--zh);color:#fff;text-shadow:0 12px 0 var(--ink)}
-.py{font:700 italic 92px var(--vi);color:var(--sun);margin-top:34px}
-.vi{display:inline-block;font:800 76px var(--vi);color:var(--ink);background:var(--cream);padding:14px 48px;border-radius:28px;margin-top:34px}
-.cta1{font:900 80px/1.15 var(--vi)}
-.cta2{font:700 50px/1.3 var(--vi);color:var(--sun);margin-top:34px}
-.btn{margin-top:60px;font:800 50px var(--vi);color:var(--ink);background:var(--sun);padding:28px 60px;border-radius:999px;box-shadow:0 12px 0 var(--amber)}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0F3468}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:${FONT_VI};color:#FFF7D6;background:#0F3468}
+.layer{position:absolute;inset:0}
+#bgworld{position:absolute;inset:-60px;opacity:0}
+#bgworld .vw{position:absolute;left:-480px;top:0;width:2164px;height:2040px;filter:blur(28px) brightness(.55) saturate(1.2)}
+#stage{position:absolute;inset:0;perspective:1700px}
+#plate{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;transform-origin:50% 50%;will-change:transform,filter}
+#pan{position:absolute;left:-542px;top:0;width:2164px;height:1920px}
+#pan video,.vw video{width:100%;height:100%;object-fit:cover;display:block}
+.vid2{position:absolute;inset:0;opacity:0}
+#grade{background:linear-gradient(180deg,rgba(15,52,104,.0) 30%,rgba(15,52,104,.55) 75%,rgba(8,26,54,.85) 100%);opacity:0}
+#glow{background:radial-gradient(60% 34% at 50% 40%,rgba(255,217,31,.42),rgba(255,217,31,0) 70%);opacity:0;mix-blend-mode:screen}
+#flash{background:#FFF7D6;opacity:0}
+#raysw{position:absolute;left:-460px;top:-60px;width:2000px;height:2000px;opacity:0;-webkit-mask:radial-gradient(closest-side,#000 25%,transparent 100%);mask:radial-gradient(closest-side,#000 25%,transparent 100%)}
+#rays{width:100%;height:100%;border-radius:50%;background:repeating-conic-gradient(rgba(255,217,31,.55) 0 7deg,rgba(255,217,31,0) 7deg 15deg)}
+#gl{position:absolute;inset:0;width:1080px;height:1920px}
+.st{position:absolute;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
+.st .in{transform-origin:50% 60%;will-change:transform,filter,opacity}
+.tape{display:inline-block;padding:13px;background:repeating-linear-gradient(-45deg,#FFD91F 0 24px,#16171B 24px 48px);border-radius:14px;box-shadow:0 18px 30px rgba(0,0,0,.35)}
+.tape{max-width:1010px}
+.tape span{display:block;background:#FFF7D6;color:#16171B;font:900 78px/1.1 ${FONT_VI};padding:14px 40px;border-radius:6px;text-align:center}
+.tape.sm span{font-size:44px;padding:8px 26px}
+.tape.md span{font-size:58px;padding:10px 30px}
+.pill{display:inline-block;font:900 46px ${FONT_VI};color:#16171B;background:#FFD91F;padding:14px 38px;border-radius:999px;border:6px solid #16171B;box-shadow:0 10px 0 #16171B}
+.brand{display:inline-block;font:900 40px ${FONT_VI};letter-spacing:.08em;color:#16171B;background:#FFD91F;padding:10px 26px;border-radius:16px;border:5px solid #16171B;box-shadow:0 8px 0 #16171B}
+.brand b{font-family:${FONT_ZH};font-weight:400;letter-spacing:0}
+.pyl{font:800 40px ${FONT_VI};color:#FFF7D6;background:rgba(22,23,27,.75);padding:6px 18px;border-radius:12px}
 `;
 
-function page({ dur, css = '', body, tl }) {
+/* bộ ghi: gom HTML, timeline GSAP, âm thanh, cảnh 3D */
+function Film(dur) {
+  const F = { dur, html: [], tl: [], au: [], g3: [], cam: [], bursts: [], glyphs: new Set(['阿', '宝']), n: 0 };
+  F.uid = p => `${p}${++F.n}`;
+  F.at = (sel, vars, t) => F.tl.push(`tl.to(${JSON.stringify(sel)}, ${vars}, ${r2(t)});`);
+  F.from = (sel, vars, t) => F.tl.push(`tl.from(${JSON.stringify(sel)}, ${vars}, ${r2(t)});`);
+  F.fromTo = (sel, a, b, t) => F.tl.push(`tl.fromTo(${JSON.stringify(sel)}, ${a}, ${b}, ${r2(t)});`);
+  F.set = (sel, vars, t) => F.tl.push(`tl.set(${JSON.stringify(sel)}, ${vars}, ${r2(t)});`);
+  F.sfx = (file, t, vol = .6) => F.au.push(`<audio id="${F.uid('a')}" src="${file}" data-start="${r2(Math.max(0, t))}" data-volume="${vol}"></audio>`);
+  // sticker có hẹn giờ: vỏ .clip giữ thời gian, ruột .in mới chuyển động
+  F.sticker = (inner, top, t0, t1, style = '') => { const id = F.uid('s'); F.html.push(`<div class="st clip" id="${id}" style="top:${top}px;${style}" data-start="${r2(t0)}" data-duration="${r2(t1 - t0)}"><div class="in">${inner}</div></div>`); return `#${id} .in`; };
+  F.tiles = (G) => { [...G.chars].forEach(c => F.glyphs.add(c)); F.g3.push(G); };
+  F.burst = (t, x = 0, y = .2, z = .4, n = 46) => F.bursts.push({ t: r2(t), x, y, z, n });
+  F.camKey = (t, p, l, extra = {}) => F.cam.push({ t: r2(t), p, l, ...extra });
+  return F;
+}
+/* máy quay 3D: z theo số quân bài để vừa khung; nhìn lệch xuống để quân bài nằm ở 1/3 trên */
+const camZ = n => Math.max(8.4, (n * .92 + .5) / (.9 * .3014));
+const lookY = (z, px = 220) => -px * 2 * z * .268 / 1920;   // dịch quân bài lên khỏi tâm khung px điểm ảnh
+
+/* các khối chung */
+function plateSetup(F, clips) {
+  // clips: [{src, start, dur, rate, mediaStart}] ; clip đầu tiên hiện sẵn, các clip sau trong .vid2 (bật bằng opacity)
+  const vids = clips.map((c, i) => `<div class="${i ? 'vid2' : 'layer'}" id="pv${i}"><video id="${F.uid('v')}" src="${c.src}" muted data-start="${r2(c.start)}" data-duration="${r2(c.dur)}"${c.rate ? ` data-playback-rate="${c.rate}"` : ''}${c.mediaStart ? ` data-media-start="${c.mediaStart}"` : ''}></video></div>`).join('');
+  const last = clips[clips.length - 1];
+  F.html.unshift(`<div id="bgworld"><div class="vw"><video id="${F.uid('v')}" src="${last.src}" muted data-start="0" data-duration="${r2(F.dur)}"${last.rate ? ` data-playback-rate="${last.rate}"` : ''}></video></div></div>
+<div id="stage"><div id="plate"><div id="pan">${vids}</div></div></div>
+<div class="layer" id="grade"></div><div class="layer" id="glow"></div>
+<div id="raysw"><div id="rays"></div></div>
+<canvas id="gl" width="1080" height="1920"></canvas>`);
+  F.set('#plate', '{ filter: "blur(0px) brightness(1) saturate(1)" }', 0);
+  F.fromTo('#rays', '{ rotation: 0 }', `{ rotation: ${r2(F.dur * 6)}, duration: ${r2(F.dur)}, ease: "none" }`, 0);
+}
+function hookOpen(F, kicker, titleLines, T) {
+  // máy quay từ trên nghiêng xuống phố, kéo lùi để lộ cả khách sạn
+  F.fromTo('#plate', '{ scale: 1.7, rotationX: 24, rotationZ: -4, y: 260 }', `{ scale: 1.06, rotationX: 0, rotationZ: 0, y: 0, duration: ${T - .2}, ease: "power2.inOut" }`, 0);
+  F.fromTo('#grade', '{ opacity: 0 }', '{ opacity: 1, duration: .6 }', .2);
+  F.fromTo('#raysw', '{ opacity: 0, scale: .6 }', '{ opacity: .9, scale: 1, duration: .7, ease: "power2.out" }', .25);
+  F.set('#raysw', '{ top: 380 }', 0);
+  const b = F.sticker(`<div class="brand">BẢO KHỰA <b>阿宝</b></div>`, 120, 0, T);
+  F.fromTo(b, '{ rotation: -30, scale: 0 }', '{ rotation: -6, scale: 1, duration: .5, ease: "back.out(2)" }', .1);
+  const tt = HZ.title(titleLines, titleLines.length > 2 ? 104 : 122);
+  const top = 1180 - tt.h / 2;
+  const k = F.sticker(tape(kicker, 'md'), top - 120, 0, T);
+  F.fromTo(k, '{ rotationX: -100, opacity: 0, transformPerspective: 900 }', '{ rotationX: 0, rotation: -3, opacity: 1, duration: .45, ease: "back.out(1.8)" }', .35);
+  const ti = F.sticker(tt.svg, top, 0, T);
+  F.fromTo(ti, '{ scale: 2.4, opacity: 0, filter: "blur(14px)" }', '{ scale: 1, opacity: 1, filter: "blur(0px)", duration: .55, ease: "expo.out" }', .55);
+  F.sfx('hit.ogg', .55, .7);
+  // rời: tiêu đề vụt lên trên, nền bị kéo nhoè (chuyển cảnh "zoom xuyên")
+  F.at([k, ti].join(','), '{ y: -260, opacity: 0, filter: "blur(10px)", duration: .25, ease: "power3.in" }', T - .28);
+  F.at(b, '{ scale: 0, duration: .2, ease: "power3.in" }', T - .25);
+  F.at('#raysw', '{ opacity: 0, duration: .3 }', T - .3);
+}
+function worldDim(F, t, x = 0) {   // nền thành "thế giới nhoè" phía sau quân bài
+  F.at('#plate', `{ scale: 1.22, x: ${x}, filter: "blur(13px) brightness(.5) saturate(1.25)", duration: .45, ease: "power3.in" }`, t - .3);
+  F.at('#glow', '{ opacity: 1, duration: .5 }', t - .1);
+  F.at('#grade', '{ opacity: .6, duration: .5 }', t - .1);
+}
+function outroPhone(F, t0) {
+  const cfg = F.cfg;
+  // thế giới thu lại thành màn hình điện thoại nghiêng 3D; phía sau là cùng cảnh đó nhoè lớn
+  F.at('#bgworld', '{ opacity: 1, duration: .5 }', t0);
+  F.at('#glow', '{ opacity: 0, duration: .4 }', t0);
+  F.at('#grade', '{ opacity: 0, duration: .4 }', t0);
+  F.at('#plate', '{ scale: .46, x: -20, y: -360, rotationY: -16, rotationX: 8, borderRadius: 110, filter: "blur(0px) brightness(1) saturate(1)", boxShadow: "0 0 0 16px #FFD91F, 0 0 0 26px #16171B, 0 80px 90px rgba(0,0,0,.55)", duration: .8, ease: "power3.inOut" }', t0);
+  F.set('#plate', '{ boxShadow: "0 0 0 0px #FFD91F, 0 0 0 0px #16171B, 0 0 0 rgba(0,0,0,0)" }', 0);
+  F.at('#raysw', '{ opacity: .55, top: 30, duration: .6 }', t0 + .2);
+  F.at('#pan', '{ x: 0, duration: .8, ease: "power3.inOut" }', t0);
+  const c1 = HZ.cream(wrap(cfg.cta.line1, 18), 84);
+  const s1 = F.sticker(c1.svg, 1075, t0, F.dur);
+  F.fromTo(s1, '{ rotationX: -95, opacity: 0, transformPerspective: 900 }', '{ rotationX: 0, opacity: 1, duration: .55, ease: "back.out(1.6)" }', t0 + .55);
+  const s2 = F.sticker(tape(cfg.cta.line2, 'sm'), 1075 + c1.h + 6, t0, F.dur);
+  F.fromTo(s2, '{ scale: 1.6, rotation: -12, opacity: 0 }', '{ scale: 1, rotation: -2, opacity: 1, duration: .35, ease: "power4.out" }', t0 + .95);
+  F.sfx('ui.ogg', t0 + .95, .6);
+  const s3 = F.sticker(`<div class="pill">${esc(cfg.cta.button)}</div>`, 1075 + c1.h + 110, t0, F.dur);
+  F.fromTo(s3, '{ y: 80, opacity: 0 }', '{ y: 0, opacity: 1, duration: .45, ease: "expo.out" }', t0 + 1.25);
+  // hành động cuối: quân 阿宝 đập xuống góc điện thoại + pháo giấy
+  const z = 19, ly = lookY(z);
+  F.camKey(t0, [0, .4, z], [0, ly, 0], { cut: true });
+  F.camKey(F.dur, [.25, .5, z - .6], [0, ly, 0]);
+  F.tiles({ chars: '阿宝', t0: t0 + 1.55, enter: 'slam', x: 1.05, y: 2.15, side: 'sun', stagger: .12 });
+  F.burst(t0 + 1.75, 1.05, 2.3, .6, 40);
+  F.sfx('win.ogg', t0 + 1.7, .55);
+  const pl = F.sticker(`<div class="pyl">阿宝 · Ā Bǎo</div>`, 420, t0, F.dur, 'padding-left:500px');
+  F.fromTo(pl, '{ opacity: 0, y: 20 }', '{ opacity: 1, y: 0, duration: .3 }', t0 + 2.0);
+}
+
+function page(F) {
+  const scene = { dur: F.dur, groups: F.g3, cam: F.cam.sort((a, b) => a.t - b.t), bursts: F.bursts, glyphs: [...F.glyphs].join('') };
   return `<!doctype html>
 <html lang="vi" data-resolution="portrait">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1080, height=1920" />
 <script src="./gsap.min.js"></script>
-<style>${CSS}${css}</style>
+<script type="importmap">{"imports":{"three":"./three.module.js","three/addons/":"./addons/"}}</script>
+<style>${CSS}</style>
 </head>
 <body>
-<div id="root" data-composition-id="main" data-start="0" data-duration="${dur}" data-width="1080" data-height="1920">
-<div class="bg"></div>
-${body}
-<div class="brand"><span>${esc(cfg.brand).replace(/([一-鿿]+)/, '<b>$1</b>')}</span></div>
-<div class="bar" id="bar"></div>
+<div id="root" data-composition-id="main" data-start="0" data-duration="${F.dur}" data-width="1080" data-height="1920">
+${F.html.join('\n')}
+<div class="layer" id="flash"></div>
+<audio id="bgm" src="bgm.m4a" data-start="0" data-duration="${F.dur}" data-volume="0.22" data-fade-out="1"></audio>
+${F.au.join('\n')}
 </div>
+<script>window.SCENE = ${JSON.stringify(scene)};</script>
+<script type="module" src="./engine3d.js"></script>
 <script>
 const tl = gsap.timeline({ paused: true });
-tl.fromTo("#bar", { scaleX: 0 }, { scaleX: 1, duration: ${dur}, ease: "none" }, 0);
-${tl}
+${F.tl.join('\n')}
 window.__timelines = window.__timelines || {};
 window.__timelines["main"] = tl;
 tl.seek(0);
@@ -102,150 +240,139 @@ tl.seek(0);
 `;
 }
 
-/* âm thanh: nhạc nền lặp từ v4/audio, tiếng "ting" khi lật đáp án, tiếng thắng ở cuối */
-let sfxN = 0;
-const sfx = (file, t, vol = 0.6) => `<audio id="sfx${++sfxN}" src="${file}" data-start="${t.toFixed(2)}" data-volume="${vol}"></audio>`;
-const music = dur => `<audio id="bgm" src="bgm.m4a" data-start="0" data-duration="${dur}" data-volume="0.22" data-fade-out="1"></audio>`;
-
-/* màn kêu gọi cuối, dùng chung */
-const OUTRO = 3;
-function outro(t0) {
-  return {
-    body: `<div class="full clip" id="outro" data-start="${t0}" data-duration="${OUTRO}">
-  <div class="cta1">${esc(cfg.cta.line1)}</div>
-  <div class="cta2">${esc(cfg.cta.line2)}</div>
-  <div class="btn">${esc(cfg.cta.button)}</div>
-</div>
-${sfx('win.ogg', t0 + 0.1, 0.5)}`,
-    tl: `tl.from("#outro .cta1", { y: 70, opacity: 0, duration: .5, ease: "back.out(1.6)" }, ${t0 + 0.1});
-tl.from("#outro .cta2", { opacity: 0, duration: .4 }, ${t0 + 0.5});
-tl.from("#outro .btn", { scale: 0, duration: .45, ease: "back.out(2)" }, ${t0 + 0.8});`
-  };
-}
-
-/* ---------- mẫu 1: TỪ VỰNG (cảnh game + 3–4 từ) ---------- */
+/* ---------- mẫu 1: TỪ VỰNG 3D ---------- */
+const ENTERS = ['drop', 'flip', 'rise', 'slam'];
 function tuvung(pack) {
   const words = pack.words.map(k => { const w = WORDS[k]; if (!w) throw new Error(pack.id + ': không có từ ' + k); return { zh: w[0], py: w[1], vi: w[2] }; });
-  const INTRO = 2.2, PER = 3.2, t1 = INTRO + PER * words.length, dur = +(t1 + OUTRO).toFixed(2);
-  const css = `.win{top:220px}
-#intro{top:1060px;bottom:auto;height:520px}
-.wcard{top:1090px;bottom:auto;height:560px;justify-content:flex-start}
-.wcard .zh{font-size:220px;line-height:1}
-.num{position:absolute;top:990px;left:0;right:0;margin:0 auto;width:max-content;font:900 52px var(--vi);color:var(--ink);background:var(--sun);padding:6px 26px;border-radius:999px}`;
-  let body = `<div class="win" id="win"><video id="game" src="clip.mp4" muted data-start="0" data-duration="${t1}"></video></div>
-<div class="full clip" id="intro" data-start="0" data-duration="${INTRO}"><div class="kicker">${words.length} từ tiếng Trung</div><div class="h1">${esc(pack.title)}</div></div>`;
-  let tl = `tl.from("#intro .kicker", { y: -30, opacity: 0, duration: .35 }, .1);
-tl.from("#intro .h1", { y: 80, opacity: 0, duration: .6, ease: "back.out(1.7)" }, .25);
-tl.to("#win", { opacity: 0, duration: .25 }, ${t1});`;
+  const HOOK = 2.6, PER = 3.4, OUT = 3.8, t1 = HOOK + PER * words.length, dur = r2(t1 + OUT);
+  const F = Film(dur); F.cfg = cfg;
+  plateSetup(F, [{ src: 'clip.mp4', start: 0, dur, rate: r2(Math.min(1, 15 / dur * .98)) }]);
+  hookOpen(F, `${words.length} từ tiếng Trung`, wrap(pack.title, 15), HOOK);
+  F.camKey(0, [0, .5, 12], [0, lookY(12), 0]);
   words.forEach((w, i) => {
-    const t = +(INTRO + i * PER).toFixed(2), s = `#w${i}`;
-    body += `
-<div class="full clip wcard" id="w${i}" data-start="${t}" data-duration="${PER}">
-  <div class="zh">${esc(w.zh)}</div><div class="py">${esc(w.py)}</div><div class="vi">${esc(w.vi)}</div>
-</div>
-<div class="clip" id="n${i}" data-start="${t}" data-duration="${PER}"><div class="num">${i + 1}/${words.length}</div></div>
-${sfx('ui.ogg', t + 0.05, 0.7)}${sfx('ui.ogg', t + 1.1, 0.5)}`;
-    tl += `
-tl.from("${s} .zh", { scale: 1.9, opacity: 0, duration: .45, ease: "power4.out" }, ${t + 0.05});
-tl.from("${s} .py", { y: 40, opacity: 0, duration: .35, ease: "power2.out" }, ${t + 0.6});
-tl.from("${s} .vi", { scale: .3, opacity: 0, duration: .4, ease: "back.out(2)" }, ${t + 1.1});
-tl.from("#n${i} .num", { scale: 0, duration: .3, ease: "back.out(2)" }, ${t});`;
+    const ts = HOOK + i * PER, n = [...w.zh].length, z = camZ(n), ly = lookY(z), last = i === words.length - 1;
+    worldDim(F, ts, i % 2 ? 60 : -60);
+    F.at('#pan', `{ x: ${i % 2 ? -90 : 90}, duration: ${PER}, ease: "sine.inOut" }`, ts);
+    // máy quay: mỗi từ một góc, trôi chậm trong nhịp, vụt nhanh sang góc của từ sau
+    const A = [[[-2.4, 2.6, z + 1.4], [-.5, 1.0, z]], [[2.6, -1.2, z + 1.2], [.6, -.1, z]], [[0, 4.4, z * .86], [0, 1.6, z]], [[-1.4, .2, z + 3], [-.2, .5, z]]][i % 4];
+    F.camKey(ts - .15, A[0], [0, ly, 0], { cut: i === 0 });
+    F.camKey(ts + PER - .4, A[1], [0, ly, 0]);
+    F.tiles({ chars: w.zh, t0: ts + .05, enter: ENTERS[i % 4], t1: last ? t1 - .1 : ts + PER - .3, exit: last ? 'spin' : 'knock', exitDir: i % 2 ? -1 : 1, side: i % 3 === 1 ? 'denim' : 'sun', stagger: .1 });
+    F.burst(ts + .55, 0, .3, .4);
+    F.sfx('hit.ogg', ts + .3, .6); F.sfx('crit.ogg', ts + .55, .35);
+    const cnt = F.sticker(tape(`TỪ ${i + 1}/${words.length}`, 'sm'), 150, ts, ts + PER - .2, 'justify-content:flex-end;padding-right:70px');
+    F.fromTo(cnt, '{ rotationY: -90, opacity: 0, transformPerspective: 800 }', '{ rotationY: 0, rotation: 4, opacity: 1, duration: .4, ease: "back.out(2)" }', ts + .1);
+    const py = HZ.py(w.py, w.py.length > 14 ? 96 : 116);
+    const sp = F.sticker(py.svg, 975, ts, ts + PER - .1);
+    F.fromTo(sp, '{ rotationX: -95, y: 50, opacity: 0, transformPerspective: 900 }', '{ rotationX: 0, y: 0, opacity: 1, duration: .5, ease: "back.out(1.7)" }', ts + .75);
+    const sv = F.sticker(tape(w.vi), 975 + py.h + 10, ts, ts + PER - .1);
+    F.fromTo(sv, '{ scale: 1.7, rotation: -14, opacity: 0 }', '{ scale: 1, rotation: -3, opacity: 1, duration: .32, ease: "power4.out" }', ts + 1.35);
+    F.sfx('ui.ogg', ts + 1.35, .6);
+    const dx = i % 2 ? 380 : -380;
+    F.at([cnt, sp].join(','), '{ opacity: 0, filter: "blur(8px)", duration: .2 }', ts + PER - .32);
+    F.at(sv, `{ x: ${dx}, opacity: 0, filter: "blur(10px)", duration: .22, ease: "power3.in" }`, ts + PER - .3);
   });
-  const o = outro(t1);
-  return {
-    id: pack.id, dur, html: page({ dur, css, body: body + music(dur) + o.body, tl: tl + '\n' + o.tl }),
-    caption: `${pack.title} 🏨\n` + words.map(w => `${w.zh} (${w.py}) – ${w.vi}`).join('\n')
-  };
+  outroPhone(F, t1);
+  return { id: pack.id, dur, html: page(F), caption: `${pack.title} 🏨\n` + words.map(w => `${w.zh} (${w.py}) – ${w.vi}`).join('\n') };
 }
 
-/* ---------- mẫu 2: 3 GIÂY TRẢ LỜI ---------- */
+/* ---------- mẫu 2: 3 GIÂY TRẢ LỜI 3D ---------- */
 function hoinhanh(id, label, cards) {
-  const INTRO = 2, PER = 6.6, t1 = INTRO + PER * cards.length, dur = +(t1 + OUTRO).toFixed(2);
-  const css = `.bgv{position:absolute;inset:-40px;filter:blur(14px) brightness(.45)}
-.bgv video{width:100%;height:100%;object-fit:cover}
-.q .kicker{margin-bottom:40px}
-.q .ask{font:900 84px/1.15 var(--vi)}
-.q .ring{position:relative;width:260px;height:260px;margin:70px auto 0}
-.q .ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
-.q .cd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 150px var(--vi);color:var(--sun)}
-.q .ans{position:absolute;left:0;right:0;top:1040px;text-align:center;padding:0 60px}
-.q .ans .zh{font-size:120px;line-height:1.2}
-.q .ans .py{font-size:64px;margin-top:22px}
-.q .top{position:absolute;left:0;right:0;top:330px;padding:0 70px;text-align:center}`;
-  let body = `<div class="bgv" id="bgv"><video id="game" src="clip.mp4" muted data-start="0" data-duration="${dur}" data-playback-rate="0.6"></video></div>
-<div class="full clip" id="intro" data-start="0" data-duration="${INTRO}"><div class="kicker">3 giây trả lời</div><div class="h1">Tiếng Trung ${esc(label.toLowerCase())}</div><div class="cta2">Bạn trả lời kịp không?</div></div>`;
-  let tl = `tl.from("#intro .kicker", { y: -30, opacity: 0, duration: .35 }, .1);
-tl.from("#intro .h1", { scale: .6, opacity: 0, duration: .5, ease: "back.out(1.7)" }, .25);
-tl.from("#intro .cta2", { opacity: 0, duration: .35 }, .8);`;
-  const C = 2 * Math.PI * 115;
+  const HOOK = 2.6, PER = 6.6, OUT = 3.8, t1 = HOOK + PER * cards.length, dur = r2(t1 + OUT);
+  const F = Film(dur); F.cfg = cfg;
+  plateSetup(F, [{ src: 'clip.mp4', start: 0, dur, rate: r2(Math.min(1, 15 / dur * .98)) }]);
+  hookOpen(F, '3 giây trả lời', wrap(`Tiếng Trung ${label.toLowerCase()}`, 14), HOOK);
+  F.camKey(0, [0, .3, 11], [0, .1, 0]);
   cards.forEach((c, i) => {
-    const t = +(INTRO + i * PER).toFixed(2), s = `#q${i}`;
-    // 0–1: câu hỏi hiện; 1–4: đếm 3-2-1; 4: lật đáp án
-    body += `
-<div class="clip q" id="q${i}" data-start="${t}" data-duration="${PER}" style="position:absolute;inset:0">
-  <div class="top">
-    <div class="kicker">Câu ${i + 1}/${cards.length} · Tiếng Trung nói sao?</div>
-    <div class="ask">“${esc(c.vi)}”</div>
-    <div class="ring"><svg viewBox="0 0 260 260"><circle cx="130" cy="130" r="115" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="18"/><circle class="arc" cx="130" cy="130" r="115" fill="none" stroke="#FFD91F" stroke-width="18" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="0"/></svg>
-      <div class="cd"><span class="d3">3</span></div><div class="cd"><span class="d2">2</span></div><div class="cd"><span class="d1">1</span></div></div>
-  </div>
-  <div class="ans"><div class="zh">${esc(c.zh)}</div><div class="py">${esc(c.py)}</div></div>
-</div>
-${[1, 2, 3].map(k => sfx('ui.ogg', t + k, 0.45)).join('')}${sfx('hit.ogg', t + 4, 0.6)}`;
-    tl += `
-tl.from("${s} .kicker", { opacity: 0, y: -20, duration: .3 }, ${t});
-tl.from("${s} .ask", { scale: .7, opacity: 0, duration: .45, ease: "back.out(1.8)" }, ${t + 0.1});
-tl.from("${s} .ring", { opacity: 0, scale: .5, duration: .3 }, ${t + 0.7});
-tl.fromTo("${s} .arc", { attr: { "stroke-dashoffset": 0 } }, { attr: { "stroke-dashoffset": ${C.toFixed(1)} }, duration: 3, ease: "none" }, ${t + 1});
-${[3, 2, 1].map((d, k) => `tl.fromTo("${s} .d${d}", { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: .25, ease: "power3.out" }, ${t + 1 + k});
-tl.to("${s} .d${d}", { opacity: 0, duration: .1 }, ${t + 1.9 + k});`).join('\n')}
-tl.set("${s} .d3, ${s} .d2, ${s} .d1", { opacity: 0 }, ${t});
-tl.to("${s} .ring", { opacity: 0, duration: .2 }, ${t + 4});
-tl.from("${s} .ans .zh", { scale: 1.8, opacity: 0, duration: .45, ease: "power4.out" }, ${t + 4});
-tl.from("${s} .ans .py", { y: 30, opacity: 0, duration: .35 }, ${t + 4.45});`;
+    const ts = HOOK + i * PER;
+    worldDim(F, ts, i % 2 ? 50 : -50);
+    F.at('#pan', `{ x: ${i % 2 ? -80 : 80}, duration: ${PER}, ease: "sine.inOut" }`, ts);
+    const cnt = F.sticker(tape(`CÂU ${i + 1}/${cards.length}`, 'sm'), 150, ts, ts + PER - .2, 'justify-content:flex-end;padding-right:70px');
+    F.fromTo(cnt, '{ rotationY: -90, opacity: 0, transformPerspective: 800 }', '{ rotationY: 0, rotation: 4, opacity: 1, duration: .4, ease: "back.out(2)" }', ts + .05);
+    const ask = F.sticker(`<div style="font:900 44px ${FONT_VI};color:#FFD91F;letter-spacing:.06em;text-align:center;margin-bottom:6px">TIẾNG TRUNG NÓI SAO?</div>` + HZ.cream(wrap(`“${c.vi}”`, 18), 84).svg, 290, ts, ts + PER - .1);
+    F.fromTo(ask, '{ scale: .6, opacity: 0, filter: "blur(10px)" }', '{ scale: 1, opacity: 1, filter: "blur(0px)", duration: .45, ease: "expo.out" }', ts + .1);
+    // đếm ngược bằng quân bài 3D: 3 đập vào, 2 rơi xuống, 1 lật; mỗi số bị số sau đánh bay
+    [['3', 'slam', 'sun', 1], ['2', 'drop', 'sun', -1], ['1', 'flip', 'hot', 1]].forEach(([d, en, side, dir], k) => {
+      const a = ts + 1 + k;
+      F.tiles({ chars: d, t0: a, enter: en, t1: a + (k === 2 ? .62 : .82), exit: k === 2 ? 'spin' : 'knock', exitDir: dir, side, y: -.15 });
+      F.sfx('ui.ogg', a + .05, .5);
+      F.camKey(a, [k === 1 ? 1.1 : -1.1, .5 + k * .3, 9.8 - k * .5], [0, .15, 0]);
+    });
+    F.camKey(ts + 3.95, [0, .3, 9.2], [0, .15, 0]);
+    // lật đáp án: chớp sáng, chữ Hán phồng đập vào, pháo giấy
+    const zc = [...c.zh], nl = Math.ceil(zc.length / 7), per = Math.ceil(zc.length / nl);
+    const zlines = Array.from({ length: nl }, (_, k) => zc.slice(k * per, (k + 1) * per).join(''));
+    const zh = HZ.zh(zlines, Math.min(160, Math.floor(900 / per)));
+    const ans = F.sticker(zh.svg, 860, ts + 4, ts + PER - .1);
+    F.fromTo('#flash', '{ opacity: .85 }', '{ opacity: 0, duration: .35, ease: "power2.out", immediateRender: false }', ts + 4);
+    F.fromTo(ans, '{ scale: 2.3, opacity: 0, filter: "blur(12px)" }', '{ scale: 1, opacity: 1, filter: "blur(0px)", duration: .45, ease: "expo.out" }', ts + 4);
+    F.burst(ts + 4.05, 0, .4, .5, 60);
+    F.sfx('hit.ogg', ts + 4, .75); F.sfx('win.ogg', ts + 4.1, .35);
+    const py = HZ.py(wrap(c.py, 22), c.py.length > 22 ? 70 : 88);
+    const sp = F.sticker(py.svg, 860 + zh.h + 6, ts + 4, ts + PER - .1);
+    F.fromTo(sp, '{ rotationX: -95, opacity: 0, transformPerspective: 900 }', '{ rotationX: 0, opacity: 1, duration: .45, ease: "back.out(1.7)" }', ts + 4.4);
+    const dx = i % 2 ? 420 : -420;
+    F.at([cnt, ask].join(','), '{ opacity: 0, filter: "blur(8px)", duration: .2 }', ts + PER - .3);
+    F.at([ans, sp].join(','), `{ x: ${dx}, opacity: 0, filter: "blur(10px)", duration: .24, ease: "power3.in" }`, ts + PER - .3);
   });
-  const o = outro(t1);
-  return {
-    id, dur, html: page({ dur, css, body: body + music(dur) + o.body, tl: tl + '\n' + o.tl }),
-    caption: `3 giây trả lời · ${label} ⏱️ Bạn trả lời kịp mấy câu?\n` + cards.map(c => `${c.zh} (${c.py}) – ${c.vi}`).join('\n')
-  };
+  outroPhone(F, t1);
+  return { id, dur, html: page(F), caption: `3 giây trả lời · ${label} ⏱️ Bạn trả lời kịp mấy câu?\n` + cards.map(c => `${c.zh} (${c.py}) – ${c.vi}`).join('\n') };
 }
 
-/* ---------- mẫu 3: KHAI GIẢNG (1★ → 5★ → thông tin lớp) ---------- */
+/* ---------- mẫu 3: KHAI GIẢNG 3D ---------- */
 function khaigiang(k) {
-  const A = 3, B = 5, C = 6.5, dur = +(A + B + C + OUTRO).toFixed(2);
-  const css = `.win{top:330px}
-.cap{position:absolute;left:0;right:0;top:1250px;text-align:center;padding:0 70px}
-.cap .h1{font-size:80px}
-.tag{position:absolute;top:360px;left:96px;font:900 48px var(--vi);color:var(--ink);background:var(--sun);padding:8px 28px;border-radius:999px;z-index:2}
-#info .h1{font-size:84px;margin-bottom:50px}
-#info .ln{font:700 54px/1.25 var(--vi);background:rgba(255,255,255,.08);border-left:12px solid var(--sun);border-radius:18px;padding:22px 34px;margin:14px 0;text-align:left;width:900px}
-#info .ln b{color:var(--sun)}`;
-  const body = `
-<div class="win" id="win1"><video id="v1" src="clip1.mp4" muted data-start="0" data-duration="${A}"></video></div>
-<div class="clip" id="s1" data-start="0" data-duration="${A}"><div class="tag">1★</div><div class="cap"><div class="h1">${esc(k.hook)}</div></div></div>
-<div class="win" id="win2"><video id="v2" src="clip.mp4" muted data-start="${A}" data-duration="${B}" data-media-start="4" data-playback-rate="2"></video></div>
-<div class="clip" id="s2" data-start="${A}" data-duration="${B}"><div class="tag">5★</div><div class="cap"><div class="h1">${esc(k.turn)}</div></div></div>
-<div class="full clip" id="info" data-start="${A + B}" data-duration="${C}">
-  <div class="h1">${esc(k.title)}</div>
-  ${k.lines.map((l, i) => `<div class="ln" id="l${i}">${esc(l).replace(/(\d[\d.:/]*(đ|\/\d+)?)/g, '<b>$1</b>')}</div>`).join('\n  ')}
-</div>
-${sfx('ui.ogg', 0.2, 0.6)}${sfx('hit.ogg', A, 0.7)}${k.lines.map((_, i) => sfx('ui.ogg', A + B + 0.6 + i * 0.45, 0.45)).join('')}`;
-  const tl = `tl.set("#win2", { opacity: 0 }, 0);
-tl.set("#win1", { opacity: 0 }, ${A});
-tl.set("#win2", { opacity: 1 }, ${A});
-tl.to("#win2", { opacity: 0, duration: .25 }, ${A + B});
-tl.from("#s1 .h1", { y: 60, opacity: 0, duration: .5, ease: "back.out(1.7)" }, .2);
-tl.from("#s1 .tag", { scale: 0, duration: .35, ease: "back.out(2)" }, .1);
-tl.from("#s2 .tag", { scale: 2.4, opacity: 0, duration: .45, ease: "power4.out" }, ${A});
-tl.from("#s2 .h1", { y: 60, opacity: 0, duration: .5, ease: "back.out(1.7)" }, ${A + 0.3});
-tl.from("#info .h1", { y: -40, opacity: 0, duration: .45 }, ${A + B + 0.1});
-${k.lines.map((_, i) => `tl.from("#l${i}", { x: -120, opacity: 0, duration: .4, ease: "power3.out" }, ${(A + B + 0.6 + i * 0.45).toFixed(2)});`).join('\n')}`;
-  const o = outro(A + B + C);
-  return {
-    id: k.id, dur, html: page({ dur, css, body: body + music(dur) + o.body, tl: tl + '\n' + o.tl }),
-    caption: `${k.title} 🏨\n` + k.lines.join('\n')
-  };
+  const A = 3, B = 5.4, C = 7, OUT = 3.8, t1 = A + B + C, dur = r2(t1 + OUT);
+  const F = Film(dur); F.cfg = cfg;
+  plateSetup(F, [{ src: 'clip1.mp4', start: 0, dur: A }, { src: 'clip.mp4', start: A, dur: dur - A, rate: .72, mediaStart: 3 }]);
+  // cảnh 1: khách sạn 1★ nhỏ
+  F.fromTo('#plate', '{ scale: 1.7, rotationX: 24, rotationZ: -4, y: 260 }', `{ scale: 1.06, rotationX: 0, rotationZ: 0, y: 0, duration: ${A - .2}, ease: "power3.out" }`, 0);
+  F.fromTo('#grade', '{ opacity: 0 }', '{ opacity: 1, duration: .6 }', .2);
+  const b = F.sticker(`<div class="brand">BẢO KHỰA <b>阿宝</b></div>`, 120, 0, A + B);
+  F.fromTo(b, '{ rotation: -30, scale: 0 }', '{ rotation: -6, scale: 1, duration: .5, ease: "back.out(2)" }', .1);
+  const h1 = HZ.title(wrap(k.hook, 14), 116);
+  const s1 = F.sticker(h1.svg, 1180 - h1.h / 2, 0, A);
+  F.fromTo(s1, '{ scale: 2.3, opacity: 0, filter: "blur(14px)" }', '{ scale: 1, opacity: 1, filter: "blur(0px)", duration: .55, ease: "expo.out" }', .5);
+  F.sfx('hit.ogg', .5, .7);
+  F.at(s1, '{ y: -260, opacity: 0, filter: "blur(10px)", duration: .25, ease: "power3.in" }', A - .28);
+  // chuyển: vụt ngang sang khách sạn 5★ (đổi clip ở điểm nhanh nhất của cú vụt)
+  F.at('#plate', '{ x: -700, filter: "blur(18px)", duration: .25, ease: "power3.in" }', A - .25);
+  F.set('#pv1', '{ opacity: 1 }', A);
+  F.set('#plate', '{ x: 700 }', A);
+  F.at('#plate', '{ x: 0, scale: 1.12, filter: "blur(0px)", duration: .45, ease: "expo.out" }', A);
+  F.at('#plate', `{ scale: 1.32, duration: ${B - .6}, ease: "sine.inOut" }`, A + .45);
+  F.camKey(0, [0, .5, 12], [0, lookY(12, 380), 0]);
+  F.camKey(A, [-1.6, 1.4, 12.5], [0, lookY(12, 380), 0], { cut: true });
+  F.camKey(A + B - .4, [.8, .4, 11], [0, lookY(11, 380), 0]);
+  F.tiles({ chars: '5★', t0: A + .35, enter: 'slam', t1: A + B - .35, exit: 'knock', exitDir: 1, side: 'hot', stagger: .14 });
+  F.burst(A + .6, 0, .5, .4, 70);
+  F.sfx('hit.ogg', A + .35, .8); F.sfx('win.ogg', A + .6, .45);
+  const h2 = HZ.cream(wrap(k.turn, 16), 88);
+  const s2 = F.sticker(h2.svg, 1080, A, A + B);
+  F.fromTo(s2, '{ rotationX: -95, opacity: 0, transformPerspective: 900 }', '{ rotationX: 0, opacity: 1, duration: .55, ease: "back.out(1.6)" }', A + 1.1);
+  F.at(s2, '{ x: -420, opacity: 0, filter: "blur(10px)", duration: .24, ease: "power3.in" }', A + B - .3);
+  F.at(b, '{ scale: 0, duration: .2 }', A + B - .25);
+  // cảnh 3: thông tin lớp; ngày khai giảng là các quân bài lịch 3D
+  const t3 = A + B;
+  worldDim(F, t3, 0);
+  const date = (k.lines.find(l => /\d{2}\/\d{2}/.test(l)) || '').match(/\d{2}\/\d{2}/);
+  const dz = camZ(date ? date[0].length : 3);
+  F.camKey(t3 - .1, [0, 2.6, dz + 2], [0, lookY(dz, 640), 0], { cut: true });
+  F.camKey(t1 - .3, [0, .9, dz], [0, lookY(dz, 640), 0]);
+  if (date) { F.tiles({ chars: date[0], t0: t3 + .1, enter: 'drop', t1: t1 - .1, exit: 'spin', side: 'denim', stagger: .08 }); F.burst(t3 + .7, 0, .3, .4); F.sfx('hit.ogg', t3 + .4, .7); }
+  const ti = HZ.title(wrap(k.title, 16), 92);
+  const st = F.sticker(ti.svg, 500, t3, t1);
+  F.fromTo(st, '{ scale: 2, opacity: 0, filter: "blur(12px)" }', '{ scale: 1, opacity: 1, filter: "blur(0px)", duration: .5, ease: "expo.out" }', t3 + .7);
+  let y = 500 + ti.h + 10;
+  k.lines.forEach((ln, i) => {
+    const s = F.sticker(tape(ln, ln.length > 30 ? 'sm' : 'md'), y, t3, t1);
+    F.fromTo(s, `{ x: ${i % 2 ? 500 : -500}, rotation: ${i % 2 ? 8 : -8}, opacity: 0 }`, `{ x: 0, rotation: ${i % 2 ? 1.5 : -1.5}, opacity: 1, duration: .38, ease: "power4.out" }`, t3 + 1.3 + i * .42);
+    F.sfx('ui.ogg', t3 + 1.3 + i * .42, .5);
+    F.at(s, '{ opacity: 0, filter: "blur(8px)", duration: .2 }', t1 - .3);
+    y += 112;
+  });
+  F.at(st, '{ opacity: 0, filter: "blur(8px)", duration: .2 }', t1 - .3);
+  outroPhone(F, t1);
+  return { id: k.id, dur, html: page(F), caption: `${k.title} 🏨\n` + k.lines.join('\n') };
 }
 
 /* ---------- danh sách việc ---------- */
@@ -262,7 +389,8 @@ for (const [topic, label] of Object.entries(cfg.hoinhanh.topics)) {
 }
 jobs.push(() => khaigiang(cfg.khaigiang));
 
-const built = jobs.map(f => f()).filter(j => !only.length || only.includes(j.id));
+const all = jobs.map(f => f());
+const built = all.filter(j => !only.length || only.includes(j.id));
 if (args.includes('--list')) { built.forEach(j => console.log(j.id.padEnd(16), j.dur + 's')); process.exit(0); }
 
 /* ---------- sinh dự án + dựng ---------- */
@@ -273,6 +401,9 @@ fs.mkdirSync(path.join(OUT, 'build'), { recursive: true });
 const bgmSrc = path.join(ROOT, 'v4/audio/bgm_loop.ogg');
 const HF = path.join(V, 'node_modules/.bin/hyperframes');
 const capLines = ['# Chú thích đăng TikTok (tự sinh, Bảo đọc lại trước khi đăng)', ''];
+for (const j of all) {
+  capLines.push(`## ${j.id} (${j.dur}s)`, '', j.caption, '', `👉 ${cfg.cta.line1} · ${cfg.cta.line2}`, (j.id.includes('factory') ? cfg.hashtags.map(h => h === '#tiengtrungletan' ? '#tiengtrungnhamay' : h) : cfg.hashtags).join(' '), '');
+}
 
 for (const j of built) {
   const dir = path.join(OUT, 'build', j.id);
@@ -283,9 +414,12 @@ for (const j of built) {
   fs.copyFileSync(path.join(V, 'node_modules/gsap/dist/gsap.min.js'), path.join(dir, 'gsap.min.js'));
   fs.copyFileSync(path.join(ASSETS, 'clip_5sao_ngaydem.mp4'), path.join(dir, 'clip.mp4'));
   fs.copyFileSync(path.join(ASSETS, 'clip_1sao.mp4'), path.join(dir, 'clip1.mp4'));
-  for (const s of ['ui.ogg', 'hit.ogg', 'win.ogg']) fs.copyFileSync(path.join(ROOT, 'v4/audio', s), path.join(dir, s));
+  for (const s of ['ui.ogg', 'hit.ogg', 'win.ogg', 'crit.ogg']) fs.copyFileSync(path.join(ROOT, 'v4/audio', s), path.join(dir, s));
+  const T3 = path.join(V, 'node_modules/three');
+  for (const f of ['three.module.js', 'three.core.js']) fs.copyFileSync(path.join(T3, 'build', f), path.join(dir, f));
+  for (const f of ['geometries/RoundedBoxGeometry.js', 'environments/RoomEnvironment.js']) { fs.mkdirSync(path.join(dir, 'addons', path.dirname(f)), { recursive: true }); fs.copyFileSync(path.join(T3, 'examples/jsm', f), path.join(dir, 'addons', f)); }
+  fs.copyFileSync(path.join(V, 'tools/engine3d.js'), path.join(dir, 'engine3d.js'));
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-stream_loop', '-1', '-i', bgmSrc, '-t', String(j.dur), '-c:a', 'aac', '-b:a', '128k', path.join(dir, 'bgm.m4a')]);
-  capLines.push(`## ${j.id} (${j.dur}s)`, '', j.caption, '', `👉 ${cfg.cta.line1} · ${cfg.cta.line2}`, (j.id.includes('factory') ? cfg.hashtags.map(h => h === '#tiengtrungletan' ? '#tiengtrungnhamay' : h) : cfg.hashtags).join(' '), '');
   if (args.includes('--no-render')) { console.log('Đã sinh', dir); continue; }
   const t0 = Date.now();
   execFileSync(HF, ['render', '-o', path.join(OUT, j.id + '.mp4'), '--quiet'], { cwd: dir, stdio: ['ignore', 'ignore', 'inherit'], env: { ...process.env, HYPERFRAMES_SKIP_SKILLS: '1' } });

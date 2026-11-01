@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "gsap": "3.15.0",
-    "hyperframes": "0.8.226"
+    "hyperframes": "0.8.226",
+    "three": "^0.171.0"
   }
 }

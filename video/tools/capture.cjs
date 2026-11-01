@@ -36,18 +36,19 @@ function serve() {
   const browser = await chromium.launch();
   for (const c of CLIPS) {
     const tmp = fs.mkdtempSync('/tmp/cap-');
-    const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3 });
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 6 });   // canvas ~2220×1970: đủ phủ kín khung dọc 1080×1920 mà vẫn nét
     const errs = []; page.on('pageerror', e => errs.push(String(e)));
     await page.route('**/khachsan.html', async r => {
-      const html = (await (await r.fetch()).text()).replace(/const GAME_DAY_MS = [^;]+;/, `const GAME_DAY_MS = ${c.dayMs}; window.__cap = { go(h) { S.clock = 'fast'; setHour(h); } };`);
+      const html = (await (await r.fetch()).text()).replace('Math.min(window.devicePixelRatio || 1, low ? 1 : 2)', 'window.devicePixelRatio').replace(/const GAME_DAY_MS = [^;]+;/, `const GAME_DAY_MS = ${c.dayMs}; window.__cap = { go(h) { S.clock = 'fast'; setHour(h); } };`);
       r.fulfill({ body: html, contentType: 'text/html; charset=utf-8' });
     });
     await page.clock.install({ time: new Date('2026-11-01T09:00:00+07:00') });
     await page.addInitScript(s => localStorage.setItem('baokhua_hotel_v1', s), JSON.stringify(c.save));
     await page.goto(base + '/khachsan.html');
+    await page.addStyleTag({ content: '#sceneTip,#zoomBtn{display:none!important}' });   // ẩn gợi ý và nút kính lúp cho cảnh sạch
     await page.clock.runFor(1500);
     // dừng hẳn đồng hồ: từ đây thời gian chỉ chạy khi gọi runFor (chụp hình chậm cũng không làm lệch)
-    await page.clock.pauseAt(await page.evaluate(() => Date.now()) + 50);
+    await page.clock.pauseAt(await page.evaluate(() => Date.now()) + 1000);
     if (errs.length) throw new Error(errs.join(" | "));
     await page.evaluate(h => window.__cap.go(h), c.hour);   // móc chỉ có trong bản quay
     await page.clock.runFor(100);
@@ -59,7 +60,7 @@ function serve() {
     }
     const out = `${OUT}/${c.name}.mp4`;
     execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-framerate', String(FPS), '-i', `${tmp}/f%04d.png`,
-      '-vf', 'scale=1080:-2:flags=lanczos', '-c:v', 'libx264', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out]);
+      '-vf', 'scale=-2:1920:flags=lanczos', '-c:v', 'libx264', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out]);
     fs.rmSync(tmp, { recursive: true });
     console.log(c.name, n, 'khung', errs.length ? 'LỖI: ' + errs.join(' | ') : 'không lỗi');
     await page.close();
