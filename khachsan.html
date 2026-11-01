@@ -101,8 +101,11 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
 .toggle input{width:22px;height:22px}
 /* sheet */
-.sheet-bg{position:fixed;inset:0;background:rgba(0,10,20,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,10,20,.6);display:none;align-items:flex-end;justify-content:center;z-index:50;transition:background .2s}
 .sheet-bg.on{display:flex}
+.sheet-bg.closing{background:rgba(0,10,20,0);pointer-events:none}
+.sheet-bg.closing .sheet{animation:slideDown .2s ease-in forwards}
+@keyframes slideDown{to{transform:translateY(70px);opacity:0}}
 .sheet{width:100%;max-width:480px;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#174f6f,#0d2a3d);border-top:3px solid #FFD91F;border-radius:22px 22px 0 0;padding:12px 12px 22px;animation:slideUp .28s ease-out}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 .sh-head{display:flex;gap:10px;align-items:center}
@@ -144,8 +147,12 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .explain .lab{font-size:12px;font-weight:800;color:#ffb4a8;text-transform:uppercase}
 .explain .qzh{font-size:22px}
 .explain .row-btns{margin-top:10px}
+.okline{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 8px 8px 12px;border-radius:14px;background:linear-gradient(180deg,rgba(61,209,122,.22),rgba(0,0,0,.28));border:2px solid rgba(61,209,122,.6);animation:slideUp .22s ease-out}
+.okline b{color:#8dffbc;font-size:15px;white-space:nowrap}
+.okline span{flex:1;min-width:0;font-size:11.5px;opacity:.8;line-height:1.3}
+.okline .btn{flex:none;padding:9px 13px;font-size:15px}
 /* overlays */
-.overlay{position:fixed;inset:0;background:rgba(0,10,20,.72);display:none;align-items:center;justify-content:center;z-index:70;padding:16px;backdrop-filter:blur(3px)}
+.overlay{position:fixed;inset:0;background:rgba(0,10,20,.78);display:none;align-items:center;justify-content:center;z-index:70;padding:16px}
 .overlay.on{display:flex}
 .ov-card{background:radial-gradient(circle at 50% 0%,#2a6d93,#0d2a3d 72%);border:3px solid #FFD91F;border-radius:22px;padding:18px 14px 14px;width:100%;max-width:400px;text-align:center;animation:clearIn .45s cubic-bezier(.2,1.4,.4,1)}
 @keyframes clearIn{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
@@ -199,7 +206,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
    <span class="combo-tag" id="shCombo"></span>
    <button class="sh-close" id="shClose" type="button" aria-label="Đóng">✕</button>
   </div>
-  <div id="tipWrap"><div class="tipbar"><i id="tipBar"></i></div><div class="tiplab">⚡ Trả lời trong 5 giây → khách boa thêm 50%</div></div>
+  <div id="tipWrap"><div class="tipbar"><i id="tipBar"></i></div><div class="tiplab" id="tipLab">⚡ Trả lời trong 8 giây → khách boa thêm 50%</div></div>
   <div class="qcard">
    <div id="qTags"></div>
    <div class="q" id="qText"></div>
@@ -232,7 +239,9 @@ const ZALO_LINK = 'https://zalo.me/g/16yx8ptwane8ggwrnyxl';
 const GOOGLE_FORM_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform';
 const FORM_UTM = 'utm_source=game_khachsan&utm_campaign=lop_0211';
 const SAVE_KEY = 'baokhua_hotel_v1';
-const FAST_SECONDS = 5;
+const FAST_SECONDS = 8;                        // trả lời trong ngần này giây → boa thêm 50%
+const FAST_BONUS = { listen: 3, order: 4, situ: 2 }; // dạng câu dài/nghe được thêm giây
+function fastSecs(q) { return FAST_SECONDS + (FAST_BONUS[q && q.type] || 0); }
 const STAR_PTS = [0, 50, 160, 400, 750, 1200, 1800, 2600, 3600, 5000];   // thang 10 sao
 const FREE_MAX_STAR = 5;                          // bản hiện tại: tối đa 5★, 6★–10★ khoá
 const MEMBER_PRICE = '299.000đ', MEMBER_3M = '99.000đ', SVIP_PRICE = '5.000.000đ';
@@ -443,7 +452,7 @@ function shade(hex, d) { const n = parseInt(hex.slice(1), 16); const c = v => Ma
 
 /* ===== âm thanh (Web Audio, không CDN) ===== */
 const Snd = (() => {
-  let ctx = null, master = null, loading = null, bgm = null;
+  let ctx = null, master = null, loading = null, bgm = null, bgmG = null;
   const buf = {};
   const FILES = { hit:'hit.ogg', ui:'ui.ogg', win:'win.ogg', hurt:'hurt.ogg', bgm:'bgm_loop.ogg' };
   const VOL = { hit:.45, ui:.35, win:.6, hurt:.45, bgm:.14 };
@@ -487,20 +496,94 @@ const Snd = (() => {
   function discover() { if (!ok()) return; try { [1047, 1319, 1568].forEach((f, i) => tone('sine', f, f, .12, .1, i * .06)); } catch (e) {} }
   function click() { if (!ok()) return; try { tone('square', 1800, 1200, .03, .05); } catch (e) {} }
   function boom() { if (!ok()) return; try { tone('sine', 120, 40, .5, .18); } catch (e) {} }
-  function startBgm() { if (S.muted || !ctx || bgm || !buf.bgm) return; try { const g = ctx.createGain(); g.gain.value = VOL.bgm; bgm = ctx.createBufferSource(); bgm.buffer = buf.bgm; bgm.loop = true; bgm.connect(g); g.connect(master); bgm.start(); } catch (e) { bgm = null; } }
+  function startBgm() { if (S.muted || !ctx || bgm || !buf.bgm) return; try { const g = ctx.createGain(); g.gain.value = VOL.bgm; bgmG = g; bgm = ctx.createBufferSource(); bgm.buffer = buf.bgm; bgm.loop = true; bgm.connect(g); g.connect(master); bgm.start(); } catch (e) { bgm = null; } }
   function setMuted(m) { if (master && ctx) { try { master.gain.setTargetAtTime(m ? 0 : 1, ctx.currentTime, .02); } catch (e) { master.gain.value = m ? 0 : 1; } } if (!m) startBgm(); }
   function unlock() { if (!ens()) return; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } load(); }
+  // hạ nhạc nền khi đang đọc tiếng Trung cho rõ chữ
+  function duck(on) { if (!ctx || !bgmG) return; try { bgmG.gain.setTargetAtTime(on ? VOL.bgm * .3 : VOL.bgm, ctx.currentTime, .12); } catch (e) {} }
   function suspend() { if (ctx && ctx.state === 'running') try { ctx.suspend(); } catch (e) {} }
   function resume() { if (ctx && ctx.state === 'suspended') try { ctx.resume(); } catch (e) {} }
-  return { play, coin, build, starUp, discover, click, boom, unlock, setMuted, suspend, resume };
+  return { play, coin, build, starUp, discover, click, boom, unlock, setMuted, suspend, resume, duck };
 })();
-function speak(text, force) {
-  if ((!force && S.muted) || !text || !window.speechSynthesis) return false;
-  try {
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = .85;
-    const v = speechSynthesis.getVoices().find(v => /zh(-|_)?CN|Chinese/i.test(v.lang + v.name)); if (v) u.voice = v;
-    speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
-  } catch (e) { return false; }
+/* ===== giọng đọc tiếng Trung: luôn đọc trọn câu =====
+   - không cắt câu khi bảng đóng; câu mới chỉ thay câu cũ khi người chơi chủ động bấm nghe/hỏi tiếp
+   - chọn giọng phổ thông tốt nhất (bỏ giọng Quảng Đông), chờ danh sách giọng tải xong
+   - giữ tham chiếu câu đang đọc (Chrome hay "quên" câu → không báo xong, có khi tắt giữa chừng)
+   - Safari đôi khi không báo onend → có hẹn giờ dự phòng theo độ dài câu */
+const Voice = (() => {
+  const ss = window.speechSynthesis || null;
+  let voice = null, listed = false, cur = null, pend = 0, gen = 0, guard = 0, warmed = false, waiters = [];
+  function score(v) {
+    const l = String(v.lang || '').toLowerCase().replace('_', '-'), n = String(v.name || '').toLowerCase();
+    if (/^(zh-hk|zh-mo|yue)/.test(l) || /cantonese|粤|粵/.test(n)) return -1;
+    let s;
+    if (l === 'zh-cn' || l.startsWith('cmn') || l.startsWith('zh-hans')) s = 50;
+    else if (l === 'zh' || l.startsWith('zh-sg')) s = 40;
+    else if (l.startsWith('zh-tw') || l.startsWith('zh-hant')) s = 25;
+    else if (/chinese|mandarin|普通话|中文|国语|國語/.test(n)) s = 20;
+    else return -1;
+    if (/natural|neural|online|enhanced|premium/.test(n)) s += 10;
+    if (/google/.test(n)) s += 6;
+    if (/xiaoxiao|xiaoyi|yunxi|tingting|huihui|yaoyao|lili|meijia/.test(n)) s += 3;
+    return s;
+  }
+  function pick() {
+    if (!ss) return;
+    let best = null, bs = -1, vs = [];
+    try { vs = ss.getVoices() || []; } catch (e) {}
+    vs.forEach(v => { const s = score(v); if (s > bs) { bs = s; best = v; } });
+    if (vs.length) listed = true;
+    voice = best;
+  }
+  function flush() { clearTimeout(guard); Snd.duck(false); const w = waiters; waiters = []; w.forEach(f => { try { f(); } catch (e) {} }); }
+  function finish(u) { if (u !== cur) return; cur = null; if (!pend) flush(); }
+  function clean(t) { return String(t || '').replace(/_{2,}/g, '').replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF\uFE0F]/gu, '').replace(/\u2026+/g, '\uFF0C').replace(/\s+/g, ' ').trim(); }
+  function ready() { if (!ss) return false; if (!voice) pick(); return !(listed && !voice); }
+  function say(text, o = {}) {
+    if (!ss) return false;
+    const t = clean(text); if (!t || !ready()) return false;
+    const my = ++gen; pend = my;
+    const go = () => {
+      if (my !== gen) return;
+      pend = 0;
+      try {
+        if (!voice) pick();
+        const u = new SpeechSynthesisUtterance(t), len = [...t].length;
+        u.lang = voice ? voice.lang : 'zh-CN'; if (voice) u.voice = voice;
+        u.rate = o.rate || (len <= 3 ? .75 : .82); u.pitch = 1; u.volume = 1;
+        u.onend = () => finish(u); u.onerror = () => finish(u);
+        cur = u; Snd.duck(true);
+        clearTimeout(guard); guard = setTimeout(() => finish(u), Math.min(14000, (900 + len * 330 / u.rate) * 1.6 + 1500));
+        try { if (ss.paused) ss.resume(); } catch (e) {}
+        ss.speak(u);
+      } catch (e) { cur = null; flush(); }
+    };
+    let busy = false; try { busy = !!cur || ss.speaking || ss.pending; } catch (e) {}
+    if (busy) { cur = null; try { ss.cancel(); } catch (e) {} setTimeout(go, 90); }   // Chrome có thể nuốt câu nếu speak() ngay sau cancel()
+    else if (o.delay) setTimeout(go, o.delay);
+    else go();
+    return true;
+  }
+  // gọi cb khi câu đang đọc xong (+tail ms); không sớm hơn min, không muộn hơn max
+  function after(cb, o = {}) {
+    const min = o.min || 0, max = o.max || 7000, tail = o.tail == null ? 400 : o.tail, t0 = Date.now();
+    let done = false;
+    const fire = () => { if (done) return; done = true; clearTimeout(hard); setTimeout(cb, Math.max(0, min - (Date.now() - t0))); };
+    const hard = setTimeout(fire, max);
+    if (cur || pend) waiters.push(() => setTimeout(fire, tail)); else fire();
+  }
+  function stop() { gen++; pend = 0; cur = null; try { ss && ss.cancel(); } catch (e) {} flush(); }
+  // iOS/Safari: lần đọc đầu phải nằm trong một cú chạm → "mồi" bằng một câu câm ở cú chạm đầu tiên
+  function warm() {
+    if (warmed || !ss) return; warmed = true; pick();
+    try { if (!ss.speaking && !ss.pending) { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; u.lang = 'zh-CN'; ss.speak(u); } } catch (e) {}
+  }
+  function init() { if (!ss) return; pick(); try { ss.addEventListener('voiceschanged', pick); } catch (e) { ss.onvoiceschanged = pick; } }
+  return { say, after, stop, warm, init, get busy() { return !!(cur || pend); }, get voiceName() { return voice ? voice.name + ' (' + voice.lang + ')' : ''; } };
+})();
+function speak(text, force, o) {
+  if ((!force && S.muted) || !text) return false;
+  return Voice.say(text, o);
 }
 
 /* ===== hiệu ứng DOM ===== */
@@ -1427,7 +1510,7 @@ const Scene = (() => {
     raf = 0;
     if (!active) return;
     raf = requestAnimationFrame(loop);
-    const minDt = 1000 / (sheetOpen ? 12 : fpsCap);
+    const minDt = 1000 / (sheetOpen ? Math.min(30, fpsCap) : fpsCap);
     if (lastF && now - lastF < minDt - 2) return;
     const dt = Math.min(.06, lastF ? (now - lastF) / 1000 : .016); lastF = now;
     // tự hạ chất lượng nếu máy yếu
@@ -1576,8 +1659,26 @@ let Q = null, combo = 0, orderPicked = [], sessionServed = 0;
 function correctText(q) { if (q.type === 'order') return (q.answer || []).join(''); return typeof q.answer === 'number' ? (q.options[q.answer] || '') : ''; }
 function fullZh(q) { const a = correctText(q); let z = q.zh || ''; if (!z && hasHan(a)) z = a; return z.includes('____') ? z.replace('____', a) : z; }
 function fullPy(q) { let p = q.py || ''; if (p.includes('____') && q.optionPy && typeof q.answer === 'number') p = p.replace('____', q.optionPy[q.answer] || '…'); return p; }
-function openSheet() { $('sheet').classList.add('on'); Scene.sheet = true; }
-function closeSheet() { $('sheet').classList.remove('on'); Scene.sheet = false; Q = null; if (window.speechSynthesis) try { speechSynthesis.cancel(); } catch (e) {} }
+let sheetShutT = 0;
+function openSheet() { clearTimeout(sheetShutT); const e = $('sheet'); e.classList.remove('closing'); e.classList.add('on'); Scene.sheet = true; }
+function closeSheet() {
+  // KHÔNG dừng giọng đọc ở đây: câu đang đọc được đọc trọn kể cả khi bảng đã đóng
+  const e = $('sheet'); Q = null; Scene.sheet = false;
+  if (!e.classList.contains('on')) return;
+  if (REDUCED) { e.classList.remove('on', 'closing'); return; }
+  e.classList.add('closing'); clearTimeout(sheetShutT);
+  sheetShutT = setTimeout(() => e.classList.remove('on', 'closing'), 200);
+}
+// sau khi trả lời đúng: hiện dòng ✓, chờ đọc hết câu rồi mới đi tiếp (chạm "Tiếp" để đi luôn)
+function okNext(label, zh, next, o) {
+  let done = false;
+  const go = () => { if (done) return; done = true; next(); };
+  $('explainSlot').innerHTML = `<div class="okline"><b>${label}</b><span>${zh ? '🔊 Đọc xong tự đi tiếp' : ''}</span>${zh ? '<button type="button" class="btn ghost" id="okSay" aria-label="Nghe lại">🔊</button>' : ''}<button type="button" class="btn" id="okNext">Tiếp ▶</button></div>`;
+  if ($('okSay')) $('okSay').onclick = () => speak(zh, true);
+  $('okNext').onclick = () => { Snd.play('ui'); go(); };
+  try { $('explainSlot').scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' }); } catch (e) {}
+  Voice.after(go, o);
+}
 
 function openServe() {
   if (Q) return;
@@ -1585,12 +1686,12 @@ function openServe() {
   if (!g) { toast('Khách đang tới…'); return; }
   Snd.unlock();
   const q = pickQuestion(g.topic);
-  Q = { kind: 'serve', q, g, t0: Date.now(), locked: false };
+  Q = { kind: 'serve', q, g, t0: Date.now(), locked: false, fast: fastSecs(q) };
   $('shAv').textContent = g.av;
   $('shName').textContent = g.name;
   $('shSub').textContent = `${TOPIC_LABEL[g.topic]} · trả phòng ${fare()} 🪙`;
-  $('tipWrap').hidden = false;
-  renderQuestion(q); openSheet(); startTipBar();
+  $('tipWrap').hidden = false; $('tipLab').textContent = `⚡ Trả lời trong ${Q.fast} giây → khách boa thêm 50%`;
+  renderQuestion(q); openSheet(); startTipBar(Q.fast);
 }
 function openBuy(it) {
   if (Q) return;
@@ -1603,7 +1704,7 @@ function openBuy(it) {
   $('tipWrap').hidden = true;
   renderQuestion(q); openSheet();
 }
-function startTipBar() { const i = $('tipBar'); i.style.transition = 'none'; i.style.transform = 'scaleX(1)'; void i.offsetWidth; i.style.transition = `transform ${FAST_SECONDS}s linear`; i.style.transform = 'scaleX(0)'; }
+function startTipBar(secs = FAST_SECONDS) { const i = $('tipBar'); i.style.transition = 'none'; i.style.transform = 'scaleX(1)'; void i.offsetWidth; i.style.transition = `transform ${secs}s linear`; i.style.transform = 'scaleX(0)'; }
 function renderQuestion(q) {
   orderPicked = [];
   $('shCombo').textContent = combo >= 2 ? `🔥 x${(1 + .1 * Math.min(10, combo)).toFixed(1)}` : '';
@@ -1624,7 +1725,7 @@ function renderQuestion(q) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ghost'; b.style.marginTop = '8px'; b.textContent = '🔊 Nghe';
     b.onclick = () => { if (!speak(q.speak || q.zh, true)) { $('qZh').textContent = q.zh; $('qPy').textContent = q.py; } };
     $('qExtra').appendChild(b);
-    if (!speak(q.speak || q.zh, true)) { $('qZh').textContent = q.zh; $('qPy').textContent = q.py; $('qVi').textContent = 'Máy không có giọng đọc tiếng Trung — đọc theo chữ.'; }
+    if (!speak(q.speak || q.zh, true, { delay: 380 })) { $('qZh').textContent = q.zh; $('qPy').textContent = q.py; $('qVi').textContent = 'Máy không có giọng đọc tiếng Trung — đọc theo chữ.'; }
   }
   if (q.type === 'order') renderOrder(q, o); else renderOptions(q, o);
 }
@@ -1686,20 +1787,21 @@ function resolve(ok, el) {
   const cx = r ? r.left + r.width / 2 : innerWidth / 2, cy = r ? r.top + r.height / 2 : innerHeight / 2;
   if (Q.kind === 'serve') {
     const g = Q.g; S.served++; sessionServed++;
-    if (sessionServed >= PITCH_AFTER_SERVES && S.pitchDay !== localDay(0) && star() >= 2) { S.pitchDay = localDay(0); setTimeout(() => { if (!Q && !$('ov').classList.contains('on')) memberPitch('daily'); }, 2600); }
+    if (sessionServed >= PITCH_AFTER_SERVES && S.pitchDay !== localDay(0) && star() >= 2) { S.pitchDay = localDay(0); const tryPitch = (n = 0) => { if (!Q && !$('ov').classList.contains('on')) memberPitch('daily'); else if (n < 60) setTimeout(() => tryPitch(n + 1), 700); }; setTimeout(tryPitch, 2600); }
     if (ok) {
       combo++; S.correct++; S.bestCombo = Math.max(S.bestCombo, combo);
-      const fast = secs <= FAST_SECONDS, vip = S.vipDay !== localDay(0);
+      const fast = secs <= (Q.fast || FAST_SECONDS), vip = S.vipDay !== localDay(0);
       const earn = Math.round(fare() * (1 + .1 * Math.min(10, combo - 1)) * (fast ? 1.5 : 1) * (vip ? 3 : 1));
       if (vip) S.vipDay = localDay(0);
       markToday();
       vib(25); Snd.coin(combo); Snd.play('hit', Math.min(1.5, 1 + combo * .05));
       burstAt(cx, cy, combo >= 5 ? 24 : 14, combo >= 5 ? 130 : 90);
       floatText(cx, cy - 10, `+${earn}${fast ? ' ⚡' : ''}${vip ? ' 👑VIP' : ''}`);
-      if (q.type !== 'listen') speak(fullZh(q));
+      const z = fullZh(q);
+      if (q.type !== 'listen') speak(z, false, { delay: 280 });   // chờ tiếng xu xong mới đọc cho rõ
       S.coins += earn; save();
       coinFly(cx, cy, earn, () => { renderHud(); renderBuild(); });
-      setTimeout(() => { closeSheet(); Scene.served(g, true); }, 900);
+      okNext(combo >= 2 ? `✓ Đúng! 🔥${combo}` : '✓ Chính xác!', z, () => { closeSheet(); Scene.served(g, true); }, { min: 1300, max: 7000, tail: 450 });
       if (combo === 5 || combo === 10) setTimeout(() => toast(`🔥 Combo ${combo}! Xu nhân x${(1 + .1 * Math.min(10, combo - 1)).toFixed(1)}`), 950);
     } else {
       combo = 0; markToday();
@@ -1716,14 +1818,14 @@ function resolve(ok, el) {
       S.coins -= price; S.own[it.id] = owned(it.id) + 1; S.pts += it.pts;
       const before = S.star || 1, after = star(); S.star = after;
       save();
-      Snd.coin(3); vib([20, 30, 20]); burstAt(cx, cy, 16, 90); speak(it.zh);
-      setTimeout(() => {
+      Snd.coin(3); vib([20, 30, 20]); burstAt(cx, cy, 16, 90); speak(it.zh, false, { delay: 240 });
+      okNext('✓ Chốt đơn!', it.zh, () => {
         closeSheet();
         Scene.rebuild(it.id); Snd.build();
         toast(`Đã xây ${it.zh} (${it.py}) – ${it.vi}`);
         renderHud(); renderBuild(); Scene.refill();
         if (after > before) setTimeout(() => starUp(after), 1200);
-      }, 650);
+      }, { min: 1000, max: 5500, tail: 300 });
     } else {
       Snd.play('hurt'); save();
       explain(q, () => { closeSheet(); toast('Chưa trừ xu – ôn từ này rồi mua lại nhé'); renderReview(); });
@@ -1741,7 +1843,7 @@ function explain(q, onNext) {
   let done = false;
   $('exNext').onclick = () => { if (done) return; done = true; Snd.play('ui'); onNext(); };
   try { $('explainSlot').scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' }); } catch (e) {}
-  if (zh) speak(zh);
+  if (zh) speak(zh, false, { delay: 320 });   // chờ tiếng báo sai xong mới đọc đáp án
 }
 
 /* ===== LÊN SAO ===== */
@@ -1884,7 +1986,7 @@ function init() {
     toast(`Còn ${STAR_PTS[st] - S.pts} điểm nữa lên ${st + 1}★ · đích đến 10★ 👑`);
   };
   $('shClose').onclick = () => { if (Q && Q.locked && Q.kind === 'serve') return; closeSheet(); };
-  $('muteBtn').onclick = () => { S.muted = !S.muted; save(); Snd.unlock(); Snd.setMuted(S.muted); renderHud(); if (!S.muted) Snd.play('ui'); };
+  $('muteBtn').onclick = () => { S.muted = !S.muted; save(); Snd.unlock(); Snd.setMuted(S.muted); if (S.muted) Voice.stop(); renderHud(); if (!S.muted) Snd.play('ui'); };
   $('zoomBtn').onclick = () => { const z = Scene.zoom > 1 ? 1 : 1.75; Scene.setZoom(z); $('zoomBtn').classList.toggle('on', z > 1); $('zoomBtn').textContent = z > 1 ? '↙' : '🔍'; Snd.play('ui'); if (z > 1) toast('Kéo theo mọi hướng để xem từng phòng'); };
   setTimeout(() => { const t = $('sceneTip'); if (t) t.style.opacity = '0'; }, 8000);
   $('clockBtn').onclick = () => {
@@ -1893,15 +1995,15 @@ function init() {
     save(); Snd.play('ui');
   };
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
-  document.body.addEventListener('pointerdown', () => Snd.unlock(), { passive: true });
+  document.body.addEventListener('pointerdown', () => { Snd.unlock(); Voice.warm(); }, { passive: true });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { hiddenAt = Date.now(); save(); Snd.suspend(); Scene.setActive(false); return; }
+    if (document.hidden) { hiddenAt = Date.now(); save(); Voice.stop(); Snd.suspend(); Scene.setActive(false); return; }
     Snd.resume(); Scene.setActive(true);
     const got = awayEarnings(hiddenAt); hiddenAt = 0;
     if (got > 0) { S.coins += got; save(); renderHud(); renderBuild(); toast(`🧑‍💼 Nhân viên thu được +${got} 🪙 khi bạn vắng`); }
   });
   setInterval(idleTick, IDLE_EVERY_MS);
-  if (window.speechSynthesis) speechSynthesis.getVoices();
+  Voice.init();
   if (!S.intro) {
     showOv('🏨', 'Khách sạn Bảo Khựa', `<p>Bạn vừa nhận một khách sạn <b>1★ nhỏ, 3 phòng</b> ở Bãi Cháy. Mục tiêu: <b>10★</b>. Khách Trung Quốc đang xếp hàng ở cửa:</p>
       <p>🛎️ <b>Trả lời đúng tiếng Trung</b> → khách vui, trả xu, lên phòng bật đèn.</p>
@@ -1918,7 +2020,7 @@ init();
 
 /* hook kiểm thử (không ảnh hưởng chơi) */
 window.__hotel = {
-  get S() { return S; }, get Q() { return Q; }, get queue() { return Scene.queue; }, ITEMS, QUESTIONS, star, fare, Scene, setHour, gameHour,
+  get S() { return S; }, get Q() { return Q; }, get queue() { return Scene.queue; }, ITEMS, QUESTIONS, star, fare, Scene, setHour, gameHour, Voice,
   openServe, openBuy: id => openBuy(ITEM[id]),
   answer(correct) {
     if (!Q || Q.locked) return false;
