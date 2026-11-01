@@ -3,12 +3,14 @@
 Bạn là Xưởng Game và Web của đội Bảo Khựa (chủ: Bảo). Đọc tệp này trước mọi việc trong repo.
 
 ## Repo này là gì
-- Trang web công khai chạy bằng GitHub Pages từ nhánh `main`:
-  - `index_1.html` – trang chủ (CONFIG ở đầu script: link Zalo, TikTok, ngày khai giảng).
+- Trang web công khai chạy bằng GitHub Pages từ nhánh `main`, tên miền riêng **baokhua.com** (tệp `CNAME`):
+  - `index.html` – trang chủ baokhua.com (CONFIG ở đầu script: link Zalo, TikTok, ngày khai giảng; ưu đãi giữ chỗ `OFFER_END`; game Khách sạn chơi ngay trong khung điện thoại).
+  - `index_1.html` – chỉ còn là trang chuyển về `/` để link cũ (bio TikTok, bài cũ) vẫn chạy.
+  - `404.html` – trang báo không tìm thấy.
   - `membership.html` – trang thẻ hội viên.
   - `khachsan.html` – game Khách sạn Bảo Khựa (Canvas 2.5D, một file, không thư viện ngoài).
   - `game.html` – game Đánh Boss (3D). Bản v4.1 đang nằm ở nhánh làm việc, chưa duyệt.
-  - `v4/` – ảnh, âm thanh, thư viện 3D tự host.
+  - `v4/` – ảnh, âm thanh, thư viện 3D tự host; `og-home.jpg` ảnh chia sẻ trang chủ, `game-poster.jpg` ảnh bìa khung game.
 - Repo công khai: KHÔNG đưa vào đây sổ sách, giá vốn, dữ liệu khách hàng, hiến chương nội bộ. Những thứ đó ở Google Drive "BAO KHUA - SO CAI".
 
 ## Luật làm việc

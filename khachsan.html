@@ -11,8 +11,9 @@
 <meta property="og:site_name" content="Bảo Khựa 阿宝">
 <meta property="og:title" content="Khách sạn Bảo Khựa 阿宝 – xây khách sạn 5 sao bằng tiếng Trung">
 <meta property="og:description" content="Phục vụ khách Trung Quốc, kiếm xu, xây tầng, gym, bể bơi, vòng quay. Phố Bãi Cháy sống động ngày đêm, chạm vào mọi thứ để học từ.">
-<meta property="og:url" content="https://ngoquocgiabao-hy.github.io/Baokhua/khachsan.html">
-<meta property="og:image" content="https://ngoquocgiabao-hy.github.io/Baokhua/v4/og-hotel.jpg">
+<meta property="og:url" content="https://baokhua.com/khachsan.html">
+<link rel="canonical" href="https://baokhua.com/khachsan.html">
+<meta property="og:image" content="https://baokhua.com/v4/og-hotel.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -265,6 +266,7 @@ body{background:#072538 radial-gradient(120% 55% at 50% 24%,#15638f 0%,#0b3d5c 4
 .coach-tip .btn{margin-top:10px;width:100%;padding:11px}
 .coach-tip .btn[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){.serve-btn:after,.coach-hand,.coach-ring,.pips i.cur,.item.can .buy,.mini i,.pill.sat,.serve-btn.urgent,.coach-tip.pop,.sheet.swap .qcard,.sheet.swap .opts,.mini:after{animation:none!important}}
+body.embed{overscroll-behavior-y:auto}
 @media (prefers-reduced-motion:reduce){.pill.coin.bump,.serve-btn.pulse,.ov-card,.sheet,.wbub{animation:none!important}}
 </style>
 </head>
@@ -331,7 +333,8 @@ body{background:#072538 radial-gradient(120% 55% at 50% 24%,#15638f 0%,#0b3d5c 4
 (() => {
 'use strict';
 /* ===== CẤU HÌNH ===== */
-const GAME_URL = 'https://ngoquocgiabao-hy.github.io/Baokhua/khachsan.html';
+const GAME_URL = 'https://baokhua.com/khachsan.html';
+const EMBED = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();   // đang nằm trong khung game của trang giới thiệu
 const ZALO_LINK = 'https://zalo.me/g/16yx8ptwane8ggwrnyxl';
 const GOOGLE_FORM_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform';
 const FORM_UTM = 'utm_source=game_khachsan&utm_campaign=lop_0211';
@@ -2385,7 +2388,8 @@ function renderMe() {
     <div class="card setlist"><label class="toggle"><span>🎵 Nhạc nền chill (lo-fi + đàn tranh)</span><input type="checkbox" id="musicChk" ${S.music ? 'checked' : ''}></label>
       <label class="toggle"><span>🔋 Chế độ mượt cho máy yếu (30 khung hình/giây, ít người xe hơn)</span><input type="checkbox" id="lowChk" ${Scene.low ? 'checked' : ''}></label>
       <button type="button" class="btn ghost" id="tutBtn">📖 Xem lại hướng dẫn chơi</button></div>
-    <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button><a class="btn ghost" href="game.html">⚔️ Chế độ Đánh Boss</a></div>`;
+    <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button><a class="btn ghost" href="game.html" ${EMBED ? 'target="_blank" rel="noopener"' : ''}>⚔️ Chế độ Đánh Boss</a></div>
+    ${EMBED ? '' : '<a class="btn ghost" href="./">🏠 Trang giới thiệu Bảo Khựa</a>'}`;
   $('shareBtn').onclick = share;
   $('lowChk').onchange = e => Scene.setLow(e.target.checked);
   $('musicChk').onchange = e => { Snd.setMusic(e.target.checked); save(); toast(e.target.checked ? '🎵 Đã bật nhạc nền' : 'Đã tắt nhạc nền'); };
@@ -2446,6 +2450,14 @@ function init() {
     if (got > 0) { S.coins += got; save(); renderHud(); renderBuild(); toast(`🧑‍💼 Nhân viên thu được +${got} 🪙 khi bạn vắng`); }
   });
   setInterval(idleTick, IDLE_EVERY_MS);
+  if (EMBED) {
+    document.body.classList.add('embed');
+    addEventListener('message', e => {
+      if (e.origin !== location.origin || !e.data || e.data.bk == null) return;
+      if (e.data.bk === 'pause') { save(); Voice.stop(); Snd.suspend(); Scene.setActive(false); }
+      else if (e.data.bk === 'resume' && !document.hidden) { Snd.resume(); Scene.setActive(true); }
+    });
+  }
   Voice.init();
   if (!S.intro) {
     showOv('🏨', 'Chào mừng tới Bảo Khựa!', `<p class="lead">Bạn là <b>lễ tân</b> khách sạn nhỏ 1★ ở Bãi Cháy. Khách Trung Quốc đang chờ ở cửa!</p>
