@@ -159,7 +159,7 @@ function hookOpen(F, kicker, titleLines, T) {
   F.fromTo('#plate', '{ scale: 1.7, rotationX: 24, rotationZ: -4, y: 260 }', `{ scale: 1.06, rotationX: 0, rotationZ: 0, y: 0, duration: ${T - .2}, ease: "power2.inOut" }`, 0);
   F.fromTo('#grade', '{ opacity: 0 }', '{ opacity: 1, duration: .6 }', .2);
   F.fromTo('#raysw', '{ opacity: 0, scale: .6 }', '{ opacity: .9, scale: 1, duration: .7, ease: "power2.out" }', .25);
-  F.set('#raysw', '{ top: 380 }', 0);
+  F.set('#raysw', '{ y: 440 }', 0);
   const b = F.sticker(`<div class="brand">BẢO KHỰA <b>阿宝</b></div>`, 120, 0, T);
   F.fromTo(b, '{ rotation: -30, scale: 0 }', '{ rotation: -6, scale: 1, duration: .5, ease: "back.out(2)" }', .1);
   const tt = HZ.title(titleLines, titleLines.length > 2 ? 104 : 122);
@@ -187,7 +187,7 @@ function outroPhone(F, t0) {
   F.at('#grade', '{ opacity: 0, duration: .4 }', t0);
   F.at('#plate', '{ scale: .46, x: -20, y: -360, rotationY: -16, rotationX: 8, borderRadius: 110, filter: "blur(0px) brightness(1) saturate(1)", boxShadow: "0 0 0 16px #FFD91F, 0 0 0 26px #16171B, 0 80px 90px rgba(0,0,0,.55)", duration: .8, ease: "power3.inOut" }', t0);
   F.set('#plate', '{ boxShadow: "0 0 0 0px #FFD91F, 0 0 0 0px #16171B, 0 0 0 rgba(0,0,0,0)" }', 0);
-  F.at('#raysw', '{ opacity: .55, top: 30, duration: .6 }', t0 + .2);
+  F.at('#raysw', '{ opacity: .55, y: 90, duration: .6 }', t0 + .2);
   F.at('#pan', '{ x: 0, duration: .8, ease: "power3.inOut" }', t0);
   const c1 = HZ.cream(wrap(cfg.cta.line1, 18), 84);
   const s1 = F.sticker(c1.svg, 1075, t0, F.dur);
@@ -422,7 +422,13 @@ for (const j of built) {
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-stream_loop', '-1', '-i', bgmSrc, '-t', String(j.dur), '-c:a', 'aac', '-b:a', '128k', path.join(dir, 'bgm.m4a')]);
   if (args.includes('--no-render')) { console.log('Đã sinh', dir); continue; }
   const t0 = Date.now();
-  execFileSync(HF, ['render', '-o', path.join(OUT, j.id + '.mp4'), '--quiet'], { cwd: dir, stdio: ['ignore', 'ignore', 'inherit'], env: { ...process.env, HYPERFRAMES_SKIP_SKILLS: '1' } });
+  // dựng; lỗi thoáng qua thì thử lại một lần; vẫn lỗi thì ghi lại và làm video kế tiếp
+  let ok = false;
+  for (let k = 0; k < 2 && !ok; k++) {
+    try { execFileSync(HF, ['render', '-o', path.join(OUT, j.id + '.mp4')], { cwd: dir, stdio: ['ignore', fs.openSync(path.join(dir, 'render.log'), 'w'), 'pipe'], env: { ...process.env, HYPERFRAMES_SKIP_SKILLS: '1' } }); ok = true; }
+    catch (e) { console.error(`! ${j.id} lỗi lần ${k + 1}: ${String(e.stderr || e.message).split('\n').filter(Boolean).slice(-3).join(' | ')}`); }
+  }
+  if (!ok) { console.error(`✗ ${j.id} bỏ qua (xem ${path.join(dir, 'render.log')})`); continue; }
   // ảnh bìa: khung hình lúc tiêu đề đã hiện đủ
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-ss', '1.6', '-i', path.join(OUT, j.id + '.mp4'), '-frames:v', '1', '-q:v', '3', path.join(OUT, j.id + '_bia.jpg')]);
   console.log(`✓ ${j.id}.mp4  ${j.dur}s  (dựng ${((Date.now() - t0) / 1000).toFixed(0)}s)`);
