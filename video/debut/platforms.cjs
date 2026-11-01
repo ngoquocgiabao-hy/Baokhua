@@ -73,14 +73,14 @@ function thumb(img) {
   body{width:1280px;height:720px;position:relative;background:${Y}}
   .k{position:absolute;inset:0;background:${K};clip-path:polygon(52% 0,100% 0,100% 100%,40% 100%)}
   .img{position:absolute;right:-30px;bottom:-40px;height:780px}
-  .txt{position:absolute;left:56px;top:70px;width:640px}
-  .t1{font:900 100px/1.1 'Inter Display';letter-spacing:-.04em;color:${K}}
+  .txt{position:absolute;left:56px;top:40px;width:640px}
+  .t1{font:900 98px/1.06 'Inter Display';letter-spacing:-.04em;color:${K}}
   .t2{margin-top:22px;display:inline-block;background:${K};color:${Y};font:900 58px/1.1 'Inter Display';padding:10px 24px;border-radius:12px;transform:rotate(-2deg)}
   .tiles{position:absolute;left:60px;bottom:52px}
   .tile{width:118px;height:146px;font-size:100px;line-height:146px;background:${K};color:${Y};border-color:${K};box-shadow:0 10px 0 rgba(0,0,0,.35)}
   .py{position:absolute;left:330px;bottom:96px;font:700 34px 'JetBrains Mono';color:${K}}
   </style></head><body><div class="k"></div><img class="img" src="file://${img}">
-  <div class="txt"><div class="t1">TIẾNG TRUNG<br>ĐỂ ĐI LÀM</div><div class="t2">học bằng game?!</div></div>
+  <div class="txt"><div class="t1">TIẾNG<br>TRUNG<br>ĐỂ ĐI LÀM</div><div class="t2">học bằng game?!</div></div>
   <div class="tiles"><div class="tile">阿</div><div class="tile">宝</div></div><div class="py">Ā Bǎo</div>
   </body></html>`;
 }
@@ -98,8 +98,9 @@ function thumb(img) {
   await shot(feed(), 1080, 1350, pf);
   if (!EVER) await shot(thumb(path.join(ROOT, 'v4/ninja_tier3_long_ha.jpg')), 1280, 720, path.join(OUT, 'BAOKHUA_DEBUT_YOUTUBE_THUMB.jpg'));
   await b.close();
+  if (process.argv.includes('--panels')) return;
   if (!fs.existsSync(MASTER)) { console.log('Chưa có', MASTER, '(mới làm bảng)'); return; }
-  const enc = ['-c:v', 'libx264', '-crf', '17', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart'];
+  const enc = ['-c:v', 'libx264', '-crf', '20', '-preset', 'slow', '-maxrate', '18M', '-bufsize', '36M', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart'];
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-loop', '1', '-i', pw, '-i', MASTER, '-filter_complex',
     '[1:v]scale=608:1080:flags=lanczos[v];[0:v][v]overlay=656:0:shortest=1,format=yuv420p[o]', '-map', '[o]', '-map', '1:a', ...enc, path.join(OUT, `BAOKHUA_${TAG}_16x9.mp4`)]);
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-loop', '1', '-i', pf, '-i', MASTER, '-filter_complex',

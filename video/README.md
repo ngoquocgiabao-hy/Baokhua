@@ -46,3 +46,13 @@ Mỗi video mất khoảng 5–9 phút để dựng (3D vẽ bằng CPU). Xem tr
 - Câu Trung mới phải qua Gemini kiểm trước khi Bảo đăng. Bot không tự đăng.
 - Không ghi "miễn phí", không nhắc S-VIP, không hứa ngày mở 6–10★.
 - Âm thanh lấy từ `../v4/audio`, là đồ của dự án. Muốn dùng nhạc thịnh hành thì Bảo thêm trong TikTok/CapCut.
+
+## Trailer debut (`debut/`)
+Trailer 46 giây, tông vàng Minion và đen, nhạc 120 BPM tự tổng hợp bằng code (`debut/music.py`, không dính bản quyền, −14 LUFS).
+```bash
+node debut/build_debut.mjs                 # bản có ngày khai giảng → out/debut/
+node debut/build_debut.mjs --evergreen     # bản không ghi ngày → out/debut-evergreen/
+cd out/debut && npx hyperframes render -o ../BAOKHUA_DEBUT_9x16_master.mp4    # khoảng 9 phút
+node debut/platforms.cjs [--evergreen]     # 16:9, 4:5, ảnh bìa (cần bản 9:16 đã nén ở out/)
+```
+Chú thích từng nền tảng: `debut/CAPTIONS_DEBUT.md`. Mọi dữ kiện về Bảo lấy từ trang chủ đã công khai.
