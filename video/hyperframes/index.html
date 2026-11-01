@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="vi" data-resolution="portrait">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="./gsap.min.js"></script>
+<style>
+  :root { --ground:#7a0d12; --red:#c8161d; --gold:#f5c542; --cream:#fff6e0; --ink:#2a0608;
+          --cjk:"WenQuanYi Zen Hei","Noto Sans CJK SC",sans-serif; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:var(--ground)}
+  #root{position:relative;width:100%;height:100%;font-family:var(--cjk);color:var(--cream);
+        background:radial-gradient(circle at 50% 35%,#b3141b 0%,#7a0d12 55%,#3d0508 100%)}
+  .clip{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring{position:absolute;left:50%;top:44%;width:820px;height:820px;margin:-410px 0 0 -410px;border-radius:50%;
+        border:6px dashed rgba(245,197,66,.35)}
+  .brand{position:absolute;top:110px;left:0;right:0;text-align:center;font-size:44px;letter-spacing:.08em;color:var(--gold)}
+  .bar{position:absolute;bottom:0;left:0;height:18px;width:1080px;background:var(--gold);transform-origin:left}
+  .t1{font-size:96px;font-weight:700;text-align:center;line-height:1.2;padding:0 80px}
+  .t2{font-size:52px;color:var(--gold);margin-top:40px}
+  .num{font-size:60px;color:var(--gold);margin-bottom:30px}
+  .hz{font-size:360px;line-height:1;font-weight:700;color:var(--cream);text-shadow:0 14px 0 var(--ink)}
+  .py{font-size:110px;color:var(--gold);margin-top:50px}
+  .vi{font-size:88px;margin-top:40px;padding:14px 50px;background:var(--cream);color:var(--red);border-radius:24px;font-weight:700}
+  .cta{font-size:72px;font-weight:700;text-align:center;padding:0 80px}
+  .btn{margin-top:60px;font-size:56px;padding:26px 60px;background:var(--gold);color:var(--ink);border-radius:999px}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="13" data-width="1080" data-height="1920">
+  <div class="ring" id="ring"></div>
+  <div class="brand">BẢO KHỰA 阿宝</div>
+</div>
+<script>
+// ===== DỮ LIỆU: mỗi video mới chỉ cần đổi khối này (đồng bộ với ../data.json) =====
+const DATA = {
+  title: "3 từ tiếng Trung ở khách sạn",
+  subtitle: "Học cùng Bảo Khựa 阿宝",
+  words: [
+    { hanzi: "酒店", pinyin: "jiǔdiàn", nghia: "Khách sạn" },
+    { hanzi: "前台", pinyin: "qiántái", nghia: "Lễ tân" },
+    { hanzi: "电梯", pinyin: "diàntī", nghia: "Thang máy" }
+  ],
+  cta: "Chơi game Khách sạn Bảo Khựa"
+};
+// =====
+const INTRO = 2, PER = 3, OUTRO = 2;
+const root = document.getElementById("root");
+const total = INTRO + PER * DATA.words.length + OUTRO;
+root.dataset.duration = total;
+function scene(id, start, dur, html){
+  const d = document.createElement("div");
+  d.id = id; d.className = "clip"; d.dataset.start = start; d.dataset.duration = dur; d.dataset.trackIndex = 1;
+  d.innerHTML = html; root.appendChild(d); return d;
+}
+scene("intro", 0, INTRO, `<div class="t1">${DATA.title}</div><div class="t2">${DATA.subtitle}</div>`);
+DATA.words.forEach((w,i)=>scene("w"+i, INTRO+i*PER, PER,
+  `<div class="num">${i+1}/${DATA.words.length}</div><div class="hz">${w.hanzi}</div><div class="py">${w.pinyin}</div><div class="vi">${w.nghia}</div>`));
+scene("outro", total-OUTRO, OUTRO, `<div class="cta">${DATA.cta}</div><div class="btn">baokhua · link ở bio</div>`);
+const bar = document.createElement("div"); bar.className="bar"; bar.id="bar"; root.appendChild(bar);
+
+const tl = gsap.timeline({ paused: true });
+tl.to("#ring", { rotation: 90, duration: total, ease: "none" }, 0);
+tl.fromTo("#bar", { scaleX: 0 }, { scaleX: 1, duration: total, ease: "none" }, 0);
+tl.from("#intro .t1", { y: 80, opacity: 0, duration: .6, ease: "back.out(1.7)" }, .1);
+tl.from("#intro .t2", { opacity: 0, duration: .4 }, .6);
+DATA.words.forEach((w,i)=>{
+  const t = INTRO + i*PER, s = "#w"+i;
+  tl.from(s+" .num", { opacity: 0, y: -30, duration: .3 }, t);
+  tl.from(s+" .hz", { scale: 2.2, opacity: 0, duration: .45, ease: "power4.out" }, t+.05);
+  tl.from(s+" .py", { y: 40, opacity: 0, duration: .35, ease: "power2.out" }, t+.6);
+  tl.from(s+" .vi", { scale: .3, opacity: 0, duration: .4, ease: "back.out(2)" }, t+1.1);
+  tl.fromTo("#ring", { scale: 1.12 }, { scale: 1, duration: .5, ease: "power2.out", immediateRender:false }, t);
+});
+tl.from("#outro .cta", { y: 60, opacity: 0, duration: .5, ease: "back.out(1.6)" }, total-OUTRO+.1);
+tl.from("#outro .btn", { scale: 0, duration: .4, ease: "back.out(2)" }, total-OUTRO+.5);
+window.__timelines = window.__timelines || {};
+window.__timelines["main"] = tl;
+tl.seek(0);
+</script>
+</body>
+</html>
