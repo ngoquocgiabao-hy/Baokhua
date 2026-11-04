@@ -446,7 +446,7 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 @keyframes smoke{0%{opacity:.7;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(6px,-22px) scale(1.6)}}
 .world .wave{animation:wave 3s ease-in-out infinite alternate}
 @keyframes wave{to{transform:translateX(-10px)}}
-.ninja{position:absolute;left:0;top:0;width:15%;aspect-ratio:4/5;transform:translate(-50%,-96%);pointer-events:none;z-index:3}
+.ninja{position:absolute;left:0;top:0;width:19%;aspect-ratio:1/1;transform:translate(-50%,-96%);pointer-events:none;z-index:3}
 .ninja .walker{position:absolute;inset:0;width:100%;height:100%}
 .ninja .gnd{bottom:1%!important;width:56%!important;height:9%!important}
 .npc{position:absolute;width:12%;aspect-ratio:4/5;transform:translate(-50%,-96%);z-index:2;border:0;background:none;padding:0;cursor:pointer}
@@ -518,6 +518,10 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 .map-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;max-width:calc(100% - 140px);text-align:center;background:rgba(22,23,27,.88);color:#fff;border-radius:12px;padding:6px 10px;font-size:12px;font-weight:700;line-height:1.3;pointer-events:none}
 .map-hint[hidden]{display:none}
 .station-card.moving{opacity:.45;transition:opacity .2s}
+.station-card{position:relative}
+.sc-boss{position:absolute;right:10px;top:10px;width:62px;height:78px;object-fit:cover;object-position:50% 12%;border-radius:12px;border:2.5px solid #FFD91F;box-shadow:0 0 0 2px #16171B,0 6px 14px rgba(0,0,0,.4)}
+.station-card .sc-top,.station-card h3,.station-card .meta,.station-card .goal{padding-right:72px}
+.station-card .learn,.station-card .lock-note{margin-top:2px}
 .station-card{transition:opacity .2s;background:rgba(8,26,40,.72);border:2px solid rgba(255,217,31,.55);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .sc-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .sc-top .lv{font-weight:900;font-size:12px;background:#FFD91F;color:#16171B;border-radius:6px;padding:2px 7px}
@@ -639,6 +643,9 @@ body.ingame .mute-btn{display:none}
 .split{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;filter:drop-shadow(0 0 6px rgba(255,217,31,.6))}
 /* v7: sân đấu canvas; tranh VS chỉ lướt qua lúc mở trận */
 .arena-wrap .stage-art{z-index:6;opacity:0;pointer-events:none}
+.arena-wrap[data-look] .pnl.boss .artbox img{filter:none!important;scale:1!important}
+.arena-wrap .hat,.arena-wrap .shades{display:none!important}
+.arena-wrap[data-look] .pnl.boss::before{display:none}
 .arena-wrap .pnl .artbox img{animation:none}
 .say{position:absolute;top:6px;right:8px;z-index:12;transform:translateY(-6px) scale(.9);transform-origin:80% 100%;opacity:0;pointer-events:none;width:max-content;max-width:72%;background:#fff;color:#16171B;border:2.5px solid #16171B;border-radius:14px;padding:6px 11px 7px;box-shadow:3px 4px 0 rgba(0,0,0,.35);text-align:center;line-height:1.25;transition:opacity .18s,transform .25s cubic-bezier(.2,1.5,.4,1)}
 .say.on{opacity:1;transform:none}
@@ -707,7 +714,7 @@ body.ingame .mute-btn{display:none}
   <h1 class="title-v5">⚔️ Bảo Khựa 阿宝 · <span>Đánh Boss</span></h1>
   <div class="poster-vs" role="img" aria-label="Ā Bǎo đấu Boss Lễ tân khó tính">
    <div class="pnl hero"><div class="artbox"><img src="v4/art/hero1.jpg" alt="" decoding="async"></div></div>
-   <div class="pnl boss"><div class="artbox"><img src="v4/art/boss1.jpg" alt="" decoding="async"></div></div>
+   <div class="pnl boss"><div class="artbox"><img src="v4/vs/hotel.jpg" alt="" decoding="async"></div></div>
    <svg class="split" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="57" y1="-2" x2="43" y2="102" stroke="#16171B" stroke-width="9" vector-effect="non-scaling-stroke"/><line x1="57" y1="-2" x2="43" y2="102" stroke="#FFD91F" stroke-width="3.5" vector-effect="non-scaling-stroke"/></svg>
    <span class="pv-vs">VS</span>
    <span class="pv-tag hero">Ā BǍO 阿宝</span><span class="pv-tag boss">LỄ TÂN KHÓ TÍNH</span>
@@ -757,7 +764,7 @@ body.ingame .mute-btn{display:none}
   <div class="arena-wrap" id="arena">
    <div class="stage-art">
     <div class="pnl hero"><div class="artbox"><img id="heroArt" src="v4/art/hero1.jpg" alt="Tướng Ā Bǎo" decoding="async"></div><div class="aura"></div><div class="pflash"></div></div>
-    <div class="pnl boss"><div class="artbox"><img id="bossArt" src="v4/art/boss1.jpg" alt="Boss" decoding="async"><svg class="hat" viewBox="0 0 100 60" aria-hidden="true"><path d="M6 46 Q50 33 94 46 L97 53 Q50 42 3 53 Z" fill="#E0A800" stroke="#16171B" stroke-width="2.6" stroke-linejoin="round"/><path d="M15 45 C15 17 33 5 50 5 C67 5 85 17 85 45 Q50 35 15 45 Z" fill="#FFD91F" stroke="#16171B" stroke-width="2.6" stroke-linejoin="round"/><path d="M44 6 L56 6 L57 39 L43 39 Z" fill="#F2B200" stroke="#16171B" stroke-width="1.6" stroke-linejoin="round"/><path d="M23 37 C23 22 31 13 41 10 L39 36 Z" fill="#FFF6BF" opacity=".75"/><path d="M60 10 L70 16 L76 38 L60 37 Z" fill="#D69A00" opacity=".55"/></svg><svg class="shades" viewBox="0 0 100 30" aria-hidden="true"><path d="M4 8 H46 Q46 26 30 26 H18 Q4 26 4 12 Z M54 8 H96 V12 Q96 26 82 26 H70 Q54 26 54 8 Z" fill="#0b0d14" stroke="#16171B" stroke-width="2"/><path d="M46 10 Q50 7 54 10" fill="none" stroke="#0b0d14" stroke-width="3"/><path d="M10 11 L22 11 L14 20 Z M60 11 L72 11 L64 20 Z" fill="#5fd0ff" opacity=".55"/></svg></div><div class="rage-ov"></div><span class="btag"></span></div>
+    <div class="pnl boss"><div class="artbox"><img id="bossArt" src="v4/vs/trainee.jpg" alt="Boss" decoding="async"><svg class="hat" viewBox="0 0 100 60" aria-hidden="true"><path d="M6 46 Q50 33 94 46 L97 53 Q50 42 3 53 Z" fill="#E0A800" stroke="#16171B" stroke-width="2.6" stroke-linejoin="round"/><path d="M15 45 C15 17 33 5 50 5 C67 5 85 17 85 45 Q50 35 15 45 Z" fill="#FFD91F" stroke="#16171B" stroke-width="2.6" stroke-linejoin="round"/><path d="M44 6 L56 6 L57 39 L43 39 Z" fill="#F2B200" stroke="#16171B" stroke-width="1.6" stroke-linejoin="round"/><path d="M23 37 C23 22 31 13 41 10 L39 36 Z" fill="#FFF6BF" opacity=".75"/><path d="M60 10 L70 16 L76 38 L60 37 Z" fill="#D69A00" opacity=".55"/></svg><svg class="shades" viewBox="0 0 100 30" aria-hidden="true"><path d="M4 8 H46 Q46 26 30 26 H18 Q4 26 4 12 Z M54 8 H96 V12 Q96 26 82 26 H70 Q54 26 54 8 Z" fill="#0b0d14" stroke="#16171B" stroke-width="2"/><path d="M46 10 Q50 7 54 10" fill="none" stroke="#0b0d14" stroke-width="3"/><path d="M10 11 L22 11 L14 20 Z M60 11 L72 11 L64 20 Z" fill="#5fd0ff" opacity=".55"/></svg></div><div class="rage-ov"></div><span class="btag"></span></div>
     <svg class="split" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="57" y1="-2" x2="43" y2="102" stroke="#16171B" stroke-width="9" vector-effect="non-scaling-stroke"/><line x1="57" y1="-2" x2="43" y2="102" stroke="#FFD91F" stroke-width="3.5" vector-effect="non-scaling-stroke"/></svg>
    </div>
    <canvas id="fx" aria-hidden="true"></canvas>
@@ -1235,10 +1242,37 @@ createBattle = function createArena(root) {
   const vsBox = q('.stage-art'), heroP = q('.pnl.hero'), bossP = q('.pnl.boss');
   const heroImg = q('#heroArt'), bossImg = q('#bossArt'), btag = q('.btag'), sayEl = q('#saybox');
   const HERO_ART = ['v4/art/hero1.jpg', 'v4/art/hero2.jpg', 'v4/art/hero3.jpg'];
-  const BOSS_ART = { trainee:'v4/art/boss1.jpg', hotel:'v4/art/boss1.jpg', factory:'v4/art/boss1.jpg', night:'v4/art/boss1.jpg', shadow:'v4/art/hero3.jpg' };
   const BOSS_TAG = { trainee:'TẬP SỰ', night:'CA ĐÊM', shadow:'HSK4 · TRÙM CUỐI' };
   const BOSS_COL = { trainee:'rgba(255,120,190,1)', hotel:'rgba(255,70,50,1)', factory:'rgba(255,150,30,1)', night:'rgba(90,200,255,1)', shadow:'rgba(185,90,255,1)' };
   const RM = REDUCED, P = Chibi.POSES, K = Chibi.key, MIX = Chibi.mix;
+  /* v8 · NHÂN VẬT THEO TRANH: hình cắt từ ảnh minh hoạ (v4/sprites/*.webp).
+     [rộng, cao, neo x (giữa chân), mặt đất y] tính theo khung cao 520px; cùng một nhân vật thì cùng tỉ lệ.
+     hit = điểm ra đòn (tỉ lệ theo khung hình), flip = lật ngang để đánh về phía tướng (bên trái). */
+  const SPRITE = {"trainee-idle":[132,520,66,520],"trainee-atk":[249,510,131,504],"trainee-ko":[168,410,101,402],"hotel-idle":[132,520,66,520],"hotel-atk":[216,509,115,512],"hotel-ko":[315,328,130,331],"factory-idle":[236,520,118,520],"factory-atk":[345,511,188,511],"factory-ko":[344,383,190,391],"night-idle":[258,520,129,520],"night-atk":[317,503,150,502],"night-ko":[399,400,189,439],"shadow-idle":[276,520,138,520],"shadow-atk":[478,430,272,569],"shadow-ko":[309,392,151,410],"hero1":[272,520,136,520],"hero2":[463,566,247,525],"hero3":[261,543,145,522]};
+  const SPR_X = { 'trainee-atk': { flip: true, hit: [.85, .3] }, 'hotel-atk': { flip: true, hit: [.85, .25] }, 'factory-atk': { hit: [.12, .25] }, 'night-atk': { hit: [.33, .37] }, 'shadow-atk': { hit: [.15, .45] }, hero1: { hit: [.82, .38] }, hero2: { hit: [.7, .55] }, hero3: { hit: [.85, .47] } };
+  const CH = { hero: .6, trainee: .66, hotel: .7, factory: .72, night: .73, shadow: .74 }; // chiều cao khi đứng, theo chiều cao sân
+  const SPR = {};
+  function spr(name) {
+    let o = SPR[name];
+    if (!o) {
+      const m = SPRITE[name]; if (!m) return null;
+      o = SPR[name] = { img: new Image(), ok: false, w: m[0], h: m[1], ax: m[2], gy: m[3], x: SPR_X[name] || {} };
+      o.img.decoding = 'async'; o.img.onload = () => { o.ok = true; }; o.img.src = 'v4/sprites/' + name + '.webp';
+    }
+    return o;
+  }
+  /** bản tô màu (chớp trắng/đỏ khi trúng đòn, bóng mờ khi lao) – vẽ 1 lần rồi dùng lại */
+  function tinted(o, col) {
+    const k = 't' + col; if (o[k]) return o[k];
+    const c = document.createElement('canvas'); c.width = o.img.naturalWidth; c.height = o.img.naturalHeight;
+    const x = c.getContext('2d'); x.drawImage(o.img, 0, 0); x.globalCompositeOperation = 'source-atop'; x.fillStyle = col; x.fillRect(0, 0, c.width, c.height);
+    return (o[k] = c);
+  }
+  const BG = {};
+  function bgImg(lk) {
+    if (!BG[lk]) { const i = new Image(); i.decoding = 'async'; i.onload = () => { if (lk === look) paintBg(); }; i.src = 'v4/bg/' + lk + '.jpg'; BG[lk] = i; }
+    return BG[lk];
+  }
   let W = 1, H = 1, dpr = 1, S = 1, GY = 1, raf = 0, on = true, last = 0, clock = 0, freezeUntil = 0;
   let look = 'hotel', rage = false, rageAcc = 0, shakeT = 0, shakeA = 0, dark = 0, darkTo = 0, zoom = 1, zoomTo = 1, ambAcc = 0;
   const parts = [], fxs = [];
@@ -1251,7 +1285,7 @@ createBattle = function createArena(root) {
   const lerp = (a, b, k) => a + (b - a) * k;
 
   /* ---------- diễn viên ---------- */
-  function mk(kind) { return { kind, spec: kind === 'hero' ? Chibi.SPECS.hero : Chibi.SPECS.hotel, side: kind === 'hero' ? 1 : -1, x: 0, y: 0, rot: 0, alpha: 1, act: null, flash: 0, flashCol: '#ffffff', mood: null, weapon: undefined, pose: P.stance, state: 'idle', dizzy: 0 }; }
+  function mk(kind) { return { kind, spec: kind === 'hero' ? Chibi.SPECS.hero : Chibi.SPECS.hotel, side: kind === 'hero' ? 1 : -1, x: 0, y: 0, rot: 0, alpha: 1, act: null, flash: 0, flashCol: '#ffffff', mood: null, weapon: undefined, pose: P.stance, state: 'idle', dizzy: 0, sp: 'idle', px: 0, ghosts: [], gAcc: 0 }; }
   const hero = mk('hero'), boss = mk('boss');
   const home = a => a === hero ? W * .27 : W * .73;
   function idlePose(a) {
@@ -1268,13 +1302,14 @@ createBattle = function createArena(root) {
       const k = Math.min(1, A.t / A.dur), r = (A.fn && A.fn(k, A.t)) || {};
       a.pose = typeof r.pose === 'string' ? P[r.pose] : (r.pose || a.pose);
       a.x = r.x != null ? r.x : a.x; a.y = r.y || 0; a.rot = r.rot || 0; a.mood = r.mood || null;
-      a.weapon = r.weapon; a.alpha = r.alpha != null ? r.alpha : 1;
+      a.weapon = r.weapon; a.alpha = r.alpha != null ? r.alpha : 1; a.sp = r.sp || (a.state === 'down' ? 'ko' : 'idle');
       if (k >= 1 && a.act === A) { a.act = null; if (A.then) A.then(); }
       return;
     }
+    a.sp = a.state === 'down' ? 'ko' : 'idle';
     const br = Math.sin(clock * 2.7 + (a === boss ? 1.3 : 0));
     a.weapon = undefined; a.alpha = 1;
-    if (a.state === 'down') { a.pose = P.hurt; a.rot = -1.5; a.y = 27 * S * (a.spec.scale || 1); a.mood = 'ko'; return; }
+    if (a.state === 'down') { a.pose = P.hurt; a.mood = 'ko'; if (sprOf(a)) { a.rot = a === hero ? -1.45 : 0; a.y = a === hero ? H * .06 : 0; } else { a.rot = -1.5; a.y = 27 * S * (a.spec.scale || 1); } return; }
     a.rot = 0; a.y = 0;
     if (a.state === 'victory') { a.pose = MIX(P.victory, P.wave, (Math.sin(clock * 8) + 1) / 2); a.y = -Math.abs(Math.sin(clock * 6)) * 14 * S; a.mood = 'happy'; a.x = home(a); return; }
     if (a.state === 'gloat') { a.pose = P.cross; a.y = -Math.abs(Math.sin(clock * 9)) * 3 * S; a.mood = 'happy'; a.x = home(a); return; }
@@ -1284,8 +1319,16 @@ createBattle = function createArena(root) {
     a.x = home(a) + (a === boss && rage ? rnd(-1.4, 1.4) : 0);
   }
   /** điểm trên người (px): 'hand' | 'chest' | 'head' */
+  function sprName(a) { return a === hero ? 'hero' + (tier + 1) : look + '-' + (a.sp || 'idle'); }
+  function sprOf(a) { const o = spr(sprName(a)); if (o && o.ok) return o; const f = a === hero ? null : spr(look + '-idle'); return f && f.ok ? f : null; }
+  function charH(a) { return H * (a === hero ? CH.hero : (CH[look] || .7)); }
   function pt(a, which) {
-    return Chibi.point(a.spec, { x: a.x, y: GY + a.y, s: S, face: a.side, pose: a.pose }, which);
+    const o = sprOf(a);
+    if (!o) return Chibi.point(a.spec, { x: a.x, y: GY + a.y, s: S, face: a.side, pose: a.pose }, which);
+    const hh = charH(a), y0 = GY + a.y;
+    if (which === 'head') return [a.x, y0 - hh * .95];
+    if (which === 'hand' && o.x.hit) { const k = hh / 520, f = o.x.flip ? -1 : 1; return [a.x + (o.x.hit[0] * o.w - o.ax) * k * f, y0 + (o.x.hit[1] * o.h - o.gy) * k]; }
+    return [a.x + a.side * hh * .04, y0 - hh * .55];
   }
   const HX = () => pt(hero, 'chest')[0], HY = () => pt(hero, 'chest')[1], BX = () => pt(boss, 'chest')[0], BY = () => pt(boss, 'chest')[1];
 
@@ -1357,7 +1400,7 @@ createBattle = function createArena(root) {
     const heavy = power > 1.5, x0 = home(boss), push = (heavy ? 64 : 14 + 9 * power) * S;
     play(boss, heavy ? .95 : .4, k => {
       if (heavy) {
-        if (k < .5) { const kk = k / .5; return { pose: 'hurt', mood: 'hurt', x: x0 + push * eOut(kk), y: -Math.sin(kk * Math.PI) * H * .24, rot: -kk * 1.1 }; }
+        if (k < .5) { const kk = k / .5; return { pose: 'hurt', mood: 'hurt', x: x0 + push * eOut(kk), y: -Math.sin(kk * Math.PI) * H * .24, rot: -kk * (sprOf(boss) ? .45 : 1.1), sp: 'ko' }; }
         const kk = (k - .5) / .5;
         return { pose: K([[0, 'hurt'], [.35, 'crouch'], [1, idlePose(boss)]], kk), mood: kk < .6 ? 'hurt' : null, x: x0 + push * (1 - ease(kk)), rot: -1.1 * Math.max(0, 1 - kk * 3) };
       }
@@ -1416,7 +1459,7 @@ createBattle = function createArena(root) {
     impact(cx + W * .02, cy, power); bossHit(power);
   }
   function longHa() {
-    const x0 = home(hero), hy = -H * .36;
+    const x0 = home(hero), hy = -H * (sprOf(hero) ? .22 : .36);
     let bx0 = boss.x;
     darkTo = .58; Snd.sfx('roar'); say(hero, ['看招！', 'Kàn zhāo!', 'Đỡ chiêu!'], 1100);
     if (!RM) zoomTo = 1.07;
@@ -1466,7 +1509,7 @@ createBattle = function createArena(root) {
     const col = BOSS_COL[look] || BOSS_COL.hotel, soft = col.replace(/[\d.]+\)$/, '.9)'), x0 = home(boss), idle = idlePose(boss);
     if (look === 'night') {
       // Quản lý ca đêm: bước lên, rọi đèn pin thành một luồng sáng rồi "tia kỷ luật" lao tới
-      play(boss, .75, k => ({ pose: K([[0, idle], [.25, 'point'], [.75, 'point'], [1, idle]], k), x: x0 - Math.sin(k * Math.PI) * 12 * S, mood: 'angry', weapon: 'flashlight' }), [
+      play(boss, .75, k => ({ pose: K([[0, idle], [.25, 'point'], [.75, 'point'], [1, idle]], k), x: x0 - Math.sin(k * Math.PI) * 12 * S, mood: 'angry', weapon: 'flashlight', sp: k > .12 && k < .82 ? 'atk' : 'idle' }), [
         [.18, () => {
           Snd.sfx('zap'); const from = pt(boss, 'hand');
           fxs.push({ t: 0, dur: .32, draw(k) {
@@ -1490,7 +1533,7 @@ createBattle = function createArena(root) {
       play(boss, .7, (k, t) => {
         const i = Math.min(2, Math.floor(t / .08)), lt = t - .04 - i * .08;
         const pose = t < .04 ? MIX(idle, P.windup, t / .04) : lt < .05 ? MIX(P.windup, P.release, Math.max(0, lt) / .05) : MIX(P.release, idle, Math.min(1, (t - .3) / .4));
-        return { pose, x: x0 + Math.sin(k * Math.PI) * 10 * S, mood: 'angry', weapon: 'katana' };
+        return { pose, x: x0 + Math.sin(k * Math.PI) * 10 * S, mood: 'angry', weapon: 'katana', sp: t < .5 ? 'atk' : 'idle' };
       }, ev);
       return { impactAt: 450 };
     }
@@ -1498,10 +1541,10 @@ createBattle = function createArena(root) {
     const wpn = bossWeapon(), clumsy = look === 'trainee';
     let x1 = hero.x + 46 * S;
     play(boss, .86, (k, t) => {
-      if (t < .26) return { pose: Chibi.cycle('run1', 'run2', t * 4.5), x: lerp(x0, x1, ease(t / .26)), weapon: wpn, mood: clumsy ? 'nervous' : 'angry', rot: clumsy ? Math.sin(t * 40) * .08 : 0 };
-      if (t < .44) return { pose: K([[0, 'raise'], [.55, 'raise'], [1, 'chop']], (t - .26) / .18), x: x1, weapon: wpn, mood: 'angry' };
+      if (t < .26) return { pose: Chibi.cycle('run1', 'run2', t * 4.5), x: lerp(x0, x1, ease(t / .26)), weapon: wpn, mood: clumsy ? 'nervous' : 'angry', rot: clumsy ? Math.sin(t * 40) * .08 : 0, sp: 'atk' };
+      if (t < .44) return { pose: K([[0, 'raise'], [.55, 'raise'], [1, 'chop']], (t - .26) / .18), x: x1, weapon: wpn, mood: 'angry', sp: 'atk' };
       const kk = (t - .44) / .42;
-      return { pose: K([[0, 'chop'], [.3, 'walk1'], [.65, 'walk2'], [1, idle]], kk), x: lerp(x1, x0, ease(kk)), weapon: wpn };
+      return { pose: K([[0, 'chop'], [.3, 'walk1'], [.65, 'walk2'], [1, idle]], kk), x: lerp(x1, x0, ease(kk)), weapon: wpn, sp: kk < .25 ? 'atk' : 'idle' };
     }, [[.42, () => { Snd.sfx(look === 'factory' ? 'zap' : 'ding'); land(col, soft, clumsy ? .7 : 1); }]]);
     return { impactAt: 420 };
   }
@@ -1529,6 +1572,20 @@ createBattle = function createArena(root) {
   function paintBg() {
     bg.width = Math.round(W * dpr); bg.height = Math.round(H * dpr);
     const c = bx; c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const art = bgImg(look);
+    if (art.complete && art.naturalWidth) {
+      // cảnh trong tranh, làm mờ chiều sâu (đã mờ sẵn trong file) – phủ kín sân, canh đáy
+      const k = Math.max(W / art.naturalWidth, H / art.naturalHeight), dw = art.naturalWidth * k, dh = art.naturalHeight * k;
+      c.drawImage(art, (W - dw) / 2, H - dh, dw, dh);
+      const tone = { night: 'rgba(10,20,60,.22)', shadow: 'rgba(30,10,60,.18)', factory: 'rgba(0,0,0,.12)' }[look];
+      if (tone) { c.fillStyle = tone; c.fillRect(0, 0, W, H); }
+      // nền đất tối dần cho nhân vật nổi khối
+      const fl = c.createLinearGradient(0, GY - H * .25, 0, H); fl.addColorStop(0, 'rgba(0,0,0,0)'); fl.addColorStop(1, 'rgba(0,0,0,.38)');
+      c.fillStyle = fl; c.fillRect(0, 0, W, H);
+      const vg2 = c.createRadialGradient(W / 2, H * .55, Math.min(W, H) * .35, W / 2, H * .55, Math.max(W, H) * .75);
+      vg2.addColorStop(0, 'rgba(0,0,0,0)'); vg2.addColorStop(1, 'rgba(0,0,0,.42)'); c.fillStyle = vg2; c.fillRect(0, 0, W, H);
+      return;
+    }
     const lg = (x0, y0, x1, y1, stops) => { const gr = c.createLinearGradient(x0, y0, x1, y1); stops.forEach(([o, s]) => gr.addColorStop(o, s)); return gr; };
     const rect = (x, y, w, h, f) => { c.fillStyle = f; c.fillRect(x, y, w, h); };
     const polyF = (pts, f) => { c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.fillStyle = f; c.fill(); };
@@ -1641,7 +1698,62 @@ createBattle = function createArena(root) {
   }
 
   /* ---------- vẽ nhân vật ---------- */
+  const GHOST = { hero: '#7fe3ff', trainee: '#ff9fd0', hotel: '#ff8a7a', factory: '#ffb35c', night: '#8fd3ff', shadow: '#c77dff' };
+  function sprXf(a, o) {
+    const hh = charH(a), k = hh / 520, p = a.pose || P.stand;
+    const rot = ((p.lean || 0) * .42 + (a.rot || 0)) * a.side;
+    const sq = Math.max(-.12, Math.min(.12, -(p.bob || 0) * .007));
+    return { hh, k, rot, sx: 1 - sq * .6, sy: 1 + sq, f: o.x.flip ? -1 : 1 };
+  }
+  function blitSpr(o, img, x, y, t) {
+    g.save(); g.translate(x, y);
+    const py = -t.hh * .45; g.translate(0, py); g.rotate(t.rot); g.scale(t.sx, t.sy); g.translate(0, -py);
+    g.scale(t.f, 1);
+    g.drawImage(img, -o.ax * t.k, -o.gy * t.k, o.w * t.k, o.h * t.k);
+    g.restore();
+  }
+  function drawSprActor(a, o) {
+    const t = sprXf(a, o), air = Math.max(0, -a.y), y0 = GY + a.y;
+    // bóng dưới chân
+    g.globalAlpha = .34 * Math.max(.25, 1 - air / (H * .5)) * a.alpha; g.fillStyle = '#000';
+    g.beginPath(); g.ellipse(a.x, GY + 2, Math.min(o.w * t.k * .42, t.hh * .34) * (1 - Math.min(.5, air / (H * .8))), 5 * S, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
+    // bóng mờ khi lao nhanh
+    const col = GHOST[a === hero ? 'hero' : look] || '#ffffff';
+    for (const gh of a.ghosts) { g.globalAlpha = gh.a * a.alpha; blitSpr(gh.o, tinted(gh.o, col), gh.x, gh.y, gh.t); }
+    // hào quang
+    const aura = a === hero ? (tier >= 2 ? 'rgba(64,255,214,1)' : null) : (rage ? 'rgba(255,60,40,1)' : look === 'shadow' ? 'rgba(185,90,255,1)' : null);
+    if (aura) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .55 + Math.sin(clock * 5) * .15; blob(a.x, y0 - t.hh * .5, t.hh * .62, aura.replace(/[\d.]+\)$/, '.5)'), 1); g.restore(); }
+    g.globalAlpha = a.alpha;
+    blitSpr(o, o.img, a.x, y0, t);
+    if (a.flash > 0) { g.globalAlpha = Math.min(1, a.flash) * .8 * a.alpha; blitSpr(o, tinted(o, a.flashCol), a.x, y0, t); }
+    g.globalAlpha = 1;
+  }
+  function trackGhost(a, dt) {
+    for (let i = a.ghosts.length - 1; i >= 0; i--) { a.ghosts[i].a -= dt * 2.4; if (a.ghosts[i].a <= 0) a.ghosts.splice(i, 1); }
+    const o = sprOf(a), v = dt > 0 ? Math.abs(a.x - a.px) / dt : 0;
+    if (o && !RM && dt > 0 && (v > W * 1.1 || (a.act && Math.abs(a.y) > H * .1 && v > W * .4))) {
+      a.gAcc += dt; if (a.gAcc > .034) { a.gAcc = 0; a.ghosts.push({ o, x: a.x, y: GY + a.y, t: sprXf(a, o), a: .3 }); if (a.ghosts.length > 4) a.ghosts.shift(); }
+    }
+    a.px = a.x;
+  }
   function drawActor(a) {
+    const so = sprOf(a);
+    if (so) {
+      drawSprActor(a, so);
+      if (a === hero && cur.armor > 0 && a.state !== 'down') {
+        const [cx, cy] = pt(a, 'chest'), hh = charH(a);
+        g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .16 + cur.armor * .09;
+        g.strokeStyle = 'rgba(90,200,255,1)'; g.lineWidth = 2 + cur.armor;
+        g.beginPath(); g.ellipse(cx, cy, hh * .36, hh * .56, 0, 0, 6.283); g.stroke();
+        g.globalAlpha = .5; g.lineWidth = 3; g.beginPath(); g.ellipse(cx, cy, hh * .36, hh * .56, 0, clock * 2, clock * 2 + .7); g.stroke();
+        g.restore();
+      }
+      if (a.state === 'down' && !a.act) {
+        const hx = a.x + (a === hero ? -charH(a) * .3 : 0), hy = GY + a.y - charH(a) * (a === hero ? .25 : .62);
+        for (let i = 0; i < 3; i++) { const an = clock * 4 + i * 2.1; Chibi.star(g, hx + Math.cos(an) * 16 * S, hy + Math.sin(an) * 5 * S, 4 * S, an, '#FFD91F', '#fff'); }
+      }
+      return;
+    }
     const sc = a.spec.scale || 1, air = Math.max(0, -a.y);
     g.globalAlpha = .3 * Math.max(.25, 1 - air / (H * .5)) * a.alpha; g.fillStyle = '#000';
     g.beginPath(); g.ellipse(a.x, GY + 2, 24 * S * sc * (1 - Math.min(.5, air / (H * .8))), 5 * S, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
@@ -1673,6 +1785,7 @@ createBattle = function createArena(root) {
     const frozen = now < freezeUntil, dt = frozen ? 0 : Math.max(0, Math.min(.05, (now - last) / 1000)); last = now;
     clock += dt;
     stepActor(hero, dt); stepActor(boss, dt);
+    trackGhost(hero, dt); trackGhost(boss, dt);
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
     let sx = 0, sy = 0;
     if (shakeT > 0) { shakeT -= dt; const a = shakeA * Math.max(0, shakeT) / .3; sx = rnd(-a, a); sy = rnd(-a, a); if (shakeT <= 0) shakeA = 0; }
@@ -1717,7 +1830,8 @@ createBattle = function createArena(root) {
   }
   resize();
   addEventListener('resize', resize);
-  [...HERO_ART, BOSS_ART.shadow].forEach(s => { const i = new Image(); i.src = s; });
+  HERO_ART.forEach(s => { const i = new Image(); i.src = s; });
+  ['hero1', 'hero2'].forEach(spr);
   function anim(el, frames, ms, easing = 'cubic-bezier(.2,.9,.3,1)') { if (!el || !el.animate || RM) return; try { el.animate(frames, { duration: ms, easing }); } catch (e) {} }
   run();
 
@@ -1731,7 +1845,8 @@ createBattle = function createArena(root) {
       root.dataset.look = look;
       root.classList.toggle('factory', look === 'factory');
       boss.spec = Chibi.SPECS[look] || Chibi.SPECS.hotel;
-      const src = BOSS_ART[look] || BOSS_ART.hotel;
+      ['idle', 'atk', 'ko'].forEach(p => spr(look + '-' + p)); bgImg(look);
+      const src = 'v4/vs/' + look + '.jpg';
       if (!bossImg.src.endsWith(src)) bossImg.src = src;
       if (btag) btag.textContent = BOSS_TAG[look] || '';
       paintBg();
@@ -1740,6 +1855,7 @@ createBattle = function createArena(root) {
     setVisual(v) {
       Object.assign(cur, v || {});
       const t = Math.min(2, cur.skillLv || 0);
+      spr('hero' + (t + 1)); if (t < 2) spr('hero' + (t + 2));
       if (heroImg) heroImg.src = HERO_ART[t];
       if (t > tier) {
         // lên cấp chiêu: loé vàng, đổi trang phục (giáp vai, kiếm sau lưng, hào quang ngọc)
@@ -1781,7 +1897,7 @@ createBattle = function createArena(root) {
       if (it) anim(it, [{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .8 }, { opacity: 0 }], 1500, 'linear');
       anim(q('.intro .vs'), [{ transform: 'scale(3.2) rotate(-24deg)', opacity: 0 }, { transform: 'scale(.92) rotate(-8deg)', opacity: 1, offset: .32 }, { transform: 'scale(1) rotate(-8deg)', opacity: 1 }], 700, 'cubic-bezier(.2,1.4,.4,1)');
       setTimeout(() => { Snd.sfx('slam'); shake(.25, H * .025); whiteFlash(.3); burst(W / 2, H / 2, 20, [C.gold, C.white], .8); }, 230);
-      if (taunt) setTimeout(() => { if (on && !boss.act) { play(boss, .6, k => ({ pose: K([[0, idlePose(boss)], [.3, 'point'], [.8, 'point'], [1, idlePose(boss)]], k), x: home(boss), mood: 'angry' })); } say(boss, taunt, 2300); }, RM ? 200 : 1550);
+      if (taunt) setTimeout(() => { if (on && !boss.act) { play(boss, .6, k => ({ pose: K([[0, idlePose(boss)], [.3, 'point'], [.8, 'point'], [1, idlePose(boss)]], k), x: home(boss), mood: 'angry', sp: look === 'hotel' && k > .2 && k < .9 ? 'atk' : 'idle' })); } say(boss, taunt, 2300); }, RM ? 200 : 1550);
     },
     /** hạ boss: văng ra, nằm sõng soài, sao xoay trên đầu; tướng nhảy mừng */
     ko() {
@@ -1789,9 +1905,10 @@ createBattle = function createArena(root) {
       Snd.sfx('slam'); shake(.4, H * .04); whiteFlash(.7); hitStop(140);
       const x0 = boss.x, push = Math.max(-20 * S, Math.min(30 * S, W - 70 * S * (boss.spec.scale || 1) - x0));
       play(boss, 1.0, k => {
-        if (k < .6) { const kk = k / .6; return { pose: 'hurt', mood: 'ko', x: x0 + push * eOut(kk), y: -Math.sin(kk * Math.PI) * H * .3 + kk * kk * 27 * S * (boss.spec.scale || 1), rot: -kk * 1.5 }; }
+        const so = !!sprOf(boss), yl = so ? 0 : 27 * S * (boss.spec.scale || 1), rl = so ? 0 : -1.5;
+        if (k < .6) { const kk = k / .6; return { pose: 'hurt', mood: 'ko', x: x0 + push * eOut(kk), y: -Math.sin(kk * Math.PI) * H * .3 + kk * kk * yl, rot: so ? -Math.sin(kk * Math.PI) * .5 : -kk * 1.5, sp: 'ko' }; }
         const kk = (k - .6) / .4;
-        return { pose: 'hurt', mood: 'ko', x: x0 + push, y: 27 * S * (boss.spec.scale || 1) - Math.sin(kk * Math.PI) * 8 * S, rot: -1.5 };
+        return { pose: so ? MIX(P.crouch, P.stand, kk) : 'hurt', mood: 'ko', x: x0 + push, y: yl - Math.sin(kk * Math.PI) * 8 * S, rot: rl, sp: 'ko' };
       }, [], () => { boss.state = 'down'; boss.x = x0 + push; });
       boss.state = 'down';
       setTimeout(() => { if (!hero.act) hero.state = 'victory'; else hero.act.then = () => { hero.state = 'victory'; }; }, 500);
@@ -1802,7 +1919,8 @@ createBattle = function createArena(root) {
     down() {
       Snd.sfx('slam'); shake(.35, H * .03); burst(HX(), HY(), 24, [C.red, C.white], .8);
       const x0 = hero.x, back = Math.max(0, Math.min(30 * S, x0 - 70 * S));
-      play(hero, .8, k => ({ pose: 'hurt', mood: 'ko', x: x0 - back * eOut(k), y: -Math.sin(Math.min(1, k * 1.4) * Math.PI) * H * .12 + k * k * 27 * S, rot: -k * 1.5 }), [], () => { hero.state = 'down'; hero.x = x0 - back; });
+      const so = !!sprOf(hero);
+      play(hero, .8, k => ({ pose: 'hurt', mood: 'ko', x: x0 - back * eOut(k), y: -Math.sin(Math.min(1, k * 1.4) * Math.PI) * H * .12 + k * k * (so ? H * .06 : 27 * S), rot: -k * (so ? 1.45 : 1.5) }), [], () => { hero.state = 'down'; hero.x = x0 - back; });
       hero.state = 'down'; boss.state = 'gloat';
     },
     reset() {
@@ -2152,10 +2270,37 @@ const WorldMap = (() => {
     const s = o.portrait ? w / 82 : h / 112;
     Chibi.draw(g, spec, Object.assign({ x: w / 2, y: o.portrait ? w * .47 + 76 * s : h - 3 * d, s, face: 1 }, o, { s }));
   }
+  // v8: Ā Bǎo trên bản đồ dùng hình theo tranh (áo đổi theo cấp); chưa tải xong thì vẽ kiểu cũ
+  const HERO_SPR = [1, 2, 3].map(n => { const i = new Image(); i.decoding = 'async'; i.src = 'v4/sprites/hero' + n + '.webp'; return i; });
+  const HERO_M = [[272, 520, 136, 520], [463, 566, 247, 525], [261, 543, 145, 522]];
+  function sprWalker(cv, walking, t) {
+    const ti = heroTier(), img = HERO_SPR[ti], m = HERO_M[ti];
+    if (!img.complete || !img.naturalWidth) return false;
+    const r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
+    const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d));
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    const g = cv.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, h);
+    const k = h * .9 / 520, ph = walkPh * Math.PI * 2;
+    const bob = walking ? -Math.abs(Math.sin(ph)) * h * .06 : Math.sin(t * 2.6) * h * .006;
+    const rot = walking ? Math.sin(ph) * .08 : 0, sq = walking ? (1 - Math.abs(Math.cos(ph)) * .04) : 1;
+    g.translate(w / 2, h - 2 * d + bob); g.rotate(rot); g.scale(facing * (2 - sq), sq);
+    g.drawImage(img, -m[2] * k, -m[3] * k, m[0] * k, m[1] * k);
+    return true;
+  }
+  function sprPortrait(cv) {
+    const ti = heroTier(), img = HERO_SPR[ti], m = HERO_M[ti];
+    if (!img.complete || !img.naturalWidth) return false;
+    const r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1), w = Math.max(1, Math.round(r.width * d));
+    if (cv.width !== w || cv.height !== w) { cv.width = w; cv.height = w; }
+    const g = cv.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, w);
+    const k = w * 2.05 / 520; g.drawImage(img, w / 2 - m[2] * k, w * .06 - (m[3] - 520) * k, m[0] * k, m[1] * k);
+    return true;
+  }
   /** Ā Bǎo đi bộ: bước chân + vung tay theo pha; đứng yên thì thở nhẹ, khăn bay */
   function drawWalker() {
     const cv = ninja().querySelector('.walker'); if (!cv) return;
     const t = performance.now() / 1000, walking = !!raf;
+    if (sprWalker(cv, walking, t)) return;
     const pose = walking ? Chibi.cycle('walk1', 'walk2', walkPh) : Object.assign({}, Chibi.POSES.stand, { bob: Math.sin(t * 2.6) * 1, aF: .18 + Math.sin(t * 2.6) * .04 });
     paintFig(cv, Chibi.SPECS.hero, { pose, face: facing, time: t, tier: heroTier(), mood: talking ? 'happy' : null });
   }
@@ -2371,7 +2516,7 @@ const WorldMap = (() => {
     $('talkAsk').hidden = true; $('talkOpts').innerHTML = ''; $('talkOpts').classList.remove('done'); $('talkWords').hidden = true;
     nb.hidden = false;
     ov.classList.add('on');
-    requestAnimationFrame(() => paintFig($('talkFace'), spec, { portrait: true, pose: Chibi.POSES[intro ? 'stand' : 'wave'], time: .4, mood: 'calm-smile', tier: intro ? heroTier() : 0 }));
+    requestAnimationFrame(() => { if (!(intro && sprPortrait($('talkFace')))) paintFig($('talkFace'), spec, { portrait: true, pose: Chibi.POSES[intro ? 'stand' : 'wave'], time: .4, mood: 'calm-smile', tier: intro ? heroTier() : 0 }); });
     playSfx('ui'); setTimeout(() => speakQuiet(n.line[0]), 250);
     const close = () => { ov.classList.remove('on'); talking = false; playSfx('ui'); drawWalker(); if (done) done(); };
     if (intro) { nb.textContent = 'Bắt đầu hành trình ▶'; nb.onclick = close; return; }
@@ -2420,7 +2565,8 @@ const WorldMap = (() => {
       return;
     }
     const s = STAGES[cur], locked = cur > unlockedIdx(), stars = prog.stars[s.key] || 0;
-    card.innerHTML = `<div class="sc-top"><span class="lv">${s.lv}</span><span class="tm">⏳ ${esc(s.time)}</span><span class="stars">${stars ? starsText(stars) : ''}</span></div>
+    card.innerHTML = `<img class="sc-boss" src="v4/vs/${s.look}.jpg" alt="Boss ${esc(s.boss)}" decoding="async">
+      <div class="sc-top"><span class="lv">${s.lv}</span><span class="tm">⏳ ${esc(s.time)}</span><span class="stars">${stars ? starsText(stars) : ''}</span></div>
       <h3>${esc(s.name)} · ${esc(s.place)}</h3>
       <div class="meta">Boss: <b>${esc(s.boss)}</b> · ${s.n} câu · ${s.sec} giây/câu${s.pyHelp ? ' · có pinyin gợi ý' : ''}</div>
       <div class="goal">🎯 ${esc(s.goal)}</div>

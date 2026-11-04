@@ -11,6 +11,9 @@ Bạn là Xưởng Game và Web của đội Bảo Khựa (chủ: Bảo). Đọc
   - `khachsan.html` – game Khách sạn Bảo Khựa (Canvas 2.5D, một file, không thư viện ngoài).
   - `game.html` – game Đánh Boss v7 "Hành trình HSK0 → HSK4": Ā Bǎo đi bộ trên bản đồ, gặp người trên đường (hội thoại + Sổ từ), qua 5 trạm, mỗi trạm hạ 1 boss. Nhân vật có khớp vẽ bằng canvas (`Chibi`), sân đấu chuyển động thật (`createArena`), không thư viện ngoài. Tranh minh hoạ ở `v4/art/` chỉ dùng cho màn VS mở trận và màn bắt đầu.
   - `v4/` – ảnh, âm thanh, thư viện 3D tự host; `og-home.jpg` ảnh chia sẻ trang chủ, `game-poster.jpg` ảnh bìa khung game.
+    - `v4/sprites/*.webp` – hình nhân vật đã tách nền cho trận đánh (game.html v8): `hero1..3` (tướng theo cấp), `<kiểu boss>-idle|atk|ko` (đứng / ra đòn / gục). Kiểu boss: trainee, hotel, factory, night, shadow.
+    - `v4/vs/*.jpg` – tranh boss có nền cho màn VS và thẻ trạm; `v4/bg/*.jpg` – phông nền sân đấu (đã làm mờ chiều sâu).
+    - Ảnh gốc ở Drive `04_GAME/ANH_BOSS_04-11`. Có ảnh mới thì chạy `tools/art/cut.py` rồi `tools/art/build.py`, dán bảng `SPRITE` mới vào game.html (trong `createArena`).
 - Repo công khai: KHÔNG đưa vào đây sổ sách, giá vốn, dữ liệu khách hàng, hiến chương nội bộ. Những thứ đó ở Google Drive "BAO KHUA - SO CAI".
 
 ## Luật làm việc
