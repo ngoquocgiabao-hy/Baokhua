@@ -5,18 +5,17 @@
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Bảo Khựa 阿宝 – Đánh Boss học tiếng Trung</title>
-<meta name="description" content="Game học tiếng Trung thực chiến: trả lời đúng → tướng ra chiêu, hạ Boss Lễ Tân Bãi Cháy và Boss Tổ trưởng Cẩm Phả. Mỗi câu có pinyin + nghĩa Việt. Chơi ngay trên điện thoại.">
+<meta name="description" content="Game học tiếng Trung từ con số 0: Ā Bǎo đi qua 5 trạm HSK0 → HSK4, mỗi trạm học câu mẫu rồi hạ 1 boss. Mỗi câu có pinyin + nghĩa Việt. Chơi ngay trên điện thoại.">
 <meta name="theme-color" content="#0b3d5c">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bảo Khựa 阿宝">
 <meta property="og:title" content="Bảo Khựa 阿宝 – Đánh Boss học tiếng Trung">
-<meta property="og:description" content="Trả lời đúng → tướng ra chiêu. Hạ boss Bãi Cháy & Cẩm Phả, học câu khách sạn – nhà máy – HSK có pinyin + nghĩa Việt.">
+<meta property="og:description" content="Hành trình HSK0 → HSK4: bắt đầu từ pinyin, lên tới họp và phỏng vấn bằng tiếng Trung. Trả lời đúng → tướng ra chiêu. Có pinyin + nghĩa Việt.">
 <meta property="og:url" content="https://baokhua.com/game.html">
 <meta property="og:image" content="https://baokhua.com/v4/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="modulepreload" href="v4/vendor/battle-vendor.min.js">
 <script>
 /* ===== CẤU HÌNH ===== */
 const GAME_URL = "https://baokhua.com/game.html";
@@ -27,20 +26,38 @@ const QUESTION_SECONDS = 20;
 const UPGRADE_EVERY = 2;      // Nâng cấp ở câu đúng thứ 1, rồi cứ mỗi 2 câu đúng (1, 3, 5…). Đặt 1 = như v4 cũ.
 const OVERTIME_MAX = 6;       // Hiệp phụ: hết câu mà boss còn máu → ôn lại tối đa 6 câu sai
 const TIMER_WARN_SECONDS = 5; // còn ≤5s: thanh giờ đỏ + tiếng tích tắc
+/* ===== HÀNH TRÌNH HSK0 → HSK4 (v6) =====
+   Mỗi trạm = 1 boss. Hạ boss trạm trước mới mở trạm sau. Mốc thời gian là lộ trình gợi ý tính từ ngày bắt đầu học,
+   không phải lịch khai giảng. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.
+   n = số câu mỗi trận · sec = giây mỗi câu · hit = hệ số sát thương boss · pyHelp = hiện pinyin ở đáp án chữ Hán
+   learn = câu mẫu học trước khi vào trận [Hán, pinyin, nghĩa Việt] */
 const STAGES = [
-  { id:1, key:'hotel', name:'Bãi Cháy – Khách sạn', boss:'Boss Lễ Tân', topics:['hotel','hsk'], badge:'🏅Bãi Cháy' },
-  { id:2, key:'factory', name:'Cẩm Phả – Nhà máy', boss:'Boss Tổ trưởng', topics:['factory'], badge:'🏅Cẩm Phả' }
+  { id:0, key:'hsk0', lv:'HSK0', time:'Tuần 1–2', name:'Làng Pinyin', place:'Bãi Cháy', boss:'Lễ tân tập sự', look:'trainee',
+    n:8, sec:30, hit:.6, pyHelp:true, badge:'🌱HSK0', goal:'4 thanh điệu · chào hỏi · số đếm',
+    learn:[['你好','nǐ hǎo','Xin chào'],['谢谢','xièxie','Cảm ơn'],['对不起','duìbuqǐ','Xin lỗi'],['再见','zàijiàn','Tạm biệt']] },
+  { id:1, key:'hsk1', lv:'HSK1', time:'Tháng 1–2', name:'Quầy lễ tân', place:'Bãi Cháy', boss:'Lễ tân khó tính', look:'hotel',
+    n:10, sec:25, hit:.8, pyHelp:true, badge:'🛎️HSK1', goal:'câu hỏi cơ bản · tiếp khách nhận phòng',
+    learn:[['你叫什么名字？','Nǐ jiào shénme míngzi?','Bạn tên là gì?'],['这个多少钱？','Zhège duōshao qián?','Cái này bao nhiêu tiền?'],['我想办理入住。','Wǒ xiǎng bànlǐ rùzhù.','Tôi muốn làm thủ tục nhận phòng.']] },
+  { id:2, key:'hsk2', lv:'HSK2', time:'Tháng 3–5', name:'Nhà máy Cẩm Phả', place:'Cẩm Phả', boss:'Tổ trưởng', look:'factory',
+    n:10, sec:20, hit:1, badge:'🏭HSK2', goal:'đã… rồi · vì… nên… · so sánh · nói chuyện ca làm',
+    learn:[['我已经下班了。','Wǒ yǐjīng xiàbān le.','Tôi đã tan ca rồi.'],['因为下雨，所以我不去了。','Yīnwèi xià yǔ, suǒyǐ wǒ bú qù le.','Vì trời mưa nên tôi không đi nữa.'],['他比我高。','Tā bǐ wǒ gāo.','Anh ấy cao hơn tôi.']] },
+  { id:3, key:'hsk3', lv:'HSK3', time:'Tháng 6–8', name:'Ca đêm KCN', place:'Khu công nghiệp', boss:'Quản lý ca đêm', look:'night',
+    n:10, sec:20, hit:1.15, badge:'🌙HSK3', goal:'câu 把 / 被 · tuy… nhưng… · nếu… thì… · xử lý sự cố',
+    learn:[['请把护照给我。','Qǐng bǎ hùzhào gěi wǒ.','Xin đưa hộ chiếu cho tôi.'],['我的手机被偷了。','Wǒ de shǒujī bèi tōu le.','Điện thoại của tôi bị trộm rồi.'],['如果您不满意，我就给您换房间。','Rúguǒ nín bù mǎnyì, wǒ jiù gěi nín huàn fángjiān.','Nếu quý khách không hài lòng, tôi sẽ đổi phòng cho quý khách.']] },
+  { id:4, key:'hsk4', lv:'HSK4', time:'Tháng 9–12', name:'Đỉnh HSK4', place:'Phòng họp', boss:'Hắc Ninja', look:'shadow',
+    n:10, sec:20, hit:1.3, badge:'🏆HSK4', goal:'không những… mà còn… · dù… cũng… · họp, đàm phán, phỏng vấn',
+    learn:[['不仅干净，而且服务很好。','Bùjǐn gānjìng, érqiě fúwù hěn hǎo.','Không những sạch mà dịch vụ còn rất tốt.'],['即使加班，我们也会按时交货。','Jíshǐ jiābān, wǒmen yě huì ànshí jiāohuò.','Dù phải tăng ca, chúng tôi cũng giao hàng đúng hạn.'],['非常抱歉给您带来不便。','Fēicháng bàoqiàn gěi nín dàilái búbiàn.','Rất xin lỗi đã gây bất tiện cho quý khách.']] }
 ];
 
-const FORM_UTM_GAME = 'utm_source=game&utm_campaign=lop_0211';
-const INVITE_BLURB = '99k cho 3 tháng, 299k cho 1 năm, học Zoom thứ Hai, Tư, Sáu lúc 20:00';
-const INVITE_SHARE_LINE = 'Thẻ 99k/299k · Zoom 20:00 T2 T4 T6 · buổi đầu 04/11';
-const OFFER_HOLD = '⏰ Giữ chỗ đến 20:00 thứ Ba 03/11';
-const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 20:00 thứ Ba 03/11 → bạn được cộng thêm 7 ngày.';
+const FORM_UTM_GAME = 'utm_source=game&utm_campaign=sale_1111';
+const INVITE_BLURB = 'Thẻ 1 năm 299k (ưu đãi 11.11) · thẻ 3 tháng 99k · học qua Zoom, lịch lớp đang chốt và sẽ báo trong nhóm Zalo';
+const INVITE_SHARE_LINE = '11.11: thẻ 1 năm 299k đến 23:59 ngày 11/11 · lộ trình HSK0 → HSK4';
+const OFFER_HOLD = '🔥 11.11 đại giảm giá: thẻ 1 năm 299k, đến 23:59 thứ Tư 11/11';
+const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 23:59 ngày 11/11 → bạn được cộng thêm 7 ngày.';
 const OFFER_MINIGAME = '🎯 Mini game Zalo đoán nghĩa → giảm đến 20k';
+const SALE_END = Date.parse('2026-11-11T16:59:59Z'); // 23:59:59 thứ Tư 11/11/2026 giờ Việt Nam
 function holdSeatExpired() {
-  // 20:00 03/11/2026 Asia/Saigon = 13:00 UTC
-  return Date.now() >= Date.parse('2026-11-03T13:00:00Z');
+  return Date.now() >= SALE_END;
 }
 function applyHoldSeatVisibility() {
   const exp = holdSeatExpired();
@@ -75,7 +92,10 @@ function normalizeQ(raw) {
     zh: raw.zh || '',
     optionPy: raw.optionPy, optionVi: raw.optionVi,
     words: raw.words, wordPy: raw.wordPy, wordVi: raw.wordVi,
-    speak: raw.speak, blankHint: raw.blankHint, stage: raw.stage
+    speak: raw.speak, blankHint: raw.blankHint, stage: raw.stage,
+    // v6: trạm HSK. Câu cũ chưa gắn cấp: khách sạn/HSK cơ bản → HSK1, nhà máy → HSK2, nhà máy khó (độ khó 3) → HSK3
+    level: raw.level || (topic === 'factory' ? ((raw.do_kho || 1) >= 3 ? 'hsk3' : 'hsk2') : 'hsk1'),
+    core: !!raw.level
   };
   if (!q.zh) {
     if (type === 'order' && q.options[0]) q.zh = q.options[0];
@@ -131,7 +151,72 @@ const QUESTIONS_RAW = [
   {id:"cp-22",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Đoàn PCCC sắp vào. Nhắc tổ trưởng 'Hãy chuẩn bị bình chữa cháy' nói thế nào?",dap_an:["请准备安全帽","请准备灭火器","请准备打卡机","请准备样品"],dung:1,pinyin:"Qǐng zhǔnbèi mièhuǒqì",giai_thich:"灭火器 (mièhuǒqì) = bình chữa cháy.",type:"situ",topic:"factory",zh:"请准备灭火器",stage:2,optionPy:["Qǐng zhǔnbèi ānquánmào","Qǐng zhǔnbèi mièhuǒqì","Qǐng zhǔnbèi dǎkǎjī","Qǐng zhǔnbèi yàngpǐn"],optionVi:["Xin chuẩn bị mũ bảo hộ","Xin chuẩn bị bình chữa cháy","Xin chuẩn bị máy chấm công","Xin chuẩn bị hàng mẫu"]},
   {id:"cp-23",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Báo sếp Trung Quốc: 'Lô hàng này đã đạt kiểm tra chất lượng' nói thế nào?",dap_an:["这批货有质量问题","这批货是次品","这批货已通过质检","这批货还没生产"],dung:2,pinyin:"Zhè pī huò yǐ tōngguò zhìjiǎn",giai_thich:"这批货 (zhè pī huò) = lô hàng này; 通过 (tōngguò) = đạt; 质检 (zhìjiǎn) = kiểm tra chất lượng.",type:"situ",topic:"factory",zh:"这批货已通过质检",stage:2,optionPy:["Zhè pī huò yǒu zhìliàng wèntí","Zhè pī huò shì cìpǐn","Zhè pī huò yǐ tōngguò zhìjiǎn","Zhè pī huò hái méi shēngchǎn"],optionVi:["Lô này có vấn đề chất lượng","Lô này là hàng kém","Lô này đã đạt QC","Lô này chưa sản xuất"]},
   {id:"cp-24",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Dẫn đoàn kiểm tra: 'Mời đi theo tôi vào phân xưởng' nói thế nào?",dap_an:["请跟我来车间","请跟我去办公室","请在门口等一下","请先去打卡"],dung:0,pinyin:"Qǐng gēn wǒ lái chējiān",giai_thich:"跟我来 (gēn wǒ lái) = đi theo tôi; 车间 (chējiān) = phân xưởng.",type:"situ",topic:"factory",zh:"请跟我来车间",stage:2,optionPy:["Qǐng gēn wǒ lái chējiān","Qǐng gēn wǒ qù bàngōngshì","Qǐng zài ménkǒu děng yīxià","Qǐng xiān qù dǎkǎ"],optionVi:["Mời theo tôi vào phân xưởng","Mời theo tôi đến văn phòng","Xin đợi ở cửa","Xin chấm công trước"]},
-  {id:"cp-25",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Khi diễn tập PCCC, hô 'Mọi người ra điểm tập kết khẩn cấp!' nói thế nào?",dap_an:["大家去食堂集合！","大家去紧急集合点！","大家回车间加班！","大家去仓库盘点！"],dung:1,pinyin:"Dàjiā qù jǐnjí jíhé diǎn!",giai_thich:"紧急集合点 (jǐnjí jíhé diǎn) = điểm tập kết khẩn cấp.",type:"situ",topic:"factory",zh:"大家去紧急集合点！",stage:2,optionPy:["Dàjiā qù shítáng jíhé!","Dàjiā qù jǐnjí jíhé diǎn!","Dàjiā huí chējiān jiābān!","Dàjiā qù cāngkù pándiǎn!"],optionVi:["Mọi người tập hợp ở nhà ăn!","Mọi người ra điểm tập kết khẩn cấp!","Mọi người về xưởng tăng ca!","Mọi người đến kho kiểm kê!"]}
+  {id:"cp-25",chang:"Cẩm Phả – Nhà máy",ngon_ngu:"zh",do_kho:3,cau_hoi:"Khi diễn tập PCCC, hô 'Mọi người ra điểm tập kết khẩn cấp!' nói thế nào?",dap_an:["大家去食堂集合！","大家去紧急集合点！","大家回车间加班！","大家去仓库盘点！"],dung:1,pinyin:"Dàjiā qù jǐnjí jíhé diǎn!",giai_thich:"紧急集合点 (jǐnjí jíhé diǎn) = điểm tập kết khẩn cấp.",type:"situ",topic:"factory",zh:"大家去紧急集合点！",stage:2,optionPy:["Dàjiā qù shítáng jíhé!","Dàjiā qù jǐnjí jíhé diǎn!","Dàjiā huí chējiān jiābān!","Dàjiā qù cāngkù pándiǎn!"],optionVi:["Mọi người tập hợp ở nhà ăn!","Mọi người ra điểm tập kết khẩn cấp!","Mọi người về xưởng tăng ca!","Mọi người đến kho kiểm kê!"]},
+
+  /* ===== v6 · HSK0: pinyin, thanh điệu, chào hỏi, số đếm (cho người chưa biết gì) ===== */
+  {id:"h0-01",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Câu chào này nghĩa là gì?",dap_an:["Xin chào","Cảm ơn","Tạm biệt","Xin lỗi"],dung:0,pinyin:"nǐ hǎo",giai_thich:"Xin chào",type:"mc",topic:"pinyin",zh:"你好"},
+  {id:"h0-02",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Cảm ơn” tiếng Trung là?",dap_an:["谢谢","你好","再见","对不起"],dung:0,pinyin:"xièxie",giai_thich:"Cảm ơn",type:"mc",topic:"pinyin",zh:"谢谢",optionPy:["xièxie","nǐ hǎo","zàijiàn","duìbuqǐ"],optionVi:["Cảm ơn","Xin chào","Tạm biệt","Xin lỗi"]},
+  {id:"h0-03",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Tạm biệt","Xin chào","Cảm ơn","Không có gì"],dung:0,pinyin:"zàijiàn",giai_thich:"Tạm biệt (hẹn gặp lại)",type:"listen",topic:"pinyin",zh:"再见",speak:"再见"},
+  {id:"h0-04",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe chữ này — thanh mấy?",dap_an:["mǎ · thanh 3 (xuống rồi lên)","mā · thanh 1 (cao, ngang)","má · thanh 2 (đi lên)","mà · thanh 4 (đi xuống)"],dung:0,pinyin:"mǎ",giai_thich:"马 = con ngựa · thanh 3: hạ xuống rồi lên",type:"listen",topic:"pinyin",zh:"马",speak:"马"},
+  {id:"h0-05",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe chữ này — thanh mấy?",dap_an:["mā · thanh 1 (cao, ngang)","má · thanh 2 (đi lên)","mǎ · thanh 3 (xuống rồi lên)","mà · thanh 4 (đi xuống)"],dung:0,pinyin:"mā",giai_thich:"妈 = mẹ · thanh 1: cao và ngang",type:"listen",topic:"pinyin",zh:"妈",speak:"妈"},
+  {id:"h0-06",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Số 3 tiếng Trung là?",dap_an:["三","八","五","十"],dung:0,pinyin:"sān",giai_thich:"Ba (số 3)",type:"mc",topic:"pinyin",zh:"三",optionPy:["sān","bā","wǔ","shí"],optionVi:["Ba","Tám","Năm","Mười"]},
+  {id:"h0-07",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Số này là số mấy?",dap_an:["Mười","Bảy","Hai","Chín"],dung:0,pinyin:"shí",giai_thich:"Mười (số 10)",type:"mc",topic:"pinyin",zh:"十"},
+  {id:"h0-08",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Số 8 tiếng Trung là?",dap_an:["八","六","四","九"],dung:0,pinyin:"bā",giai_thich:"Tám (số 8)",type:"mc",topic:"pinyin",zh:"八",optionPy:["bā","liù","sì","jiǔ"],optionVi:["Tám","Sáu","Bốn","Chín"]},
+  {id:"h0-09",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Bạn lỡ va vào khách. Bạn nói?",dap_an:["对不起！","谢谢！","你好！","再见！"],dung:0,pinyin:"Duìbuqǐ!",giai_thich:"Xin lỗi!",type:"situ",topic:"pinyin",zh:"对不起！",optionPy:["Duìbuqǐ!","Xièxie!","Nǐ hǎo!","Zàijiàn!"],optionVi:["Xin lỗi!","Cảm ơn!","Xin chào!","Tạm biệt!"]},
+  {id:"h0-10",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách nói 谢谢 (xièxie · cảm ơn). Bạn đáp?",dap_an:["不客气。","对不起。","再见。","你好。"],dung:0,pinyin:"Bú kèqi.",giai_thich:"Không có gì.",type:"situ",topic:"pinyin",zh:"不客气。",optionPy:["Bú kèqi.","Duìbuqǐ.","Zàijiàn.","Nǐ hǎo."],optionVi:["Không có gì.","Xin lỗi.","Tạm biệt.","Xin chào."]},
+  {id:"h0-11",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp: Tôi là người Việt Nam.",dap_an:["我是越南人。","你好。","谢谢。","再见。"],dung:0,pinyin:"Wǒ shì Yuènán rén.",giai_thich:"Tôi là người Việt Nam.",type:"order",topic:"pinyin",zh:"我是越南人。",words:["我","是","越南人"],wordPy:["wǒ","shì","Yuènán rén"],wordVi:["tôi","là","người Việt Nam"],answerOrder:["我","是","越南人"]},
+  {id:"h0-12",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chữ còn thiếu để thành “Xin chào!”",dap_an:["你","我","他","是"],dung:0,pinyin:"____ hǎo!",giai_thich:"Xin chào! (nǐ hǎo)",type:"fill",topic:"pinyin",zh:"____好！",optionPy:["nǐ","wǒ","tā","shì"],optionVi:["bạn","tôi","anh ấy","là"],blankHint:"bạn"},
+  {id:"h0-13",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Tôi” tiếng Trung là?",dap_an:["我","你","他","她"],dung:0,pinyin:"wǒ",giai_thich:"Tôi",type:"mc",topic:"pinyin",zh:"我",optionPy:["wǒ","nǐ","tā","tā"],optionVi:["Tôi","Bạn","Anh ấy","Cô ấy"]},
+  {id:"h0-14",level:"hsk0",chang:"HSK0 · Làng Pinyin",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Không phải","Đúng vậy","Cảm ơn","Bao nhiêu"],dung:0,pinyin:"bú shì",giai_thich:"Không phải",type:"listen",topic:"pinyin",zh:"不是",speak:"不是"},
+
+  /* ===== v6 · HSK1: câu hỏi cơ bản, tiếp khách (cộng thêm các câu khách sạn bc-01…bc-21) ===== */
+  {id:"h1-01",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Hỏi tên bạn mới thế nào?",dap_an:["你叫什么名字？","你几岁？","你去哪儿？","你是哪国人？"],dung:0,pinyin:"Nǐ jiào shénme míngzi?",giai_thich:"Bạn tên là gì?",type:"situ",topic:"hsk",zh:"你叫什么名字？",optionPy:["Nǐ jiào shénme míngzi?","Nǐ jǐ suì?","Nǐ qù nǎr?","Nǐ shì nǎ guó rén?"],optionVi:["Bạn tên là gì?","Bạn mấy tuổi?","Bạn đi đâu?","Bạn là người nước nào?"]},
+  {id:"h1-02",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Câu này nghĩa là gì?",dap_an:["Bây giờ mấy giờ?","Hôm nay thứ mấy?","Bao nhiêu tiền?","Bạn đi đâu?"],dung:0,pinyin:"Xiànzài jǐ diǎn?",giai_thich:"Bây giờ mấy giờ?",type:"mc",topic:"hsk",zh:"现在几点？"},
+  {id:"h1-03",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe — khách muốn gì?",dap_an:["Uống trà","Ăn cơm","Đi ngủ","Mua trà"],dung:0,pinyin:"Wǒ xiǎng hē chá.",giai_thich:"Tôi muốn uống trà.",type:"listen",topic:"hsk",zh:"我想喝茶。",speak:"我想喝茶。"},
+  {id:"h1-04",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống: Đây là sách của tôi.",dap_an:["的","是","有","在"],dung:0,pinyin:"Zhè shì wǒ ____ shū.",giai_thich:"Đây là sách của tôi.",type:"fill",topic:"hsk",zh:"这是我____书。",optionPy:["de","shì","yǒu","zài"],optionVi:["của","là","có","ở"],blankHint:"của"},
+  {id:"h1-05",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Sắp xếp: Bạn đi đâu?",dap_an:["你去哪儿？","你好。","谢谢。","再见。"],dung:0,pinyin:"Nǐ qù nǎr?",giai_thich:"Bạn đi đâu?",type:"order",topic:"hsk",zh:"你去哪儿？",words:["你","去","哪儿"],wordPy:["nǐ","qù","nǎr"],wordVi:["bạn","đi","đâu"],answerOrder:["你","去","哪儿"]},
+  {id:"h1-06",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"“Hôm nay” tiếng Trung là?",dap_an:["今天","明天","昨天","现在"],dung:0,pinyin:"jīntiān",giai_thich:"Hôm nay",type:"mc",topic:"hsk",zh:"今天",optionPy:["jīntiān","míngtiān","zuótiān","xiànzài"],optionVi:["Hôm nay","Ngày mai","Hôm qua","Bây giờ"]},
+  {id:"h1-07",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Khách hỏi 洗手间在哪儿？(Xǐshǒujiān zài nǎr? · Nhà vệ sinh ở đâu?). Bạn chỉ: ở đằng kia.",dap_an:["在那儿。","在这儿。","没有。","不是。"],dung:0,pinyin:"Zài nàr.",giai_thich:"Ở đằng kia.",type:"situ",topic:"hotel",zh:"在那儿。",optionPy:["Zài nàr.","Zài zhèr.","Méiyǒu.","Bú shì."],optionVi:["Ở đằng kia.","Ở đây.","Không có.","Không phải."]},
+  {id:"h1-08",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Câu này nghĩa là gì?",dap_an:["Tôi có hai đứa con","Tôi có hai cái bàn","Tôi muốn hai cái","Tôi hai mươi tuổi"],dung:0,pinyin:"Wǒ yǒu liǎng ge háizi.",giai_thich:"Tôi có hai đứa con.",type:"mc",topic:"hsk",zh:"我有两个孩子。"},
+  {id:"h1-09",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Điền chỗ trống: Tôi biết nói tiếng Trung.",dap_an:["说","吃","喝","坐"],dung:0,pinyin:"Wǒ huì ____ Hànyǔ.",giai_thich:"Tôi biết nói tiếng Trung.",type:"fill",topic:"hsk",zh:"我会____汉语。",optionPy:["shuō","chī","hē","zuò"],optionVi:["nói","ăn","uống","ngồi"],blankHint:"nói"},
+  {id:"h1-10",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Mai gặp lại!","Hôm nay vui quá!","Chào buổi sáng!","Hẹn tuần sau!"],dung:0,pinyin:"Míngtiān jiàn!",giai_thich:"Mai gặp lại!",type:"listen",topic:"hsk",zh:"明天见！",speak:"明天见！"},
+  {id:"h1-11",level:"hsk1",chang:"HSK1 · Quầy lễ tân",ngon_ngu:"zh",do_kho:1,cau_hoi:"Câu này nghĩa là gì?",dap_an:["Tôi không uống cà phê","Tôi muốn uống cà phê","Tôi thích cà phê","Cà phê không ngon"],dung:0,pinyin:"Wǒ bù hē kāfēi.",giai_thich:"Tôi không uống cà phê.",type:"mc",topic:"hsk",zh:"我不喝咖啡。"},
+
+  /* ===== v6 · HSK2: đã… rồi, vì… nên…, so sánh, từng… (cộng thêm các câu nhà máy cp-01…cp-21) ===== */
+  {id:"h2-01",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Câu này nghĩa là gì?",dap_an:["Tôi đã ăn cơm rồi","Tôi sắp ăn cơm","Tôi chưa ăn cơm","Tôi đang nấu cơm"],dung:0,pinyin:"Wǒ yǐjīng chī fàn le.",giai_thich:"Tôi đã ăn cơm rồi.",type:"mc",topic:"hsk",zh:"我已经吃饭了。"},
+  {id:"h2-02",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Điền chỗ trống: Vì trời mưa nên tôi không đi nữa.",dap_an:["所以","但是","可是","还是"],dung:0,pinyin:"Yīnwèi xià yǔ, ____ wǒ bú qù le.",giai_thich:"Vì trời mưa nên tôi không đi nữa.",type:"fill",topic:"hsk",zh:"因为下雨，____我不去了。",optionPy:["suǒyǐ","dànshì","kěshì","háishi"],optionVi:["cho nên","nhưng","nhưng mà","hay là"],blankHint:"nên"},
+  {id:"h2-03",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Sắp xếp: Anh ấy cao hơn tôi.",dap_an:["他比我高。","你好。","谢谢。","再见。"],dung:0,pinyin:"Tā bǐ wǒ gāo.",giai_thich:"Anh ấy cao hơn tôi.",type:"order",topic:"hsk",zh:"他比我高。",words:["他","比","我","高"],wordPy:["tā","bǐ","wǒ","gāo"],wordVi:["anh ấy","so với","tôi","cao"],answerOrder:["他","比","我","高"]},
+  {id:"h2-04",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Hỏi đồng nghiệp mới: “Bạn từng đến Trung Quốc chưa?”",dap_an:["你去过中国吗？","你去中国吗？","你在中国吗？","你是中国人吗？"],dung:0,pinyin:"Nǐ qùguo Zhōngguó ma?",giai_thich:"Bạn từng đến Trung Quốc chưa?",type:"situ",topic:"hsk",zh:"你去过中国吗？",optionPy:["Nǐ qùguo Zhōngguó ma?","Nǐ qù Zhōngguó ma?","Nǐ zài Zhōngguó ma?","Nǐ shì Zhōngguó rén ma?"],optionVi:["Bạn từng đến Trung Quốc chưa?","Bạn có đi Trung Quốc không?","Bạn đang ở Trung Quốc à?","Bạn là người Trung Quốc à?"]},
+  {id:"h2-05",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Tàu sắp chạy rồi","Tàu đã đến rồi","Tàu bị hỏng rồi","Tàu không chạy"],dung:0,pinyin:"Huǒchē yào kāi le.",giai_thich:"Tàu sắp chạy rồi.",type:"listen",topic:"hsk",zh:"火车要开了。",speak:"火车要开了。"},
+  {id:"h2-06",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Đang làm việc” tiếng Trung là?",dap_an:["正在工作","已经工作","工作过","要工作"],dung:0,pinyin:"zhèngzài gōngzuò",giai_thich:"Đang làm việc",type:"mc",topic:"hsk",zh:"正在工作",optionPy:["zhèngzài gōngzuò","yǐjīng gōngzuò","gōngzuò guo","yào gōngzuò"],optionVi:["Đang làm việc","Đã làm việc","Từng làm việc","Sắp / muốn làm việc"]},
+  {id:"h2-07",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Bạn bị ốm, muốn xin nghỉ. Nói với tổ trưởng?",dap_an:["我生病了，想请假。","我想加班。","我已经下班了。","我很高兴。"],dung:0,pinyin:"Wǒ shēngbìng le, xiǎng qǐngjià.",giai_thich:"Tôi bị ốm, muốn xin nghỉ.",type:"situ",topic:"factory",zh:"我生病了，想请假。",optionPy:["Wǒ shēngbìng le, xiǎng qǐngjià.","Wǒ xiǎng jiābān.","Wǒ yǐjīng xiàbān le.","Wǒ hěn gāoxìng."],optionVi:["Tôi bị ốm, muốn xin nghỉ.","Tôi muốn tăng ca.","Tôi đã tan ca rồi.","Tôi rất vui."]},
+  {id:"h2-08",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Điền chỗ trống: Từ khách sạn đến sân bay mất một tiếng.",dap_an:["到","在","给","对"],dung:0,pinyin:"Cóng jiǔdiàn ____ jīchǎng yào yí ge xiǎoshí.",giai_thich:"Từ khách sạn đến sân bay mất một tiếng.",type:"fill",topic:"hsk",zh:"从酒店____机场要一个小时。",optionPy:["dào","zài","gěi","duì"],optionVi:["đến","ở","cho","đối với"],blankHint:"đến"},
+  {id:"h2-09",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"“Xin nghỉ phép” tiếng Trung là?",dap_an:["请假","请客","请问","请进"],dung:0,pinyin:"qǐngjià",giai_thich:"Xin nghỉ phép",type:"mc",topic:"factory",zh:"请假",optionPy:["qǐngjià","qǐngkè","qǐngwèn","qǐng jìn"],optionVi:["Xin nghỉ phép","Mời khách / bao","Xin hỏi","Mời vào"]},
+  {id:"h2-10",level:"hsk2",chang:"HSK2 · Nhà máy Cẩm Phả",ngon_ngu:"zh",do_kho:2,cau_hoi:"Nghe — sếp khen gì?",dap_an:["Bạn nói tiếng Trung rất giỏi","Bạn học tiếng Trung lâu chưa?","Tiếng Trung rất khó","Bạn nói chậm thôi"],dung:0,pinyin:"Nǐ de Zhōngwén shuō de hěn hǎo.",giai_thich:"Bạn nói tiếng Trung rất giỏi.",type:"listen",topic:"hsk",zh:"你的中文说得很好。",speak:"你的中文说得很好。"},
+
+  /* ===== v6 · HSK3: 把 / 被, tuy… nhưng…, nếu… thì…, vừa… vừa…, xử lý sự cố (cộng thêm cp-22…cp-25) ===== */
+  {id:"h3-01",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Sắp xếp: Xin đặt hộ chiếu lên bàn.",dap_an:["请把护照放在桌子上。","你好。","谢谢。","再见。"],dung:0,pinyin:"Qǐng bǎ hùzhào fàng zài zhuōzi shang.",giai_thich:"Xin đặt hộ chiếu lên bàn.",type:"order",topic:"hotel",zh:"请把护照放在桌子上。",words:["请","把护照","放在","桌子上"],wordPy:["qǐng","bǎ hùzhào","fàng zài","zhuōzi shang"],wordVi:["xin","(đem) hộ chiếu","đặt ở","trên bàn"],answerOrder:["请","把护照","放在","桌子上"]},
+  {id:"h3-02",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Điền chỗ trống: Anh ấy tuy rất mệt nhưng vẫn đang làm việc.",dap_an:["虽然","因为","如果","所以"],dung:0,pinyin:"Tā ____ hěn lèi, dànshì hái zài gōngzuò.",giai_thich:"Anh ấy tuy rất mệt nhưng vẫn đang làm việc.",type:"fill",topic:"hsk",zh:"他____很累，但是还在工作。",optionPy:["suīrán","yīnwèi","rúguǒ","suǒyǐ"],optionVi:["tuy","vì","nếu","cho nên"],blankHint:"tuy"},
+  {id:"h3-03",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Khách báo gì?",dap_an:["Điện thoại của tôi bị trộm rồi","Tôi đã mua điện thoại mới","Điện thoại của tôi hết pin","Tôi làm rơi điện thoại"],dung:0,pinyin:"Wǒ de shǒujī bèi tōu le.",giai_thich:"Điện thoại của tôi bị trộm rồi.",type:"mc",topic:"hotel",zh:"我的手机被偷了。"},
+  {id:"h3-04",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Khách phàn nàn phòng ồn. Bạn đáp lịch sự?",dap_an:["如果您不满意，我就给您换房间。","虽然您不满意，但是房间很好。","因为您不满意，所以我不换。","您满意吗？"],dung:0,pinyin:"Rúguǒ nín bù mǎnyì, wǒ jiù gěi nín huàn fángjiān.",giai_thich:"Nếu quý khách không hài lòng, tôi sẽ đổi phòng cho quý khách.",type:"situ",topic:"hotel",zh:"如果您不满意，我就给您换房间。",optionPy:["Rúguǒ nín bù mǎnyì, wǒ jiù gěi nín huàn fángjiān.","Suīrán nín bù mǎnyì, dànshì fángjiān hěn hǎo.","Yīnwèi nín bù mǎnyì, suǒyǐ wǒ bú huàn.","Nín mǎnyì ma?"],optionVi:["Nếu quý khách không hài lòng, tôi sẽ đổi phòng.","Tuy quý khách không hài lòng nhưng phòng rất tốt.","Vì quý khách không hài lòng nên tôi không đổi.","Quý khách hài lòng không?"]},
+  {id:"h3-05",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Nghe và chọn nghĩa đúng.",dap_an:["Trời càng ngày càng lạnh","Hôm nay trời nóng quá","Ngày mai trời mưa","Trời lạnh nhưng có nắng"],dung:0,pinyin:"Tiānqì yuè lái yuè lěng le.",giai_thich:"Trời càng ngày càng lạnh.",type:"listen",topic:"hsk",zh:"天气越来越冷了。",speak:"天气越来越冷了。"},
+  {id:"h3-06",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Điền chỗ trống: Anh ấy vừa ăn cơm vừa xem điện thoại.",dap_an:["一边","一起","一样","一定"],dung:0,pinyin:"Tā yìbiān chī fàn, ____ kàn shǒujī.",giai_thich:"Anh ấy vừa ăn cơm vừa xem điện thoại.",type:"fill",topic:"hsk",zh:"他一边吃饭，____看手机。",optionPy:["yìbiān","yìqǐ","yíyàng","yídìng"],optionVi:["vừa","cùng nhau","giống nhau","nhất định"],blankHint:"vừa"},
+  {id:"h3-07",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Ca đêm, máy báo lỗi. Bạn báo quản lý?",dap_an:["这台机器有问题，需要马上检查。","这台机器很新，不用检查。","我们明天再说吧。","机器已经修好了。"],dung:0,pinyin:"Zhè tái jīqì yǒu wèntí, xūyào mǎshàng jiǎnchá.",giai_thich:"Máy này có vấn đề, cần kiểm tra ngay.",type:"situ",topic:"factory",zh:"这台机器有问题，需要马上检查。",optionPy:["Zhè tái jīqì yǒu wèntí, xūyào mǎshàng jiǎnchá.","Zhè tái jīqì hěn xīn, búyòng jiǎnchá.","Wǒmen míngtiān zài shuō ba.","Jīqì yǐjīng xiūhǎo le."],optionVi:["Máy này có vấn đề, cần kiểm tra ngay.","Máy này rất mới, không cần kiểm tra.","Mai chúng ta nói tiếp nhé.","Máy đã sửa xong rồi."]},
+  {id:"h3-08",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"“Hài lòng” tiếng Trung là?",dap_an:["满意","满足","满了","漂亮"],dung:0,pinyin:"mǎnyì",giai_thich:"Hài lòng",type:"mc",topic:"hotel",zh:"满意",optionPy:["mǎnyì","mǎnzú","mǎn le","piàoliang"],optionVi:["Hài lòng","Thoả mãn (nhu cầu)","Đầy rồi","Đẹp"]},
+  {id:"h3-09",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"“Kiểm tra” tiếng Trung là?",dap_an:["检查","检讨","参加","准备"],dung:0,pinyin:"jiǎnchá",giai_thich:"Kiểm tra",type:"mc",topic:"factory",zh:"检查",optionPy:["jiǎnchá","jiǎntǎo","cānjiā","zhǔnbèi"],optionVi:["Kiểm tra","Kiểm điểm","Tham gia","Chuẩn bị"]},
+  {id:"h3-10",level:"hsk3",chang:"HSK3 · Ca đêm KCN",ngon_ngu:"zh",do_kho:3,cau_hoi:"Sắp xếp: Tôi đã làm xong việc rồi.",dap_an:["我已经把工作做完了。","你好。","谢谢。","再见。"],dung:0,pinyin:"Wǒ yǐjīng bǎ gōngzuò zuò wán le.",giai_thich:"Tôi đã làm xong việc rồi.",type:"order",topic:"factory",zh:"我已经把工作做完了。",words:["我","已经","把工作","做完了"],wordPy:["wǒ","yǐjīng","bǎ gōngzuò","zuò wán le"],wordVi:["tôi","đã","(đem) công việc","làm xong rồi"],answerOrder:["我","已经","把工作","做完了"]},
+
+  /* ===== v6 · HSK4 (đỉnh): không những… mà còn…, dù… cũng…, bất kể… đều…, họp, đàm phán, phỏng vấn ===== */
+  {id:"h4-01",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Điền chỗ trống: Khách sạn này không những sạch mà dịch vụ còn rất tốt.",dap_an:["而且","但是","所以","或者"],dung:0,pinyin:"Zhè jiā jiǔdiàn bùjǐn gānjìng, ____ fúwù yě hěn hǎo.",giai_thich:"Khách sạn này không những sạch sẽ mà dịch vụ cũng rất tốt.",type:"fill",topic:"hotel",zh:"这家酒店不仅干净，____服务也很好。",optionPy:["érqiě","dànshì","suǒyǐ","huòzhě"],optionVi:["mà còn","nhưng","cho nên","hoặc"],blankHint:"mà còn"},
+  {id:"h4-02",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Đối tác hỏi có kịp giao hàng không. Bạn đáp?",dap_an:["即使加班，我们也会按时交货。","如果加班，我们就不交货。","因为加班，所以我们很累。","我们从来不加班。"],dung:0,pinyin:"Jíshǐ jiābān, wǒmen yě huì ànshí jiāohuò.",giai_thich:"Dù phải tăng ca, chúng tôi cũng sẽ giao hàng đúng hạn.",type:"situ",topic:"factory",zh:"即使加班，我们也会按时交货。",optionPy:["Jíshǐ jiābān, wǒmen yě huì ànshí jiāohuò.","Rúguǒ jiābān, wǒmen jiù bù jiāohuò.","Yīnwèi jiābān, suǒyǐ wǒmen hěn lèi.","Wǒmen cónglái bù jiābān."],optionVi:["Dù phải tăng ca, chúng tôi cũng giao hàng đúng hạn.","Nếu tăng ca thì chúng tôi không giao hàng.","Vì tăng ca nên chúng tôi rất mệt.","Chúng tôi chưa bao giờ tăng ca."]},
+  {id:"h4-03",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Quản lý dặn gì?",dap_an:["Gặp vấn đề gì cũng có thể liên hệ tôi","Có vấn đề thì đừng liên hệ tôi","Tôi đã gặp rất nhiều vấn đề","Vấn đề này không liên quan đến tôi"],dung:0,pinyin:"Wúlùn yùdào shénme wèntí, dōu kěyǐ liánxì wǒ.",giai_thich:"Dù gặp vấn đề gì, đều có thể liên hệ tôi.",type:"mc",topic:"hsk",zh:"无论遇到什么问题，都可以联系我。"},
+  {id:"h4-04",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Sắp xếp: Theo quy định, khách phải trả phòng trước 12 giờ.",dap_an:["按照规定，客人必须在十二点前退房。","你好。","谢谢。","再见。"],dung:0,pinyin:"Ànzhào guīdìng, kèrén bìxū zài shí'èr diǎn qián tuìfáng.",giai_thich:"Theo quy định, khách phải trả phòng trước 12 giờ.",type:"order",topic:"hotel",zh:"按照规定，客人必须在十二点前退房。",words:["按照规定，","客人必须","在十二点前","退房"],wordPy:["ànzhào guīdìng","kèrén bìxū","zài shí'èr diǎn qián","tuìfáng"],wordVi:["theo quy định","khách phải","trước 12 giờ","trả phòng"],answerOrder:["按照规定，","客人必须","在十二点前","退房"]},
+  {id:"h4-05",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Nghe thông báo ở sân bay.",dap_an:["Do thời tiết, chuyến bay bị hoãn","Trời đẹp, máy bay cất cánh sớm","Chuyến bay bị huỷ vì hết vé","Trời xấu nhưng bay đúng giờ"],dung:0,pinyin:"Yóuyú tiānqì yuányīn, hángbān tuīchí le.",giai_thich:"Do thời tiết, chuyến bay bị hoãn.",type:"listen",topic:"hsk",zh:"由于天气原因，航班推迟了。",speak:"由于天气原因，航班推迟了。"},
+  {id:"h4-06",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Khách VIP phàn nàn. Câu xin lỗi chuyên nghiệp nhất?",dap_an:["非常抱歉给您带来不便，我们马上处理。","这不是我们的问题。","您等一下吧，我很忙。","没关系，下次再说。"],dung:0,pinyin:"Fēicháng bàoqiàn gěi nín dàilái búbiàn, wǒmen mǎshàng chǔlǐ.",giai_thich:"Rất xin lỗi đã gây bất tiện cho quý khách, chúng tôi xử lý ngay.",type:"situ",topic:"hotel",zh:"非常抱歉给您带来不便，我们马上处理。",optionPy:["Fēicháng bàoqiàn gěi nín dàilái búbiàn, wǒmen mǎshàng chǔlǐ.","Zhè bú shì wǒmen de wèntí.","Nín děng yíxià ba, wǒ hěn máng.","Méi guānxi, xià cì zài shuō."],optionVi:["Rất xin lỗi đã gây bất tiện, chúng tôi xử lý ngay.","Đây không phải vấn đề của chúng tôi.","Anh chờ chút đi, tôi đang bận.","Không sao, lần sau nói."]},
+  {id:"h4-07",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Điền chỗ trống: Mọi người đã đồng ý rồi thì chúng ta bắt đầu thôi.",dap_an:["既然","虽然","尽管","不管"],dung:0,pinyin:"____ dàjiā dōu tóngyì le, wǒmen jiù kāishǐ ba.",giai_thich:"Mọi người đã đồng ý rồi thì chúng ta bắt đầu thôi.",type:"fill",topic:"hsk",zh:"____大家都同意了，我们就开始吧。",optionPy:["jìrán","suīrán","jǐnguǎn","bùguǎn"],optionVi:["đã… thì","tuy","mặc dù","bất kể"],blankHint:"đã… thì"},
+  {id:"h4-08",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"“Hiệu suất” tiếng Trung là?",dap_an:["效率","质量","速度","数量"],dung:0,pinyin:"xiàolǜ",giai_thich:"Hiệu suất, năng suất",type:"mc",topic:"factory",zh:"效率",optionPy:["xiàolǜ","zhìliàng","sùdù","shùliàng"],optionVi:["Hiệu suất","Chất lượng","Tốc độ","Số lượng"]},
+  {id:"h4-09",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Phỏng vấn xin việc: “Tôi đã làm lễ tân 3 năm, có kinh nghiệm phong phú.”",dap_an:["我做了三年前台，有丰富的经验。","我做前台三天了，没有经验。","我想做三年前台。","前台有三个人。"],dung:0,pinyin:"Wǒ zuòle sān nián qiántái, yǒu fēngfù de jīngyàn.",giai_thich:"Tôi đã làm lễ tân 3 năm, có kinh nghiệm phong phú.",type:"situ",topic:"hotel",zh:"我做了三年前台，有丰富的经验。",optionPy:["Wǒ zuòle sān nián qiántái, yǒu fēngfù de jīngyàn.","Wǒ zuò qiántái sān tiān le, méiyǒu jīngyàn.","Wǒ xiǎng zuò sān nián qiántái.","Qiántái yǒu sān ge rén."],optionVi:["Tôi đã làm lễ tân 3 năm, có kinh nghiệm phong phú.","Tôi làm lễ tân được 3 ngày, chưa có kinh nghiệm.","Tôi muốn làm lễ tân 3 năm.","Quầy lễ tân có 3 người."]},
+  {id:"h4-10",level:"hsk4",chang:"HSK4 · Đỉnh",ngon_ngu:"zh",do_kho:4,cau_hoi:"Nghe giám đốc nói trong cuộc họp.",dap_an:["Khách du lịch ngày càng đông, khách sạn cần thêm nhân viên biết tiếng Trung","Khách sạn đang giảm bớt nhân viên","Khách du lịch không thích nói tiếng Trung","Khách sạn chỉ tuyển người Trung Quốc"],dung:0,pinyin:"Suízhe yóukè yuè lái yuè duō, jiǔdiàn xūyào gèng duō huì shuō Zhōngwén de yuángōng.",giai_thich:"Khách du lịch ngày càng đông, khách sạn cần thêm nhân viên biết nói tiếng Trung.",type:"listen",topic:"hotel",zh:"随着游客越来越多，酒店需要更多会说中文的员工。",speak:"随着游客越来越多，酒店需要更多会说中文的员工。"}
 ];
 const QUESTIONS = normalizeQuestions(QUESTIONS_RAW);
 </script>
@@ -158,9 +243,6 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 #timer.low i{background:linear-gradient(90deg,#ff4d4d,#ff9a3d)}
 #timer.low{animation:pulse .5s infinite alternate}
 .arena-wrap{position:relative;height:max(234px,min(55vw,286px));min-height:234px;border-radius:16px;overflow:hidden;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
-#gl{display:block;width:100%;height:100%}
-.arena-fallback{display:none;height:100%;align-items:center;justify-content:space-around;font-size:64px;padding:10px}
-.arena-fallback.on{display:flex}
 .webgl-msg{display:none;font-size:12px;text-align:center;opacity:.9;padding:6px;background:rgba(0,0,0,.35);border-radius:10px}
 .webgl-msg.on{display:block}
 .skill-tag{position:absolute;left:50%;top:6%;transform:translateX(-50%);font-weight:900;font-size:15px;text-shadow:0 2px 8px #000;opacity:0;pointer-events:none;z-index:10;white-space:nowrap;max-width:90%;text-align:center}
@@ -184,6 +266,8 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 .shake{animation:shake .35s}@keyframes shake{0%,100%{transform:none}25%{transform:translate(-6px,2px)}50%{transform:translate(6px,-2px)}75%{transform:translate(-4px,1px)}}
 .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#ffd34d;color:#3a2600}
 .tag.listen{background:#2ec4b6;color:#042}.tag.order{background:#a78bfa;color:#1a0a3a}.tag.fill{background:#fb923c;color:#3a1600}.tag.situ{background:#60a5fa;color:#0a1a3a}
+.tag.lvtag{background:#16171B;color:#FFD91F;border:1.5px solid #FFD91F}
+.opts.py-help .opt .py{display:block}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .chip{border:0;border-radius:999px;padding:8px 12px;font-weight:700;font-size:14px;background:#fff;color:#123}
 .chip.used{opacity:.35}
@@ -252,7 +336,7 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 .invite .offers{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:rgba(22,23,27,.08);font-size:12.5px;line-height:1.45;text-align:left}
 .invite .offers p{margin:0 0 6px;opacity:1;font-weight:600}
 .invite .offers p:last-child{margin:0}
-.chip .py{display:block;font-size:10px;font-weight:500;opacity:.75;font-style:italic}
+.chip .py{display:block;font-size:10.5px;font-weight:600;opacity:1;font-style:italic;color:#1e5aa8}
 
 .mute-btn{position:fixed;bottom:14px;right:14px;z-index:40;width:44px;height:44px;border-radius:14px;border:2px solid var(--ink,#16171B);background:var(--sun,#FFD91F);font-size:20px;box-shadow:3px 3px 0 #16171B;cursor:pointer}
 #endTitle{padding-right:8px;line-height:1.25;word-break:break-word;max-width:100%}
@@ -272,19 +356,91 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
   box-shadow:none;min-height:0;font-family:inherit
 }
 .end-links a:active,.end-links button.linkish:active{opacity:.7}
-.road-art{margin-top:12px;width:100%;border-radius:16px;overflow:hidden;background:linear-gradient(#4a90b8 0%,#6eb6d9 42%,#2a7a9a 43%,#3d8a5a 70%,#c4a35a 100%);border:2px solid rgba(22,23,27,.5);aspect-ratio:16/11;position:relative}
-.road-art svg{display:block;width:100%;height:100%}
-.bike-progress{position:absolute;left:8%;top:52%;transform:translate(-50%,-50%);font-size:22px;filter:drop-shadow(0 2px 2px #000);transition:left .45s ease;pointer-events:none;z-index:2}
-
-.stage-map.screen{display:none;padding:16px 14px 28px}.stage-map.screen.on{display:flex;flex-direction:column}
-.stage-map h2{margin:8px 0 4px;font-size:22px}
-.stage-map .road{margin:16px 0;padding:14px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12)}
-.stage-node{display:flex;align-items:center;gap:12px;padding:12px;margin:8px 0;border-radius:14px;background:rgba(255,255,255,.08);border:2px solid transparent}
-.stage-node.done{border-color:#2ec4b6}.stage-node.current{border-color:#FFD91F;background:rgba(255,217,31,.15)}
-.stage-node.lock{opacity:.55}
-.stage-node .dot{width:36px;height:36px;border-radius:50%;background:#FFD91F;color:#16171B;display:grid;place-items:center;font-weight:900}
-.stage-node.lock .dot{background:#666;color:#ccc}
-.stage-map .btn{margin-top:8px}
+/* ===== v6 · bản đồ hành trình HSK0 → HSK4: Ā Bǎo đi bộ từ biển Bãi Cháy lên đỉnh ===== */
+.stage-map.screen{gap:8px}
+.map-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.map-head h2{font-size:21px;font-weight:900;line-height:1.1;letter-spacing:-.01em}
+.map-head h2 b{color:#FFD91F}
+.map-head .eyebrow{display:block;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-bottom:3px}
+.map-head .prog-pill{flex:none;font-size:12px;font-weight:900;background:#16171B;color:#FFD91F;border:2px solid #FFD91F;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.world{position:relative;width:min(100%,calc(58vh * 360 / 440));aspect-ratio:360/440;margin:0 auto;border-radius:18px;overflow:hidden;border:3px solid #16171B;box-shadow:0 6px 0 rgba(0,0,0,.35),0 18px 34px -14px rgba(0,0,0,.6);background:#0a0f2e;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.world svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.world .node{cursor:pointer}
+.world .node .halo{fill:none;stroke:#FFD91F;stroke-width:3;opacity:0}
+.world .node.open .halo{animation:halo 1.6s ease-out infinite}
+@keyframes halo{0%{opacity:.9;transform:scale(.8)}100%{opacity:0;transform:scale(1.7)}}
+.world .node .halo{transform-box:fill-box;transform-origin:center}
+.world .node .core{fill:#FFD91F;stroke:#16171B;stroke-width:3}
+.world .node.done .core{fill:#2ec4b6}
+.world .node.lock .core{fill:#5b6275}
+.world .node .num{font:900 15px system-ui,sans-serif;fill:#16171B;text-anchor:middle;dominant-baseline:central}
+.world .node.lock .num{fill:#c9cdd8}
+.world .node .lk{display:none}.world .node.lock .lk{display:block}.world .node.lock .num{display:none}
+.world .lbl{font:900 12px system-ui,sans-serif;fill:#fff;paint-order:stroke;stroke:#16171B;stroke-width:3.5px;stroke-linejoin:round}
+.world .lbl.tm{font-weight:700;font-size:10px;fill:#FFE98A}
+.world .lbl.st{font-size:11px;fill:#FFD91F;letter-spacing:1px}
+.world .node.here .core{stroke:#fff}
+.world .road{fill:none;stroke:#5a4632;stroke-width:13;stroke-linecap:round}
+.world .road-in{fill:none;stroke:#8a6d4c;stroke-width:9;stroke-linecap:round}
+.world .road-dash{fill:none;stroke:rgba(255,255,255,.55);stroke-width:1.6;stroke-dasharray:5 7;stroke-linecap:round}
+.world .road-done{fill:none;stroke:#FFD91F;stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 3px rgba(255,217,31,.9))}
+.world .twinkle{animation:twk 2.4s ease-in-out infinite alternate}
+@keyframes twk{from{opacity:.25}to{opacity:1}}
+.world .smoke{animation:smoke 3.2s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes smoke{0%{opacity:.7;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(6px,-22px) scale(1.6)}}
+.world .wave{animation:wave 3s ease-in-out infinite alternate}
+@keyframes wave{to{transform:translateX(-10px)}}
+.ninja{position:absolute;left:0;top:0;width:13%;aspect-ratio:1;transform:translate(-50%,-100%);pointer-events:none;z-index:3}
+.ninja .bod{position:absolute;inset:0;transform-origin:50% 100%}
+.ninja .pin{position:absolute;inset:0 0 18% 0;border-radius:50%;overflow:hidden;border:3px solid #FFD91F;box-shadow:0 0 0 2.5px #16171B,0 6px 10px rgba(0,0,0,.45);background:#1E5AA8}
+.ninja .pin img{width:100%;height:100%;object-fit:cover;object-position:50% 16%;transform:scale(1.9) translateY(14%);transform-origin:50% 30%;display:block}
+.ninja.flip .pin img{transform:scale(1.9) translateY(14%) scaleX(-1)}
+.ninja .tip{position:absolute;left:50%;bottom:6%;width:22%;aspect-ratio:1;background:#FFD91F;border:2.5px solid #16171B;border-top:0;border-left:0;transform:translateX(-50%) rotate(45deg)}
+.ninja .gnd{position:absolute;left:50%;bottom:-6%;width:70%;height:14%;border-radius:50%;background:rgba(0,0,0,.35);transform:translateX(-50%);filter:blur(1px)}
+.ninja.walking .bod{animation:hop .26s ease-in-out infinite alternate}
+@keyframes hop{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-16%) rotate(6deg)}}
+.ninja.cheer .bod{animation:cheer .5s cubic-bezier(.2,1.6,.4,1) 2}
+@keyframes cheer{50%{transform:translateY(-30%) scale(1.12)}}
+.dust{position:absolute;width:7px;height:7px;border-radius:50%;background:rgba(255,236,190,.85);pointer-events:none;z-index:2;transform:translate(-50%,-50%);animation:dust .55s ease-out forwards}
+@keyframes dust{to{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-160%) scale(2.2)}}
+.wbtn{position:absolute;bottom:10px;z-index:4;width:52px;height:52px;border-radius:50%;border:3px solid #16171B;background:#FFD91F;color:#16171B;font-size:22px;font-weight:900;box-shadow:0 4px 0 #16171B;display:grid;place-items:center}
+.wbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #16171B}
+.wbtn.prev{left:10px}.wbtn.next{right:10px}
+.wbtn[disabled]{opacity:.4}
+.wbtn.nudge{animation:nudge 1s ease-in-out infinite}
+@keyframes nudge{50%{transform:scale(1.14);box-shadow:0 4px 0 #16171B,0 0 0 8px rgba(255,217,31,.35)}}
+.map-toast{position:absolute;left:50%;top:10px;transform:translate(-50%,-8px);z-index:5;background:#16171B;color:#fff;border:2px solid #FFD91F;border-radius:12px;padding:7px 12px;font-size:13px;font-weight:800;white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+.map-toast.on{opacity:1;transform:translate(-50%,0)}
+.map-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;max-width:calc(100% - 140px);text-align:center;background:rgba(22,23,27,.88);color:#fff;border-radius:12px;padding:6px 10px;font-size:12px;font-weight:700;line-height:1.3;pointer-events:none}
+.map-hint[hidden]{display:none}
+.station-card.moving{opacity:.45;transition:opacity .2s}
+.station-card{transition:opacity .2s;background:rgba(8,26,40,.72);border:2px solid rgba(255,217,31,.55);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sc-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sc-top .lv{font-weight:900;font-size:12px;background:#FFD91F;color:#16171B;border-radius:6px;padding:2px 7px}
+.sc-top .tm{font-size:12px;font-weight:800;color:#FFE98A}
+.sc-top .stars{margin-left:auto;color:#FFD91F;letter-spacing:1px;font-size:14px}
+.station-card h3{font-size:18px;font-weight:900;line-height:1.2}
+.station-card .meta{font-size:12.5px;opacity:.88}
+.station-card .goal{font-size:12.5px;font-weight:700;color:#bff3ea}
+.learn{display:grid;gap:6px}
+.learn .lr{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:2px 10px;text-align:left;border:0;border-radius:12px;padding:8px 10px;background:rgba(255,255,255,.1);color:#fff}
+.learn .lr b{font:800 19px/1.2 "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;grid-row:span 2}
+.learn .lr i{font-size:12.5px;color:#9fd7ff}
+.learn .lr span{font-size:12.5px;opacity:.92}
+.learn .lr em{grid-row:1 / span 2;grid-column:3;font-style:normal;font-size:18px}
+.learn .lr:active{background:rgba(255,217,31,.25)}
+.lock-note{font-size:13px;font-weight:700;color:#ffd0c8}
+.map-cta{display:block;text-align:center;font-size:13px;font-weight:800;color:#16171B;background:linear-gradient(90deg,#FFD91F,#ffb347);border-radius:12px;padding:10px;text-decoration:none;border:2px solid #16171B}
+.map-cta[hidden]{display:none}
+.hsk-note{font-size:11px;opacity:.7;text-align:center}
+.unlock-line{margin:-2px 0 10px;font-size:14px;color:#bff3ea}.unlock-line[hidden]{display:none}
+#btnNextMap{width:100%}
+.road-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}
+.road-mini div{border-radius:10px;padding:7px 4px;text-align:center;background:rgba(255,255,255,.1);border:2px solid transparent;font-size:10.5px;line-height:1.25}
+.road-mini div b{display:block;font-size:13px;color:#FFD91F}
+.road-mini div.done{border-color:#2ec4b6}.road-mini div.next{border-color:#FFD91F;background:rgba(255,217,31,.15)}
+.road-mini div.lock{opacity:.6}
+@media (prefers-reduced-motion:reduce){.world .node.open .halo,.world .twinkle,.world .smoke,.world .wave,.ninja.walking .bod,.wbtn.nudge{animation:none!important}}
 
 /* ===== v4.1: juice + chiều sâu học ===== */
 .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
@@ -338,6 +494,94 @@ body.ingame .mute-btn{display:none}
 .end-streak{text-align:center;font-size:14px;font-weight:700;margin-top:-2px}
 @media (prefers-reduced-motion:reduce){.stars span.on,.clear-card,.explain,.opt.ok,.opt.no,.score-pill.bump,#timer.low{animation:none!important}.stars span.on{opacity:1;filter:none;transform:none}}
 .stars span.on{opacity:1}
+
+/* ===== v5 · sân đấu minh hoạ theo trailer: khung chéo vàng–đen, thanh máu kiểu game đối kháng ===== */
+.title-v5{font-size:19px;letter-spacing:.01em}.title-v5 span{color:#FFD91F}
+.fhud{flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-top:2px}
+.fh{min-width:0;display:flex;flex-direction:column;gap:4px}
+.fh .top{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:12px;font-weight:900;letter-spacing:.01em;white-space:nowrap}
+.fh .nm{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fh.hero .nm{color:#FFD91F}.fh.hero .nm b{color:#fff}
+.fh.boss .top{flex-direction:row-reverse}.fh.boss .nm{color:#ff8a7a}
+.fh .hp-num{font-variant-numeric:tabular-nums;opacity:.9}
+.fh .bar{height:15px;border:2px solid #16171B;border-radius:3px;background:#3a2020;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.fh.hero .bar{transform:skewX(-16deg)}.fh.boss .bar{transform:skewX(16deg)}
+.fh .bar i,.fh .bar .trail{border-radius:0}
+.fh.boss .bar i,.fh.boss .bar .trail{left:auto;right:0}
+#heroHp i{background:linear-gradient(180deg,#fff59a,#FFD91F 45%,#d99a00)}
+#bossHp i{background:linear-gradient(180deg,#ff9a8a,#ff3b30 45%,#a8121b)}
+#bossHp .trail{background:#fff;opacity:.85}
+.vs-badge{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 35% 30%,#2e3340,#0b0c10);border:3px solid #FFD91F;box-shadow:0 0 0 3px #16171B,0 6px 16px rgba(0,0,0,.45)}
+.vs-badge b{display:block;font-weight:900;font-size:19px;line-height:1;color:#FFD91F;font-variant-numeric:tabular-nums}
+.vs-badge small{display:block;font-size:7.5px;letter-spacing:.16em;font-weight:900;opacity:.75;margin-top:2px}
+.vs-badge.low{border-color:#ff4d4d;animation:pulse .5s infinite alternate}.vs-badge.low b{color:#ff6b6b}
+#timer{height:6px;border-radius:3px}
+.arena-wrap{flex:none;height:clamp(236px,68vw,320px);min-height:236px;border:3px solid #16171B;border-radius:14px;background:#16171B;box-shadow:0 6px 0 rgba(0,0,0,.35),0 16px 30px -12px rgba(0,0,0,.6);isolation:isolate}
+.stage-art{position:absolute;inset:0}
+.pnl{position:absolute;inset:0;overflow:hidden}
+.pnl.hero{clip-path:polygon(0 0,57% 0,43% 100%,0 100%);background:#FFD91F}
+.pnl.boss{clip-path:polygon(57% 0,100% 0,100% 100%,43% 100%);background:#16171B}
+.artbox{position:absolute;top:0;height:100%;aspect-ratio:3/4;min-width:60%}
+.pnl.hero .artbox{left:-3%}
+.pnl.boss .artbox{right:-15%}
+.artbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;display:block;transform-origin:50% 92%}
+.pnl.hero .artbox img{animation:breathe 3.4s ease-in-out infinite}
+.pnl.boss .artbox img{animation:breathe 4.3s ease-in-out infinite reverse}
+@keyframes breathe{50%{transform:translateY(-1.1%) scale(1.018)}}
+.pnl::after{content:"";position:absolute;inset:0;pointer-events:none}
+.pnl.hero::after{background:linear-gradient(100deg,rgba(255,217,31,0) 52%,rgba(255,217,31,.5) 100%),linear-gradient(0deg,rgba(0,0,0,.28),rgba(0,0,0,0) 30%)}
+.pnl.boss::after{background:linear-gradient(260deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.55) 100%),linear-gradient(0deg,rgba(0,0,0,.35),rgba(0,0,0,0) 30%)}
+.split{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;filter:drop-shadow(0 0 6px rgba(255,217,31,.6))}
+.aura{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 26px 8px rgba(70,200,255,.9);opacity:calc(var(--armor,0) / 3);transition:opacity .5s}
+.pflash{position:absolute;inset:0;background:#fffbe0;opacity:0;pointer-events:none}
+.rage-ov{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 66% 42%,rgba(255,30,20,0) 35%,rgba(255,30,20,.62) 100%)}
+.arena-wrap.rage .rage-ov{animation:ragePulse .8s ease-in-out infinite alternate}
+@keyframes ragePulse{from{opacity:.35}to{opacity:.95}}
+.arena-wrap.rage .pnl.boss .artbox img{animation:tremble .2s linear infinite;filter:saturate(1.3) contrast(1.08)}
+@keyframes tremble{0%,100%{transform:translate(0,0)}25%{transform:translate(-.7%,.3%)}50%{transform:translate(.6%,-.3%)}75%{transform:translate(-.3%,-.2%)}}
+.hat{display:none;position:absolute;left:24%;top:1.5%;width:32%;z-index:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.5))}
+.arena-wrap.factory .hat{display:block}
+.arena-wrap.factory .pnl.boss .artbox img{filter:sepia(.35) hue-rotate(-12deg) saturate(1.2) contrast(1.05)}
+.arena-wrap.factory .pnl.boss::before{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;z-index:2;background:repeating-linear-gradient(-45deg,#FFD91F 0 12px,#16171B 12px 24px)}
+/* v6 · boss từng trạm */
+.btag{display:none;position:absolute;right:8px;bottom:12px;z-index:3;font:900 10px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 7px;border:2px solid #16171B;background:#fff;color:#16171B;box-shadow:2px 2px 0 #16171B;transform:skewX(-10deg)}
+.arena-wrap[data-look=trainee] .btag{display:block;background:#7CFFB2}
+.arena-wrap[data-look=night] .btag{display:block;background:#5fd0ff}
+.arena-wrap[data-look=shadow] .btag{display:block;background:#c77dff;color:#16171B}
+.arena-wrap[data-look=trainee] .pnl.boss .artbox img{filter:brightness(1.08) saturate(1.15)}
+.shades{display:none;position:absolute;left:31%;top:17.5%;width:24%;z-index:1;filter:drop-shadow(0 2px 1px rgba(0,0,0,.4))}
+.arena-wrap[data-look=night] .shades{display:block}
+.arena-wrap[data-look=night] .pnl.boss{background:#0b1030}
+.arena-wrap[data-look=night] .pnl.boss .artbox img{filter:brightness(.82) contrast(1.15) saturate(.85)}
+.arena-wrap[data-look=night] .pnl.boss::after{background:radial-gradient(circle at 78% 14%,rgba(160,200,255,.4),transparent 40%),linear-gradient(rgba(30,50,150,.26),rgba(5,8,30,.45))}
+.arena-wrap[data-look=shadow] .pnl.boss{background:#12061f}
+.arena-wrap[data-look=shadow] .pnl.boss .artbox img{scale:-1 1;filter:grayscale(.6) brightness(.62) contrast(1.4) sepia(.3) hue-rotate(215deg) saturate(2.2)}
+.arena-wrap[data-look=shadow] .pnl.boss::after{background:radial-gradient(ellipse at 62% 42%,rgba(170,70,255,.38),transparent 58%),linear-gradient(260deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.6) 100%),linear-gradient(0deg,rgba(40,0,60,.5),rgba(0,0,0,0) 35%)}
+.arena-wrap.down-boss .pnl.boss .artbox{transform:translateY(7%) rotate(5deg);filter:grayscale(1) brightness(.6);transition:transform .7s cubic-bezier(.5,0,.7,.4) .2s,filter .5s .2s}
+.arena-wrap.down-hero .pnl.hero .artbox{transform:translateY(7%) rotate(-5deg);filter:grayscale(1) brightness(.6);transition:transform .7s cubic-bezier(.5,0,.7,.4) .2s,filter .5s .2s}
+.arena-wrap.paused .artbox img{animation-play-state:paused}
+#fx{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+.intro,.ko{position:absolute;inset:0;z-index:13;pointer-events:none;display:grid;place-items:center;opacity:0}
+.intro .vs,.ko{font:italic 900 clamp(64px,22vw,96px)/1 system-ui,-apple-system,sans-serif;color:#FFD91F;-webkit-text-stroke:5px #16171B;paint-order:stroke fill;text-shadow:6px 7px 0 #16171B;letter-spacing:-.03em;transform:rotate(-8deg)}
+.ko{z-index:14;font-size:clamp(72px,26vw,112px)}
+.intro .nm{position:absolute;left:0;right:0;bottom:16px;text-align:center}
+.intro .nm span{display:inline-block;background:#FFD91F;color:#16171B;font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border:2px solid #16171B;box-shadow:3px 3px 0 #16171B;transform:skewX(-10deg)}
+.arena-wrap .arena-mute{z-index:15}
+.combo-float{z-index:11}
+/* màn bắt đầu */
+.poster-vs{position:relative;height:clamp(190px,56vw,250px);border-radius:16px;overflow:hidden;border:3px solid #16171B;background:#16171B;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.poster-vs .pnl.hero .artbox img,.poster-vs .pnl.boss .artbox img{animation-duration:4s}
+.pv-vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-8deg);z-index:4;font:italic 900 64px/1 system-ui,-apple-system,sans-serif;color:#FFD91F;-webkit-text-stroke:4px #16171B;paint-order:stroke fill;text-shadow:5px 6px 0 #16171B;animation:vsBeat 1.6s ease-in-out infinite}
+@keyframes vsBeat{50%{transform:translate(-50%,-50%) rotate(-8deg) scale(1.08)}}
+.pv-tag{position:absolute;z-index:4;font-weight:900;font-size:11px;letter-spacing:.08em;padding:4px 9px;border:2px solid #16171B;box-shadow:2px 2px 0 #16171B;transform:skewX(-10deg)}
+.pv-tag.hero{left:10px;bottom:10px;background:#FFD91F;color:#16171B}
+.pv-tag.boss{right:10px;top:10px;background:#16171B;color:#ff8a7a;border-color:#ff8a7a}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.tiers figure{position:relative;border-radius:12px;overflow:hidden;border:2px solid rgba(255,217,31,.6);aspect-ratio:3/4;margin:0}
+.tiers img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.tiers figcaption{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-align:center;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.tiers figcaption b{display:block;font-size:13px;letter-spacing:0;color:#FFD91F;text-transform:none}
+@media (prefers-reduced-motion:reduce){.artbox img,.pv-vs,.vs-badge.low,.arena-wrap.rage .rage-ov{animation:none!important}}
 </style>
 </head>
 <body>
@@ -345,64 +589,65 @@ body.ingame .mute-btn{display:none}
 
 <div id="app">
  <div class="screen on" id="sStart">
-  <h1>⚔️ Bảo Khựa 阿宝<br>Đánh Boss 3D</h1>
+  <h1 class="title-v5">⚔️ Bảo Khựa 阿宝 · <span>Đánh Boss</span></h1>
+  <div class="poster-vs" role="img" aria-label="Ā Bǎo đấu Boss Lễ tân khó tính">
+   <div class="pnl hero"><div class="artbox"><img src="v4/art/hero1.jpg" alt="" decoding="async"></div></div>
+   <div class="pnl boss"><div class="artbox"><img src="v4/art/boss1.jpg" alt="" decoding="async"></div></div>
+   <svg class="split" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="57" y1="-2" x2="43" y2="102" stroke="#16171B" stroke-width="9" vector-effect="non-scaling-stroke"/><line x1="57" y1="-2" x2="43" y2="102" stroke="#FFD91F" stroke-width="3.5" vector-effect="non-scaling-stroke"/></svg>
+   <span class="pv-vs">VS</span>
+   <span class="pv-tag hero">Ā BǍO 阿宝</span><span class="pv-tag boss">LỄ TÂN KHÓ TÍNH</span>
+  </div>
   <div class="card">
-   <h2>📍 Chặng 1: Bãi Cháy – Lễ tân</h2>
-   <p class="note" style="margin-top:6px">Trả lời đúng → chiêu 3D. Nhanh <b id="fs"></b>s → x2. Combo 3 → <b>Long Hạ</b>. Nâng giáp / ATK / chiêu đều đổi hình tướng. Sai → xem đáp án + nghe mẫu; hết câu mà boss còn máu → <b>Hiệp phụ</b>. Mỗi chặng tối đa ⭐⭐⭐.</p>
-   <div class="concept" style="margin-top:8px">
-    <img src="v4/thumb/ninja_tier1_phi_tieu.jpg" alt="Cấp 1 Phi tiêu" width="72" height="72" decoding="async">
-    <img src="v4/thumb/ninja_tier2_chem_gio.jpg" alt="Cấp 2 Chém gió" width="72" height="72" decoding="async">
-    <img src="v4/thumb/ninja_tier3_long_ha.jpg" alt="Cấp 3 Long Hạ" width="72" height="72" decoding="async">
-    <img src="v4/thumb/boss_le_tan_kho_tinh.jpg" alt="Boss lễ tân" width="72" height="72" decoding="async">
+   <h2>🗺️ Hành trình HSK0 → HSK4</h2>
+   <p class="note" style="margin-top:6px">Chưa biết chữ nào cũng chơi được. Ā Bǎo đi bộ qua 5 trạm, từ pinyin và câu chào ở biển Bãi Cháy lên tới <b>đỉnh HSK4</b>: họp, đàm phán, phỏng vấn. Mỗi trạm học 3–4 câu mẫu rồi đánh 1 boss, trạm sau khó hơn trạm trước.</p>
+   <div class="road-mini" id="roadMini"></div>
+   <p class="note" style="margin-top:10px">Trả lời đúng → tướng ra chiêu. Nhanh <b id="fs"></b>s → x2. Combo 3 → <b>Long Hạ</b>. Nâng giáp / ATK / chiêu để đổi hình tướng. Sai → boss phản đòn, xem đáp án và nghe mẫu. Hết câu mà boss còn máu → <b>Hiệp phụ</b>. Mỗi trạm tối đa ⭐⭐⭐.</p>
+   <div class="tiers">
+    <figure><img src="v4/art/hero1.jpg" alt="" decoding="async"><figcaption>Cấp 1<b>Phi tiêu</b></figcaption></figure>
+    <figure><img src="v4/art/hero2.jpg" alt="" decoding="async"><figcaption>Cấp 2<b>Chém gió</b></figcaption></figure>
+    <figure><img src="v4/art/hero3.jpg" alt="" decoding="async"><figcaption>Cấp 3<b>Long Hạ</b></figcaption></figure>
    </div>
   </div>
   <div class="card" id="progress"></div>
-  <p class="webgl-msg" id="webglMsg">Máy không hỗ trợ WebGL — chạy chế độ dự phòng (emoji). Vẫn chơi đủ tính năng học.</p>
-  <button class="btn" type="button" id="btnStart">BẮT ĐẦU</button>
+  <button class="btn" type="button" id="btnStart">▶ VÀO HÀNH TRÌNH</button>
  </div>
 
  
 <div class="screen stage-map" id="sMap">
- <div class="wrap">
-  <span class="eyebrow">Hạ Long → Cẩm Phả</span>
-  <h2>Bản đồ chặng</h2>
-  <p class="lead" style="opacity:.85;font-size:14px">Đường Hạ Long–Cẩm Phả · 2 chặng boss. Mỗi câu Trung có pinyin + nghĩa Việt.</p>
-  <div class="road">
-   <div class="stage-node" id="node1"><span class="dot">1</span><div><b>Bãi Cháy – Khách sạn</b><br><small>Boss Lễ Tân · nhận phòng / trả phòng</small></div><span class="node-stars" id="stars1"></span></div>
-   <div style="text-align:center;opacity:.6;font-size:12px;margin:4px 0">QL18 · Hạ Long → Cẩm Phả</div>
-   <div class="stage-node lock" id="node2"><span class="dot">2</span><div><b>Cẩm Phả – Nhà máy</b><br><small>Boss Tổ trưởng · an toàn / tan ca</small></div><span class="node-stars" id="stars2"></span></div>
+  <div class="map-head">
+   <div><span class="eyebrow">Hành trình Ā Bǎo 阿宝</span><h2>HSK0 → <b>HSK4</b></h2></div>
+   <span class="prog-pill" id="mapProg">0/5 trạm</span>
   </div>
-  <div class="road-art" id="roadArt" aria-label="Bản đồ QL18 ven biển">
-   <span class="bike-progress" id="bikeIcon">🚲</span>
-   <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" role="img">
-    <!-- sky already via CSS bg; karsts -->
-    <g fill="#3d5c48" opacity=".9">
-      <path d="M20 95 L40 40 L60 95 Z"/><path d="M55 100 L80 35 L105 100 Z"/><path d="M100 98 L125 50 L150 98 Z"/>
-      <path d="M200 100 L230 42 L260 100 Z"/><path d="M250 105 L275 55 L300 105 Z"/>
-    </g>
-    <ellipse cx="160" cy="128" rx="150" ry="22" fill="#1e6a8a" opacity=".55"/>
-    <!-- coastal road QL18 -->
-    <path id="ql18" d="M28 165 C 80 150, 120 175, 160 160 S 240 145, 295 155" fill="none" stroke="#4a4a4a" stroke-width="14" stroke-linecap="round"/>
-    <path d="M28 165 C 80 150, 120 175, 160 160 S 240 145, 295 155" fill="none" stroke="#e8d24a" stroke-width="2" stroke-dasharray="8 10" stroke-linecap="round"/>
-    <!-- markers -->
-    <circle cx="36" cy="164" r="7" fill="#FFD91F" stroke="#16171B" stroke-width="2"/>
-    <circle cx="288" cy="154" r="7" fill="#2ec4b6" stroke="#16171B" stroke-width="2"/>
-    <text x="36" y="190" text-anchor="middle" font-size="11" font-weight="700" fill="#16171B">Hạ Long</text>
-    <text x="288" y="190" text-anchor="middle" font-size="11" font-weight="700" fill="#16171B">Cẩm Phả</text>
-    <text x="160" y="210" text-anchor="middle" font-size="10" fill="#16171B" opacity=".75">🚲 tiến độ trên QL18</text>
-   </svg>
+  <div class="world" id="world" role="group" aria-label="Bản đồ hành trình HSK0 đến HSK4">
+   <svg id="worldSvg" viewBox="0 0 360 440" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+   <div class="ninja" id="ninja" aria-hidden="true"><i class="gnd"></i><div class="bod"><div class="pin"><img src="v4/art/hero1.jpg" alt="" decoding="async"></div><i class="tip"></i></div></div>
+   <button type="button" class="wbtn prev" id="walkPrev" aria-label="Đi về trạm trước">◀</button>
+   <button type="button" class="wbtn next" id="walkNext" aria-label="Đi tới trạm sau">▶</button>
+   <div class="map-hint" id="mapHint" hidden>Chạm ▶ hoặc chạm vòng tròn để Ā Bǎo đi</div>
+   <div class="map-toast" id="mapToast" role="status" aria-live="polite"></div>
   </div>
-  <button class="btn" type="button" id="btnEnterStage">▶ Vào chặng</button>
+  <button class="btn" type="button" id="btnEnterStage">▶ Vào trận</button>
+  <div class="station-card" id="stationCard" aria-live="polite"></div>
+  <a class="map-cta" id="mapCta" href="membership.html" target="_blank" rel="noopener" data-offer-hold>🔥 11.11 · Học thật cùng Bảo: thẻ 1 năm 299k, đến 23:59 ngày 11/11 →</a>
   <button class="btn alt" type="button" id="btnMapBack">← Menu</button>
- </div>
+  <p class="hsk-note">Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức. Mốc thời gian là lộ trình gợi ý, tính từ ngày bạn bắt đầu học.</p>
 </div>
 
 <div class="screen" id="sGame">
-  <div class="hp-lab boss"><span class="nm" id="bossName">👹 Boss Lễ Tân</span><span class="hp-num" id="bossTxt">0/0</span></div>
-  <div class="bar boss-bar" id="bossHp"><span class="trail"></span><i></i></div>
+  <div class="fhud">
+   <div class="fh hero"><div class="top"><span class="nm">Ā Bǎo · <b id="heroLvl">Lv1</b></span><span class="hp-num" id="heroTxt">0/0</span></div><div class="bar hero-bar" id="heroHp"><i></i></div></div>
+   <div class="vs-badge" id="vsBadge"><div><b id="timerTxt">20</b><small>GIÂY</small></div></div>
+   <div class="fh boss"><div class="top"><span class="nm" id="bossName">Boss Lễ Tân</span><span class="hp-num" id="bossTxt">0/0</span></div><div class="bar boss-bar" id="bossHp"><span class="trail"></span><i></i></div></div>
+  </div>
   <div class="arena-wrap" id="arena">
-   <canvas id="gl"></canvas>
-   <div class="arena-fallback" id="fallback" aria-hidden="true"><span id="heroEmoji">🥷</span><span>👹</span></div>
+   <div class="stage-art">
+    <div class="pnl hero"><div class="artbox"><img id="heroArt" src="v4/art/hero1.jpg" alt="Tướng Ā Bǎo" decoding="async"></div><div class="aura"></div><div class="pflash"></div></div>
+    <div class="pnl boss"><div class="artbox"><img id="bossArt" src="v4/art/boss1.jpg" alt="Boss" decoding="async"><svg class="hat" viewBox="0 0 100 60" aria-hidden="true"><path d="M6 46 Q50 33 94 46 L97 53 Q50 42 3 53 Z" fill="#E0A800" stroke="#16171B" stroke-width="2.6" stroke-linejoin="round"/><path d="M15 45 C15 17 33 5 50 5 C67 5 85 17 85 45 Q50 35 15 45 Z" fill="#FFD91F" stroke="#16171B" stroke-width="2.6" stroke-linejoin="round"/><path d="M44 6 L56 6 L57 39 L43 39 Z" fill="#F2B200" stroke="#16171B" stroke-width="1.6" stroke-linejoin="round"/><path d="M23 37 C23 22 31 13 41 10 L39 36 Z" fill="#FFF6BF" opacity=".75"/><path d="M60 10 L70 16 L76 38 L60 37 Z" fill="#D69A00" opacity=".55"/></svg><svg class="shades" viewBox="0 0 100 30" aria-hidden="true"><path d="M4 8 H46 Q46 26 30 26 H18 Q4 26 4 12 Z M54 8 H96 V12 Q96 26 82 26 H70 Q54 26 54 8 Z" fill="#0b0d14" stroke="#16171B" stroke-width="2"/><path d="M46 10 Q50 7 54 10" fill="none" stroke="#0b0d14" stroke-width="3"/><path d="M10 11 L22 11 L14 20 Z M60 11 L72 11 L64 20 Z" fill="#5fd0ff" opacity=".55"/></svg></div><div class="rage-ov"></div><span class="btag"></span></div>
+    <svg class="split" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="57" y1="-2" x2="43" y2="102" stroke="#16171B" stroke-width="9" vector-effect="non-scaling-stroke"/><line x1="57" y1="-2" x2="43" y2="102" stroke="#FFD91F" stroke-width="3.5" vector-effect="non-scaling-stroke"/></svg>
+   </div>
+   <canvas id="fx" aria-hidden="true"></canvas>
+   <div class="intro" aria-hidden="true"><div class="vs">VS</div><div class="nm"><span></span></div></div>
+   <div class="ko" aria-hidden="true">K.O.</div>
    <div class="float-layer" id="floatLayer"></div>
    <div class="vignette" id="vignette"></div>
    <div class="combo-float" id="comboFloat"></div>
@@ -410,11 +655,8 @@ body.ingame .mute-btn{display:none}
    <div class="skill-tag" id="skillTag"></div>
    <button type="button" class="arena-mute" id="muteBtn2" aria-label="Tắt/bật tiếng" title="Âm thanh">🔊</button>
   </div>
-  <div class="hp-lab hero"><span class="nm">🥷 Tướng · <b id="heroLvl">Lv1</b></span><span class="hp-num" id="heroTxt">0/0</span></div>
-  <div class="bar hero-bar" id="heroHp"><i></i></div>
-  <div class="combo-box" id="combo"></div>
-  <div class="bar-lab"><b>⏱ Thời gian trả lời</b><span id="timerTxt"></span></div>
   <div class="bar" id="timer"><i></i></div>
+  <div class="combo-box" id="combo"></div>
   <div class="card">
    <div class="row"><span id="qNum"></span><span class="score-pill" id="scorePill">⭐ 0</span><span id="pwr"></span></div>
    <div id="qType"></div>
@@ -433,6 +675,7 @@ body.ingame .mute-btn{display:none}
   <h1 id="endTitle"></h1>
   <div class="end-streak" id="endStreak"></div>
   <div class="card" id="endInfo"></div>
+  <button class="btn" type="button" id="btnNextMap">🗺️ Về bản đồ</button>
   <div class="card review-card" id="reviewCard" hidden>
    <h4>📒 Sổ ôn – câu sai lượt này</h4>
    <div id="reviewList"></div>
@@ -449,8 +692,8 @@ body.ingame .mute-btn{display:none}
    <p class="price" id="invitePrice"></p>
    <p id="inviteShareLine" style="font-size:13px;margin:0 0 10px;opacity:.85"></p>
    <div class="offers" id="inviteOffers">
-    <p data-offer-hold>⏰ Giữ chỗ đến 20:00 thứ Ba 03/11.</p>
-    <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 20:00 thứ Ba 03/11 → bạn được cộng thêm 7 ngày.</p>
+    <p data-offer-hold>🔥 11.11 đại giảm giá: thẻ 1 năm 299k, đến 23:59 thứ Tư 11/11.</p>
+    <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 23:59 ngày 11/11 → bạn được cộng thêm 7 ngày.</p>
     <p>🎯 Mini game đoán nghĩa trong nhóm Zalo: đoán đúng → giảm đến 20k khi mua thẻ.</p>
    </div>
    <div class="row-btns">
@@ -460,7 +703,7 @@ body.ingame .mute-btn{display:none}
   </div>
   <div class="end-links">
    <button type="button" class="linkish" id="shareBtn">Chia sẻ</button>
-   <button type="button" class="linkish" id="btnAgain">Chơi lại</button>
+   <button type="button" class="linkish" id="btnAgain">↻ Đánh lại trạm này</button>
   </div>
  </div>
 </div>
@@ -477,824 +720,367 @@ body.ingame .mute-btn{display:none}
    <div><b id="clearScore">0</b>điểm</div>
   </div>
   <p class="note" id="clearTip" style="margin:-4px 0 10px"></p>
+  <p class="unlock-line" id="clearUnlock" hidden></p>
   <button class="btn" type="button" id="clearBtn">▶ Tiếp</button>
  </div>
 </div>
 <div class="overlay" id="upOverlay" role="dialog" aria-modal="true">
  <div class="up-card">
-  <h3>✨ Nâng cấp tướng (đổi hình 3D)</h3>
-  <p class="sub">Giáp · vũ khí · hào quang sẽ đổi ngay trên sân</p>
+  <h3>✨ Nâng cấp tướng</h3>
+  <p class="sub">Giáp · đòn đánh · chiêu mới hiện ngay trên sân</p>
   <div class="stats" id="upStats"></div>
   <div class="up-opts" id="upOpts"></div>
  </div>
 </div>
 
 <script type="module">
-/* ===== inlined from v4/battle3d.mjs — lazy CDN (2D first, swap-in when ready) ===== */
+/* ===== v5 · SÂN ĐẤU MINH HOẠ (tranh trong trailer + hiệu ứng canvas 2D) =====
+   Không cần WebGL hay thư viện ngoài. Tranh nhân vật nằm trong 2 khung chéo kiểu game đối kháng,
+   chiêu thức vẽ bằng canvas: phi tiêu xoay, nhát chém gió, rồng Long Hạ + sét, chuông phản đòn của boss.
+   Canvas chỉ chạy khi có hiệu ứng; lúc đứng yên chỉ còn CSS "thở" nhẹ → nhẹ máy. */
 let createBattle = null;
-function webglAvailable() {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
-  } catch (e) { return false; }
-}
-let __battle3dPromise = null;
-function ensureBattle3d() {
-  if (__battle3dPromise) return __battle3dPromise;
-  __battle3dPromise = (async () => {
-    // v4.1: tự host bản rút gọn (three r186 + bloom, ~148 KB gzip) thay vì ~2,7 MB từ CDN
-    const THREE = await import('./v4/vendor/battle-vendor.min.js');
-/**
- * Bảo Khựa battle scene — procedural low-poly (Media concept):
- * denim #1E5AA8 · sun #FFD91F · ink #16171B · teal aura Long Hạ
- * No GLB required; three.js + postprocessing gói trong v4/vendor/battle-vendor.min.js
- */
-let BloomEffect, EffectComposer, EffectPass, RenderPass;
-let postOk = false;
-async function loadPost() {
-  try {
-    const pp = THREE;
-    BloomEffect = pp.BloomEffect;
-    EffectComposer = pp.EffectComposer;
-    EffectPass = pp.EffectPass;
-    RenderPass = pp.RenderPass;
-    postOk = true;
-  } catch (e) {
-    console.warn('postprocessing CDN fail — bloom off', e);
-    postOk = false;
+createBattle = function createArena(root) {
+  const q = s => root.querySelector(s);
+  const stageEl = q('.stage-art'), heroP = q('.pnl.hero'), bossP = q('.pnl.boss');
+  const heroBox = q('.pnl.hero .artbox'), bossBox = q('.pnl.boss .artbox');
+  const heroImg = q('#heroArt'), bossImg = q('#bossArt'), pflash = q('.pnl.hero .pflash');
+  const cv = q('#fx'), g = cv.getContext('2d');
+  const HERO_ART = ['v4/art/hero1.jpg', 'v4/art/hero2.jpg', 'v4/art/hero3.jpg'];
+  HERO_ART.forEach(s => { const i = new Image(); i.src = s; });   // tải sẵn để đổi tranh không bị nháy trắng
+  const RM = REDUCED;
+  let W = 1, H = 1, dpr = 1, raf = 0, on = true, last = 0, freezeUntil = 0, inLoop = false;
+  let tier = -1, rage = false, rageAcc = 0, shakeT = 0, shakeA = 0, dark = 0, darkTo = 0, key = 'hotel', look = 'hotel';
+  // v6: mỗi trạm một boss. Hắc Ninja (HSK4) = tranh tướng cấp 3 lật ngược + nhuộm tối
+  const BOSS_ART = { trainee:'v4/art/boss1.jpg', hotel:'v4/art/boss1.jpg', factory:'v4/art/boss1.jpg', night:'v4/art/boss1.jpg', shadow:'v4/art/hero3.jpg' };
+  const BOSS_TAG = { trainee:'TẬP SỰ', night:'CA ĐÊM', shadow:'HSK4 · TRÙM CUỐI' };
+  const BOSS_COL = { trainee:'rgba(255,120,190,1)', hotel:'rgba(255,70,50,1)', factory:'rgba(255,150,30,1)', night:'rgba(90,200,255,1)', shadow:'rgba(185,90,255,1)' };
+  const btag = q('.btag');
+  const parts = [], fxs = [];
+  // điểm neo (theo khung sân): tay tướng bên trái, ngực boss bên phải
+  const HX = () => W * .3, HY = () => H * .58, BX = () => W * .72, BY = () => H * .47;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+
+  /* ---------- quả cầu sáng dựng sẵn cho từng màu (vẽ 1 lần, dùng lại) ---------- */
+  const glowCache = {};
+  function glow(col) {
+    if (glowCache[col]) return glowCache[col];
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const x = c.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, col); gr.addColorStop(.35, col.replace(/[\d.]+\)$/, '.45)')); gr.addColorStop(1, col.replace(/[\d.]+\)$/, '0)'));
+    x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+    return (glowCache[col] = c);
   }
-}
-const postReady = loadPost();
+  const C = { gold: 'rgba(255,217,31,1)', white: 'rgba(255,255,255,1)', teal: 'rgba(64,255,214,1)', cyan: 'rgba(90,200,255,1)', red: 'rgba(255,60,40,1)', orange: 'rgba(255,140,30,1)' };
+  function blob(x, y, r, col, a = 1) { g.globalAlpha = a; g.drawImage(glow(col), x - r, y - r, r * 2, r * 2); }
 
-const DENIM = 0x1e5aa8, DENIM_DEEP = 0x0f3468, SUN = 0xffd91f, INK = 0x16171b;
-const SKIN = 0xf0c9a0, TEAL = 0x2ec4b6, WHITE = 0xfff8e7, GOLD = 0xffd34d;
-
-function mat(color, opts = {}) {
-  return new THREE.MeshStandardMaterial({
-    color, flatShading: true, roughness: opts.roughness ?? 0.72, metalness: opts.metalness ?? 0.08,
-    emissive: opts.emissive ?? 0x000000, emissiveIntensity: opts.emissiveIntensity ?? 0,
-    transparent: !!opts.transparent, opacity: opts.opacity ?? 1
-  });
-}
-
-function box(w, h, d, color, opts) {
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color, opts));
-  m.castShadow = false; m.receiveShadow = false;
-  return m;
-}
-
-function makeBadgeTexture() {
-  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
-  const g = c.getContext('2d');
-  g.fillStyle = '#FFD91F'; g.beginPath();
-  g.moveTo(32, 4); g.lineTo(60, 32); g.lineTo(32, 60); g.lineTo(4, 32); g.closePath(); g.fill();
-  g.fillStyle = '#16171B'; g.font = 'bold 34px serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillText('宝', 32, 34);
-  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
-createBattle = function createBattle(canvas) {
-  const state = {
-    armor: 0, atk: 0, skillLv: 0, stageKey: 'hotel',
-    particles: [], shakeT: 0, shakeAmp: 0,
-    atkAnim: 0, bossAnim: 0, hitFlash: 0,
-    auraColor: new THREE.Color(TEAL),
-    running: true, active: true, rage: false, zoomT: 0,
-    reduced: matchMedia('(prefers-reduced-motion: reduce)').matches
-  };
-  const baseBg = new THREE.Color(0x4a90b8);
-  const tmpCol = new THREE.Color();
-  let rafId = 0;
-  let composer = null, bloomOn = false;
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-  renderer.setClearColor(0x4a90b8, 1);
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x4a90b8);
-  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 80);
-  camera.position.set(0, 1.95, 5.15);
-  camera.lookAt(0, 1.05, 0);
-  const camBase = camera.position.clone();
-
-  scene.add(new THREE.HemisphereLight(0xfff0d0, 0x1a3050, 1.15));
-  const key = new THREE.DirectionalLight(0xffffff, 1.05);
-  key.position.set(3, 6, 4); scene.add(key);
-  const rim = new THREE.DirectionalLight(0x7ec8ff, 0.35);
-  rim.position.set(-4, 3, -2); scene.add(rim);
-
-  // --- Floor / lobby ---
-  const floor = box(10, 0.12, 5, 0x3a3f48); floor.position.set(0, -0.06, 0.3); scene.add(floor);
-  const rug = box(3.2, 0.02, 1.6, 0x1e5aa8); rug.position.set(0, 0.02, 0.5); scene.add(rug);
-
-  // Stylized Ha Long karsts (backdrop)
-  const bg = new THREE.Group(); bg.position.set(0, 0, -3.5); scene.add(bg);
-  const sky = box(14, 7, 0.2, 0x6eb6d9); sky.position.y = 3; bg.add(sky);
-  [[-3.2, 1.4, 0.9], [-1.4, 2.0, 1.1], [0.2, 1.6, 0.8], [2.0, 2.2, 1.2], [3.5, 1.5, 0.85]].forEach(([x, h, s]) => {
-    const k = box(s, h, s * 0.7, 0x5a7a62); k.position.set(x, h / 2, -0.2); bg.add(k);
-  });
-  const water = box(14, 0.08, 2, 0x2a7a9a); water.position.set(0, 0.2, 0.6); bg.add(water);
-
-  // Reception desk
-  const desk = new THREE.Group(); desk.position.set(1.55, 0, 0.15); scene.add(desk);
-  const deskBody = box(1.8, 0.95, 0.7, 0x5a5e66); deskBody.position.y = 0.48; desk.add(deskBody);
-  const deskTop = box(1.9, 0.08, 0.78, GOLD); deskTop.position.y = 0.98; desk.add(deskTop);
-  const bell = box(0.18, 0.12, 0.18, GOLD, { metalness: 0.6, roughness: 0.3 }); bell.position.set(-0.55, 1.1, 0.1); desk.add(bell);
-  const book = box(0.35, 0.05, 0.28, WHITE); book.position.set(0.1, 1.06, 0.05); desk.add(book);
-  const card = box(0.18, 0.28, 0.02, DENIM); card.position.set(0.55, 1.2, 0.15); desk.add(card);
-
-  const badgeTex = makeBadgeTexture();
-
-  // --- Hero ---
-  const hero = new THREE.Group(); hero.position.set(-1.55, 0, 0.4); scene.add(hero);
-  const heroParts = {};
-
-  function buildHero() {
-    while (hero.children.length) hero.remove(hero.children[0]);
-    const body = new THREE.Group(); hero.add(body);
-
-    // legs
-    const legL = box(0.28, 0.55, 0.28, INK); legL.position.set(-0.16, 0.28, 0); body.add(legL);
-    const legR = box(0.28, 0.55, 0.28, INK); legR.position.set(0.16, 0.28, 0); body.add(legR);
-    const bootL = box(0.32, 0.16, 0.36, INK); bootL.position.set(-0.16, 0.08, 0.02); body.add(bootL);
-    const bootR = box(0.32, 0.16, 0.36, INK); bootR.position.set(0.16, 0.08, 0.02); body.add(bootR);
-    heroParts.bootGoldL = box(0.34, 0.04, 0.38, SUN); heroParts.bootGoldL.position.set(-0.16, 0.02, 0.02); heroParts.bootGoldL.visible = false; body.add(heroParts.bootGoldL);
-    heroParts.bootGoldR = box(0.34, 0.04, 0.38, SUN); heroParts.bootGoldR.position.set(0.16, 0.02, 0.02); heroParts.bootGoldR.visible = false; body.add(heroParts.bootGoldR);
-
-    // torso
-    const torso = box(0.72, 0.7, 0.42, DENIM); torso.position.set(0, 0.9, 0); body.add(torso);
-    heroParts.wave = box(0.74, 0.28, 0.44, DENIM_DEEP); heroParts.wave.position.set(0, 0.68, 0); body.add(heroParts.wave);
-
-    // badge 宝
-    const badge = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.28), new THREE.MeshStandardMaterial({ map: badgeTex, transparent: true, flatShading: true }));
-    badge.position.set(-0.18, 1.05, 0.22); body.add(badge);
-    heroParts.badgeBig = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.34), new THREE.MeshStandardMaterial({ map: badgeTex, transparent: true, flatShading: true, emissive: SUN, emissiveIntensity: 0.2 }));
-    heroParts.badgeBig.position.set(0, 1.05, 0.22); heroParts.badgeBig.visible = false; body.add(heroParts.badgeBig);
-
-    // armor pieces (upgrades)
-    heroParts.shoulderL = box(0.32, 0.22, 0.38, DENIM_DEEP, { metalness: 0.2 }); heroParts.shoulderL.position.set(-0.48, 1.18, 0); heroParts.shoulderL.visible = false; body.add(heroParts.shoulderL);
-    heroParts.shoulderR = box(0.32, 0.22, 0.38, DENIM_DEEP, { metalness: 0.2 }); heroParts.shoulderR.position.set(0.48, 1.18, 0); heroParts.shoulderR.visible = false; body.add(heroParts.shoulderR);
-    heroParts.shoulderGoldL = box(0.34, 0.06, 0.4, SUN, { emissive: SUN, emissiveIntensity: 0.15 }); heroParts.shoulderGoldL.position.set(-0.48, 1.28, 0); heroParts.shoulderGoldL.visible = false; body.add(heroParts.shoulderGoldL);
-    heroParts.shoulderGoldR = box(0.34, 0.06, 0.4, SUN, { emissive: SUN, emissiveIntensity: 0.15 }); heroParts.shoulderGoldR.position.set(0.48, 1.28, 0); heroParts.shoulderGoldR.visible = false; body.add(heroParts.shoulderGoldR);
-    heroParts.chestPlate = box(0.76, 0.36, 0.46, INK, { metalness: 0.25 }); heroParts.chestPlate.position.set(0, 0.95, 0.02); heroParts.chestPlate.visible = false; body.add(heroParts.chestPlate);
-
-    // arms
-    const armL = box(0.22, 0.55, 0.22, DENIM); armL.position.set(-0.52, 0.85, 0); body.add(armL);
-    const armR = box(0.22, 0.55, 0.22, DENIM); armR.position.set(0.52, 0.85, 0); body.add(armR);
-    heroParts.armWrapL = box(0.24, 0.2, 0.24, INK); heroParts.armWrapL.position.set(-0.52, 0.62, 0); heroParts.armWrapL.visible = false; body.add(heroParts.armWrapL);
-    heroParts.armWrapR = box(0.24, 0.2, 0.24, INK); heroParts.armWrapR.position.set(0.52, 0.62, 0); heroParts.armWrapR.visible = false; body.add(heroParts.armWrapR);
-
-    // head
-    const head = box(0.55, 0.55, 0.5, SKIN); head.position.set(0, 1.52, 0); body.add(head);
-    const hair = box(0.58, 0.28, 0.52, INK); hair.position.set(0, 1.78, -0.02); body.add(hair);
-    const spike = box(0.12, 0.22, 0.12, INK); spike.position.set(-0.12, 1.95, 0); body.add(spike);
-    const spike2 = box(0.1, 0.18, 0.1, INK); spike2.position.set(0.14, 1.92, 0.05); body.add(spike2);
-    // eyes
-    const eyeL = box(0.1, 0.1, 0.04, INK); eyeL.position.set(-0.12, 1.54, 0.26); body.add(eyeL);
-    const eyeR = box(0.1, 0.1, 0.04, INK); eyeR.position.set(0.12, 1.54, 0.26); body.add(eyeR);
-    // headband
-    const band = box(0.58, 0.1, 0.52, SUN); band.position.set(0, 1.68, 0.02); body.add(band);
-    heroParts.bandTail = box(0.08, 0.45, 0.08, SUN); heroParts.bandTail.position.set(0.32, 1.55, -0.15); heroParts.bandTail.rotation.z = 0.4; body.add(heroParts.bandTail);
-    heroParts.bandBadge = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.16), new THREE.MeshStandardMaterial({ map: badgeTex, transparent: true }));
-    heroParts.bandBadge.position.set(0, 1.68, 0.28); heroParts.bandBadge.visible = false; body.add(heroParts.bandBadge);
-
-    // Weapons group
-    heroParts.weapons = new THREE.Group(); heroParts.weapons.position.set(0.55, 0.95, 0.25); body.add(heroParts.weapons);
-
-    // Tier1 shuriken
-    heroParts.shuriken = new THREE.Group();
-    for (let i = 0; i < 4; i++) {
-      const blade = box(0.55, 0.06, 0.14, SUN, { emissive: SUN, emissiveIntensity: 0.25, metalness: 0.4 });
-      blade.rotation.z = (Math.PI / 2) * i; heroParts.shuriken.add(blade);
-    }
-    const hub = box(0.14, 0.08, 0.14, INK); heroParts.shuriken.add(hub);
-    heroParts.weapons.add(heroParts.shuriken);
-
-    // Tier2 dual blades
-    heroParts.blades = new THREE.Group(); heroParts.blades.visible = false;
-    const mkBlade = (x) => {
-      const g = new THREE.Group();
-      const blade = box(0.08, 0.7, 0.04, 0xe8f0ff, { emissive: SUN, emissiveIntensity: 0.45, metalness: 0.5 });
-      blade.position.y = 0.35; g.add(blade);
-      const hilt = box(0.1, 0.18, 0.1, INK); g.add(hilt);
-      const guard = box(0.22, 0.04, 0.08, SUN); guard.position.y = 0.1; g.add(guard);
-      g.position.x = x; return g;
-    };
-    heroParts.blades.add(mkBlade(-0.15)); heroParts.blades.add(mkBlade(0.15));
-    heroParts.weapons.add(heroParts.blades);
-
-    // Tier3 dragon shuriken (bigger + glow)
-    heroParts.dragonStar = new THREE.Group(); heroParts.dragonStar.visible = false;
-    for (let i = 0; i < 4; i++) {
-      const blade = box(0.75, 0.08, 0.16, SUN, { emissive: SUN, emissiveIntensity: 0.7, metalness: 0.55 });
-      blade.rotation.z = (Math.PI / 2) * i + 0.2; heroParts.dragonStar.add(blade);
-    }
-    const hub2 = box(0.18, 0.1, 0.18, TEAL, { emissive: TEAL, emissiveIntensity: 0.5 }); heroParts.dragonStar.add(hub2);
-    heroParts.weapons.add(heroParts.dragonStar);
-
-    // Aura ring (skill)
-    heroParts.aura = new THREE.Mesh(
-      new THREE.TorusGeometry(0.85, 0.04, 6, 20),
-      mat(TEAL, { emissive: TEAL, emissiveIntensity: 0.8, transparent: true, opacity: 0.75 })
-    );
-    heroParts.aura.rotation.x = Math.PI / 2; heroParts.aura.position.y = 0.9; heroParts.aura.visible = false; body.add(heroParts.aura);
-
-    heroParts.aura2 = new THREE.Mesh(
-      new THREE.TorusGeometry(1.05, 0.03, 6, 16),
-      mat(SUN, { emissive: SUN, emissiveIntensity: 0.5, transparent: true, opacity: 0.5 })
-    );
-    heroParts.aura2.rotation.x = Math.PI / 2; heroParts.aura2.position.y = 1.1; heroParts.aura2.visible = false; body.add(heroParts.aura2);
-
-    heroParts.body = body;
-  }
-  buildHero();
-
-  // --- Boss ---
-  const boss = new THREE.Group(); boss.position.set(1.55, 0, -0.15); scene.add(boss);
-  const bossParts = {};
-  (function buildBoss() {
-    const body = new THREE.Group(); boss.add(body);
-    // skirt/legs
-    const skirt = box(0.7, 0.5, 0.4, INK); skirt.position.set(0, 0.35, 0); body.add(skirt);
-    // blazer
-    const torso = box(0.75, 0.75, 0.42, DENIM); torso.position.set(0, 0.95, 0); body.add(torso);
-    const trimL = box(0.08, 0.7, 0.44, SUN); trimL.position.set(-0.28, 0.95, 0); body.add(trimL);
-    const trimR = box(0.08, 0.7, 0.44, SUN); trimR.position.set(0.28, 0.95, 0); body.add(trimR);
-    const shirt = box(0.28, 0.35, 0.4, WHITE); shirt.position.set(0, 1.05, 0.05); body.add(shirt);
-    // crossed arms
-    const armL = box(0.55, 0.18, 0.18, DENIM); armL.position.set(-0.15, 0.95, 0.28); armL.rotation.z = 0.15; body.add(armL);
-    const armR = box(0.55, 0.18, 0.18, DENIM); armR.position.set(0.15, 0.95, 0.28); armR.rotation.z = -0.15; body.add(armR);
-    // head
-    const head = box(0.5, 0.5, 0.45, SKIN); head.position.set(0, 1.55, 0); body.add(head);
-    const bun = box(0.22, 0.22, 0.22, INK); bun.position.set(0, 1.88, -0.05); body.add(bun);
-    const hair = box(0.52, 0.2, 0.48, INK); hair.position.set(0, 1.78, -0.02); body.add(hair);
-    const browL = box(0.14, 0.04, 0.04, INK); browL.position.set(-0.12, 1.62, 0.24); browL.rotation.z = 0.3; body.add(browL);
-    const browR = box(0.14, 0.04, 0.04, INK); browR.position.set(0.12, 1.62, 0.24); browR.rotation.z = -0.3; body.add(browR);
-    const eyeL = box(0.09, 0.08, 0.04, INK); eyeL.position.set(-0.12, 1.52, 0.24); body.add(eyeL);
-    const eyeR = box(0.09, 0.08, 0.04, INK); eyeR.position.set(0.12, 1.52, 0.24); body.add(eyeR);
-    const nameTag = box(0.16, 0.1, 0.02, SUN); nameTag.position.set(-0.22, 1.1, 0.22); body.add(nameTag);
-    bossParts.body = body;
-    bossParts.glow = new THREE.Mesh(new THREE.SphereGeometry(0.9, 8, 8), mat(0xff4444, { transparent: true, opacity: 0, emissive: 0xff2222, emissiveIntensity: 0.5 }));
-    bossParts.glow.position.y = 1; body.add(bossParts.glow);
-  })();
-
-  // ===== Combat VFX (MOBA feel) — models unchanged =====
-  const MAX_PARTICLES = 72;
-  const projectiles = [];
-  const fxMeshes = []; // slash arcs, rings, beams — temporary
-  const particlePool = [];
-
-  // Telegraph / impact helpers on boss
-  bossParts.telegraph = new THREE.Mesh(
-    new THREE.RingGeometry(0.35, 0.55, 24),
-    mat(0xff3333, { transparent: true, opacity: 0, emissive: 0xff2222, emissiveIntensity: 0.8 })
-  );
-  bossParts.telegraph.rotation.x = -Math.PI / 2;
-  bossParts.telegraph.position.set(0, 0.05, 0.35);
-  boss.add(bossParts.telegraph);
-
-  bossParts.hitFlashMat = [];
-  boss.traverse(ch => {
-    if (ch.isMesh && ch.material && ch.material.emissive) {
-      ch.material.userData.baseEI = ch.material.emissiveIntensity;
-      ch.material.userData.baseEm = ch.material.emissive.getHex();
-      bossParts.hitFlashMat.push(ch.material);
-    }
-  });
-
-  state.hitStop = 0;
-  state.knockT = 0;
-  state.knockDir = 0;
-  state.bossHitT = 0;
-  state.telegraphT = 0;
-  state.levelUpT = 0;
-  state.timeScale = 1;
-  hero.userData.baseX = -1.55;
-  boss.userData.baseX = 1.55;
-
-  function acquireParticle() {
-    let p = particlePool.pop();
-    if (!p) {
-      p = box(0.07, 0.07, 0.07, SUN, { emissive: SUN, emissiveIntensity: 0.7, transparent: true, opacity: 1 });
-    }
-    p.visible = true;
-    return p;
-  }
-  function releaseParticle(p) {
-    p.visible = false;
-    if (p.parent) p.parent.remove(p);
-    if (particlePool.length < MAX_PARTICLES) particlePool.push(p);
-  }
-
-  function spawnParticle(x, y, z, color, n = 12, speed = 0.08) {
-    if (state.reduced) n = Math.min(n, 6);
-    const room = MAX_PARTICLES - state.particles.length;
-    n = Math.min(n, Math.max(0, room));
+  /* ---------- hạt ---------- */
+  function burst(x, y, n, cols, sp = 1, o = {}) {
+    if (RM) n = Math.ceil(n / 3);
     for (let i = 0; i < n; i++) {
-      const p = acquireParticle();
-      // Đa sắc: lệch nhẹ hue/độ sáng quanh màu gốc → hạt lấp lánh không đơn điệu
-      tmpCol.setHex(color).offsetHSL((Math.random() - 0.5) * 0.09, 0, (Math.random() - 0.5) * 0.18);
-      p.material.color.copy(tmpCol);
-      p.material.emissive.copy(tmpCol);
-      p.material.emissiveIntensity = 0.75;
-      p.material.opacity = 1;
-      p.position.set(x, y, z);
-      p.scale.setScalar(0.7 + Math.random() * 0.8);
-      p.userData.v = new THREE.Vector3((Math.random() - 0.5) * speed, Math.random() * speed * 1.2, (Math.random() - 0.5) * speed);
-      p.userData.life = 1;
-      p.userData.decay = 1.6 + Math.random() * 1.2;
-      scene.add(p);
-      state.particles.push(p);
+      const a = o.dir != null ? o.dir + rnd(-o.spread || -.6, o.spread || .6) : rnd(0, 6.283), v = rnd(.35, 1) * sp * H * .9;
+      parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: o.g != null ? o.g : H * .9, life: rnd(.35, .75) * (o.life || 1), max: 0, r: rnd(1.6, 3.6) * (o.size || 1) * (H / 300), col: cols[i % cols.length], kind: o.kind || 'spark' });
+      parts[parts.length - 1].max = parts[parts.length - 1].life;
     }
+    run();
+  }
+  function ring(x, y, r1, col, dur = .45, w = 6, delay = 0) { fxs.push({ t: -delay, dur, draw(k) { const r = r1 * (.15 + .85 * (1 - Math.pow(1 - k, 3))); g.globalAlpha = 1 - k; g.strokeStyle = col; g.lineWidth = w * (1 - k) + 1; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.stroke(); } }); run(); }
+  function boltPts(x0, y0, x1, y1, segs = 9, jit = .08) {
+    const pts = [[x0, y0]];
+    for (let i = 1; i < segs; i++) { const k = i / segs; pts.push([x0 + (x1 - x0) * k + rnd(-1, 1) * H * jit, y0 + (y1 - y0) * k + rnd(-1, 1) * H * jit]); }
+    pts.push([x1, y1]); return pts;
+  }
+  function bolt(x0, y0, x1, y1, col = 'rgba(160,255,240,1)', life = .14) {
+    const pts = boltPts(x0, y0, x1, y1);
+    fxs.push({ t: 0, dur: life, draw(k) {
+      g.globalAlpha = 1 - k; g.lineCap = 'round'; g.lineJoin = 'round';
+      [[9, col.replace(/[\d.]+\)$/, '.28)')], [3.2, col], [1.2, '#fff']].forEach(([w, c]) => { g.strokeStyle = c; g.lineWidth = w; g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); });
+    } });
+    run();
+  }
+  function shake(t, a) { if (RM) return; shakeT = Math.max(shakeT, t); shakeA = Math.max(shakeA, a); run(); }
+  function hitStop(ms) { if (!RM) freezeUntil = performance.now() + ms; }
+
+  /* ---------- phản ứng của tranh (Web Animations) ---------- */
+  function anim(el, frames, ms, ease = 'cubic-bezier(.2,.9,.3,1)') { if (!el || !el.animate || RM) return; try { el.animate(frames, { duration: ms, easing: ease }); } catch (e) {} }
+  function bossHit(strong) {
+    anim(bossBox, [{ transform: 'translateX(0)', filter: 'brightness(1)' }, { transform: `translateX(${strong ? 9 : 6}%) rotate(${strong ? 2 : 1}deg)`, filter: 'brightness(2.6) saturate(.3)', offset: .18 }, { transform: 'translateX(0)', filter: 'brightness(1)' }], strong ? 520 : 340);
+  }
+  function heroHurt() {
+    anim(heroBox, [{ transform: 'translateX(0)', filter: 'none' }, { transform: 'translateX(-7%) rotate(-2deg)', filter: 'brightness(1.3) sepia(1) saturate(7) hue-rotate(-35deg)', offset: .2 }, { transform: 'translateX(0)', filter: 'none' }], 420);
+  }
+  function heroLunge(px = 9) { anim(heroBox, [{ transform: 'translateX(0) scale(1)' }, { transform: `translateX(${px}%) scale(1.05)`, offset: .35 }, { transform: 'translateX(0) scale(1)' }], 420); }
+
+  /* ---------- hình vẽ ---------- */
+  function shurikenShape(x, y, R, ang, body = '#FFD91F', gem = '#5ff5d8') {
+    g.save(); g.translate(x, y); g.rotate(ang);
+    g.beginPath();
+    for (let i = 0; i < 8; i++) { const r = i % 2 ? R * .32 : R, a = i * Math.PI / 4; g[i ? 'lineTo' : 'moveTo'](Math.cos(a) * r, Math.sin(a) * r); }
+    g.closePath(); g.fillStyle = body; g.fill(); g.lineWidth = Math.max(1.5, R * .12); g.strokeStyle = '#16171B'; g.stroke();
+    g.beginPath(); g.arc(0, 0, R * .2, 0, 6.283); g.fillStyle = '#16171B'; g.fill();
+    g.beginPath(); g.arc(0, 0, R * .1, 0, 6.283); g.fillStyle = gem; g.fill();
+    g.restore();
+  }
+  function crescent(cx, cy, R, a0, a1, th, col) {
+    const mid = (a0 + a1) / 2, ox = Math.cos(mid) * th, oy = Math.sin(mid) * th;
+    g.beginPath(); g.arc(cx, cy, R, a0, a1); g.arc(cx - ox, cy - oy, R * .9, a1, a0, true); g.closePath();
+    const gr = g.createLinearGradient(cx + Math.cos(a0) * R, cy + Math.sin(a0) * R, cx + Math.cos(a1) * R, cy + Math.sin(a1) * R);
+    gr.addColorStop(0, 'rgba(255,200,40,0)'); gr.addColorStop(.45, col); gr.addColorStop(.85, 'rgba(255,236,150,.95)'); gr.addColorStop(1, 'rgba(255,255,255,1)');
+    g.fillStyle = gr; g.fill();
   }
 
-  function addFxMesh(mesh, life) {
-    mesh.userData.life = life;
-    mesh.userData.maxLife = life;
-    scene.add(mesh);
-    fxMeshes.push(mesh);
-    return mesh;
+  /* ---------- CHIÊU CỦA TƯỚNG ---------- */
+  function phiTieu() {
+    const n = 1 + (cur.atk >= 2 ? 2 : cur.atk >= 1 ? 1 : 0);
+    heroLunge(7); Snd.sfx('swish');
+    let hitAt = 300;
+    for (let i = 0; i < n; i++) {
+      const d = i * .07, dy = (i - (n - 1) / 2) * H * .09, x0 = HX() + W * .05, y0 = HY() - H * .06;
+      fxs.push({ t: -d - .08, dur: .26, spin: rnd(18, 26), draw(k) {
+        const x = x0 + (BX() - x0) * k, y = y0 + (BY() + dy - y0) * k - Math.sin(k * Math.PI) * H * .1, R = H * .055;
+        if (Math.random() < .9) parts.push({ x, y, vx: rnd(-20, 20), vy: rnd(-20, 20), g: 0, life: .22, max: .22, r: R * .35, col: 'rgba(255,217,31,1)', kind: 'glow' });
+        g.globalCompositeOperation = 'lighter'; blob(x, y, R * 2.2, C.gold, .7); g.globalCompositeOperation = 'source-over';
+        g.globalAlpha = 1; shurikenShape(x, y, R, this.t * this.spin);
+      }, end() { impact(BX() - W * .02, BY() + dy, i === n - 1 ? 1 : .6); } });
+    }
+    run();
+    return { impactAt: hitAt + (n - 1) * 70 };
   }
-
-  function spawnShockwave(x, y, z, color, scale = 1) {
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.15, 0.28, 28),
-      mat(color, { transparent: true, opacity: 0.9, emissive: color, emissiveIntensity: 0.9 })
-    );
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.set(x, y, z);
-    ring.userData.grow = 3.5 * scale;
-    addFxMesh(ring, 0.45);
+  function chemGio() {
+    heroLunge(14); Snd.sfx('swish'); setTimeout(() => Snd.sfx('swish'), 120);
+    // vệt gió chạy ngang
+    for (let i = 0; i < 9; i++) { const y = rnd(H * .25, H * .8), len = rnd(W * .2, W * .45); fxs.push({ t: -rnd(0, .1), dur: .28, draw(k) { const x = W * (.2 + k * .7); g.globalAlpha = (1 - k) * .8; g.strokeStyle = 'rgba(255,240,180,.9)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x - len, y); g.lineTo(x, y); g.stroke(); } }); }
+    const cut = (delay, a0, a1, flip) => fxs.push({ t: -delay, dur: .32, draw(k) {
+      const sw = Math.min(1, k / .45), a = a0 + (a1 - a0) * sw, R = H * .42;
+      g.globalCompositeOperation = 'lighter'; g.globalAlpha = 1 - Math.max(0, (k - .45) / .55);
+      crescent(BX() + (flip ? W * .02 : -W * .02), BY(), R, a0, a, H * .07, 'rgba(255,196,20,1)');
+      g.globalCompositeOperation = 'source-over';
+    }, end() {} });
+    cut(.1, -2.3, -.5, false); cut(.22, 2.4, .7, true);
+    setTimeout(() => impact(BX(), BY(), .8), 200);
+    setTimeout(() => impact(BX() + W * .03, BY() + H * .05, 1), 320);
+    run();
+    return { impactAt: 210 };
   }
-
-  function spawnSlashArc(from, to, color) {
-    const mid = from.clone().lerp(to, 0.45);
-    mid.y += 0.35;
-    const arc = new THREE.Mesh(
-      new THREE.TorusGeometry(0.85, 0.06, 6, 18, Math.PI * 0.85),
-      mat(color, { transparent: true, opacity: 0.95, emissive: color, emissiveIntensity: 1 })
-    );
-    arc.position.copy(mid);
-    arc.rotation.set(-0.4, 0.6, 0.9);
-    arc.userData.spin = 8;
-    addFxMesh(arc, 0.28);
-  }
-
-  function spawnTrailProjectile(origin, target, color, kind) {
-    const body = box(
-      kind === 'chem_gio' ? 0.12 : 0.32,
-      kind === 'chem_gio' ? 0.55 : 0.1,
-      kind === 'chem_gio' ? 0.06 : 0.32,
-      color,
-      { emissive: color, emissiveIntensity: 1, metalness: 0.4 }
-    );
-    body.position.copy(origin);
-    const dir = target.clone().sub(origin);
-    const dist = dir.length();
-    dir.normalize();
-    body.userData.v = dir.multiplyScalar(0.11);
-    body.userData.life = Math.min(0.55, dist / 6);
-    body.userData.trailColor = color;
-    body.userData.trailAcc = 0;
-    if (kind === 'chem_gio') body.rotation.z = -0.9;
-    scene.add(body);
-    projectiles.push(body);
-    return body;
-  }
-
-  function spawnAoEPillar(x, z, color) {
-    const pillar = box(0.35, 2.8, 0.35, color, { transparent: true, opacity: 0.55, emissive: color, emissiveIntensity: 1 });
-    pillar.position.set(x, 1.4, z);
-    pillar.userData.shrink = true;
-    addFxMesh(pillar, 0.55);
-    spawnShockwave(x, 0.08, z, color, 1.6);
-    spawnParticle(x, 1.2, z, color, 22, 0.14);
-    spawnParticle(x, 1.4, z, 0xffffff, 10, 0.1);
-  }
-
-  function hitStop(ms) {
-    state.hitStop = Math.max(state.hitStop, ms / 1000);
-  }
-
-  function applyVisuals() {
-    const a = state.armor, atk = state.atk, sk = state.skillLv;
-    heroParts.shoulderL.visible = a >= 1;
-    heroParts.shoulderR.visible = a >= 1;
-    heroParts.armWrapL.visible = a >= 1;
-    heroParts.armWrapR.visible = a >= 1;
-    heroParts.chestPlate.visible = a >= 2;
-    heroParts.shoulderGoldL.visible = a >= 3;
-    heroParts.shoulderGoldR.visible = a >= 3;
-    heroParts.bootGoldL.visible = a >= 2;
-    heroParts.bootGoldR.visible = a >= 2;
-    heroParts.badgeBig.visible = a >= 3;
-    heroParts.bandBadge.visible = sk >= 2 || a >= 3;
-    heroParts.shuriken.visible = sk === 0;
-    heroParts.blades.visible = sk === 1;
-    heroParts.dragonStar.visible = sk >= 2;
-    heroParts.aura.visible = sk >= 2;
-    heroParts.aura2.visible = sk >= 2;
-    const glow = Math.min(1, 0.2 + atk * 0.08);
-    const setEmissive = (obj, c, inten) => obj.traverse(ch => {
-      if (ch.material && ch.material.emissive) {
-        ch.material.emissive.setHex(c);
-        ch.material.emissiveIntensity = inten;
+  function longHa() {
+    darkTo = .62; Snd.sfx('roar');
+    heroLunge(4);
+    // tụ khí: sét bao quanh tướng
+    for (let i = 0; i < 7; i++) setTimeout(() => { const a = rnd(0, 6.283); bolt(HX() + Math.cos(a) * H * .32, HY() + Math.sin(a) * H * .32, HX() + rnd(-8, 8), HY() - H * .1 + rnd(-8, 8)); }, i * 45);
+    burst(HX(), HY() - H * .08, 26, [C.teal, C.gold, C.white], .45, { g: -H * .6, kind: 'glow', life: 1.1 });
+    // rồng ngọc bay từ tướng vòng lên rồi lao vào boss
+    const SEG = RM ? 10 : 26;
+    fxs.push({ t: -.34, dur: .55, draw(k) {
+      const path = s => { s = Math.max(0, Math.min(1, s)); return [HX() + (BX() - HX()) * s, HY() - H * .1 + (BY() - HY() + H * .1) * s - Math.sin(s * Math.PI) * H * .3 + Math.sin(s * 9 + this.t * 12) * H * .035]; };
+      g.globalCompositeOperation = 'lighter';
+      for (let i = SEG - 1; i >= 0; i--) {
+        const s = k * 1.25 - i * .03; if (s < 0) continue;
+        const [x, y] = path(s), r = H * (.075 - i * .0022);
+        blob(x, y, r * 2.2, C.teal, .42); if (i % 3 === 0) blob(x, y, r * 1.1, C.gold, .55); blob(x, y, r * .55, C.white, .3);
       }
-    });
-    if (sk === 0) setEmissive(heroParts.shuriken, SUN, glow);
-    if (sk === 1) setEmissive(heroParts.blades, SUN, glow + 0.15);
-    if (sk >= 2) setEmissive(heroParts.dragonStar, SUN, glow + 0.35);
-    const auraCol = sk >= 2 ? TEAL : (atk >= 3 ? 0xff6b35 : SUN);
-    if (heroParts.aura.material) {
-      heroParts.aura.material.color.setHex(auraCol);
-      heroParts.aura.material.emissive.setHex(auraCol);
+      const [hx, hy] = path(k * 1.25), [bx, by] = path(k * 1.25 - .03), ang = Math.atan2(hy - by, hx - bx);
+      blob(hx, hy, H * .17, C.teal, .8); blob(hx, hy, H * .06, C.white, .5);
+      g.globalCompositeOperation = 'source-over';
+      // sừng rồng
+      g.globalAlpha = .95; g.strokeStyle = '#FFD91F'; g.lineWidth = Math.max(2, H * .012); g.lineCap = 'round';
+      [-.9, .9].forEach(d => { g.beginPath(); g.moveTo(hx, hy); g.lineTo(hx - Math.cos(ang + d * .5) * H * .09, hy - Math.sin(ang + d * .5) * H * .09 - H * .02); g.stroke(); });
+      g.globalCompositeOperation = 'lighter';
+      if (Math.random() < .5) bolt(hx, hy, hx + rnd(-1, 1) * H * .2, hy + rnd(-1, 1) * H * .2, 'rgba(160,255,240,1)', .08);
+      g.globalCompositeOperation = 'source-over';
+      // mắt rồng
+      g.globalAlpha = 1; g.fillStyle = '#FFD91F'; g.beginPath(); g.arc(hx + H * .03, hy - H * .02, H * .016, 0, 6.283); g.fill();
+    }, end() {
+      darkTo = 0; Snd.sfx('slam');
+      impact(BX(), BY(), 2.2);
+      for (let i = 0; i < 6; i++) setTimeout(() => bolt(BX() + rnd(-1, 1) * W * .12, -10, BX() + rnd(-1, 1) * W * .06, BY(), 'rgba(160,255,240,1)', .18), i * 40);
+      ring(BX(), BY(), H * .7, 'rgba(64,255,214,.95)', .6, 10); ring(BX(), BY(), H * .5, 'rgba(255,217,31,.95)', .5, 7, .08);
+      whiteFlash(.75);
+    } });
+    run();
+    return { impactAt: 860 };
+  }
+  function impact(x, y, power = 1) {
+    hitStop(power > 1.5 ? 110 : 55);
+    shake(.18 + .1 * power, H * .018 * power);
+    bossHit(power > 1.5);
+    g.globalCompositeOperation = 'source-over';
+    burst(x, y, Math.round(16 * power), [C.gold, C.white, 'rgba(255,170,60,1)'], .7 * Math.sqrt(power), { kind: 'spark' });
+    burst(x, y, Math.round(6 * power), [C.white], .25, { kind: 'glow', g: 0, size: 3 });
+    ring(x, y, H * .32 * Math.sqrt(power), 'rgba(255,240,170,.95)', .38, 6);
+    fxs.push({ t: 0, dur: .16, draw(k) { g.globalCompositeOperation = 'lighter'; blob(x, y, H * .35 * power * (1 - k * .5), C.white, 1 - k); g.globalCompositeOperation = 'source-over'; } });
+  }
+  function whiteFlash(a = .6) { fxs.push({ t: 0, dur: .3, draw(k) { g.globalAlpha = a * (1 - k); g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); } }); run(); }
+
+  /* ---------- BOSS PHẢN ĐÒN (mỗi trạm một kiểu) ---------- */
+  function bossAttack() {
+    const col = BOSS_COL[look] || BOSS_COL.hotel, soft = col.replace(/[\d.]+\)$/, '.9)');
+    anim(bossBox, [{ transform: 'scale(1)' }, { transform: 'scale(1.07) translateX(-3%)', offset: .5 }, { transform: 'scale(1)' }], 380);
+    if (look === 'shadow') {
+      // Hắc Ninja ném 3 phi tiêu tím ngược về phía tướng
+      Snd.sfx('swish');
+      for (let i = 0; i < 3; i++) {
+        const dy = (i - 1) * H * .09, x0 = BX() - W * .05, y0 = BY() - H * .04;
+        fxs.push({ t: -i * .06 - .04, dur: .27, spin: -rnd(18, 26), draw(k) {
+          const x = x0 + (HX() - x0) * k, y = y0 + (HY() - H * .05 + dy - y0) * k - Math.sin(k * Math.PI) * H * .08, R = H * .05;
+          if (Math.random() < .8) parts.push({ x, y, vx: rnd(-20, 20), vy: rnd(-20, 20), g: 0, life: .2, max: .2, r: R * .35, col, kind: 'glow' });
+          g.globalCompositeOperation = 'lighter'; blob(x, y, R * 2.2, col, .7); g.globalCompositeOperation = 'source-over';
+          g.globalAlpha = 1; shurikenShape(x, y, R, this.t * this.spin, '#2a1240', '#d38bff');
+        } });
+      }
+      run();
+    } else if (look === 'night') {
+      // Quản lý ca đêm: đèn pin quét một luồng sáng xanh rồi "tia" kỷ luật lao tới
+      setTimeout(() => {
+        Snd.sfx('zap');
+        fxs.push({ t: 0, dur: .32, draw(k) {
+          const a = .85 * (1 - k * .5), sp = H * (.08 + .22 * k);
+          const gr = g.createLinearGradient(BX(), BY(), HX(), HY());
+          gr.addColorStop(0, 'rgba(200,240,255,.95)'); gr.addColorStop(1, 'rgba(90,200,255,0)');
+          g.globalAlpha = a; g.fillStyle = gr; g.beginPath(); g.moveTo(BX() - W * .04, BY() - H * .06);
+          g.lineTo(HX() + W * .02, HY() - H * .05 - sp); g.lineTo(HX() + W * .02, HY() - H * .05 + sp); g.closePath(); g.fill();
+        } });
+        bolt(BX() - W * .04, BY() - H * .05, HX() + W * .02, HY() - H * .05, 'rgba(120,210,255,1)', .2);
+        run();
+      }, 150);
+    } else {
+      // lễ tân: chuông "ding" · nhà máy: sóng cảnh báo cam · tập sự: chuông nhỏ màu hồng
+      const fac = look === 'factory';
+      setTimeout(() => {
+        Snd.sfx(fac ? 'zap' : 'ding');
+        for (let i = 0; i < (look === 'trainee' ? 2 : 3); i++) fxs.push({ t: -i * .07, dur: .34, draw(k) {
+          const x = BX() + (HX() - BX()) * k, y = BY() + (HY() - BY()) * k, r = H * (.1 + .16 * k) * (look === 'trainee' ? .8 : 1);
+          g.globalAlpha = .9 * (1 - k * .6); g.strokeStyle = col; g.lineWidth = 5;
+          g.beginPath(); g.arc(x, y, r, Math.PI * .62, Math.PI * 1.38); g.stroke();
+          g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.beginPath(); g.arc(x, y, r, Math.PI * .7, Math.PI * 1.3); g.stroke();
+        } });
+        run();
+      }, 150);
     }
-    state.auraColor.setHex(auraCol);
-    const ws = 1 + Math.min(0.45, atk * 0.06);
-    heroParts.weapons.scale.setScalar(ws);
+    setTimeout(() => {
+      heroHurt(); shake(.3, H * (look === 'trainee' ? .02 : look === 'shadow' ? .04 : .03)); hitStop(look === 'shadow' ? 100 : 70);
+      burst(HX(), HY() - H * .05, look === 'shadow' ? 28 : 20, [col, C.white, look === 'factory' ? C.gold : 'rgba(255,190,170,1)'], .7);
+      ring(HX(), HY() - H * .05, H * .3, soft, .4, 6);
+      if (look === 'shadow') Snd.sfx('slam');
+    }, 330);
+    return { impactAt: 330 };
   }
 
+  /* ---------- vòng lặp vẽ: chỉ chạy khi có hiệu ứng ---------- */
+  // đang trong vòng vẽ thì không đặt thêm vòng (tránh 2 vòng cùng khung → thời gian âm)
+  function run() { if (!raf && !inLoop && on) { last = performance.now(); raf = requestAnimationFrame(loop); } }
+  function loop(now) {
+    raf = 0; inLoop = true;
+    try { frame(now); } catch (e) { parts.length = 0; fxs.length = 0; }
+    inLoop = false;
+    if (on && (parts.length || fxs.length || shakeT > 0 || dark > .01 || darkTo > 0 || rage)) raf = requestAnimationFrame(loop);
+    else g.clearRect(0, 0, W, H);
+  }
+  function frame(now) {
+    const frozen = now < freezeUntil, dt = frozen ? 0 : Math.max(0, Math.min(.05, (now - last) / 1000)); last = now;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    dark += (darkTo - dark) * Math.min(1, dt * 10);
+    if (dark > .01) { g.globalAlpha = dark; g.fillStyle = '#020814'; g.fillRect(0, 0, W, H); }
+    // hạt
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i]; p.life -= dt; if (p.life <= 0) { parts.splice(i, 1); continue; }
+      p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .985;
+      const a = p.life / p.max;
+      if (p.kind === 'glow') { g.globalCompositeOperation = 'lighter'; blob(p.x, p.y, p.r * 3, p.col, a); g.globalCompositeOperation = 'source-over'; }
+      else { g.globalAlpha = a; g.strokeStyle = p.col; g.lineWidth = p.r; g.lineCap = 'round'; g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx * .035, p.y - p.vy * .035); g.stroke(); }
+    }
+    // hiệu ứng có thời lượng
+    for (let i = fxs.length - 1; i >= 0; i--) {
+      const f = fxs[i]; f.t += dt;
+      if (f.t < 0) continue;
+      const k = Math.min(1, f.t / f.dur);
+      g.globalAlpha = 1; f.draw(k);
+      if (k >= 1) { fxs.splice(i, 1); if (f.end) f.end(); }
+    }
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+    // rung sân
+    if (shakeT > 0) { shakeT -= dt; const a = shakeA * Math.max(0, shakeT) / .3; stageEl.style.transform = `translate(${rnd(-a, a).toFixed(1)}px,${rnd(-a, a).toFixed(1)}px)`; if (shakeT <= 0) { stageEl.style.transform = ''; shakeA = 0; } }
+    // boss nổi giận: hơi nóng bốc lên
+    if (rage && !RM) { rageAcc += dt; if (rageAcc > .12) { rageAcc = 0; parts.push({ x: BX() + rnd(-W * .12, W * .12), y: H * .95, vx: rnd(-10, 10), vy: -rnd(40, 80), g: 0, life: 1.2, max: 1.2, r: rnd(3, 6), col: look === 'shadow' ? 'rgba(185,90,255,1)' : look === 'night' ? 'rgba(90,200,255,1)' : 'rgba(255,90,40,1)', kind: 'glow' }); } }
+  }
+
+  const cur = { armor: 0, atk: 0, skillLv: 0 };
   function resize() {
-    const parent = canvas.parentElement;
-    const w = Math.max(2, (parent && parent.clientWidth) || canvas.clientWidth || 320);
-    const h = Math.max(2, (parent && parent.clientHeight) || canvas.clientHeight || 200);
-    canvas.width = w; canvas.height = h;
-    renderer.setSize(w, h, false);
-    if (composer && composer.setSize) composer.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
+    const r = root.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(1, r.width); H = Math.max(1, r.height);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
   }
-
-  let last = performance.now();
-  function tick(now) {
-    // v4.1: dừng hẳn vòng vẽ khi rời màn chơi / ẩn tab → mát máy, đỡ pin
-    if (!state.running || !state.active) { rafId = 0; return; }
-    rafId = requestAnimationFrame(tick);
-    let dt = Math.min(0.05, (now - last) / 1000); last = now;
-
-    // Hit-stop / freeze frames
-    if (state.hitStop > 0) {
-      state.hitStop -= dt;
-      dt *= 0.08; // near-freeze
-    }
-
-    const t = now * 0.001;
-
-    // idle bob (respect knock)
-    const heroKnock = state.knockT > 0 && state.knockDir < 0 ? -0.35 * state.knockT : 0;
-    const bossKnock = state.knockT > 0 && state.knockDir > 0 ? 0.4 * state.knockT : 0;
-    if (state.knockT > 0) state.knockT -= dt * 2.2;
-
-    hero.position.y = Math.sin(t * 2.2) * 0.03;
-    boss.position.y = Math.sin(t * (state.rage ? 5.5 : 2.0) + 1) * (state.rage ? 0.035 : 0.02);
-    if (heroParts.shuriken.visible) heroParts.shuriken.rotation.z += dt * (2.5 + state.atk * 0.4);
-    if (heroParts.dragonStar.visible) heroParts.dragonStar.rotation.z += dt * 3.5;
-    if (heroParts.aura.visible) {
-      heroParts.aura.rotation.z += dt * 1.5;
-      heroParts.aura2.rotation.z -= dt * 1.1;
-      heroParts.aura.material.opacity = 0.55 + Math.sin(t * 4) * 0.2;
-    }
-
-    // attack lunge
-    if (state.atkAnim > 0) {
-      state.atkAnim -= dt;
-      const k = Math.max(0, state.atkAnim);
-      hero.position.x = hero.userData.baseX + Math.sin((1 - k) * Math.PI) * 1.35 + heroKnock;
-      hero.rotation.y = Math.sin((1 - k) * Math.PI) * 0.45;
-    } else {
-      hero.position.x = hero.userData.baseX + heroKnock;
-      hero.rotation.y = 0.15;
-    }
-
-    // boss telegraph pulse
-    if (state.telegraphT > 0) {
-      state.telegraphT -= dt;
-      const p = state.telegraphT;
-      bossParts.telegraph.material.opacity = Math.min(0.95, p * 2.2);
-      const s = 1 + (1 - Math.min(1, p)) * 1.4;
-      bossParts.telegraph.scale.set(s, s, s);
-    } else {
-      bossParts.telegraph.material.opacity = 0;
-      bossParts.telegraph.scale.set(1, 1, 1);
-    }
-
-    if (state.bossAnim > 0) {
-      state.bossAnim -= dt;
-      const k = Math.max(0, state.bossAnim);
-      boss.position.x = boss.userData.baseX - Math.sin((1 - k) * Math.PI) * 1.15 + bossKnock;
-      bossParts.glow.material.opacity = k * 0.5;
-    } else {
-      boss.position.x = boss.userData.baseX + bossKnock;
-      // Boss sắp gục (máu < 30%) → hào quang đỏ phập phồng: báo hiệu "sắp thắng"
-      bossParts.glow.material.opacity = state.rage ? 0.12 + Math.sin(t * 7) * 0.08 : 0;
-    }
-
-    // boss hit flash reaction + squash & stretch
-    if (state.bossHitT > 0) {
-      state.bossHitT -= dt;
-      const f = Math.min(1, state.bossHitT * 5);
-      bossParts.hitFlashMat.forEach(m => { m.emissiveIntensity = 0.2 + f * 1.4; m.emissive.setHex(0xff2222); });
-      boss.rotation.z = Math.sin(state.bossHitT * 40) * 0.08 * f;
-      boss.scale.set(1 + 0.13 * f, 1 - 0.13 * f, 1 + 0.13 * f);
-      state._bossFlashDirty = true;
-    } else {
-      boss.rotation.z = 0;
-      boss.scale.set(1, 1, 1);
-      if (state._bossFlashDirty) {
-        // trả màu gốc (v4 để boss đỏ ửng vĩnh viễn sau cú đánh đầu)
-        bossParts.hitFlashMat.forEach(m => { m.emissiveIntensity = m.userData.baseEI || 0; m.emissive.setHex(m.userData.baseEm || 0); });
-        state._bossFlashDirty = false;
-      }
-    }
-
-    // camera punch-zoom khi tung chiêu kết liễu
-    if (state.zoomT > 0) {
-      state.zoomT = Math.max(0, state.zoomT - dt);
-      camera.fov = 48 - Math.sin(Math.min(1, state.zoomT / 0.5) * Math.PI) * 7;
-      camera.updateProjectionMatrix();
-    }
-
-    // level-up pillar local
-    if (state.levelUpT > 0) {
-      state.levelUpT -= dt;
-    }
-
-    // projectiles + trails
-    for (let i = projectiles.length - 1; i >= 0; i--) {
-      const pr = projectiles[i];
-      pr.position.addScaledVector(pr.userData.v, dt * 60);
-      pr.userData.life -= dt;
-      pr.rotation.z += dt * (pr.userData.spin || 12);
-      pr.userData.trailAcc = (pr.userData.trailAcc || 0) + dt;
-      if (!state.reduced && pr.userData.trailAcc > 0.03) {
-        pr.userData.trailAcc = 0;
-        spawnParticle(pr.position.x, pr.position.y, pr.position.z, pr.userData.trailColor || SUN, 2, 0.04);
-      }
-      if (pr.userData.life <= 0) {
-        scene.remove(pr);
-        if (pr.geometry) pr.geometry.dispose();
-        if (pr.material) pr.material.dispose();
-        projectiles.splice(i, 1);
-      }
-    }
-
-    // fx meshes (slash, rings, pillars)
-    for (let i = fxMeshes.length - 1; i >= 0; i--) {
-      const m = fxMeshes[i];
-      m.userData.life -= dt;
-      const lifeRatio = m.userData.life / m.userData.maxLife;
-      if (m.material) m.material.opacity = Math.max(0, lifeRatio);
-      if (m.userData.grow) {
-        const s = 1 + (1 - lifeRatio) * m.userData.grow;
-        m.scale.set(s, s, s);
-      }
-      if (m.userData.spin) m.rotation.z += dt * m.userData.spin;
-      if (m.userData.shrink) m.scale.y = Math.max(0.1, lifeRatio);
-      if (m.userData.life <= 0) {
-        scene.remove(m);
-        if (m.geometry) m.geometry.dispose();
-        if (m.material) m.material.dispose();
-        fxMeshes.splice(i, 1);
-      }
-    }
-
-    // particles
-    for (let i = state.particles.length - 1; i >= 0; i--) {
-      const p = state.particles[i];
-      p.position.add(p.userData.v);
-      p.userData.v.y -= 0.004;
-      p.userData.life -= dt * (p.userData.decay || 1.8);
-      p.material.opacity = Math.max(0, p.userData.life);
-      p.material.transparent = true;
-      if (p.userData.life <= 0) {
-        state.particles.splice(i, 1);
-        releaseParticle(p);
-      }
-    }
-
-    // camera shake
-    if (state.shakeT > 0) {
-      state.shakeT -= dt;
-      const a = state.shakeAmp * Math.max(0, state.shakeT);
-      camera.position.x = camBase.x + (Math.random() - 0.5) * a;
-      camera.position.y = camBase.y + (Math.random() - 0.5) * a * 0.65;
-    } else {
-      camera.position.copy(camBase);
-    }
-
-    // v4.1: chớp màu nền thật (v4 đặt clearColor nhưng bị scene.background che → không thấy)
-    if (state.hitFlash > 0) {
-      state.hitFlash -= dt;
-      const a = Math.min(0.5, Math.max(0, state.hitFlash) * 2.2);
-      scene.background.copy(baseBg).lerp(tmpCol.setHex(state.hitFlashColor || 0xffffff), a);
-    } else {
-      scene.background.copy(baseBg);
-    }
-
-    if (composer && bloomOn) composer.render();
-    else renderer.render(scene, camera);
-  }
-
-  function applyStageTheme(key) {
-    state.stageKey = key || 'hotel';
-    const factory = state.stageKey === 'factory';
-    // Minimal palette swap — không beautify model
-    baseBg.setHex(factory ? 0x5a6a72 : 0x4a90b8);
-    scene.background.copy(baseBg);
-    renderer.setClearColor(factory ? 0x5a6a72 : 0x4a90b8, 1);
-    try {
-      // hard-hat tint on boss hair-ish / band if present
-      boss.traverse(ch => {
-        if (!ch.isMesh || !ch.material || !ch.material.color) return;
-        // skip particles
-      });
-      if (factory) {
-        // small orange block as hard hat (once)
-        if (!boss.userData.hardHat) {
-          const hat = box(0.5, 0.18, 0.45, 0xff8c1a, { metalness: 0.2 });
-          hat.position.set(0, 1.95, 0);
-          boss.add(hat);
-          boss.userData.hardHat = hat;
-        }
-        boss.userData.hardHat.visible = true;
-      } else if (boss.userData.hardHat) {
-        boss.userData.hardHat.visible = false;
-      }
-    } catch (e) {}
-  }
-
-  async function setupBloom() {
-    await postReady;
-    if (!postOk || state.reduced) return;
-    try {
-      composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      const bloom = new BloomEffect({
-        intensity: 0.55,
-        luminanceThreshold: 0.72,
-        luminanceSmoothing: 0.3,
-        mipmapBlur: true
-      });
-      composer.addPass(new EffectPass(camera, bloom));
-      bloomOn = true;
-      const _r = resize;
-      // keep composer size in sync
-      const origResize = resize;
-      // monkey: call setSize on composer inside resize via wrap
-    } catch (e) {
-      console.warn('bloom setup fail', e);
-      composer = null; bloomOn = false;
-    }
-  }
-  setupBloom();
-
   resize();
-  applyVisuals();
-  applyStageTheme('hotel');
-  rafId = requestAnimationFrame(tick);
-  window.addEventListener('resize', resize, { passive: true });
-
-  // wrap resize to sync composer
-  const _resize = resize;
-  function resizeWithComposer() {
-    _resize();
-    if (composer && composer.setSize) {
-      const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
-      composer.setSize(w, h);
-    }
-  }
-  window.removeEventListener('resize', resize);
-  window.addEventListener('resize', resizeWithComposer, { passive: true });
+  addEventListener('resize', resize);
 
   return {
-    resize: resizeWithComposer,
-    setStage(key) { applyStageTheme(key); state.rage = false; },
-    /** Bật/tắt vòng vẽ (tắt khi không ở màn chơi hoặc tab ẩn) */
-    setActive(on) {
-      state.active = !!on;
-      if (state.active && state.running && !rafId) { last = performance.now(); rafId = requestAnimationFrame(tick); }
+    ok: true,
+    resize,
+    setActive(v) { on = !!v; root.classList.toggle('paused', !on); if (on) run(); else if (raf) { cancelAnimationFrame(raf); raf = 0; } },
+    setStage(k) {
+      key = k;
+      const sg = STAGES.find(x => x.key === k);
+      look = (sg && sg.look) || (k === 'factory' ? 'factory' : 'hotel');
+      root.dataset.look = look;
+      root.classList.toggle('factory', look === 'factory');
+      const src = BOSS_ART[look] || BOSS_ART.hotel;
+      if (!bossImg.src.endsWith(src)) bossImg.src = src;
+      if (btag) btag.textContent = BOSS_TAG[look] || '';
     },
-    setRage(on) { state.rage = !!on; },
-    setVisual({ armor = 0, atk = 0, skillLv = 0 } = {}) {
-      state.armor = armor; state.atk = atk; state.skillLv = skillLv; applyVisuals();
+    setRage(v) { rage = !!v; root.classList.toggle('rage', rage); if (rage) run(); },
+    setVisual(v) {
+      Object.assign(cur, v || {});
+      root.style.setProperty('--armor', Math.min(3, cur.armor || 0));
+      root.style.setProperty('--atk', Math.min(4, cur.atk || 0));
+      const t = Math.min(2, cur.skillLv || 0);
+      if (t === tier) return;
+      const first = tier < 0; tier = t;
+      if (first || RM) { heroImg.src = HERO_ART[t]; return; }
+      // đổi tranh tướng: lóe sáng rồi hiện hình mới
+      anim(pflash, [{ opacity: 0 }, { opacity: 1, offset: .35 }, { opacity: 0 }], 650, 'ease-out');
+      setTimeout(() => { heroImg.src = HERO_ART[t]; anim(heroBox, [{ transform: 'scale(1.12)' }, { transform: 'scale(1)' }], 500, 'cubic-bezier(.2,1.6,.4,1)'); }, 220);
     },
-    /** @returns {{ impactAt:number }} ms until impact for syncing float dmg */
-    playHeroAttack(kind = 'phi_tieu') {
-      const origin = new THREE.Vector3(hero.position.x, 1.05, hero.position.z);
-      const target = new THREE.Vector3(boss.position.x, 1.25, boss.position.z);
-      let impactAt = 180;
-      state.atkAnim = 0.32;
-
-      if (kind === 'phi_tieu') {
-        spawnTrailProjectile(origin, target, SUN, 'phi_tieu');
-        spawnParticle(origin.x, origin.y, origin.z, SUN, 8, 0.06);
-        impactAt = 200;
-        setTimeout(() => {
-          spawnParticle(target.x, target.y, target.z, SUN, 16, 0.12);
-          spawnParticle(target.x, target.y, target.z, 0xffffff, 8, 0.09);
-          spawnShockwave(target.x, 0.1, target.z, SUN, 0.9);
-          state.bossHitT = 0.28;
-          state.knockT = 0.45; state.knockDir = 1;
-          hitStop(70);
-          state.shakeT = 0.2; state.shakeAmp = 0.14;
-          state.hitFlash = 0.12; state.hitFlashColor = SUN;
-        }, impactAt);
-      } else if (kind === 'chem_gio') {
-        spawnSlashArc(origin, target, 0xffe08a);
-        spawnTrailProjectile(origin.clone().add(new THREE.Vector3(0, 0.2, 0)), target, GOLD, 'chem_gio');
-        impactAt = 160;
-        setTimeout(() => {
-          spawnSlashArc(target.clone().add(new THREE.Vector3(-0.3, 0, 0)), target, SUN);
-          spawnParticle(target.x, target.y, target.z, GOLD, 18, 0.13);
-          spawnParticle(target.x, target.y, target.z, 0xffffff, 10, 0.1);
-          spawnShockwave(target.x, 0.12, target.z, GOLD, 1.1);
-          state.bossHitT = 0.35;
-          state.knockT = 0.55; state.knockDir = 1;
-          hitStop(80);
-          state.shakeT = 0.26; state.shakeAmp = 0.18;
-          state.hitFlash = 0.14; state.hitFlashColor = GOLD;
-        }, impactAt);
-      } else {
-        // Long Hạ ultimate — AoE
-        spawnParticle(origin.x, origin.y, origin.z, TEAL, 14, 0.1);
-        spawnAoEPillar(target.x, target.z, TEAL);
-        const p2 = spawnTrailProjectile(origin, target, TEAL, 'long_ha');
-        p2.scale.setScalar(1.4);
-        impactAt = 220;
-        setTimeout(() => {
-          spawnAoEPillar(target.x, target.z, SUN);
-          spawnShockwave(target.x, 0.1, target.z, TEAL, 2.2);
-          spawnShockwave(target.x, 0.15, target.z, SUN, 1.4);
-          spawnParticle(target.x, target.y, target.z, TEAL, 28, 0.16);
-          spawnParticle(target.x, target.y + 0.4, target.z, 0xffffff, 14, 0.12);
-          state.bossHitT = 0.5;
-          state.knockT = 0.7; state.knockDir = 1;
-          state.zoomT = 0.5;
-          hitStop(90);
-          state.shakeT = 0.4; state.shakeAmp = 0.32;
-          state.hitFlash = 0.22; state.hitFlashColor = TEAL;
-        }, impactAt);
-      }
-      return { impactAt };
-    },
-    playBossAttack() {
-      // telegraph then strike
-      state.telegraphT = 0.35;
-      state.shakeT = 0.12; state.shakeAmp = 0.06;
-      setTimeout(() => {
-        state.bossAnim = 0.38;
-        state.shakeT = 0.32; state.shakeAmp = 0.22;
-        state.hitFlash = 0.2; state.hitFlashColor = 0xff3030;
-        state.knockT = 0.5; state.knockDir = -1;
-        hitStop(75);
-        const tpos = new THREE.Vector3(hero.position.x, 1.05, hero.position.z);
-        spawnParticle(tpos.x, tpos.y, tpos.z, 0xff5555, 18, 0.12);
-        spawnShockwave(tpos.x, 0.08, tpos.z, 0xff3333, 1.0);
-      }, 320);
-      return { impactAt: 320 };
-    },
+    playHeroAttack(kind) { return kind === 'long_ha' ? longHa() : kind === 'chem_gio' ? chemGio() : phiTieu(); },
+    playBossAttack: bossAttack,
+    flashBoss() {},   // chớp boss đã nằm sẵn ở lúc trúng đòn
     playLevelUp() {
-      state.levelUpT = 0.9;
-      const x = hero.position.x, z = hero.position.z;
-      spawnAoEPillar(x, z, SUN);
-      spawnShockwave(x, 0.08, z, SUN, 1.8);
-      spawnShockwave(x, 0.12, z, TEAL, 1.2);
-      spawnParticle(x, 1.2, z, SUN, 20, 0.12);
-      spawnParticle(x, 1.5, z, 0xffffff, 10, 0.08);
-      state.shakeT = 0.18; state.shakeAmp = 0.1;
+      Snd.sfx('ding');
+      const x = HX(), top = 0;
+      fxs.push({ t: 0, dur: .8, draw(k) {
+        const a = Math.sin(k * Math.PI), w = W * .16 * (1 - k * .4);
+        const gr = g.createLinearGradient(x - w, 0, x + w, 0);
+        gr.addColorStop(0, 'rgba(255,217,31,0)'); gr.addColorStop(.5, 'rgba(255,240,160,.9)'); gr.addColorStop(1, 'rgba(255,217,31,0)');
+        g.globalCompositeOperation = 'lighter'; g.globalAlpha = a; g.fillStyle = gr; g.fillRect(x - w, top, w * 2, H);
+        g.globalCompositeOperation = 'source-over';
+      } });
+      burst(x, H * .9, 30, [C.gold, C.white, C.teal], .5, { g: -H * .9, kind: 'glow', dir: -Math.PI / 2, spread: .5, life: 1.2 });
+      ring(x, HY(), H * .45, 'rgba(255,217,31,.95)', .6, 7);
+      run();
     },
-    burstAtBoss(color = SUN) {
-      spawnParticle(boss.position.x, 1.2, boss.position.z, color, 18, 0.1);
+    /** màn mở trận: hai khung lao vào, chữ VS đập xuống */
+    intro(stageName) {
+      const it = q('.intro'); if (!it) return;
+      q('.intro .nm span').textContent = stageName || '';
+      if (RM) return;
+      anim(heroP, [{ transform: 'translateX(-60%)' }, { transform: 'none' }], 420, 'cubic-bezier(.16,1,.3,1)');
+      anim(bossP, [{ transform: 'translateX(60%)' }, { transform: 'none' }], 420, 'cubic-bezier(.16,1,.3,1)');
+      anim(it, [{ opacity: 0 }, { opacity: 1, offset: .12 }, { opacity: 1, offset: .8 }, { opacity: 0 }], 1500, 'linear');
+      anim(q('.intro .vs'), [{ transform: 'scale(3.2) rotate(-24deg)', opacity: 0 }, { transform: 'scale(.92) rotate(-8deg)', opacity: 1, offset: .32 }, { transform: 'scale(1) rotate(-8deg)', opacity: 1 }], 700, 'cubic-bezier(.2,1.4,.4,1)');
+      setTimeout(() => { Snd.sfx('slam'); shake(.25, H * .025); whiteFlash(.35); burst(W / 2, H / 2, 24, [C.gold, C.white], .8); }, 230);
     },
-    /** Red flash on boss materials for ms (default 150) */
-    flashBoss(ms = 150) {
-      state.bossHitT = Math.max(state.bossHitT, ms / 1000);
-      state.shakeT = Math.max(state.shakeT, ms / 1000);
-      state.shakeAmp = Math.max(state.shakeAmp, 0.16);
-      state.hitFlash = Math.max(state.hitFlash, ms / 1000);
-      state.hitFlashColor = 0xff3030;
+    /** hạ boss: K.O. */
+    ko() {
+      const k = q('.ko'); darkTo = 0; rage = false; root.classList.remove('rage'); root.classList.add('down-boss');
+      Snd.sfx('slam'); shake(.4, H * .04); whiteFlash(.8);
+      for (let i = 0; i < 4; i++) setTimeout(() => burst(BX() + rnd(-1, 1) * W * .12, BY() + rnd(-1, 1) * H * .2, 18, [C.gold, C.white, C.teal], .9), i * 110);
+      if (k) anim(k, [{ opacity: 0, transform: 'scale(3) rotate(-14deg)' }, { opacity: 1, transform: 'scale(1) rotate(-8deg)', offset: .25 }, { opacity: 1, transform: 'scale(1.04) rotate(-8deg)', offset: .85 }, { opacity: 0, transform: 'scale(1.1) rotate(-8deg)' }], 1400, 'cubic-bezier(.2,1.4,.4,1)');
     },
-    dispose() {
-      state.running = false;
-      renderer.dispose();
-    },
-    get ok() { return !!renderer.getContext(); }
+    /** tướng gục */
+    down() { root.classList.add('down-hero'); Snd.sfx('slam'); shake(.35, H * .03); burst(HX(), HY(), 24, [C.red, C.white], .8); },
+    /** về trạng thái đầu trận (chặng mới / chơi lại) */
+    reset() { root.classList.remove('down-boss', 'down-hero', 'rage'); rage = false; darkTo = dark = 0; parts.length = 0; fxs.length = 0; stageEl.style.transform = ''; },
+    dispose() { on = false; if (raf) cancelAnimationFrame(raf); },
   };
-}
+};
 
-
-    return !!createBattle;
-  })().catch(e => {
-    console.warn('3D CDN fail — stay 2D', e);
-    createBattle = null;
-    return false;
-  });
-  return __battle3dPromise;
-}
-/* ===== end inlined battle3d ===== */
 
 const SAVE_KEY = 'baokhua_game_v4';
 const BOSS_PER_Q = 16, HERO_BASE = 110, BASE_DMG = 12, WRONG_DMG = 20;
@@ -1303,7 +1089,10 @@ const SKILLS = [
   { id:'chem_gio', name:'Chém gió', emoji:'🗡️', mult:1.35 },
   { id:'long_ha', name:'Long Hạ', emoji:'🐉', mult:1.8, finisher:true }
 ];
-const TOPIC_LABEL = { hotel:'Khách sạn', factory:'Nhà máy', hsk:'HSK 1–2 (luyện tập, không phải đề chính thức)' };
+const TOPIC_LABEL = { hotel:'Khách sạn', factory:'Nhà máy', hsk:'Giao tiếp', pinyin:'Pinyin & chào hỏi' };
+const BOSS_ICON = { trainee:'🔰', hotel:'👹', factory:'🏭', night:'🌙', shadow:'🥷' };
+/** giây cho mỗi câu ở trạm hiện tại (HSK0 chậm rãi hơn cho người mới) */
+function qSeconds() { const s = STAGES[stageIdx]; return (s && s.sec) || QUESTION_SECONDS; }
 const TYPE_LABEL = { mc:'Trắc nghiệm', listen:'Nghe', order:'Sắp xếp', fill:'Điền từ', situ:'Tình huống' };
 
 const $ = id => document.getElementById(id);
@@ -1330,6 +1119,8 @@ try {
 if (!prog.mem || typeof prog.mem !== 'object') prog.mem = {};
 if (!prog.stars || typeof prog.stars !== 'object') prog.stars = {};
 if (!prog.streak || typeof prog.streak !== 'object') prog.streak = { last: '', n: 0 };
+// v6: trạm cao nhất đã mở (0 = HSK0) và trạm Ā Bǎo đang đứng trên bản đồ (-1 = điểm xuất phát)
+if (typeof prog.unlock !== 'number') prog.unlock = 0;
 const save = () => { try { lsSet(SAVE_KEY, JSON.stringify(prog)); } catch (e) {} };
 
 function localDay(offsetDays = 0) {
@@ -1364,13 +1155,21 @@ function learnText() {
 function starsText(n) { return n ? '★'.repeat(n) + '☆'.repeat(3 - n) : ''; }
 function renderProgress() {
   const l = learnedCount(), total = QUESTIONS.length, sk = streakAlive();
-  const s1 = prog.stars.hotel || 0, s2 = prog.stars.factory || 0;
+  const cleared = STAGES.filter((x, i) => stageCleared(i)).length;
   $('progress').innerHTML =
-    `${sk ? `<span class="streak-fire">🔥 Chuỗi học: ${sk} ngày</span>` : '🔥 Chơi 1 chặng hôm nay để bắt đầu chuỗi ngày học'}` +
-    `<br>🏆 Thắng: <b>${prog.wins}</b> · Điểm cao: <b>${prog.best}</b>${(s1 || s2) ? ` · ⭐ Bãi Cháy ${starsText(s1) || '–'} · Cẩm Phả ${starsText(s2) || '–'}` : ''}` +
+    `${sk ? `<span class="streak-fire">🔥 Chuỗi học: ${sk} ngày</span>` : '🔥 Chơi 1 trạm hôm nay để bắt đầu chuỗi ngày học'}` +
+    `<br>🗺️ Đã qua <b>${cleared}/${STAGES.length}</b> trạm · Điểm cao: <b>${prog.best}</b>` +
     `<br>${learnText()}` +
     `<div class="meter"><i style="width:${Math.round(l / Math.max(1, total) * 100)}%"></i></div>` +
-    `<div style="margin-top:6px;font-size:12px;opacity:.85">🎖️ ${prog.badges.length ? prog.badges.join(' ') : 'chưa có huy hiệu'} · ${total} câu · 2 chặng</div>`;
+    `<div style="margin-top:6px;font-size:12px;opacity:.85">🎖️ ${prog.badges.length ? prog.badges.join(' ') : 'chưa có huy hiệu'} · ${total} câu · ${STAGES.length} trạm HSK</div>`;
+  const rm = $('roadMini');
+  if (rm) {
+    const u = unlockedIdx();
+    rm.innerHTML = STAGES.map((st_, i) => {
+      const done = stageCleared(i), cls = done ? 'done' : (i <= u ? 'next' : 'lock');
+      return `<div class="${cls}"><b>${st_.lv}</b>${esc(st_.time)}<br>${done ? starsText(prog.stars[st_.key]) : (i <= u ? '▶' : '🔒')}</div>`;
+    }).join('');
+  }
 }
 
 $('fs').textContent = FAST_SECONDS;
@@ -1380,7 +1179,7 @@ if ($('formBtn')) $('formBtn').href = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
 renderProgress();
 
 let battle = null, use3d = false, st, timerId, qStart, locked, bossTrail = 0, orderPicked = [];
-let stageIdx = 0; // 0 = stage1 hotel, 1 = stage2 factory
+let stageIdx = 0; // trạm đang đánh: 0 = HSK0 … 4 = HSK4
 let runScore = 0, runCorrect = 0, runAnswered = 0, runComboMax = 0, runQPool = 0;
 let runWrong = []; // câu sai trong lượt (cho Sổ ôn ở màn kết)
 let audioReady = false, muted = lsGet('baokhua_mute', '0') === '1';
@@ -1494,7 +1293,19 @@ const Snd = (() => {
   }
   function suspend() { if (ctx && ctx.state === 'running') try { ctx.suspend(); } catch (e) {} }
   function resume() { if (ctx && ctx.state === 'suspended') try { ctx.resume(); } catch (e) {} }
-  return { play, chime, star, tick, startBgm, setMuted, unlock, suspend, resume };
+  /** tiếng chiêu thức tổng hợp bằng code: vút, sét, chuông quầy, đập mạnh, rồng gầm */
+  function sfx(kind) {
+    if (muted || !ensureCtx()) return;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    try {
+      if (kind === 'swish') { noise(0.16, 0.14); tone('sine', 1200, 260, 0.16, 0.05); }
+      else if (kind === 'zap') { tone('sawtooth', 1400, 180, 0.26, 0.07); noise(0.22, 0.1); }
+      else if (kind === 'ding') { tone('triangle', 1568, 1568, 0.55, 0.12); tone('sine', 3136, 3136, 0.4, 0.04); tone('sine', 2093, 2093, 0.45, 0.04, 0.02); }
+      else if (kind === 'slam') { tone('sine', 150, 38, 0.5, 0.4); noise(0.2, 0.22); }
+      else if (kind === 'roar') { tone('sawtooth', 120, 60, 0.7, 0.12); tone('square', 240, 95, 0.55, 0.05, 0.05); noise(0.55, 0.09); }
+    } catch (e) {}
+  }
+  return { play, chime, star, tick, startBgm, setMuted, unlock, suspend, resume, sfx };
 })();
 
 function initAudio() {
@@ -1551,42 +1362,247 @@ function bumpScore() {
 
 function questionsForStage(si) {
   const stage = STAGES[si];
-  const topics = new Set(stage.topics);
-  let pool = QUESTIONS.filter(q => topics.has(q.topic));
-  // Prefer stage:2 extras for factory
-  if (si === 1) {
-    const tagged = pool.filter(q => q.stage === 2);
-    if (tagged.length >= 6) pool = tagged.concat(pool.filter(q => q.stage !== 2)).slice(0, 14);
-  } else {
-    pool = pool.filter(q => q.stage !== 2);
+  const all = QUESTIONS.filter(q => q.level === stage.key);
+  const n = Math.min(stage.n || 10, all.length);
+  // Sổ ôn: tối đa 3 câu từng sai / chưa chắc (hộp 0–1) của trạm này được hỏi lại trước
+  const weak = shuffle(all.filter(q => prog.mem[q.id] != null && prog.mem[q.id] <= 1)).slice(0, 3);
+  const used = new Set(weak.map(q => q.id));
+  // ≥60% là câu lõi đúng cấp HSK của trạm, phần còn lại là câu tình huống nghề (khách sạn, nhà máy)
+  const needCore = Math.max(0, Math.ceil(n * .6) - weak.filter(q => q.core).length);
+  const core = shuffle(all.filter(q => q.core && !used.has(q.id))).slice(0, needCore);
+  core.forEach(q => used.add(q.id));
+  const rest = shuffle(all.filter(q => !used.has(q.id))).slice(0, Math.max(0, n - weak.length - core.length));
+  let list = shuffle(weak.concat(core, rest));
+  // Lần đầu vào HSK0: câu đầu tiên luôn là câu dễ nhất (你好 → Xin chào) để người mới không bị choáng
+  if (si === 0 && !(prog.stars[stage.key] > 0)) {
+    const first = QUESTIONS.find(q => q.id === 'h0-01');
+    list = [first].concat(list.filter(q => q.id !== 'h0-01')).slice(0, n);
   }
-  if (pool.length < 8) pool = QUESTIONS.filter(q => topics.has(q.topic));
-  const n = Math.min(12, Math.max(8, pool.length));
-  // v4.1 Sổ ôn: ưu tiên tối đa 4 câu từng sai / chưa chắc (hộp 0–1), còn lại ngẫu nhiên, rồi trộn đều
-  const weak = shuffle(pool.filter(q => prog.mem[q.id] != null && prog.mem[q.id] <= 1)).slice(0, 4);
-  const weakIds = new Set(weak.map(q => q.id));
-  const rest = shuffle(pool.filter(q => !weakIds.has(q.id))).slice(0, n - weak.length);
-  return shuffle(weak.concat(rest));
+  return list;
 }
-function refreshMapUI() {
-  const n1 = $('node1'), n2 = $('node2');
-  if (!n1 || !n2) return;
-  if ($('stars1')) $('stars1').textContent = starsText(prog.stars.hotel || 0);
-  if ($('stars2')) $('stars2').textContent = starsText(prog.stars.factory || 0);
-  n1.className = 'stage-node' + (stageIdx > 0 ? ' done' : ' current');
-  n2.className = 'stage-node' + (stageIdx >= 1 ? (stageIdx > 1 ? ' done' : ' current') : ' lock');
-  const btn = $('btnEnterStage');
-  if (btn) btn.textContent = stageIdx >= STAGES.length ? '✓ Xong cả lộ trình' : ('▶ Vào: ' + STAGES[Math.min(stageIdx, STAGES.length-1)].name);
-  // Bicycle on QL18: 12% start → 50% mid → 88% end
-  const bike = $('bikeIcon');
-  if (bike) {
-    const pct = stageIdx <= 0 ? 12 : (stageIdx === 1 ? 50 : 88);
-    bike.style.left = pct + '%';
+function stageCleared(i) { return (prog.stars[STAGES[i].key] || 0) > 0; }
+function unlockedIdx() { return Math.max(0, Math.min(STAGES.length - 1, prog.unlock || 0)); }
+
+/* ===== v6 · BẢN ĐỒ HÀNH TRÌNH: Ā Bǎo đi bộ qua 5 trạm =====
+   Vị trí trên đường đi: t = 0 là điểm xuất phát, t = i + 1 là trạm i. Chạm trạm / nút ◀ ▶ / phím mũi tên để đi. */
+const WorldMap = (() => {
+  const VW = 360, VH = 440;
+  const START = [36, 352];
+  const P = [[112, 378], [282, 312], [82, 232], [278, 150], [180, 58]];
+  const LEGS = [
+    'M36 352 C 60 366, 84 378, 112 378',
+    'M112 378 C 200 380, 270 360, 282 312',
+    'M282 312 C 296 262, 130 276, 82 232',
+    'M82 232 C 44 190, 230 196, 278 150',
+    'M278 150 C 312 110, 206 104, 180 58'
+  ];
+  const SIDE = [1, -1, 1, -1, 1]; // nhãn trạm nằm bên phải (1) hay trái (-1)
+  const HERO_PIN = ['v4/art/hero1.jpg', 'v4/art/hero2.jpg', 'v4/art/hero3.jpg'];
+  let built = false, legEls = [], lens = [], pos = 0, target = 0, raf = 0, last = 0, lastDust = 0, cb = null, cur = -1, toastT = 0;
+  const svg = () => $('worldSvg'), ninja = () => $('ninja');
+
+  function sceneSvg() {
+    // sao: vị trí cố định (giả ngẫu nhiên) để mỗi lần mở đều giống nhau
+    let seed = 7; const r = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    let stars = '';
+    for (let i = 0; i < 46; i++) { const x = (r() * VW).toFixed(1), y = (r() * 190).toFixed(1), rr = (.6 + r() * 1.3).toFixed(2); stars += `<circle cx="${x}" cy="${y}" r="${rr}" fill="#fff"${i % 3 ? '' : ` class="twinkle" style="animation-delay:${(r() * 2).toFixed(2)}s"`}/>`; }
+    let wins = '';
+    [[300, 104, 22, 86], [324, 120, 18, 70], [344, 96, 16, 94], [6, 150, 18, 46], [26, 138, 20, 58]].forEach(([x, y, w, h]) => {
+      wins += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#141c45" stroke="#0a0f2e" stroke-width="1"/>`;
+      for (let yy = y + 6; yy < y + h - 6; yy += 9) for (let xx = x + 4; xx < x + w - 4; xx += 6) if (r() > .45) wins += `<rect x="${xx}" y="${yy}" width="2.6" height="3.4" fill="#FFE27A" opacity="${(.55 + r() * .45).toFixed(2)}"/>`;
+    });
+    let hotelWin = '';
+    for (let yy = 262; yy < 326; yy += 11) for (let xx = 310; xx < 346; xx += 9) hotelWin += `<rect x="${xx}" y="${yy}" width="5" height="6" rx="1" fill="#7fc3e8"/>`;
+    const road = LEGS.map((d, i) => `<path class="road" d="${d}"/>`).join('') + LEGS.map(d => `<path class="road-in" d="${d}"/>`).join('') + LEGS.map(d => `<path class="road-dash" d="${d}"/>`).join('')
+      + LEGS.map((d, i) => `<path class="road-done" id="leg${i}" d="${d}" style="opacity:0"/>`).join('');
+    const nodes = P.map(([x, y], i) => {
+      const s = STAGES[i], side = SIDE[i], lx = x + side * 22, anchor = side > 0 ? 'start' : 'end';
+      return `<g class="node lock" data-i="${i}" transform="translate(${x} ${y})" role="button" aria-label="Trạm ${s.lv} – ${s.name}">
+        <circle r="26" fill="transparent"/><circle class="halo" r="16"/><circle class="core" r="15"/>
+        <text class="num">${i}</text>
+        <g class="lk"><path d="M-4.5 -1 v-3.2 a4.5 4.5 0 0 1 9 0 v3.2" fill="none" stroke="#c9cdd8" stroke-width="2.2"/><rect x="-6.5" y="-1.5" width="13" height="10" rx="2.2" fill="#c9cdd8"/></g>
+      </g>
+      <text class="lbl" x="${lx}" y="${y - 3}" text-anchor="${anchor}">${s.lv}</text>
+      <text class="lbl tm" x="${lx}" y="${y + 10}" text-anchor="${anchor}">${s.time}</text>
+      <text class="lbl st" id="nst${i}" x="${lx}" y="${y + 22}" text-anchor="${anchor}"></text>`;
+    }).join('');
+    return `<defs>
+      <linearGradient id="wSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0f2e"/><stop offset=".34" stop-color="#1b2a63"/><stop offset=".6" stop-color="#3a78b5"/><stop offset=".82" stop-color="#8fd3ea"/></linearGradient>
+      <linearGradient id="wHill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f8f5f"/><stop offset="1" stop-color="#2b6a48"/></linearGradient>
+      <linearGradient id="wSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2fa3c8"/><stop offset="1" stop-color="#1b6f99"/></linearGradient>
+      <linearGradient id="wPeak" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f73"/><stop offset="1" stop-color="#1c2148"/></linearGradient>
+    </defs>
+    <rect width="${VW}" height="${VH}" fill="url(#wSky)"/>
+    ${stars}
+    <circle cx="318" cy="34" r="13" fill="#FFF3C4"/><circle cx="324" cy="30" r="12" fill="#121a45"/>
+    <polygon points="60,150 112,96 150,150" fill="#20264f"/><polygon points="214,150 262,92 312,150" fill="#20264f"/>
+    <polygon points="104,138 180,26 256,138" fill="url(#wPeak)" stroke="#0e1230" stroke-width="2"/>
+    <polygon points="164,50 180,26 196,50 188,46 180,56 172,46" fill="#FFD91F" stroke="#b88a00" stroke-width="1"/>
+    <line x1="180" y1="27" x2="180" y2="6" stroke="#fff" stroke-width="2"/><polygon points="180,6 200,11 180,16" fill="#FFD91F" stroke="#16171B" stroke-width="1"/>
+    ${wins}
+    <path d="M0 262 Q 90 232 180 256 T 360 244 L360 352 L0 352 Z" fill="url(#wHill)"/>
+    <path d="M0 300 Q 70 284 150 300 T 360 296 L360 352 L0 352 Z" fill="#357a52" opacity=".7"/>
+    <g><rect x="6" y="206" width="52" height="40" fill="#8a96a8" stroke="#16171B" stroke-width="1.5"/>
+      <path d="M6 206 L15 196 L15 206 L24 196 L24 206 L33 196 L33 206 L42 196 L42 206 L51 196 L51 206 L58 206" fill="#6b7789" stroke="#16171B" stroke-width="1.5"/>
+      <rect x="44" y="178" width="8" height="28" fill="#6b7789" stroke="#16171B" stroke-width="1.5"/>
+      <rect x="12" y="222" width="9" height="9" fill="#FFD91F"/><rect x="26" y="222" width="9" height="9" fill="#FFD91F"/><rect x="40" y="226" width="12" height="20" fill="#4b5566"/>
+      <circle class="smoke" cx="48" cy="172" r="5" fill="#dfe6ee"/><circle class="smoke" cx="48" cy="172" r="5" fill="#dfe6ee" style="animation-delay:1.1s"/><circle class="smoke" cx="48" cy="172" r="5" fill="#dfe6ee" style="animation-delay:2.2s"/></g>
+    <g><rect x="304" y="252" width="46" height="84" fill="#efe6d4" stroke="#16171B" stroke-width="1.5"/>${hotelWin}
+      <rect x="312" y="240" width="30" height="13" rx="2" fill="#c8102e" stroke="#16171B" stroke-width="1.2"/><text x="327" y="250" text-anchor="middle" font-size="9" font-weight="900" fill="#FFD91F">酒店</text></g>
+    <rect x="0" y="346" width="${VW}" height="${VH - 346}" fill="url(#wSea)"/>
+    <path class="wave" d="M150 372 q8 -4 16 0 t16 0 t16 0 M210 360 q8 -4 16 0 t16 0 M240 392 q8 -4 16 0 t16 0 t16 0 M160 420 q8 -4 16 0 t16 0" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/>
+    <g fill="#3d6b52" stroke="#24452f" stroke-width="1.2"><path d="M196 428 L204 396 Q210 384 216 398 L222 428 Z"/><path d="M226 430 L236 388 Q243 372 250 390 L258 430 Z"/><path d="M262 432 L268 410 Q272 402 277 412 L282 432 Z"/></g>
+    <path d="M0 326 Q 70 318 140 352 Q 168 368 166 440 L0 440 Z" fill="#ecd394"/>
+    <path d="M0 336 Q 66 330 130 358" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2"/>
+    ${road}
+    <g transform="translate(${START[0]} ${START[1]})"><circle r="6" fill="#fff" stroke="#16171B" stroke-width="2"/></g>
+    <text class="lbl tm" x="${START[0]}" y="${START[1] - 12}" text-anchor="middle">Xuất phát</text>
+    ${nodes}`;
   }
-}
-function openMap() {
-  refreshMapUI();
+
+  function build() {
+    if (built) return;
+    svg().innerHTML = sceneSvg();
+    legEls = LEGS.map((d, i) => $('leg' + i));
+    lens = legEls.map(el => el.getTotalLength());
+    svg().querySelectorAll('.node').forEach(g => g.addEventListener('click', () => { hideHint(); go(+g.dataset.i); }));
+    $('walkPrev').onclick = () => { hideHint(); go(cur - 1); };
+    $('walkNext').onclick = () => { hideHint(); go(cur + 1); };
+    built = true;
+  }
+  function pt(t) {
+    t = Math.max(0, Math.min(LEGS.length, t));
+    const leg = Math.min(LEGS.length - 1, Math.floor(t));
+    return legEls[leg].getPointAtLength((t - leg) * lens[leg]);
+  }
+  function place() {
+    const p = pt(pos), n = ninja();
+    n.style.left = (p.x / VW * 100) + '%'; n.style.top = (p.y / VH * 100) + '%';
+  }
+  function dust(p) {
+    const d = document.createElement('i'); d.className = 'dust';
+    d.style.left = (p.x / VW * 100) + '%'; d.style.top = (p.y / VH * 100) + '%';
+    d.style.setProperty('--dx', (ninja().classList.contains('flip') ? 10 : -10) + 'px');
+    $('world').appendChild(d); setTimeout(() => d.remove(), 600);
+  }
+  function walkTo(t, done) {
+    target = Math.max(0, Math.min(LEGS.length, t)); cb = done || null;
+    if (REDUCED) { pos = target; place(); const c = cb; cb = null; if (c) setTimeout(c, 0); return; }
+    ninja().classList.add('walking'); $('stationCard').classList.add('moving');
+    if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); }
+  }
+  function step(now) {
+    const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now;
+    const before = pt(pos), d = target - pos;
+    pos += Math.sign(d) * Math.min(Math.abs(d), 1.2 * dt);
+    const after = pt(pos);
+    if (Math.abs(after.x - before.x) > .05) ninja().classList.toggle('flip', after.x < before.x);
+    place();
+    if (now - lastDust > 120) { lastDust = now; dust(after); }
+    if (Math.abs(target - pos) < 1e-4) {
+      pos = target; raf = 0; ninja().classList.remove('walking'); $('stationCard').classList.remove('moving'); place();
+      const c = cb; cb = null; if (c) c();
+      return;
+    }
+    raf = requestAnimationFrame(step);
+  }
+  function toast(msg) {
+    const t = $('mapToast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 1800);
+  }
+  function hideHint() { const h = $('mapHint'); if (h) h.hidden = true; $('walkNext').classList.remove('nudge'); }
+  function go(i) {
+    i = Math.max(-1, Math.min(STAGES.length - 1, i));
+    const u = unlockedIdx();
+    if (i > u) {
+      // trạm còn khoá: đi tới cổng rồi bị đẩy lại
+      walkTo(u + 1.3, () => {
+        toast(`🔒 Hạ boss ${STAGES[u].lv} để mở ${STAGES[u + 1].lv}`); playSfx('hurt'); vib(60);
+        setTimeout(() => walkTo(u + 1, () => arrive(u)), 260);
+      });
+      return;
+    }
+    if (i === cur && !raf) { arrive(i, true); return; }
+    walkTo(i + 1, () => arrive(i));
+  }
+  function arrive(i, quiet) {
+    cur = i; prog.at = i; save();
+    paint();
+    if (!quiet) { playSfx('ui'); const n = ninja(); n.classList.remove('cheer'); void n.offsetWidth; n.classList.add('cheer'); }
+  }
+  function paint() {
+    const u = unlockedIdx();
+    let cleared = 0;
+    svg().querySelectorAll('.node').forEach(g => {
+      const i = +g.dataset.i, done = stageCleared(i);
+      if (done) cleared++;
+      g.setAttribute('class', 'node ' + (done ? 'done' : (i <= u ? 'open' : 'lock')) + (i === cur ? ' here' : ''));
+      $('nst' + i).textContent = done ? starsText(prog.stars[STAGES[i].key]) : '';
+    });
+    // đoạn đường đã đi được tô vàng
+    legEls.forEach((el, i) => { el.style.opacity = (i === 0 || stageCleared(i - 1)) && i <= u ? 1 : 0; });
+    $('mapProg').textContent = `${cleared}/${STAGES.length} trạm`;
+    $('walkPrev').disabled = cur <= -1;
+    $('walkNext').disabled = cur >= STAGES.length - 1;
+    const tier = stageCleared(3) ? 2 : stageCleared(1) ? 1 : 0;
+    const img = ninja().querySelector('img'); if (img && !img.src.endsWith(HERO_PIN[tier])) img.src = HERO_PIN[tier];
+    renderCard();
+  }
+  function renderCard() {
+    const card = $('stationCard'), btn = $('btnEnterStage');
+    if (cur < 0) {
+      card.innerHTML = `<div class="sc-top"><span class="lv">Bắt đầu</span><span class="tm">Chưa biết gì cũng chơi được</span></div>
+        <h3>Xuất phát · Bãi Cháy</h3>
+        <div class="meta">Chạm <b>▶</b> (hoặc chạm vòng <b>0</b>) để Ā Bǎo đi tới trạm đầu tiên. Mỗi trạm: học 3–4 câu mẫu → đánh boss bằng câu trả lời đúng.</div>`;
+      btn.textContent = '▶ Đi tới trạm HSK0'; btn.disabled = false;
+      return;
+    }
+    const s = STAGES[cur], locked = cur > unlockedIdx(), stars = prog.stars[s.key] || 0;
+    card.innerHTML = `<div class="sc-top"><span class="lv">${s.lv}</span><span class="tm">⏳ ${esc(s.time)}</span><span class="stars">${stars ? starsText(stars) : ''}</span></div>
+      <h3>${esc(s.name)} · ${esc(s.place)}</h3>
+      <div class="meta">Boss: <b>${esc(s.boss)}</b> · ${s.n} câu · ${s.sec} giây/câu${s.pyHelp ? ' · có pinyin gợi ý' : ''}</div>
+      <div class="goal">🎯 ${esc(s.goal)}</div>
+      ${locked ? `<div class="lock-note">🔒 Hạ boss ${STAGES[cur - 1].lv} để mở trạm này</div>` :
+        `<div class="meta" style="margin-top:2px">📖 Học trước khi đánh · chạm để nghe:</div>
+         <div class="learn">${s.learn.map((l, k) => `<button type="button" class="lr" data-k="${k}"><b>${esc(l[0])}</b><i>${esc(l[1])}</i><span>${esc(l[2])}</span><em>🔊</em></button>`).join('')}</div>`}`;
+    card.querySelectorAll('.lr').forEach(b => { b.onclick = () => { initAudio(); speakQuiet(s.learn[+b.dataset.k][0]); }; });
+    btn.disabled = locked;
+    btn.textContent = locked ? '🔒 Trạm chưa mở' : (stars ? `↻ Đánh lại ${s.lv} (lấy thêm sao)` : `⚔️ Vào trận ${s.lv} · ${s.boss}`);
+  }
+  return {
+    open(opts = {}) {
+      build();
+      const u = unlockedIdx();
+      cur = opts.from != null ? opts.from : (prog.at != null ? Math.min(prog.at, u) : -1);
+      pos = cur + 1; target = pos; place();
+      ninja().classList.remove('walking', 'flip');
+      paint();
+      const first = prog.at == null;
+      $('mapHint').hidden = !first; $('walkNext').classList.toggle('nudge', first);
+      if (opts.walkTo != null) setTimeout(() => {
+        if (opts.fresh) toast(`🔓 Mở trạm ${STAGES[opts.walkTo].lv} · ${STAGES[opts.walkTo].name}!`);
+        go(opts.walkTo);
+      }, REDUCED ? 0 : 650);
+    },
+    enter() {
+      if (raf) return;
+      if (cur < 0) { hideHint(); go(0); return; }
+      if (cur > unlockedIdx()) return;
+      startStage(cur);
+    },
+    key(e) {
+      if (!$('sMap').classList.contains('on') || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'd' || e.key === 'w') { e.preventDefault(); hideHint(); go(cur + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown' || e.key === 'a' || e.key === 's') { e.preventDefault(); hideHint(); go(cur - 1); }
+      else if (e.key === 'Enter' && e.target === document.body) { e.preventDefault(); this.enter(); }
+    },
+    get cur() { return cur; }, get walking() { return !!raf; }
+  };
+})();
+document.addEventListener('keydown', e => WorldMap.key(e));
+function openMap(opts) {
   show('sMap');
+  WorldMap.open(opts || {});
   playSfx('ui');
 }
 /** v4.1: bỏ tween.js — CSS transition (.bar i) tự làm mượt */
@@ -1701,68 +1717,32 @@ function speakZh(text) {
   }, 300);
 }
 
-function show2dFallback(msgOn) {
-  use3d = false; battle = null;
-  if (msgOn) $('webglMsg').classList.add('on');
-  $('fallback').classList.add('on');
-  $('gl').style.display = 'none';
-}
-
-/** 2D ngay lập tức; lazy-load three CDN rồi swap 3D khi sẵn sàng (fail-safe nếu CDN lỗi). */
-async function lazyInit3d() {
-  // Luôn hiện 2D trước — không chặn câu hỏi
-  if (!battle) {
-    $('fallback').classList.add('on');
-  }
-  if (!webglAvailable()) {
-    show2dFallback(true);
-    return;
-  }
+/** v5: sân đấu minh hoạ – tạo ngay, không phải chờ tải thư viện 3D */
+function init3d() {
+  if (battle) { try { battle.resize(); } catch (e) {} return; }
   try {
-    const ok = await ensureBattle3d();
-    if (!ok || !createBattle) {
-      show2dFallback(true);
-      return;
-    }
-    // Đã có battle cũ → chỉ resize
-    if (battle) {
-      use3d = true;
-      try { battle.resize(); } catch (e) {}
-      $('fallback').classList.remove('on');
-      $('gl').style.display = '';
-      return;
-    }
-    battle = createBattle($('gl'));
-    if (!battle || !battle.ok) throw new Error('no ctx');
+    battle = createBattle($('arena'));
     use3d = true;
-    $('webglMsg').classList.remove('on');
-    $('fallback').classList.remove('on');
-    $('gl').style.display = '';
     if (st && battle.setStage) battle.setStage((STAGES[stageIdx] || STAGES[0]).key);
     syncVisual();
   } catch (e) {
     window.__battleErr = String(e && e.stack || e);
-    console.error('battle3d init failed', e);
-    show2dFallback(true);
+    console.error('arena init failed', e);
+    battle = null;
   }
-}
-function init3d() {
-  // Đồng bộ shim: kick lazy, không await
-  void lazyInit3d();
 }
 
 function syncVisual() {
   if (battle) battle.setVisual({ armor: st.armor, atk: st.atkTier, skillLv: st.skillLv });
-  const em = ['🥷', '🥷🛡️', '🥷⚔️', '🐉🥷'][Math.min(3, st.armor + (st.skillLv >= 2 ? 1 : 0))];
-  $('heroEmoji').textContent = em;
 }
 
+function resetRun() { runScore = 0; runCorrect = 0; runAnswered = 0; runComboMax = 0; runQPool = 0; runWrong = []; }
 function beginRun() {
-  stageIdx = 0; runScore = 0; runCorrect = 0; runAnswered = 0; runComboMax = 0; runQPool = 0; runWrong = [];
+  resetRun();
   initAudio(); ensureBgm();
   openMap();
 }
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
 function correctText(q) {
   if (!q) return '';
   if (q.type === 'order') return (q.answer || []).join('');
@@ -1797,7 +1777,7 @@ function freezeTimer() {
   const m = getComputedStyle(ti).transform;
   ti.style.transition = 'none';
   ti.style.transform = (m && m !== 'none') ? m : 'scaleX(0)';
-  $('timer').classList.remove('low');
+  $('timer').classList.remove('low'); $('vsBadge').classList.remove('low');
 }
 /** Sai / hết giờ → dừng lại cho học: hiện câu đúng + pinyin + nghĩa + nút nghe, bấm Tiếp mới đi tiếp */
 function showExplain(q, onNext) {
@@ -1823,6 +1803,7 @@ function showExplain(q, onNext) {
 function startStage(si) {
   stageIdx = si;
   const stage = STAGES[si];
+  resetRun(); // v6: mỗi trận một trạm, điểm/đúng-sai tính riêng từng trạm
   const list = questionsForStage(si);
   const bossMax = Math.max(list.length, 8) * BOSS_PER_Q;
   st = {
@@ -1835,17 +1816,21 @@ function startStage(si) {
   if ($('explainSlot')) $('explainSlot').innerHTML = '';
   if ($('scorePill')) $('scorePill').textContent = '⭐ ' + st.score;
   if (battle && battle.setRage) battle.setRage(false);
+  showComboFloat(0);
   bossTrail = bossMax;
   runQPool += list.length; // tổng mẫu số khớp kiểu Câu X/Y (Y = số câu chặng)
   const bn = $('bossName');
-  if (bn) bn.textContent = (si === 1 ? '🏭 ' : '👹 ') + stage.boss;
+  if (bn) bn.textContent = (BOSS_ICON[stage.look] || '👹') + ' ' + stage.boss;
   show('sGame');
   initAudio(); ensureBgm(); playSfx('ui');
   requestAnimationFrame(() => {
     if (!battle) init3d();
     else battle.resize();
-    if (battle && battle.setStage) battle.setStage(stage.key);
-    syncVisual();
+    if (battle) {
+      if (battle.reset) battle.reset();
+      battle.setStage(stage.key); syncVisual();
+      if (battle.intro) battle.intro(`${stage.lv} · ${stage.name}`);
+    }
   });
   syncVisual();
   upd();
@@ -1879,7 +1864,9 @@ function ask() {
   $('qNum').textContent = st.i >= st.baseLen
     ? `⏱ Hiệp phụ ${st.i - st.baseLen + 1}/${st.list.length - st.baseLen}`
     : `Câu ${st.i + 1}/${st.baseLen}`;
-  $('qType').innerHTML = `<span class="tag ${q.type}">${TYPE_LABEL[q.type] || q.type}</span> <span class="tag">${TOPIC_LABEL[q.topic] || q.topic || ''}</span>`;
+  const stg = STAGES[stageIdx] || STAGES[0];
+  $('qType').innerHTML = `<span class="tag lvtag">${stg.lv}</span> <span class="tag ${q.type}">${TYPE_LABEL[q.type] || q.type}</span> <span class="tag">${TOPIC_LABEL[q.topic] || q.topic || ''}</span>`;
+  $('opts').classList.toggle('py-help', !!stg.pyHelp);
   $('qText').textContent = q.q || '';
   // situ/order: không hiện sẵn câu Hán đúng (tránh lộ đáp án); vẫn giữ nghĩa Việt làm gợi ý
   if (q.type === 'situ') {
@@ -1933,17 +1920,18 @@ function ask() {
 
   // v4.1: thanh giờ chạy bằng GPU (transform) → mượt 60fps, JS chỉ cập nhật số giây
   const ti = $('timer').firstChild;
-  $('timer').classList.remove('low');
+  $('timer').classList.remove('low'); $('vsBadge').classList.remove('low');
   ti.style.transition = 'none'; ti.style.transform = 'scaleX(1)'; void ti.offsetWidth;
-  ti.style.transition = `transform ${QUESTION_SECONDS}s linear`; ti.style.transform = 'scaleX(0)';
+  const QS = qSeconds();
+  ti.style.transition = `transform ${QS}s linear`; ti.style.transform = 'scaleX(0)';
   qStart = Date.now(); clearInterval(timerId); lastTickSec = -1;
-  const tt0 = $('timerTxt'); if (tt0) tt0.textContent = QUESTION_SECONDS + 's';
+  const tt0 = $('timerTxt'); if (tt0) tt0.textContent = QS;
   timerId = setInterval(() => {
-    const left = QUESTION_SECONDS - (Date.now() - qStart) / 1000;
+    const left = QS - (Date.now() - qStart) / 1000;
     const sec = Math.max(0, Math.ceil(left));
-    const tt = $('timerTxt'); if (tt) tt.textContent = sec + 's';
+    const tt = $('timerTxt'); if (tt) tt.textContent = sec;
     if (left > 0 && left <= TIMER_WARN_SECONDS) {
-      $('timer').classList.add('low');
+      $('timer').classList.add('low'); $('vsBadge').classList.add('low');
       if (sec !== lastTickSec) { lastTickSec = sec; Snd.tick(sec <= 2); }
     }
     if (left <= 0) onTimeout();
@@ -2127,15 +2115,16 @@ function resolve(ok, btn) {
       return;
     }
     st.streak = 0; showComboFloat(0);
-    showSkill(stageIdx === 1 ? '🏭 Tổ trưởng phản đòn!' : '👹 Lễ tân phản đòn!');
+    { const sg = STAGES[stageIdx] || STAGES[0]; showSkill(`${BOSS_ICON[sg.look] || '👹'} ${sg.boss} phản đòn!`); }
     const timing = battle ? battle.playBossAttack() : { impactAt: 320 };
     const impactAt = (timing && timing.impactAt) || 320;
     setTimeout(() => {
       if (!st || st._ended) return;
       if (st.boss <= 0) return; // race: boss chết trước impact
       // Giáp giảm sát thương nhận: mỗi cấp −6 (tối thiểu 4)
-      const taken = Math.max(4, WRONG_DMG - (st.armor || 0) * 6);
-      floatDmg(taken, { hurt: true, tag: st.armor ? ('GIÁP −' + (WRONG_DMG - taken)) : 'TRÚNG ĐÒN' });
+      const raw = Math.round(WRONG_DMG * ((STAGES[stageIdx] || {}).hit || 1));
+      const taken = Math.max(4, raw - (st.armor || 0) * 6);
+      floatDmg(taken, { hurt: true, tag: st.armor ? ('GIÁP −' + (raw - taken)) : 'TRÚNG ĐÒN' });
       playSfx('hurt');
       flash('red'); shakeMs(150); showVignette(); vib(160);
       st.hero = Math.max(0, st.hero - taken); upd();
@@ -2162,10 +2151,10 @@ function openUpgrade() {
   if (st.hero <= 0) return end(false);
   let upgradeLocked = false;
   const choices = [
-    { id: 'atk', ico: '⚔️', title: '+ Sức đánh', desc: 'ATK +4 · vũ khí sáng / to hơn', apply: () => { st.atk += 4; st.atkTier++; } },
-    { id: 'armor', ico: '🛡️', title: '+ Giáp / Máu', desc: 'Hiện giáp 3D · HP +20 · −6 ST mỗi cấp', apply: () => { st.armor = Math.min(3, st.armor + 1); st.heroMax += 20; st.hero = Math.min(st.heroMax, st.hero + 20); } },
+    { id: 'atk', ico: '⚔️', title: '+ Sức đánh', desc: 'ATK +4 · thêm phi tiêu, đòn sáng hơn', apply: () => { st.atk += 4; st.atkTier++; } },
+    { id: 'armor', ico: '🛡️', title: '+ Giáp / Máu', desc: 'Khiên sáng quanh tướng · HP +20 · −6 ST mỗi cấp', apply: () => { st.armor = Math.min(3, st.armor + 1); st.heroMax += 20; st.hero = Math.min(st.heroMax, st.hero + 20); } },
     { id: 'skill', ico: '✨', title: st.skillLv === 0 ? 'Mở chiêu: Chém gió' : (st.skillLv === 1 ? 'Mở chiêu: Long Hạ' : 'Nâng chiêu (+15% dmg)'),
-      desc: st.skillLv < 2 ? 'Đổi vũ khí + hào quang trên sân 3D' : 'Vũ khí Long Hạ mạnh hơn',
+      desc: st.skillLv < 2 ? 'Đổi hình tướng + chiêu mới trên sân' : 'Rồng Long Hạ mạnh hơn',
       apply: () => { if (st.skillLv < 2) st.skillLv++; else st.atk = Math.round(st.atk * 1.15); } }
   ];
   const order = shuffle(choices);
@@ -2237,10 +2226,12 @@ function countUp(el, to, ms = 700) {
   })(t0);
 }
 /** Màn "HẠ BOSS!" — sao bật lần lượt + số liệu chạy → khoảnh khắc thưởng rõ ràng */
-function showClear(stage, stars, onNext, isFinal) {
+function showClear(stage, stars, onNext, isFinal, opened) {
   const acc = st.answered ? Math.round(st.correct / st.answered * 100) : 0;
-  $('clearTitle').textContent = isFinal ? 'XONG LỘ TRÌNH!' : 'HẠ BOSS!';
-  $('clearSub').textContent = `${stage.boss} · ${stage.name}`;
+  $('clearTitle').textContent = isFinal ? 'LÊN ĐỈNH HSK4!' : 'HẠ BOSS!';
+  $('clearSub').textContent = `${stage.lv} · ${stage.boss} · ${stage.name}`;
+  const ul = $('clearUnlock');
+  if (ul) { ul.hidden = !opened; if (opened) ul.innerHTML = `🔓 Mở trạm mới: <b>${opened.lv} · ${esc(opened.name)}</b> <small>(${esc(opened.time)})</small>`; }
   $('clearAcc').textContent = acc + '%';
   $('clearCombo').textContent = st.comboMax;
   $('clearScore').textContent = '0';
@@ -2250,7 +2241,7 @@ function showClear(stage, stars, onNext, isFinal) {
     1: 'Đúng ≥70% để được 2 sao – xem Sổ ôn ở cuối lượt.'
   };
   $('clearTip').textContent = tips[stars];
-  $('clearBtn').textContent = isFinal ? '🏆 Xem kết quả' : ('▶ Chặng tiếp: ' + (STAGES[stageIdx] ? STAGES[stageIdx].name : ''));
+  $('clearBtn').textContent = isFinal ? '🏆 Xem kết quả' : '▶ Xem kết quả & sổ ôn';
   const spans = [...$('clearStars').children];
   spans.forEach(s => { s.className = ''; });
   $('clearOverlay').classList.add('on');
@@ -2282,51 +2273,55 @@ function end(win) {
   if ($('explainSlot')) $('explainSlot').innerHTML = '';
   if ((st.answered || 0) >= 5 || win) markPlayedToday();
   const stage = STAGES[stageIdx] || STAGES[0];
+  const FX_MS = battle ? (win ? 1250 : 950) : 0;   // để K.O. / gục diễn xong rồi mới hiện bảng
+  if (battle) { if (win && battle.ko) battle.ko(); else if (!win && battle.down) battle.down(); }
   if (win) {
     if (!prog.badges.includes(stage.badge)) prog.badges.push(stage.badge);
     const stars = calcStars();
     prog.stars[stage.key] = Math.max(prog.stars[stage.key] || 0, stars);
     prog.best = Math.max(prog.best, runScore);
-    // More stages left?
-    if (stageIdx + 1 < STAGES.length) {
-      stageIdx += 1;
-      save();
-      playSfx('win');
-      showClear(stage, stars, () => {
-        openMap();
-        const btn = $('btnEnterStage');
-        if (btn) { btn.textContent = '▶ Chặng tiếp: ' + STAGES[stageIdx].name; }
-      }, false);
-      return;
-    }
-    // Full clear
-    prog.wins++;
+    prog.at = stageIdx;
+    const isFinal = stageIdx >= STAGES.length - 1;
+    const next = isFinal ? null : STAGES[stageIdx + 1];
+    const opened = next && (stageIdx + 1) > (prog.unlock || 0) ? next : null;
+    if (next) prog.unlock = Math.max(prog.unlock || 0, stageIdx + 1);
+    if (isFinal) prog.wins++;
     save();
-    playSfx('win');
-    showClear(stage, stars, () => renderEnd(true, stage), true);
+    setTimeout(() => { playSfx('win'); showClear(stage, stars, () => renderEnd(true, stage, { next, opened }), isFinal, opened); }, FX_MS);
     return;
   }
-  renderEnd(false, stage);
+  setTimeout(() => renderEnd(false, stage), FX_MS);
 }
 
-function renderEnd(win, stage) {
+function renderEnd(win, stage, info = {}) {
   show('sEnd');
+  const si = STAGES.indexOf(stage);
   if (win) {
-    $('badge').textContent = '🏅';
-    $('endTitle').textContent = 'Xong lộ trình Hạ Long–Cẩm Phả!';
+    $('badge').textContent = info.next ? stage.badge.replace(/[A-Z0-9]+$/, '') || '🏅' : '🏆';
+    $('endTitle').textContent = info.next ? `Qua trạm ${stage.lv} · ${stage.name}!` : 'Lên đỉnh HSK4 rồi!';
   } else {
-    $('badge').textContent = '💀';
-    $('endTitle').textContent = 'Thua ở ' + (st.stageName || stage.name) + ' — thử lại nhé!';
+    $('badge').textContent = '💪';
+    $('endTitle').textContent = `Chưa qua ${stage.lv} — ôn sổ bên dưới rồi đánh lại nhé!`;
+  }
+  const nb = $('btnNextMap');
+  if (nb) {
+    nb.textContent = win && info.next ? `🗺️ Đi tiếp tới ${info.next.lv} · ${info.next.name}` : '🗺️ Về bản đồ hành trình';
+    nb.onclick = () => {
+      playSfx('ui');
+      if (win && info.next) openMap({ from: si, walkTo: si + 1, fresh: !!info.opened });
+      else openMap({ from: si });
+    };
   }
   prog.best = Math.max(prog.best, runScore); save();
   // Đúng/đã trả lời = cộng dồn 1 lần mỗi chặng (không hiện lộ trình/ngân hàng)
   const correctN = runCorrect;
   const answeredN = runAnswered;
   const resultLine = win
-    ? `🏆 Hạ boss sau ${answeredN} câu · đúng ${correctN}/${answeredN}`
+    ? `🏆 Hạ ${esc(stage.boss)} sau ${answeredN} câu · đúng ${correctN}/${answeredN}`
     : `✅ Đúng ${correctN}/${answeredN} câu đã trả lời`;
+  const doneN = STAGES.filter((x, i) => stageCleared(i)).length;
   $('endInfo').innerHTML = resultLine +
-    `<br>🗺️ ${win ? 'Hạ Long–Cẩm Phả' : (st.stageName || stage.name)}<br>⚔️ Điểm: ${runScore}<br>🆙 Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor} · ${SKILLS[Math.min(st.skillLv,2)].name}`;
+    `<br>🗺️ ${stage.lv} · ${esc(stage.name)} · đã qua ${doneN}/${STAGES.length} trạm<br>⚔️ Điểm: ${runScore}<br>🆙 Lv${st.level} · ATK ${st.atk} · Giáp ${st.armor} · ${SKILLS[Math.min(st.skillLv,2)].name}`;
   const lc = $('learnCard');
   if (st.lastLearned && st.lastLearned.zh) {
     $('learnZh').textContent = st.lastLearned.zh;
@@ -2365,11 +2360,8 @@ function renderEnd(win, stage) {
 }
 
 $('btnStart').onclick = beginRun;
-$('btnAgain').onclick = beginRun;
-if ($('btnEnterStage')) $('btnEnterStage').onclick = () => {
-  if (stageIdx >= STAGES.length) { show('sEnd'); return; }
-  startStage(stageIdx);
-};
+$('btnAgain').onclick = () => { playSfx('ui'); startStage(stageIdx); };
+if ($('btnEnterStage')) $('btnEnterStage').onclick = () => WorldMap.enter();
 if ($('btnMapBack')) $('btnMapBack').onclick = () => { renderProgress(); show('sStart'); playSfx('ui'); };
 function toggleMute() {
   muted = !muted;
@@ -2392,7 +2384,8 @@ function buildShareCard() {
   g.font = 'bold 64px system-ui,sans-serif'; g.textAlign = 'center';
   g.fillText('Bảo Khựa 阿宝', W/2, 160);
   g.font = 'bold 48px system-ui,sans-serif'; g.fillStyle = '#FFD91F';
-  g.fillText(stageIdx >= 1 && st.boss <= 0 ? '🏅 Hạ Long–Cẩm Phả!' : (st.boss <= 0 ? '🏅 Hạ Boss!' : '🎮 Thành tích Bảo Khựa'), W/2, 260);
+  const sgc = STAGES[stageIdx] || STAGES[0];
+  g.fillText(st.boss <= 0 ? `🏅 Qua trạm ${sgc.lv}!` : `🎮 Hành trình ${sgc.lv}`, W/2, 260);
   g.fillStyle = '#fff'; g.font = '36px system-ui,sans-serif';
   const lines = [
     `Đúng ${runCorrect}/${runAnswered} câu đã trả lời (NH ${QUESTIONS.length})`,
@@ -2423,12 +2416,10 @@ function buildShareCard() {
   wrapText(g, OFFER_MINIGAME, W/2, 1445, W - 220, 34);
   g.font = '24px system-ui,sans-serif';
   const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
-  wrapText(g, /THAY_/.test(formUrl) ? 'Đăng ký thẻ · Zoom T2 T4 T6 20:00' : formUrl, W/2, 1500, W - 220, 34);
-  const s1 = prog.stars.hotel || 0, s2 = prog.stars.factory || 0;
-  if (s1 || s2) {
-    g.fillStyle = '#FFD91F'; g.font = 'bold 40px system-ui,sans-serif';
-    g.fillText(`Bãi Cháy ${starsText(s1) || '–'}   Cẩm Phả ${starsText(s2) || '–'}`, W/2, 950);
-  }
+  wrapText(g, /THAY_/.test(formUrl) ? 'Đăng ký thẻ hội viên Bảo Khựa' : formUrl, W/2, 1500, W - 220, 34);
+  const roadLine = STAGES.map((x, i) => `${x.lv} ${stageCleared(i) ? '✓' : '·'}`).join('  ');
+  g.fillStyle = '#FFD91F'; g.font = 'bold 36px system-ui,sans-serif';
+  g.fillText(roadLine, W/2, 950);
   g.fillStyle = '#fff'; g.font = 'bold 34px system-ui,sans-serif';
   g.fillText('▶ Chơi thử: ' + GAME_URL.replace(/^https?:\/\//, ''), W/2, 1660);
   g.fillStyle = '#16171B'; g.font = '22px system-ui,sans-serif';
@@ -2452,9 +2443,10 @@ $('shareBtn').onclick = async () => {
   const answered = st.answered || Math.min(st.i + 1, st.list.length);
   const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
   const totalQ = runQPool || (st.list && st.list.length) || 0;
-  const starLine = (prog.stars.hotel || prog.stars.factory) ? ` ⭐ Bãi Cháy ${starsText(prog.stars.hotel || 0) || '–'} · Cẩm Phả ${starsText(prog.stars.factory || 0) || '–'}` : '';
-  const text = `Mình chơi Bảo Khựa 3D (Hạ Long–Cẩm Phả), đúng ${runCorrect || st.correct}/${runAnswered || totalQ}! 🏅${starLine}
-👉 Thử hạ boss xem bạn được mấy sao: ${GAME_URL}
+  const doneN = STAGES.filter((x, i) => stageCleared(i)).length;
+  const sg = STAGES[stageIdx] || STAGES[0];
+  const text = `Mình đang leo hành trình HSK0 → HSK4 của Bảo Khựa: qua ${doneN}/${STAGES.length} trạm, trận ${sg.lv} đúng ${runCorrect || st.correct}/${runAnswered || totalQ} câu! 🏅
+👉 Bắt đầu từ con số 0, thử xem bạn lên tới trạm nào: ${GAME_URL}
 ${INVITE_SHARE_LINE}
 ${holdSeatExpired() ? "" : (OFFER_HOLD + "\n")}${holdSeatExpired() ? "" : OFFER_REFERRAL}
 ${OFFER_MINIGAME}
@@ -2477,10 +2469,8 @@ ${/THAY_/.test(formUrl) ? '' : formUrl}`.trim();
   catch (e) { prompt('Copy:', text); }
 };
 
-// Pre-check WebGL message on load (don't init GL until start to save battery)
-if (!webglAvailable()) $('webglMsg').classList.add('on');
-// Prefetch 3D sau paint — không chặn màn Start / câu hỏi
-requestAnimationFrame(() => { setTimeout(() => void ensureBattle3d(), 0); });
+
+
 if (window.speechSynthesis) speechSynthesis.getVoices();
 
 // Smoke / debug hooks (không ảnh hưởng chơi)
@@ -2488,7 +2478,7 @@ window.__bao = {
   end, beginRun, startStage, openMap, save, lsGet, lsSet, ask,
   get st(){ return st; }, get battle(){ return battle; },
   get prog(){ return prog; }, set prog(v){ prog = v; },
-  get stageIdx(){ return stageIdx; },
+  get stageIdx(){ return stageIdx; }, WorldMap, STAGES, questionsForStage,
   get runCorrect(){ return runCorrect; }, get runAnswered(){ return runAnswered; },
   get runQPool(){ return runQPool; }, get runScore(){ return runScore; },
   buildShareCard, onTimeout, holdSeatExpired, applyHoldSeatVisibility,

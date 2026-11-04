@@ -207,6 +207,39 @@ h1 .line>span{display:block}
 @keyframes flipnum{0%{transform:rotateX(-88deg);opacity:.2}100%{transform:none;opacity:1}}
 .count__lab{display:block;margin-top:16px;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--mut)}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px;margin-bottom:30px}
+.launch .lead{max-width:56ch;margin:14px auto 0;color:var(--mut)}
+/* lộ trình HSK0 → HSK4: bậc thang lên đỉnh */
+.road{list-style:none;margin:44px 0 0;padding:0;display:grid;gap:16px;position:relative}
+.road::before{content:"";position:absolute;left:28px;top:12px;bottom:12px;width:4px;border-radius:4px;background:linear-gradient(var(--sun),var(--amber) 55%,var(--ink))}
+.road__st{position:relative;padding:20px 20px 20px 78px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:0 7px 0 rgba(22,23,27,.9);transition:transform .35s var(--ease-out)}
+.road__st:hover{transform:translateY(-4px)}
+.road__lv{position:absolute;left:6px;top:18px;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:13.5px;background:var(--sun);color:var(--ink);box-shadow:3px 3px 0 var(--ink);transform:rotate(-5deg)}
+.road__st--peak .road__lv{background:var(--ink);color:var(--sun);box-shadow:3px 3px 0 var(--amber)}
+.road__st--peak{background:linear-gradient(160deg,#fff,var(--sun-2))}
+.road__st--peak::after{content:"🏆";position:absolute;right:14px;top:12px;font-size:22px}
+#hsk h2,#khai-giang h2,.road__lv,.road__st h3{font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
+.road__tm{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--denim)}
+.road__st h3{font-family:var(--disp);font-size:21px;line-height:1.25;margin:2px 0 4px}
+.road__st p{color:var(--mut);font-size:15.5px}
+.road__st .road__ex{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--cream);border:1px dashed var(--line);color:var(--ink);font-size:14.5px;line-height:1.5}
+.road__ex b{font-size:19px;margin-right:2px} .road__ex i{color:var(--denim)}
+.road__cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:36px}
+.road__note{font-size:13.5px;color:var(--mut);max-width:52ch}
+@media (min-width:1000px){
+  .road{grid-template-columns:repeat(5,1fr);align-items:end;gap:14px;padding-bottom:20px}
+  .road::before{left:0;right:0;top:auto;bottom:0;width:auto;height:4px;background:linear-gradient(90deg,var(--sun),var(--amber) 55%,var(--ink))}
+  .road__st{padding:62px 16px 18px}
+  .road__lv{left:16px;top:-16px}
+  .road__st:nth-child(1){margin-bottom:0}.road__st:nth-child(2){margin-bottom:28px}.road__st:nth-child(3){margin-bottom:56px}.road__st:nth-child(4){margin-bottom:84px}.road__st:nth-child(5){margin-bottom:112px}
+}
+/* dải ưu đãi ở đầu trang */
+.sale-pill{display:inline-flex;align-items:center;gap:10px;line-height:1.35;max-width:100%;margin-top:18px;padding:8px 16px 8px 8px;border-radius:999px;background:var(--ink);color:#FFF7D6;font-size:14.5px;font-weight:600;box-shadow:0 6px 0 rgba(0,0,0,.18);text-decoration:none}
+.sale-pill[hidden]{display:none}
+.sale-pill b{color:var(--sun)}
+.sale-pill__tag{font-family:var(--disp);font-weight:800;font-size:13px;padding:5px 10px;border-radius:999px;background:linear-gradient(90deg,#ff5a3c,var(--amber));color:#fff;animation:salePulse 1.6s var(--ease-io) infinite}
+.sale-left{font-variant-numeric:tabular-nums;white-space:nowrap}
+@keyframes salePulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(255,90,60,.2)}}
+@media (prefers-reduced-motion:reduce){.sale-pill__tag{animation:none}}
 .chip{font-size:14px;font-weight:500;padding:9px 16px;border-radius:999px;border:1.5px solid var(--line)}
 
 /* ---------- doanh nghiệp ---------- */
@@ -445,7 +478,7 @@ body.gaming .progress{opacity:0}
       <span>Bảo Khựa <span class="han">阿宝</span><small>China-ready</small></span>
     </a>
     <nav class="nav__links" aria-label="Điều hướng chính">
-      <a href="#hai-cua">Hai cửa</a><a href="#ban-la-ai">Dành cho ai</a><a href="#cau">Học thử</a><a href="#game">Game</a><a href="#lop">Lớp học</a><a href="#doanh-nghiep">Doanh nghiệp</a><a href="#ve-minh">Về mình</a>
+      <a href="#hai-cua">Hai cửa</a><a href="#ban-la-ai">Dành cho ai</a><a href="#cau">Học thử</a><a href="#game">Game</a><a href="#hsk">Lộ trình HSK</a><a href="#khai-giang">11.11</a><a href="#doanh-nghiep">Doanh nghiệp</a><a href="#ve-minh">Về mình</a>
     </nav>
     <a class="btn btn--main btn--sm" data-link="zaloGroup" href="#lien-he">Vào nhóm Zalo</a>
   </div>
@@ -486,6 +519,7 @@ body.gaming .progress{opacity:0}
         <a class="btn btn--ghost" href="#game">🎮 Chơi game học tiếng Trung</a>
       </div>
       <p class="hero__note fade" style="--dl:1.2s">Không cần biết trước chữ nào. Vào xem, thấy hợp thì ở lại.</p>
+      <a class="sale-pill fade" style="--dl:1.35s" href="#khai-giang" data-offer><span class="sale-pill__tag">11.11</span><span>Thẻ 1 năm <b>299k</b> · còn <b class="sale-left" data-sale-left>…</b></span></a>
     </div>
   </div>
   <a class="cue" href="#hai-cua" aria-label="Cuộn xuống"></a>
@@ -529,7 +563,7 @@ body.gaming .progress{opacity:0}
     <div class="num reveal"><b data-count="5">5</b><span>năm sống và làm việc ở Trung Quốc</span></div>
     <div class="num reveal" style="--i:1"><b data-count="46">46</b><span>câu tình huống trong game Khách sạn</span></div>
     <div class="num reveal" style="--i:2"><b data-count="43">43</b><span>từ mới chạm là nghe trên phố game</span></div>
-    <div class="num reveal" style="--i:3"><b data-count="3">3</b><span>buổi Zoom mỗi tuần: thứ Hai, Tư, Sáu</span></div>
+    <div class="num reveal" style="--i:3"><b data-count="5">5</b><span>chặng lộ trình, từ HSK0 lên HSK4</span></div>
   </div>
 </section>
 
@@ -672,7 +706,7 @@ body.gaming .progress{opacity:0}
     <p class="lead reveal" style="--i:2">Mình không muốn bạn tin vào lời giới thiệu. Bạn cứ xem, cứ học thử, rồi tự quyết.</p>
     <div class="steps">
       <div class="step scrub"><h3>Xem video ngắn</h3><p>Mỗi video một tình huống thật: ở quầy lễ tân, trên xe đoàn, trong nhà máy.</p></div>
-      <div class="step scrub"><h3>Nhận bài trong nhóm Zalo</h3><p>Mỗi tuần 2–3 bài đầy đủ, có phiên âm và file nghe. Không mất tiền.</p></div>
+      <div class="step scrub"><h3>Nhận bài trong nhóm Zalo</h3><p>Mỗi tuần 2–3 bài đầy đủ, có phiên âm và file nghe. Học trước, thấy hợp rồi hẵng tính.</p></div>
       <div class="step scrub"><h3>Học thử một buổi Zoom</h3><p>Mỗi tuần một buổi Zoom mở. Bạn nói, mình sửa trực tiếp.</p></div>
       <div class="step scrub"><h3>Vào lớp nhóm hoặc kèm riêng</h3><p>Nhóm 5–10 người theo nghề hoặc theo cấp HSK. Kèm một một thì mình đứng lớp.</p></div>
     </div>
@@ -692,22 +726,44 @@ body.gaming .progress{opacity:0}
   </div>
 </section>
 
-<!-- ĐẾM NGƯỢC -->
+<!-- LỘ TRÌNH HSK0 → HSK4 -->
+<section class="s-cream" id="hsk">
+  <span class="bg-han" data-speed=".12" data-rot="5" aria-hidden="true">路</span>
+  <div class="wrap">
+    <span class="eyebrow reveal">Lộ trình HSK0 → HSK4</span>
+    <h2 class="reveal" style="--i:1">Bắt đầu từ con số 0, <em>lên tới đỉnh HSK4.</em></h2>
+    <p class="lead reveal" style="--i:2">Năm chặng, chặng sau khó hơn chặng trước một chút. Mốc thời gian là lộ trình gợi ý nếu bạn học đều mỗi tuần. Ai bận thì đi chậm hơn, không sao cả.</p>
+    <ol class="road">
+      <li class="road__st reveal" style="--i:0"><span class="road__lv">HSK0</span><span class="road__tm">Tuần 1–2</span><h3>Pinyin và câu chào</h3><p>Bốn thanh điệu, đếm số, chào hỏi, cảm ơn, xin lỗi. Chưa biết chữ nào cũng học được.</p><p class="road__ex"><b class="han" lang="zh-CN">你好！</b> <i>nǐ hǎo</i> · Xin chào!</p></li>
+      <li class="road__st reveal" style="--i:1"><span class="road__lv">HSK1</span><span class="road__tm">Tháng 1–2</span><h3>Tiếp khách cơ bản</h3><p>Hỏi tên, hỏi giờ, hỏi giá, chỉ đường, làm thủ tục nhận phòng.</p><p class="road__ex"><b class="han" lang="zh-CN">我想办理入住。</b> <i>Wǒ xiǎng bànlǐ rùzhù.</i> · Tôi muốn làm thủ tục nhận phòng.</p></li>
+      <li class="road__st reveal" style="--i:2"><span class="road__lv">HSK2</span><span class="road__tm">Tháng 3–5</span><h3>Nói chuyện ca làm</h3><p>Đã… rồi, vì… nên…, so sánh. Xin nghỉ, báo tan ca, báo máy hỏng.</p><p class="road__ex"><b class="han" lang="zh-CN">我已经下班了。</b> <i>Wǒ yǐjīng xiàbān le.</i> · Tôi đã tan ca rồi.</p></li>
+      <li class="road__st reveal" style="--i:3"><span class="road__lv">HSK3</span><span class="road__tm">Tháng 6–8</span><h3>Xử lý sự cố</h3><p>Câu 把, 被, tuy… nhưng…, nếu… thì… Khách phàn nàn, đổi phòng, sự cố ca đêm.</p><p class="road__ex"><b class="han" lang="zh-CN">如果您不满意，我就给您换房间。</b> <i>Rúguǒ nín bù mǎnyì, wǒ jiù gěi nín huàn fángjiān.</i> · Nếu quý khách không hài lòng, tôi sẽ đổi phòng cho quý khách.</p></li>
+      <li class="road__st road__st--peak reveal" style="--i:4"><span class="road__lv">HSK4</span><span class="road__tm">Tháng 9–12 · Đỉnh</span><h3>Họp, đàm phán, phỏng vấn</h3><p>Không những… mà còn…, dù… cũng… Nói trôi chảy trong cuộc họp và buổi phỏng vấn xin việc.</p><p class="road__ex"><b class="han" lang="zh-CN">即使加班，我们也会按时交货。</b> <i>Jíshǐ jiābān, wǒmen yě huì ànshí jiāohuò.</i> · Dù phải tăng ca, chúng tôi cũng giao hàng đúng hạn.</p></li>
+    </ol>
+    <div class="road__cta reveal">
+      <a class="btn btn--main magnet" href="game.html">🥷 Chơi thử trạm HSK0</a>
+      <span class="road__note">Game Đánh Boss đi đúng 5 chặng này. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ƯU ĐÃI 11.11 -->
 <section class="launch s-ink" id="khai-giang">
   <div class="wrap">
-    <span class="eyebrow reveal">Lớp đầu tiên</span>
-    <h2 class="reveal" style="--i:1" id="launchTitle">Tiếng Trung cho người làm <em>du lịch, khách sạn</em></h2>
-    <div class="count reveal" style="--i:2" id="count" role="timer" aria-label="Thời gian còn lại đến ngày khai giảng">
+    <span class="eyebrow reveal">Ưu đãi 11.11</span>
+    <h2 class="reveal" style="--i:1" id="launchTitle">Thẻ hội viên 1 năm <em>chỉ 299k</em></h2>
+    <p class="lead reveal" style="--i:2" id="launchLead">Đại giảm giá đến 23:59 thứ Tư 11/11. Một thẻ năm đi vừa cả lộ trình gợi ý HSK0 → HSK4. Lịch lớp Zoom đang chốt, mình sẽ báo trong nhóm Zalo trước khi vào học.</p>
+    <div class="count reveal" style="--i:2" id="count" role="timer" aria-label="Thời gian còn lại của ưu đãi 11.11">
       <div class="count__box"><span class="count__num" data-u="d">00</span><span class="count__lab">Ngày</span></div>
       <div class="count__box"><span class="count__num" data-u="h">00</span><span class="count__lab">Giờ</span></div>
       <div class="count__box"><span class="count__num" data-u="m">00</span><span class="count__lab">Phút</span></div>
       <div class="count__box"><span class="count__num" data-u="s">00</span><span class="count__lab">Giây</span></div>
     </div>
     <div class="chips reveal" style="--i:3">
-      <span class="chip chip--hot" data-offer>⏰ Giữ chỗ đến 20:00 thứ Ba 03/11</span><span class="chip" id="launchDate">Khai giảng 20:00 thứ Tư 04/11/2026</span><span class="chip">Học qua Zoom</span><span class="chip">Nhóm 5–10 người</span>
+      <span class="chip chip--hot" data-offer>🔥 Đến 23:59 thứ Tư 11/11</span><span class="chip">Lộ trình HSK0 → HSK4</span><span class="chip">Học qua Zoom · lịch đang chốt</span><span class="chip">Nhóm 5–10 người</span>
     </div>
-    <a class="btn btn--main magnet reveal" style="--i:4" data-link="zaloGroup" href="#lien-he">Giữ chỗ qua Zalo</a>
-    <a class="btn btn--ghost reveal" style="--i:5;margin:12px 6px 0;--fg:var(--sun)" href="#game">🎮 Chơi game Khách sạn Bảo Khựa</a>
+    <a class="btn btn--main magnet reveal" style="--i:4" href="membership.html" id="saleBtn">Xem thẻ 299k</a>
+    <a class="btn btn--ghost reveal" style="--i:5;margin:12px 6px 0;--fg:var(--sun)" data-link="zaloGroup" href="#lien-he">Hỏi Bảo qua Zalo</a>
   </div>
 </section>
 
@@ -807,7 +863,7 @@ body.gaming .progress{opacity:0}
 const CONFIG = {
   zaloGroup:    "https://zalo.me/g/16yx8ptwane8ggwrnyxl",   // link nhóm Zalo, dạng "https://zalo.me/g/16yx8ptwane8ggwrnyxl"
   tiktok:       "https://www.tiktok.com/@baokhuaa",   // dạng "https://www.tiktok.com/@ten_kenh"
-  startDate:    "2026-11-04T20:00:00+07:00"  // ngày giờ khai giảng
+  saleEnd:      "2026-11-11T23:59:59+07:00"  // hết ưu đãi 11.11 (thẻ 1 năm 299k). Lịch học chưa chốt nên trang không ghi ngày khai giảng
 };
 
 (() => {
@@ -897,16 +953,23 @@ const CONFIG = {
     }, { passive: true });
   }
 
-  /* ---- đếm ngược ---- */
-  const target = new Date(CONFIG.startDate).getTime(), nums = {}, p2 = n => String(n).padStart(2, '0');
+  /* ---- đếm ngược ưu đãi 11.11 ---- */
+  const target = new Date(CONFIG.saleEnd).getTime(), nums = {}, p2 = n => String(n).padStart(2, '0');
   $$('.count__num').forEach(n => nums[n.dataset.u] = n);
-  const vn = new Date(target + 7 * 3600e3), days = ['Chủ nhật', 'thứ Hai', 'thứ Ba', 'thứ Tư', 'thứ Năm', 'thứ Sáu', 'thứ Bảy'];
-  $('#launchDate').textContent = `Khai giảng ${p2(vn.getUTCHours())}:${p2(vn.getUTCMinutes())} ${days[vn.getUTCDay()]} ${p2(vn.getUTCDate())}/${p2(vn.getUTCMonth() + 1)}/${vn.getUTCFullYear()}`;
+  const left = $$('[data-sale-left]');
   const tick = () => {
     const s = Math.floor((target - Date.now()) / 1000);
-    if (s <= 0) { $('#count').hidden = true; $('#launchTitle').textContent = 'Lớp đầu tiên đã khai giảng. Nhắn Zalo để hỏi lịch khóa kế tiếp.'; clearInterval(timer); return; }
+    if (s <= 0) {
+      $('#count').hidden = true; $$('[data-offer]').forEach(el => { el.hidden = true; });
+      $('#launchTitle').textContent = 'Ưu đãi 11.11 đã kết thúc.';
+      $('#launchLead').textContent = 'Lịch lớp Zoom sẽ báo trong nhóm Zalo. Nhắn Bảo để hỏi giá thẻ hiện tại.';
+      const sb = $('#saleBtn'); if (sb) sb.textContent = 'Xem thẻ hội viên';
+      clearInterval(timer); return;
+    }
     const v = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
     for (const k in v) { const t = p2(v[k]); if (nums[k].textContent !== t) { nums[k].textContent = t; if (!reduce) { nums[k].classList.remove('is-flip'); void nums[k].offsetWidth; nums[k].classList.add('is-flip'); } } }
+    const short = v.d > 0 ? `${v.d} ngày ${v.h} giờ` : `${p2(v.h)}:${p2(v.m)}:${p2(v.s)}`;
+    left.forEach(el => { if (el.textContent !== short) el.textContent = short; });
   };
   const timer = setInterval(tick, 1000); tick();
 
@@ -1066,9 +1129,6 @@ const CONFIG = {
     addEventListener('scroll', () => { if (!tk) { tk = true; requestAnimationFrame(par); } }, { passive: true }); par();
   }
 
-  /* ---- ưu đãi giữ chỗ: tự ẩn sau hạn ---- */
-  const OFFER_END = Date.parse('2026-11-03T13:00:00Z');   // 20:00 thứ Ba 03/11 giờ Việt Nam
-  if (Date.now() > OFFER_END) $$('[data-offer]').forEach(el => { el.hidden = true; });
 
   /* ---- game Khách sạn trong khung điện thoại ---- */
   const phone = $('#phone'), scr = $('#phoneScreen'), poster = $('#playHere');
