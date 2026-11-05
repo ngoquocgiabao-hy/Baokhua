@@ -31,7 +31,7 @@ const OVERTIME_MAX = 6;       // Hiệp phụ: hết câu mà boss còn máu →
 const TIMER_WARN_SECONDS = 5; // còn ≤5s: thanh giờ đỏ + tiếng tích tắc
 /* ===== HÀNH TRÌNH HSK0 → HSK4 (v6) =====
    Mỗi trạm = 1 boss. Hạ boss trạm trước mới mở trạm sau. Mốc thời gian là lộ trình gợi ý tính từ ngày bắt đầu học,
-   không phải lịch khai giảng. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.
+   không phải lịch lớp. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.
    n = số câu mỗi trận · sec = giây mỗi câu · hit = hệ số sát thương boss · pyHelp = hiện pinyin ở đáp án chữ Hán
    learn = câu mẫu học trước khi vào trận [Hán, pinyin, nghĩa Việt] */
 const STAGES = [
@@ -123,7 +123,7 @@ const ACT_DIFF = [
    Giáp vàng: boss còn 50% máu thì bật giáp, đòn thường chỉ còn 35% sát thương tới khi bị tuyệt chiêu phá.
    Đòn thường không hạ được boss dưới 8% máu → phải kết liễu bằng tuyệt chiêu (trả lời đúng câu hỏi). */
 const ACT_HERO = { cd: { a: .55, b: 1.5, d: .8 }, k: { a: .024, b: .055 }, ult: [.2, .22, .25, .3], en: { a: 11, b: 18, dodge: 6, perfect: 14, break: 12, perSec: 3 } };
-const INVITE_BLURB = 'Thẻ 1 năm 299k (ưu đãi 11.11) · thẻ 3 tháng 99k · học qua Zoom, lịch lớp đang chốt và sẽ báo trong nhóm Zalo';
+const INVITE_BLURB = 'Thẻ 1 năm 299k (ưu đãi 11.11) · thẻ 3 tháng 99k · tự học, không gồm lớp Zoom';
 const INVITE_SHARE_LINE = '11.11: thẻ 1 năm 299k đến 23:59 ngày 11/11 · lộ trình HSK0 → HSK4';
 const OFFER_HOLD = '🔥 11.11 đại giảm giá: thẻ 1 năm 299k, đến 23:59 thứ Tư 11/11';
 const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 23:59 ngày 11/11 → bạn được cộng thêm 7 ngày.';
