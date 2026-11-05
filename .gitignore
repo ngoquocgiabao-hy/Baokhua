@@ -1,3 +1,5 @@
+**/__pycache__/
 tools/art/node_modules/
 tools/art/package*.json
 tools/art/pose_heavy.task
+tools/test/out/

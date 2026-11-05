@@ -1293,32 +1293,48 @@ const Rig = (() => {
       const v = bin(d.v), t = bin(d.t);
       c.V = new Int16Array(v.buffer, 0, v.length >> 1); c.T = new Uint16Array(t.buffer, 0, t.length >> 1);
       c.BI = bin(d.bi); c.BW = bin(d.bw); c.d = d; c.J = d.bones.map(b => b.j); c.P = d.bones.map(b => b.p);
-      c.M = new Float32Array(NB * 6); c.id = name; c.ok = true;
+      c.M = new Float32Array(NB * 6); c.id = name;
+      const RK = [null, null, null, 'uaF', 'faF', 'uaB', 'faB', 'thF', 'shF', 'thB', 'shB'];
+      c.AX = new Float32Array(NB * 2); for (let i = 0; i < NB; i++) { const a = RK[i] ? (d.rest[RK[i]] || 0) : 0; c.AX[i * 2] = Math.sin(a); c.AX[i * 2 + 1] = Math.cos(a); }
+      c.ok = true;
     }).catch(() => {});
     return null;
   }
   /** tư thế p (kiểu Chibi: lean, head, aF/eF, aB/eB, lF/kF, lB/kB) so với tư thế gốc ref → góc xoay của từng xương */
+  /* Tranh vẽ nhìn chính diện / 3/4: tay chân đưa trước–sau là chuyển động theo chiều sâu.
+     Nếu chỉ xoay trong mặt phẳng tranh, gối và khuỷu sẽ gập ngang như gãy. Nên mỗi khớp chỉ xoay một phần (hệ số [0])
+     và chi bị co ngắn theo trục khi đưa ra trước/sau (hệ số [1]) — giống phối cảnh thật. */
+  const PR = { ua: [.8, .3], fa: [.7, .25], th: [.6, .55], sh: [.5, .5] };
+  const SC = new Float32Array(NB).fill(1);
+  const fore = (dv, q) => Math.max(.5, 1 - q * Math.pow(Math.sin(Math.min(Math.abs(dv), Math.PI / 2)), 2));
   function angles(p, ref, fs, gain) {
     const d = k => (p[k] || 0) - (ref[k] || 0), s = -fs, ga = gain ? gain.arm : 1, gl = gain ? gain.leg : 1, lean = d('lean');
+    const aF = (d('aF') + lean * .45) * ga, eF = d('eF') * ga, aB = (d('aB') + lean * .45) * ga, eB = d('eB') * ga;
+    const lF = d('lF') * gl, kF = d('kF') * gl, lB = d('lB') * gl, kB = d('kB') * gl;
     ang[0] = s * lean * .12;
     ang[1] = s * lean * .7;
     ang[2] = ang[1] + s * (d('head') * .85 + lean * .12);
-    ang[3] = s * (d('aF') + lean * .45) * ga; ang[4] = ang[3] + s * d('eF') * ga;
-    ang[5] = s * (d('aB') + lean * .45) * ga; ang[6] = ang[5] + s * d('eB') * ga;
-    ang[7] = s * d('lF') * gl; ang[8] = ang[7] + s * d('kF') * gl;
-    ang[9] = s * d('lB') * gl; ang[10] = ang[9] + s * d('kB') * gl;
-    for (let i = 0; i < NB; i++) ang[i] = Math.max(-2.7, Math.min(2.7, ang[i]));
+    ang[3] = s * aF * PR.ua[0]; ang[4] = ang[3] + s * eF * PR.fa[0];
+    ang[5] = s * aB * PR.ua[0]; ang[6] = ang[5] + s * eB * PR.fa[0];
+    ang[7] = s * lF * PR.th[0]; ang[8] = ang[7] + s * kF * PR.sh[0];
+    ang[9] = s * lB * PR.th[0]; ang[10] = ang[9] + s * kB * PR.sh[0];
+    for (let i = 0; i < NB; i++) ang[i] = Math.max(-2.6, Math.min(2.6, ang[i]));
+    SC[3] = fore(aF, PR.ua[1]); SC[4] = fore(aF + eF, PR.fa[1]); SC[5] = fore(aB, PR.ua[1]); SC[6] = fore(aB + eB, PR.fa[1]);
+    SC[7] = fore(lF, PR.th[1]); SC[8] = fore(lF + kF, PR.sh[1]); SC[9] = fore(lB, PR.th[1]); SC[10] = fore(lB + kB, PR.sh[1]);
     return ang;
   }
-  function solve(c, A, dx, dy) {
-    const M = c.M, J = c.J, P = c.P;
+  /** mỗi xương: xoay quanh khớp + co giãn dọc theo trục xương (phối cảnh); khớp con đi theo xương cha */
+  function solve(c, A, S, dx, dy) {
+    const M = c.M, J = c.J, P = c.P, AX = c.AX;
     for (let i = 0; i < NB; i++) {
       const jx = J[i][0], jy = J[i][1], p = P[i]; let px, py;
       if (p < 0) { px = jx + dx; py = jy + dy; }
       else { const o = p * 6; px = M[o] * jx + M[o + 1] * jy + M[o + 2]; py = M[o + 3] * jx + M[o + 4] * jy + M[o + 5]; }
-      const cs = Math.cos(A[i]), sn = Math.sin(A[i]), o = i * 6;
-      M[o] = cs; M[o + 1] = -sn; M[o + 2] = px - (cs * jx - sn * jy);
-      M[o + 3] = sn; M[o + 4] = cs; M[o + 5] = py - (sn * jx + cs * jy);
+      const cs = Math.cos(A[i]), sn = Math.sin(A[i]), o = i * 6, k = (S ? S[i] : 1) - 1, ux = AX[i * 2], uy = AX[i * 2 + 1];
+      const S00 = 1 + k * ux * ux, S01 = k * ux * uy, S11 = 1 + k * uy * uy;
+      const L00 = cs * S00 - sn * S01, L01 = cs * S01 - sn * S11, L10 = sn * S00 + cs * S01, L11 = sn * S01 + cs * S11;
+      M[o] = L00; M[o + 1] = L01; M[o + 2] = px - (L00 * jx + L01 * jy);
+      M[o + 3] = L10; M[o + 4] = L11; M[o + 5] = py - (L10 * jx + L11 * jy);
     }
   }
   function xf(c, bone, pt) { const M = c.M, o = bone * 6; return [M[o] * pt[0] + M[o + 1] * pt[1] + M[o + 2], M[o + 3] * pt[0] + M[o + 4] * pt[1] + M[o + 5]]; }
@@ -1329,7 +1345,11 @@ const Rig = (() => {
   function pose(c, p, ref, gain, plant, extra, st, dt) {
     const A = angles(p, ref, c.d.fs, gain);
     if (extra) for (let i = 0; i < NB; i++) A[i] += extra[i] || 0;
+    let Sx = SC;
     if (st) {
+      if (!st.sc || st.id !== c.id) st.sc = Float32Array.from(SC);
+      else { const kk = Math.min(1, (dt || 0) * 16); for (let i = 0; i < NB; i++) st.sc[i] += (SC[i] - st.sc[i]) * kk; }
+      Sx = st.sc;
       if (!st.cur || st.id !== c.id) { st.cur = Float32Array.from(A); st.vel = new Float32Array(NB); st.id = c.id; }
       else if (dt > 0) {
         const n = dt > .02 ? 3 : 2, h = Math.min(dt, .05) / n;
@@ -1337,10 +1357,10 @@ const Rig = (() => {
       }
       for (let i = 0; i < NB; i++) A[i] = st.cur[i];
     }
-    solve(c, A, 0, 0);
+    solve(c, A, Sx, 0, 0);
     if (plant) {
       const pf = c.d.pts.ankF, pb = c.d.pts.ankB, g0 = Math.max(pf[1], pb[1]), low = Math.max(xf(c, 8, pf)[1], xf(c, 10, pb)[1]);
-      const dy = (g0 - low) * plant; if (Math.abs(dy) > .3) solve(c, A, 0, dy);
+      const dy = (g0 - low) * plant; if (Math.abs(dy) > .3) solve(c, A, Sx, 0, dy);
     }
     return c.M;
   }
@@ -1551,6 +1571,15 @@ createBattle = function createArena(root) {
     else if (look === 'shadow') a.y = -Math.abs(Math.sin(clock * 3.6)) * 2.6 * S;
     else if (look === 'trainee') a.y = -Math.abs(Math.sin(clock * 7)) * .9 * S;
     a.pose = Object.assign({}, base, { bob: base.bob + br * 1.3, aF: base.aF + br * .04 });
+    // v11.1 · mỗi người một dáng chờ: tướng nhún thủ thế, lễ tân tập sự đổi chân bồn chồn, lễ tân khó tính gõ chân,
+    // tổ trưởng thở nặng vai, quản lý ca đêm đưa đèn pin qua lại, Hắc Ninja nhún chân sẵn sàng
+    const P2 = a.pose, c1 = Math.sin(clock * 1.6), c2 = Math.sin(clock * 3.1);
+    if (a === hero) { P2.aF += Math.sin(clock * 4.2) * .07; P2.aB -= Math.sin(clock * 4.2 + .6) * .06; P2.head += c1 * .03; P2.kF -= Math.abs(Math.sin(clock * 4.2)) * .12; P2.kB -= Math.abs(Math.sin(clock * 4.2)) * .1; }
+    else if (look === 'trainee') { P2.lF += c2 * .07; P2.lB += c2 * .07; P2.head += Math.sin(clock * 2.3) * .08; P2.lean += c2 * .03; }
+    else if (look === 'hotel') { const tap = Math.max(0, Math.sin(clock * 7)) * (Math.sin(clock * .8) > 0 ? 1 : 0); P2.kF -= tap * .35; P2.lF += tap * .1; P2.head += c1 * .04; }
+    else if (look === 'factory') { P2.lean += c1 * .035; P2.aF += c1 * .08; P2.aB -= c1 * .08; P2.head -= c1 * .03; }
+    else if (look === 'night') { P2.aF += Math.sin(clock * 1.1) * .18; P2.head += Math.sin(clock * 1.1 + .4) * .06; }
+    else if (look === 'shadow') { P2.kF -= Math.abs(Math.sin(clock * 3.6)) * .2; P2.kB -= Math.abs(Math.sin(clock * 3.6)) * .18; P2.aF += Math.sin(clock * 3.6) * .06; }
     a.mood = null;
     a.x = home(a) + (a === boss && rage ? rnd(-1.4, 1.4) : 0);
   }
@@ -1584,6 +1613,12 @@ createBattle = function createArena(root) {
   };
   const GAIN = { hero: { arm: 1, leg: 1 }, trainee: { arm: .55, leg: .9 }, hotel: { arm: .5, leg: .9 }, factory: { arm: .8, leg: 1 }, night: { arm: .75, leg: 1 }, shadow: { arm: 1, leg: 1 } };
   const RUNP = (a, ph, run, amt = 1) => Rig.gait(idlePose(a), ph, run, amt);
+  /** nhảy lùi về chỗ (k: 0→1): nhún lấy đà, bật lùi hai chân thu lại, tiếp đất khuỵu gối rồi về thế đứng — không "đi lùi ngược" */
+  function backstep(k, idle) {
+    if (k < .18) return { pose: MIX(P.chop, P.crouch, ease(k / .18)), sq: -.08 * (k / .18) };
+    if (k < .72) { const q = (k - .18) / .54; return { pose: MIX(P.crouch, P.jump, Math.sin(q * Math.PI) * .7), y: -Math.sin(q * Math.PI) * H * .075, sq: .06 * Math.sin(q * Math.PI) }; }
+    const q = (k - .72) / .28; return { pose: MIX(P.crouch, idle, ease(q)), sq: -.1 * (1 - q) };
+  }
   function rigName(a) { return a === hero ? 'hero' + (tier + 1) : (a.sp === 'atk' || a.sp === 'ko' || a.state === 'down') ? null : look + '-idle'; }
   function rigOf(a) { if (!rg()) return null; const n = rigName(a); if (!n) return null; const R = Rig.get(n) || Rig.load(n); return R && R.ok ? R : null; }
   const GHOSTC = {}, BREATH = new Float32Array(11);
@@ -2135,7 +2170,7 @@ createBattle = function createArena(root) {
         if (t < .24) return { pose: RUNP(boss, t * 4.2, true), x: lerp(xs, x1, ease(t / .24)), rot: Math.sin(t * 38) * .05, mood: 'nervous' };
         if (t < .36) return { pose: 'raise', x: x1, sp: 'atk', rot: -.1 * ((t - .24) / .12), sq: .06 };
         if (t < .58) return { pose: 'chop', x: x1, sp: 'atk', rot: .08, sq: -.04 };
-        const kk = (t - .58) / .37; return { pose: kk < .25 ? MIX(P.chop, idle, kk / .25) : RUNP(boss, kk * 2.4, false, 1 - ease((kk - .25) / .75)), x: lerp(x1, x0, ease(kk)), sp: kk < .25 ? 'atk' : 'idle' };
+        const kk = (t - .58) / .37; return Object.assign(backstep(kk, idle), { x: lerp(x1, x0, ease(kk)), sp: kk < .2 ? 'atk' : 'idle' });
       }, [
         [.26, () => { if (!alive()) return; sx('paper'); const n = lite ? 4 : 9; for (let i = 0; i < n; i++) paperSheet(pt(boss, 'hand'), [HX() + rnd(-.06, .06) * W, HY() + rnd(-.18, .14) * H], .3, i * .028); }],
         [.4, () => { if (!alive()) return; sx('swish'); const from = pt(boss, 'hand'); folder(from, [HX() + W * .01, HY() - H * .02], .2, () => { if (!alive()) return; burst(HX(), HY(), 12, ['rgba(255,255,255,1)', 'rgba(120,170,255,1)'], .6); land(col, soft, .8); if (!lite) textPop(HX(), HY() - H * .2, 'BỘP!', '#ffffff', .08); }); }]
@@ -2208,7 +2243,7 @@ createBattle = function createArena(root) {
       if (t < .26) return { pose: RUNP(boss, t * 4.5, true), x: lerp(xs, x1, ease(t / .26)), weapon: wpn, mood: 'angry' };
       if (t < .44) return { pose: K([[0, 'raise'], [.55, 'raise'], [1, 'chop']], (t - .26) / .18), x: x1, weapon: wpn, mood: 'angry', sp: 'atk' };
       const kk = (t - .44) / .42;
-      return { pose: kk < .25 ? MIX(P.chop, idle, kk / .25) : RUNP(boss, kk * 2.4, false, 1 - ease((kk - .25) / .75)), x: lerp(x1, x0, ease(kk)), weapon: wpn, sp: kk < .25 ? 'atk' : 'idle' };
+      return Object.assign(backstep(kk, idle), { x: lerp(x1, x0, ease(kk)), weapon: wpn, sp: kk < .2 ? 'atk' : 'idle' });
     }, [[.42, () => { if (!alive()) return; sx('ding'); land(col, soft, 1); }]]);
     return { impactAt: 420 };
   }
@@ -2700,8 +2735,20 @@ createBattle = function createArena(root) {
       }
       tier = t;
     },
-    playHeroAttack(kind, info) { hush(); pressure(false); hero.act = null; return kind === 'long_ha' ? longHa() : kind === 'chem_gio' ? chemGio() : phiTieu(info); },
-    playBossAttack() { hush(); pressure(false); boss.act = null; hero.act = null; return bossAttack(false); },
+    playHeroAttack(kind, info) {
+      hush(); pressure(false); hero.act = null;
+      const r = kind === 'long_ha' ? longHa() : kind === 'chem_gio' ? chemGio() : phiTieu(info);
+      // boss thấy đòn tới: rụt vai, lùi nửa bước, đưa tay che (rồi trúng đòn sẽ diễn tiếp)
+      if (!boss.act && boss.state === 'idle') { const x0 = home(boss), id = idlePose(boss); play(boss, .32, k => ({ pose: MIX(id, P.hurt, Math.sin(k * Math.PI) * .38), x: x0 + Math.sin(k * Math.PI) * 6 * S, mood: 'nervous' })); }
+      return r;
+    },
+    playBossAttack() {
+      hush(); pressure(false); boss.act = null; hero.act = null;
+      const r = bossAttack(false);
+      // tướng thấy boss lao tới: hạ thấp người thủ thế, lùi nửa bước
+      if (!hero.act && hero.state === 'idle') { const x0 = home(hero); play(hero, .36, k => ({ pose: MIX(P.stance, P.crouch, Math.sin(k * Math.PI) * .45), x: x0 - Math.sin(k * Math.PI) * 7 * S, mood: 'angry' })); }
+      return r;
+    },
     pressure,
     flashBoss() {},
     playLevelUp() {
@@ -3732,6 +3779,7 @@ const WorldMap = (() => {
             const pz = near > 0 ? Chibi.mix(idle, Object.assign({}, P.point, { aF: P.point.aF + Math.sin(clock * 7) * .12 }), near * .75) : idle;
             if (!gateRS[i]) gateRS[i] = {};
             drawn = !!rigBlit(R, img, pz, P.stand, MGAIN[s.look] || MGAIN.hero, 1, gateRS[i], bx, by, 0, 1, 1, 92 * u, 1, m, null, 1);
+            if (near > .15 && !talking && !duel && s.taunt) onTop(() => speech(bx, by - 100 * u, s.taunt, '#e63946', clamp(near * 1.6, 0, 1)));
           }
           if (!drawn) { g.globalAlpha = open ? 1 : .55; g.drawImage(img, bx - m[2] * k, by + Math.sin(clock * 2 + i) * .8 * u - m[3] * k, m[0] * k, m[1] * k); g.globalAlpha = 1; }
         }
@@ -3765,8 +3813,9 @@ const WorldMap = (() => {
       const pz = met ? Object.assign({}, P0.stand, { bob: Math.sin(tt * 2.4) * .8, aF: P0.stand.aF + Math.sin(tt * 1.6) * .06, head: Math.sin(tt * .9) * .06 + (near ? -.08 : 0), lean: Math.sin(tt * 1.2) * .03 })
         : Object.assign({}, P0.wave, { aF: P0.wave.aF + Math.sin(tt * 7) * .32, eF: P0.wave.eF + Math.sin(tt * 7 + .6) * .35, bob: Math.abs(Math.sin(tt * 3.5)) * -1.4, head: Math.sin(tt * 3.5) * .05 });
       Chibi.draw(g, Chibi.SPECS[n.id], { x, y: GY * u, s: u * .72, face, pose: pz, time: clock, mood: 'calm-smile' });
-      const by = (GY - 92) * u + Math.sin(clock * 4) * 2 * u;
-      if (!met || near) {
+      const by = (GY - 92) * u + Math.sin(clock * 4) * 2 * u, dist = Math.abs(hero.x - nx), close = dist < 82 && !talking && !duel;
+      if (close) { const line = met ? n.after : n.line, a = clamp((82 - dist) / 22, 0, 1); onTop(() => speech(x, (GY - 84) * u + Math.sin(clock * 3) * 1.2 * u, line, met ? '#2ec4b6' : '#e9a23b', a)); }
+      else if (!met || near) {
         g.save(); g.translate(x, by); g.scale(u, u);
         g.fillStyle = met ? '#2ec4b6' : '#FFD91F'; RR(g, -10, -9, 20, 15, 5); g.fill(); g.beginPath(); g.moveTo(-3, 6); g.lineTo(0, 11); g.lineTo(3, 6); g.fill();
         g.strokeStyle = '#16171B'; g.lineWidth = 1.6; RR(g, -10, -9, 20, 15, 5); g.stroke();
@@ -3786,9 +3835,10 @@ const WorldMap = (() => {
     const T = MON[m.type], sc = (m.big ? 1.85 : 1.2) * u, f = m.face;
     const lx = m.act && m.act.type === 'atk' ? Math.sin(Math.min(1, m.act.t / m.act.dur) * Math.PI) * 28 * u * f : 0;
     const x = SX(m.x) + lx; if (x < -80 || x > W + 80) return;
-    let y = GY * u; const t = clock + m.ph;
-    if (m.type === 'vali') y -= Math.abs(Math.sin(t * 5)) * 8 * sc;
+    let y = GY * u; const nr = m.near || 0, t = clock * (1 + nr * 1.4) + m.ph;
+    if (m.type === 'vali') y -= Math.abs(Math.sin(t * 5)) * 8 * sc * (1 + nr * 1.2);
     if (m.type === 'ma') y -= 12 * sc + Math.sin(t * 2.5) * 4 * sc;
+    if (m.type === 'cua' && nr > .3) y -= Math.abs(Math.sin(t * 9)) * 2.2 * sc * nr;
     g.globalAlpha = .3; g.fillStyle = '#000'; g.beginPath(); g.ellipse(x, GY * u + 1, 14 * sc, 3 * sc, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
     if (m.big) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .45 + .15 * Math.sin(clock * 4); glowDot(g, x, y - 16 * sc, 30 * sc, m.type === 'bong' ? 'rgba(185,90,255,.6)' : 'rgba(255,90,60,.45)'); g.restore(); }
     g.save(); g.translate(x, y); g.scale(f, 1);
@@ -3800,7 +3850,7 @@ const WorldMap = (() => {
       const gr = g.createRadialGradient(-4 * sc, -14 * sc, 2 * sc, 0, -9 * sc, 15 * sc); gr.addColorStop(0, '#ff9a7a'); gr.addColorStop(.6, '#e2553c'); gr.addColorStop(1, '#a3311f');
       g.fillStyle = gr; g.strokeStyle = '#16171B'; g.lineWidth = 1.4 * sc / u; g.beginPath(); g.ellipse(0, -9 * sc, 14 * sc, 8.5 * sc, 0, 0, 6.283); g.fill(); g.stroke();
       g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.ellipse(-5 * sc, -13 * sc, 4 * sc, 1.8 * sc, -.3, 0, 6.283); g.fill();
-      const sn = Math.sin(t * 6) * .35;
+      const sn = Math.sin(t * (6 + nr * 8)) * (.35 + nr * .3) - nr * .25;
       [-1, 1].forEach(sd => { g.save(); g.translate(sd * 15 * sc, -15 * sc); g.rotate(sd * (.4 + sn)); g.fillStyle = gr; g.beginPath(); g.ellipse(0, 0, 7 * sc, 4.6 * sc, 0, 0, 6.283); g.fill(); g.stroke(); g.fillStyle = '#a3311f'; g.beginPath(); g.moveTo(sd * 3 * sc, -1 * sc); g.lineTo(sd * 9 * sc, -4 * sc - Math.abs(sn) * 3 * sc); g.lineTo(sd * 7 * sc, 0); g.fill(); g.restore(); });
       g.strokeStyle = '#16171B'; g.lineWidth = 1.2 * sc / u; g.beginPath(); g.moveTo(-4 * sc, -16 * sc); g.lineTo(-4.5 * sc, -22 * sc); g.moveTo(4 * sc, -16 * sc); g.lineTo(4.5 * sc, -22 * sc); g.stroke();
       eye(-4.5 * sc, -23 * sc, 2.8 * sc, m.big); eye(4.5 * sc, -23 * sc, 2.8 * sc, m.big);
@@ -3843,7 +3893,8 @@ const WorldMap = (() => {
         const R = Rig.get('shadow-idle') || Rig.load('shadow-idle');
         if (R && R.ok && mrg()) {
           const P = Chibi.POSES, mv = m.range && !duel ? Math.abs(Math.cos(clock * .7 + m.ph)) : 0;
-          const pz = mv > .15 ? Rig.gait(P.stance, clock * 1.6 + m.ph, false, mv) : Object.assign({}, P.stance, { aF: P.stance.aF + Math.sin(t * 2) * .15, lean: P.stance.lean + Math.sin(t * 1.4) * .05 });
+          let pz = mv > .15 && nr < .3 ? Rig.gait(P.stance, clock * 1.6 + m.ph, false, mv) : Object.assign({}, P.stance, { aF: P.stance.aF + Math.sin(t * 2) * .15, lean: P.stance.lean + Math.sin(t * 1.4) * .05 });
+          if (nr > 0) pz = Chibi.mix(pz, Object.assign({}, P.windup, { kF: P.windup.kF - .3, kB: P.windup.kB - .3 }), nr * .7);
           if (!m.rs) m.rs = {};
           g.restore(); g.save();
           g.globalCompositeOperation = 'lighter'; g.globalAlpha = .55; glowDot(g, x, y - hh * .5, hh * .7, 'rgba(185,90,255,.55)'); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
@@ -3863,6 +3914,23 @@ const WorldMap = (() => {
     }
     g.restore();
     onTop(() => monLabel(m, x, T));
+  }
+  /** bong bóng lời thoại trên đầu: chữ Hán to, pinyin, nghĩa Việt (luôn đủ 3 dòng) */
+  function speech(x, yTop, line, col = '#16171B', a = 1) {
+    if (!line) return;
+    g.save(); g.globalAlpha = a;
+    const f1 = `900 ${11 * u}px "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif`, f2 = `italic 700 ${6.8 * u}px system-ui,sans-serif`, f3 = `700 ${6.4 * u}px system-ui,sans-serif`;
+    g.font = f1; const w1 = g.measureText(line[0]).width; g.font = f2; const w2 = g.measureText(line[1]).width; g.font = f3; const w3 = g.measureText(line[2]).width;
+    const bw = Math.min(W - 8 * u, Math.max(w1, w2, w3) + 14 * u), bh = 35 * u, bx = clamp(x - bw / 2, 4 * u, W - bw - 4 * u), by = yTop - bh;
+    g.fillStyle = 'rgba(0,0,0,.18)'; RR(g, bx + 1.5 * u, by + 2 * u, bw, bh, 7 * u); g.fill();
+    g.fillStyle = '#ffffff'; RR(g, bx, by, bw, bh, 7 * u); g.fill();
+    const tx = clamp(x, bx + 8 * u, bx + bw - 8 * u); g.beginPath(); g.moveTo(tx - 4 * u, by + bh - .5); g.lineTo(tx, by + bh + 6 * u); g.lineTo(tx + 4 * u, by + bh - .5); g.fill();
+    g.strokeStyle = col; g.lineWidth = 1.4 * u; RR(g, bx, by, bw, bh, 7 * u); g.stroke();
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic'; const cx = bx + bw / 2;
+    g.font = f1; g.fillStyle = '#16171B'; g.fillText(line[0], cx, by + 13 * u, bw - 8 * u);
+    g.font = f2; g.fillStyle = '#1f5fbf'; g.fillText(line[1], cx, by + 22 * u, bw - 8 * u);
+    g.font = f3; g.fillStyle = '#5d6676'; g.fillText(line[2], cx, by + 30.5 * u, bw - 8 * u);
+    g.restore();
   }
   /** tên "Đại …" và dấu "!" phía trên quái (vẽ ở lớp trên cùng) */
   function monLabel(m, x, T) {
@@ -3925,7 +3993,18 @@ const WorldMap = (() => {
       const v = clamp(hero.vy / 330, -1, 1);
       p = v > .15 ? Chibi.mix(P.jump, P.crouch, .25) : Chibi.mix(P.jump, P.stand, clamp((.15 - v) / 1.1, 0, .75));
     } else if (sp > 6) p = Rig.gait(ref, hero.ph, sp > 100, Math.min(1, sp / 100));
-    else p = ref;
+    else {
+      p = Object.assign({}, ref);
+      const nearN = STORY.some(n => Math.abs(hero.x - NPC_X[n.id]) < 70) && !talking && !duel;
+      if (nearN) { const w = Math.sin(clock * 7); p = Chibi.mix(p, Object.assign({}, P.wave, { aF: P.wave.aF + w * .3, eF: P.wave.eF + w * .3 }), .85); }
+      else if (hero.idleT > 2.5) {
+        const f = (hero.idleT - 2.5) % 6;
+        if (f < 1.4) p.head = Math.sin(f / 1.4 * Math.PI * 2) * .35;                       // ngó quanh
+        else if (f > 3 && f < 4.4) p = Chibi.mix(p, P.victory, Math.sin((f - 3) / 1.4 * Math.PI) * .7);  // vươn vai
+        else { p.kF -= Math.abs(Math.sin(clock * 3)) * .12; p.kB -= Math.abs(Math.sin(clock * 3)) * .12; }  // nhún nhún
+      }
+    }
+    if (hero.skid > 0) p = Chibi.mix(p, { lean: -.32, head: .1, bob: 0, aF: 1.1, eF: .6, aB: -.7, eB: .4, lF: .55, kF: -.25, lB: -.15, kB: -.55, wpn: 0 }, Math.min(1, hero.skid * 5));
     if (hero.land > 0) p = Chibi.mix(p, P.crouch, hero.land * .6);
     return p;
   }
@@ -3947,8 +4026,8 @@ const WorldMap = (() => {
       HEX[1] = br * .025; HEX[2] = Math.sin(clock * 1.7) * .03; HEX[3] = br * .03; HEX[5] = -br * .03;
       if (!hero.rs) hero.rs = {};
       for (const gh of trail) { const nx = SX(gh.wx); gh.sx = nx; gh.X2 = [gh.X[0], gh.X[1], gh.X[2] + (nx - gh.sx0) * dpr, gh.X[3], gh.X[4], gh.X[5]]; }
-      let sx = 1, sy = 1;
-      if (!hero.grounded) { const v = clamp(hero.vy / 330, -1, 1); sy = 1 + v * .05; sx = 1 - v * .03; }
+      let sx = 1 - (hero.turn || 0) * .35, sy = 1 + (hero.turn || 0) * .03;
+      if (!hero.grounded) { const v = clamp(hero.vy / 330, -1, 1); sy *= 1 + v * .05; sx *= 1 - v * .03; }
       const X = rigBlit(R, img, p, Chibi.POSES.stand, MGAIN.hero, hero.grounded ? 1 : .35, hero.rs, x + ax, y, rot, sx, sy, HH * u, hero.face, m,
         hero.flash > 0 ? [REDT[0], REDT[1], REDT[2], Math.min(1, hero.flash) * .75] : null, 1, HEX, trail, CYAN);
       // bóng mờ (tư thế thật của từng khoảnh khắc) khi chạy nhanh / lao chém
@@ -4046,12 +4125,15 @@ const WorldMap = (() => {
   function blockX() { for (let i = 1; i < DIST.length; i++) if (i > unlockedIdx()) return wallX(i) - 16; return L - 20; }
   function update(dt) {
     clock += dt;
-    hero.flash = Math.max(0, hero.flash - dt * 3); hero.land = Math.max(0, (hero.land || 0) - dt * 5);
+    hero.flash = Math.max(0, hero.flash - dt * 3); hero.land = Math.max(0, (hero.land || 0) - dt * 5); hero.skid = Math.max(0, (hero.skid || 0) - dt);
+    hero.idleT = Math.abs(hero.vx) < 6 && hero.grounded && !hero.act ? (hero.idleT || 0) + dt : 0;
     if (hero.act) { hero.act.t += dt; if (hero.act.ev && hero.act.t >= hero.act.ev.at && !hero.act.ev.done) { hero.act.ev.done = true; hero.act.ev.f(); } if (hero.act.t >= hero.act.dur) { const a = hero.act; hero.act = null; if (a.then) a.then(); } }
     const busy = talking || duel || (hero.act && hero.act.type !== 'cheer');
     let dir = busy ? 0 : (padDir || keyDir);
     if (!dir && hero.auto && !busy) { const d = hero.auto.x - hero.x; if (Math.abs(d) < 4) { const a = hero.auto; hero.auto = null; if (a.cb) a.cb(); } else dir = Math.sign(d); }
-    if (dir) { hero.face = dir; }
+    if (dir && hero.grounded && Math.abs(hero.vx) > 70 && Math.sign(hero.vx) === -dir) { hero.skid = .22; if (Math.random() < .7) puff(hero.x + Math.sign(hero.vx) * 6, GY - 1, 1, ['rgba(225,215,195,.75)'], 34, 10); }
+    if (dir) { if (dir !== hero.face) hero.turn = 1; hero.face = dir; }
+    hero.turn = Math.max(0, (hero.turn || 0) - dt * 7);
     const tv = dir * (hero.auto ? 170 : 150);
     hero.vx += (tv - hero.vx) * Math.min(1, dt * (hero.act && hero.act.type === 'hurt' ? 3 : 12));
     const bx = blockX();
@@ -4071,6 +4153,7 @@ const WorldMap = (() => {
       m.flash = Math.max(0, (m.flash || 0) - dt * 2); m.alert = Math.max(0, (m.alert || 0) - dt); m.cool = Math.max(0, m.cool - dt);
       if (m.act) { m.act.t += dt; if (m.act.ev && !m.act.ev.done && m.act.t >= m.act.ev.at) { m.act.ev.done = true; m.act.ev.f(); } if (m.act.t >= m.act.dur) m.act = null; }
       if (!duel && m.range) { m.x = m.x0 + Math.sin(clock * .7 + m.ph) * m.range; m.face = Math.cos(clock * .7 + m.ph) > 0 ? 1 : -1; }
+      { const dd = hero.x - m.x; m.near = clamp(1 - (Math.abs(dd) - 18) / 70, 0, 1); if (m.near > 0 && !m.dying) m.face = dd > 0 ? 1 : -1; if (m.near > .7 && !m.dying) m.alert = Math.max(m.alert || 0, .25); }
       if (duel || talking || m.dying || m.cool > 0 || m.d > unlockedIdx() || (hero.act && hero.act.type !== 'cheer')) continue;
       const T = MON[m.type], hh = T.h * (m.big ? 2.4 : 1);
       if (Math.abs(hero.x - m.x) < (m.big ? 22 : 15) && hero.y < hh) startDuel(m);
@@ -5343,7 +5426,7 @@ window.__bao = {
   get runCorrect(){ return runCorrect; }, get runAnswered(){ return runAnswered; },
   get runQPool(){ return runQPool; }, get runScore(){ return runScore; },
   buildShareCard, onTimeout, holdSeatExpired, applyHoldSeatVisibility,
-  get QUESTIONS(){ return QUESTIONS; }, fullZh, Voice,
+  get QUESTIONS(){ return QUESTIONS; }, fullZh, Voice, Rig, Chibi,
   get TOPIC_LABEL(){ return TOPIC_LABEL; },
   get GOOGLE_FORM_LINK(){ return GOOGLE_FORM_LINK; },
   forceCorrect(){
