@@ -548,6 +548,7 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 .world.city canvas{position:relative;width:100%;aspect-ratio:360/316;height:auto;display:block;touch-action:none;outline:none}
 .city-deck{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px 9px;background:linear-gradient(#262a35,#14161c);border-top:2px solid #FFD91F}
 .city-deck .pad{position:static}
+.world.city canvas.city-gl{position:absolute;aspect-ratio:auto;pointer-events:none;z-index:1;touch-action:none}
 .city-hud{position:absolute;left:8px;top:8px;right:8px;z-index:4;display:flex;justify-content:space-between;gap:6px;pointer-events:none}
 .city-hud span{background:rgba(22,23,27,.72);color:#fff;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:800}
 .city-hud span#cityXp{color:#FFD91F}
@@ -714,7 +715,8 @@ body.ingame .mute-btn{display:none}
 .arena-wrap.down-boss .pnl.boss .artbox{transform:translateY(7%) rotate(5deg);filter:grayscale(1) brightness(.6);transition:transform .7s cubic-bezier(.5,0,.7,.4) .2s,filter .5s .2s}
 .arena-wrap.down-hero .pnl.hero .artbox{transform:translateY(7%) rotate(-5deg);filter:grayscale(1) brightness(.6);transition:transform .7s cubic-bezier(.5,0,.7,.4) .2s,filter .5s .2s}
 .arena-wrap.paused .artbox img{animation-play-state:paused}
-#fx{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+#fx,.fx-gl,.fx-top{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+#arena.inv canvas{filter:invert(1) hue-rotate(180deg)}
 .intro,.ko{position:absolute;inset:0;z-index:13;pointer-events:none;display:grid;place-items:center;opacity:0}
 .intro .vs,.ko{font:italic 900 clamp(64px,22vw,96px)/1 system-ui,-apple-system,sans-serif;color:#FFD91F;-webkit-text-stroke:5px #16171B;paint-order:stroke fill;text-shadow:6px 7px 0 #16171B;letter-spacing:-.03em;transform:rotate(-8deg)}
 .ko{z-index:14;font-size:clamp(72px,26vw,112px)}
@@ -1273,6 +1275,193 @@ const Chibi = (() => {
   return { POSES, key, mix, cycle, draw, point, star, SPECS, rig };
 })();
 
+/* ===== v11 · KHUNG XƯƠNG CHO TRANH NHÂN VẬT =====
+   Mỗi tranh (v4/sprites) được phủ lưới tam giác gắn 11 xương (tools/art/rig.py → v4/rig/*.json).
+   Mỗi khung hình: tư thế (đi, chạy, nhảy, ném, chém, trúng đòn…) → góc từng xương → lưới biến dạng vẽ bằng WebGL
+   → tay chân, thân, đầu cử động thật mà vẫn giữ nguyên nét vẽ. Chân luôn bám đất (foot planting).
+   Máy không có WebGL hoặc chưa tải xong: tự quay về cách vẽ hình tĩnh cũ. */
+const Rig = (() => {
+  const DATA = {};
+  const NB = 11, ang = new Float32Array(NB);
+  function load(name) {
+    let c = DATA[name];
+    if (c) return c.ok ? c : null;
+    c = DATA[name] = { ok: false };
+    fetch('v4/rig/' + name + '.json').then(r => r.ok ? r.json() : null).then(d => {
+      if (!d) return;
+      const bin = s => { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
+      const v = bin(d.v), t = bin(d.t);
+      c.V = new Int16Array(v.buffer, 0, v.length >> 1); c.T = new Uint16Array(t.buffer, 0, t.length >> 1);
+      c.BI = bin(d.bi); c.BW = bin(d.bw); c.d = d; c.J = d.bones.map(b => b.j); c.P = d.bones.map(b => b.p);
+      c.M = new Float32Array(NB * 6); c.id = name; c.ok = true;
+    }).catch(() => {});
+    return null;
+  }
+  /** tư thế p (kiểu Chibi: lean, head, aF/eF, aB/eB, lF/kF, lB/kB) so với tư thế gốc ref → góc xoay của từng xương */
+  function angles(p, ref, fs, gain) {
+    const d = k => (p[k] || 0) - (ref[k] || 0), s = -fs, ga = gain ? gain.arm : 1, gl = gain ? gain.leg : 1, lean = d('lean');
+    ang[0] = s * lean * .12;
+    ang[1] = s * lean * .7;
+    ang[2] = ang[1] + s * (d('head') * .85 + lean * .12);
+    ang[3] = s * (d('aF') + lean * .45) * ga; ang[4] = ang[3] + s * d('eF') * ga;
+    ang[5] = s * (d('aB') + lean * .45) * ga; ang[6] = ang[5] + s * d('eB') * ga;
+    ang[7] = s * d('lF') * gl; ang[8] = ang[7] + s * d('kF') * gl;
+    ang[9] = s * d('lB') * gl; ang[10] = ang[9] + s * d('kB') * gl;
+    for (let i = 0; i < NB; i++) ang[i] = Math.max(-2.7, Math.min(2.7, ang[i]));
+    return ang;
+  }
+  function solve(c, A, dx, dy) {
+    const M = c.M, J = c.J, P = c.P;
+    for (let i = 0; i < NB; i++) {
+      const jx = J[i][0], jy = J[i][1], p = P[i]; let px, py;
+      if (p < 0) { px = jx + dx; py = jy + dy; }
+      else { const o = p * 6; px = M[o] * jx + M[o + 1] * jy + M[o + 2]; py = M[o + 3] * jx + M[o + 4] * jy + M[o + 5]; }
+      const cs = Math.cos(A[i]), sn = Math.sin(A[i]), o = i * 6;
+      M[o] = cs; M[o + 1] = -sn; M[o + 2] = px - (cs * jx - sn * jy);
+      M[o + 3] = sn; M[o + 4] = cs; M[o + 5] = py - (sn * jx + cs * jy);
+    }
+  }
+  function xf(c, bone, pt) { const M = c.M, o = bone * 6; return [M[o] * pt[0] + M[o + 1] * pt[1] + M[o + 2], M[o + 3] * pt[0] + M[o + 4] * pt[1] + M[o + 5]]; }
+  // độ cứng lò xo từng xương: gốc/ngực cứng, cẳng tay/đầu/cẳng chân mềm hơn → theo sau một nhịp (follow-through)
+  const STIFF = [1400, 900, 420, 760, 380, 700, 360, 1100, 700, 1100, 700];
+  /** đặt tư thế; plant = mức bám đất (0..1): chân thấp nhất luôn chạm mặt đất → co gối là người hạ xuống tự nhiên.
+      st (trạng thái riêng mỗi nhân vật) + dt: góc xương đuổi theo tư thế bằng lò xo hơi nảy → động tác có quán tính */
+  function pose(c, p, ref, gain, plant, extra, st, dt) {
+    const A = angles(p, ref, c.d.fs, gain);
+    if (extra) for (let i = 0; i < NB; i++) A[i] += extra[i] || 0;
+    if (st) {
+      if (!st.cur || st.id !== c.id) { st.cur = Float32Array.from(A); st.vel = new Float32Array(NB); st.id = c.id; }
+      else if (dt > 0) {
+        const n = dt > .02 ? 3 : 2, h = Math.min(dt, .05) / n;
+        for (let q = 0; q < n; q++) for (let i = 0; i < NB; i++) { const k = STIFF[i], z = 2 * Math.sqrt(k) * .72; st.vel[i] += ((A[i] - st.cur[i]) * k - st.vel[i] * z) * h; st.cur[i] += st.vel[i] * h; }
+      }
+      for (let i = 0; i < NB; i++) A[i] = st.cur[i];
+    }
+    solve(c, A, 0, 0);
+    if (plant) {
+      const pf = c.d.pts.ankF, pb = c.d.pts.ankB, g0 = Math.max(pf[1], pb[1]), low = Math.max(xf(c, 8, pf)[1], xf(c, 10, pb)[1]);
+      const dy = (g0 - low) * plant; if (Math.abs(dy) > .3) solve(c, A, 0, dy);
+    }
+    return c.M;
+  }
+  /** dáng đi / chạy đối xứng quanh tư thế gốc: chân đưa trước-sau, gối co khi đưa chân lên, tay vung ngược chân */
+  function gait(ref, ph, run, amt = 1) {
+    const s = Math.sin(ph * 6.2832), c = Math.cos(ph * 6.2832), A = (run ? .78 : .46) * amt, K = (run ? 1.25 : .62) * amt, Aa = (run ? .95 : .5) * amt;
+    const o = Object.assign({}, ref);
+    o.lF = (ref.lF || 0) * .4 + A * s; o.lB = (ref.lB || 0) * .4 - A * s;
+    o.kF = (ref.kF || 0) * .5 - K * Math.pow(Math.max(0, c), 1.4) - (run ? .25 : .05) * amt;
+    o.kB = (ref.kB || 0) * .5 - K * Math.pow(Math.max(0, -c), 1.4) - (run ? .25 : .05) * amt;
+    o.aF = (ref.aF || 0) - Aa * s; o.aB = (ref.aB || 0) + Aa * s;
+    o.eF = (ref.eF || 0) + (run ? .55 : .12) * amt; o.eB = (ref.eB || 0) + (run ? .55 : .12) * amt;
+    o.lean = (ref.lean || 0) + (run ? .2 : .05) * amt + Math.abs(c) * .03 * amt;
+    o.head = (ref.head || 0) - (run ? .1 : .02) * amt;
+    return o;
+  }
+
+  /* ---- bộ vẽ WebGL (mỗi khung vẽ một bộ, dùng chung cho mọi nhân vật trong khung đó) ---- */
+  const VS = 'attribute vec2 aP;attribute vec4 aI;attribute vec4 aW;uniform vec3 uB[22];uniform vec3 uX0;uniform vec3 uX1;uniform vec2 uS;uniform vec2 uUV;varying vec2 vT;' +
+    'vec2 f(float i,vec2 p){int k=int(i+.5)*2;vec3 q=vec3(p,1.);return vec2(dot(uB[k],q),dot(uB[k+1],q));}' +
+    'void main(){vec2 p=f(aI.x,aP)*aW.x+f(aI.y,aP)*aW.y+f(aI.z,aP)*aW.z+f(aI.w,aP)*aW.w;vec3 q=vec3(p,1.);vec2 s=vec2(dot(uX0,q),dot(uX1,q));' +
+    'gl_Position=vec4(s.x/uS.x*2.-1.,1.-s.y/uS.y*2.,0.,1.);vT=aP*uUV;}';
+  const FS = 'precision mediump float;uniform sampler2D uT;uniform vec4 uC;uniform float uA;varying vec2 vT;' +
+    'void main(){vec4 c=texture2D(uT,vT);c.rgb=mix(c.rgb,uC.rgb*c.a,uC.a);gl_FragColor=c*uA;}';
+  function renderer() {
+    const cv = document.createElement('canvas');
+    let gl = null;
+    if (window.__noGL) return null;
+    const opt = { premultipliedAlpha: true, alpha: true, antialias: true, depth: false, stencil: false };
+    let gl2 = false;
+    try { gl = cv.getContext('webgl2', opt); gl2 = !!gl; if (!gl) gl = cv.getContext('webgl', opt); } catch (e) {}
+    if (!gl) return null;
+    try {
+      let rn = String(gl.getParameter(gl.RENDERER) || '');
+      if (/webkit webgl/i.test(rn) && /Chrome|CriOS|Edg/.test(navigator.userAgent)) { const ex = gl.getExtension('WEBGL_debug_renderer_info'); if (ex) rn = String(gl.getParameter(ex.UNMASKED_RENDERER_WEBGL) || rn); }
+      if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(rn) && !window.__forceGL) return null;
+    } catch (e) {}
+    const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+    const pr = gl.createProgram();
+    try { gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return null; } catch (e) { return null; }
+    gl.useProgram(pr);
+    const L = n => gl.getUniformLocation(pr, n), at = { P: gl.getAttribLocation(pr, 'aP'), I: gl.getAttribLocation(pr, 'aI'), W: gl.getAttribLocation(pr, 'aW') };
+    const U = { B: L('uB'), X0: L('uX0'), X1: L('uX1'), S: L('uS'), UV: L('uUV'), C: L('uC'), A: L('uA'), T: L('uT') };
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.uniform1i(U.T, 0);
+    const MESH = new Map(), TEX = new Map();
+    let lost = false;
+    cv.addEventListener('webglcontextlost', e => { e.preventDefault(); lost = true; });
+    cv.addEventListener('webglcontextrestored', () => { lost = false; MESH.clear(); TEX.clear(); });
+    function mesh(c) {
+      let m = MESH.get(c.id); if (m) return m;
+      const n = c.V.length / 2, buf = new ArrayBuffer(n * 12), f = new Float32Array(buf), u8 = new Uint8Array(buf);
+      for (let i = 0; i < n; i++) { f[i * 3] = c.V[i * 2]; f[i * 3 + 1] = c.V[i * 2 + 1]; for (let k = 0; k < 4; k++) { u8[i * 12 + 8 + k] = c.BI[i * 4 + k]; } }
+      const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, buf, gl.STATIC_DRAW);
+      const wb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, wb); gl.bufferData(gl.ARRAY_BUFFER, c.BW, gl.STATIC_DRAW);
+      const ib = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, c.T, gl.STATIC_DRAW);
+      m = { vb, wb, ib, n: c.T.length }; MESH.set(c.id, m); return m;
+    }
+    function tex(img, key) {
+      let t = TEX.get(key); if (t) return t;
+      // mipmap để thu nhỏ mịn, không răng cưa. WebGL2: nạp thẳng ảnh; WebGL1: vẽ lại vào khung lũy thừa 2
+      let src = img;
+      if (!gl2) {
+        const p2 = v => { let x = 1; while (x < v) x <<= 1; return Math.min(1024, x); };
+        const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, c2 = document.createElement('canvas');
+        c2.width = p2(w); c2.height = p2(h); c2.getContext('2d').drawImage(img, 0, 0, c2.width, c2.height); src = c2;
+      }
+      t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      TEX.set(key, t); return t;
+    }
+    const B = new Float32Array(NB * 6);
+    return {
+      cv,
+      get ok() { return !lost; },
+      size(w, h) { if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } gl.viewport(0, 0, w, h); },
+      /** xoá một vùng (toạ độ thiết bị) trước khi vẽ nhân vật vào đó */
+      clear(x, y, w, h) { gl.enable(gl.SCISSOR_TEST); gl.scissor(Math.max(0, x | 0), Math.max(0, (cv.height - y - h) | 0), Math.ceil(w) + 1, Math.ceil(h) + 1); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); },
+      clearAll() { gl.disable(gl.SCISSOR_TEST); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); },
+      /** X = [a c e b d f]: toạ độ trên tranh → điểm ảnh thiết bị; mats = ma trận xương; tint = [r,g,b,mức] */
+      draw(c, img, mats, X, tint, alpha) {
+        if (lost) return;
+        const m = mesh(c), t = tex(img, c.id);
+        for (let i = 0; i < NB; i++) { const o = i * 6; B[o] = mats[o]; B[o + 1] = mats[o + 1]; B[o + 2] = mats[o + 2]; B[o + 3] = mats[o + 3]; B[o + 4] = mats[o + 4]; B[o + 5] = mats[o + 5]; }
+        gl.uniform3fv(U.B, B); gl.uniform3f(U.X0, X[0], X[1], X[2]); gl.uniform3f(U.X1, X[3], X[4], X[5]);
+        gl.uniform2f(U.S, cv.width, cv.height); gl.uniform2f(U.UV, 1 / c.d.w, 1 / c.d.h);
+        gl.uniform4f(U.C, tint ? tint[0] : 0, tint ? tint[1] : 0, tint ? tint[2] : 0, tint ? tint[3] : 0); gl.uniform1f(U.A, alpha);
+        gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.bindBuffer(gl.ARRAY_BUFFER, m.vb);
+        gl.enableVertexAttribArray(at.P); gl.vertexAttribPointer(at.P, 2, gl.FLOAT, false, 12, 0);
+        gl.enableVertexAttribArray(at.I); gl.vertexAttribPointer(at.I, 4, gl.UNSIGNED_BYTE, false, 12, 8);
+        gl.bindBuffer(gl.ARRAY_BUFFER, m.wb); gl.enableVertexAttribArray(at.W); gl.vertexAttribPointer(at.W, 4, gl.UNSIGNED_BYTE, true, 0, 0);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, m.ib); gl.drawElements(gl.TRIANGLES, m.n, gl.UNSIGNED_SHORT, 0);
+      }
+    };
+  }
+  const hexRGB = h => { const v = parseInt(h.slice(1), 16); return [(v >> 16 & 255) / 255, (v >> 8 & 255) / 255, (v & 255) / 255]; };
+  /** ma trận tranh → thiết bị: dời tới chân (x,y), xoay/nén quanh giữa người, rồi thu theo chiều cao k, lật f */
+  function modelX(x, y, rot, sx, sy, pivotY, k, f, ax, gy, dpr) {
+    const cs = Math.cos(rot), sn = Math.sin(rot);
+    // T(x,y+pv)·R·S(sx,sy)·T(0,-pv)·S(f*k,k)·T(-ax,-gy)
+    const a = cs * sx * f * k, b = sn * sx * f * k, c = -sn * sy * k, d = cs * sy * k;
+    const tx = -ax, ty = -gy - pivotY / k;
+    const e = x + a * tx + c * ty, ff = y + pivotY + b * tx + d * ty;
+    return [a * dpr, c * dpr, e * dpr, b * dpr, d * dpr, ff * dpr];
+  }
+  /** hình tĩnh (tư thế ra đòn, gục) cũng vẽ qua WebGL bằng một tấm 4 đỉnh, xương đứng yên */
+  const IDM = (() => { const m = new Float32Array(NB * 6); for (let i = 0; i < NB; i++) { m[i * 6] = 1; m[i * 6 + 4] = 1; } return m; })();
+  const QD = {};
+  function quad(id, w, h) {
+    if (QD[id]) return QD[id];
+    return (QD[id] = { ok: true, id: 'q:' + id, V: new Int16Array([0, 0, w, 0, 0, h, w, h]), T: new Uint16Array([0, 1, 3, 0, 3, 2]), BI: new Uint8Array(16), BW: new Uint8Array([255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0]), d: { w, h }, M: IDM });
+  }
+  /** ghép ma trận [a c e b d f]: A∘B */
+  const cmp = (A, B) => [A[0] * B[0] + A[1] * B[3], A[0] * B[1] + A[1] * B[4], A[0] * B[2] + A[1] * B[5] + A[2], A[3] * B[0] + A[4] * B[3], A[3] * B[1] + A[4] * B[4], A[3] * B[2] + A[4] * B[5] + A[5]];
+  return { load, pose, gait, xf, renderer, hexRGB, modelX, quad, cmp, IDM, get(name) { const c = DATA[name]; return c && c.ok ? c : null; } };
+})();
+
 /* ===== v7 · SÂN ĐẤU CHUYỂN ĐỘNG THẬT =====
    Hai nhân vật có khớp (Chibi) đứng trên phông nền của từng trạm, chạy tới đánh nhau thật:
    phi tiêu (vung tay ném), chém gió (lao tới chém 2 nhát rồi lộn ngược về), Long Hạ (nhảy lên gọi rồng rồi đá bổ xuống).
@@ -1281,7 +1470,7 @@ const Chibi = (() => {
 let createBattle = null;
 createBattle = function createArena(root) {
   const q = s => root.querySelector(s);
-  const cv = q('#fx'), g = cv.getContext('2d');
+  const cv = q('#fx'); let g = cv.getContext('2d'); const gBase = g; let cvTop = null, gTop = null;
   const vsBox = q('.stage-art'), heroP = q('.pnl.hero'), bossP = q('.pnl.boss');
   const heroImg = q('#heroArt'), bossImg = q('#bossArt'), btag = q('.btag'), sayEl = q('#saybox');
   const HERO_ART = ['v4/art/hero1.jpg', 'v4/art/hero2.jpg', 'v4/art/hero3.jpg'];
@@ -1374,10 +1563,60 @@ createBattle = function createArena(root) {
     if (!o) return Chibi.point(a.spec, { x: a.x, y: GY + a.y, s: S, face: a.side, pose: a.pose }, which);
     const hh = charH(a), y0 = GY + a.y;
     if (which === 'head') return [a.x, y0 - hh * .95];
+    if (which === 'hand' && a.rigR && a.rigOn) { const h = rigPt(a, 4, a.rigR.d.pts.hand); if (h) return h; }
     if (which === 'hand' && o.x.hit) { const k = hh / 520, f = o.x.flip ? -1 : 1; return [a.x + (o.x.hit[0] * o.w - o.ax) * k * f, y0 + (o.x.hit[1] * o.h - o.gy) * k]; }
     return [a.x + a.side * hh * .04, y0 - hh * .55];
   }
   const HX = () => pt(hero, 'chest')[0], HY = () => pt(hero, 'chest')[1], BX = () => pt(boss, 'chest')[0], BY = () => pt(boss, 'chest')[1];
+  /* v11 · khung xương: tranh cử động tay chân thật. Ba lớp: nền (2D) → nhân vật (WebGL) → hiệu ứng (2D) */
+  let RG = null, CAM = [1, 0, 0, 0, 1, 0];
+  const topQ = [];
+  const rg = () => {
+    if (RG === null) {
+      RG = RM ? false : (Rig.renderer() || false);
+      if (RG) {
+        RG.cv.className = 'fx-gl'; RG.cv.setAttribute('aria-hidden', 'true'); cv.after(RG.cv);
+        cvTop = document.createElement('canvas'); cvTop.className = 'fx-top'; cvTop.setAttribute('aria-hidden', 'true'); RG.cv.after(cvTop); gTop = cvTop.getContext('2d');
+        RG.size(cv.width, cv.height); cvTop.width = cv.width; cvTop.height = cv.height;
+      }
+    }
+    return RG || null;
+  };
+  const GAIN = { hero: { arm: 1, leg: 1 }, trainee: { arm: .55, leg: .9 }, hotel: { arm: .5, leg: .9 }, factory: { arm: .8, leg: 1 }, night: { arm: .75, leg: 1 }, shadow: { arm: 1, leg: 1 } };
+  const RUNP = (a, ph, run, amt = 1) => Rig.gait(idlePose(a), ph, run, amt);
+  function rigName(a) { return a === hero ? 'hero' + (tier + 1) : (a.sp === 'atk' || a.sp === 'ko' || a.state === 'down') ? null : look + '-idle'; }
+  function rigOf(a) { if (!rg()) return null; const n = rigName(a); if (!n) return null; const R = Rig.get(n) || Rig.load(n); return R && R.ok ? R : null; }
+  const GHOSTC = {}, BREATH = new Float32Array(11);
+  const tintOf = a => a.flash > 0 ? [...Rig.hexRGB(a.flashCol), Math.min(1, a.flash) * .8] : null;
+  /** vẽ nhân vật lên lớp WebGL: có khung xương thì cử động tay chân, không thì dùng tấm phẳng của hình tĩnh */
+  function glActor(a, o, t) {
+    const r = rg(); if (!r || !r.ok) return false;
+    const y0 = GY + a.y, hh = t.hh, key = a === hero ? 'hero' : look;
+    const gc = GHOSTC[key] || (GHOSTC[key] = [...Rig.hexRGB(GHOST[key] || '#ffffff'), 1]);
+    for (const gh of a.ghosts) {
+      if (gh.M && gh.R) r.draw(gh.R, gh.o.img, gh.M, Rig.cmp(CAM, gh.X), gc, gh.a * a.alpha);
+      else { const X = Rig.modelX(gh.x, gh.y, gh.t.rot, gh.t.sx, gh.t.sy, -gh.t.hh * .45, gh.t.k, gh.t.f, gh.o.ax, gh.o.gy, 1); r.draw(Rig.quad(gh.o.img.src, gh.o.w, gh.o.h), gh.o.img, Rig.IDM, Rig.cmp(CAM, X), gc, gh.a * a.alpha); }
+    }
+    const R = rigOf(a);
+    a.rigOn = false;
+    if (R) {
+      if (!a.rs) a.rs = {};
+      const ref = idlePose(a), p = a.pose || ref, br = Math.sin(clock * 2.3 + (a === hero ? 0 : 1.4)), ex = BREATH;
+      ex[1] = br * .025; ex[2] = Math.sin(clock * 1.7 + 1) * .035 - br * .015; ex[3] = br * .03; ex[5] = -br * .03;
+      Rig.pose(R, p, ref, GAIN[key] || GAIN.hero, a.y < -4 ? .3 : 1, ex, a.rs, lastDt);
+      const rot = ((p.lean || 0) * .1 + (a.rot || 0)) * a.side;
+      const X = Rig.modelX(a.x, y0, rot, t.sx, t.sy, -hh * .45, t.k, t.f, o.ax, o.gy, 1);
+      a.rigX = X; a.rigR = R; a.rigM = R.M; a.rigO = o; a.rigOn = true;
+      r.draw(R, o.img, R.M, Rig.cmp(CAM, X), tintOf(a), a.alpha);
+    } else {
+      a.rs = null;
+      const X = Rig.modelX(a.x, y0, t.rot, t.sx, t.sy, -hh * .45, t.k, t.f, o.ax, o.gy, 1);
+      r.draw(Rig.quad(o.img.src, o.w, o.h), o.img, Rig.IDM, Rig.cmp(CAM, X), tintOf(a), a.alpha);
+    }
+    return true;
+  }
+  /** điểm trên tranh đã biến dạng → toạ độ sân (bàn tay thật đang ở đâu thì phi tiêu bay ra từ đó) */
+  function rigPt(a, bone, ptv) { const R = a.rigR, X = a.rigX; if (!R || !X) return null; const q = Rig.xf(R, bone, ptv); return [X[0] * q[0] + X[1] * q[1] + X[2], X[3] * q[0] + X[4] * q[1] + X[5]]; }
 
   /* ---------- quả cầu sáng dựng sẵn ---------- */
   const glowCache = {};
@@ -1465,7 +1704,7 @@ createBattle = function createArena(root) {
   /* ---------- v10 · HIỆU ỨNG ĐIỆN ẢNH ----------
      Kỹ thuật game đối kháng: gồng (anticipation) → ra đòn rất nhanh → khựng hình (hit-stop) → khung âm bản (impact frame)
      → văng, rung, bụi, tia lửa. Thêm băng cut-in hô tên chiêu (chữ Hán + pinyin + nghĩa Việt), vạch tốc độ, tia sáng toả. */
-  let invertUntil = 0, slowUntil = 0, slowK = 1, focusX = null, focusY = null, camFX = 0, camFY = 0;
+  let dbgK = 1, invertUntil = 0, slowUntil = 0, slowK = 1, focusX = null, focusY = null, camFX = 0, camFY = 0;
   const overlays = [];
   const eIn = k => k * k * k;
   const fade0 = c => c.replace(/[\d.]+\)$/, '0)'), alphaC = (c, a) => c.replace(/[\d.]+\)$/, a + ')');
@@ -1893,10 +2132,10 @@ createBattle = function createArena(root) {
       // chạy lóng ngóng lên nửa sân, vấp, tung cả xấp giấy tờ bay rào rào rồi ném luôn cặp hồ sơ
       const xs = boss.x, x1 = lerp(home(hero), x0, .55);
       play(boss, .95, (k, t) => {
-        if (t < .24) return { pose: Chibi.cycle('run1', 'run2', t * 5), x: lerp(xs, x1, ease(t / .24)), rot: Math.sin(t * 38) * .07, mood: 'nervous' };
+        if (t < .24) return { pose: RUNP(boss, t * 4.2, true), x: lerp(xs, x1, ease(t / .24)), rot: Math.sin(t * 38) * .05, mood: 'nervous' };
         if (t < .36) return { pose: 'raise', x: x1, sp: 'atk', rot: -.1 * ((t - .24) / .12), sq: .06 };
         if (t < .58) return { pose: 'chop', x: x1, sp: 'atk', rot: .08, sq: -.04 };
-        const kk = (t - .58) / .37; return { pose: K([[0, 'chop'], [.4, 'walk1'], [.8, 'walk2'], [1, idle]], kk), x: lerp(x1, x0, ease(kk)), sp: kk < .25 ? 'atk' : 'idle' };
+        const kk = (t - .58) / .37; return { pose: kk < .25 ? MIX(P.chop, idle, kk / .25) : RUNP(boss, kk * 2.4, false, 1 - ease((kk - .25) / .75)), x: lerp(x1, x0, ease(kk)), sp: kk < .25 ? 'atk' : 'idle' };
       }, [
         [.26, () => { if (!alive()) return; sx('paper'); const n = lite ? 4 : 9; for (let i = 0; i < n; i++) paperSheet(pt(boss, 'hand'), [HX() + rnd(-.06, .06) * W, HY() + rnd(-.18, .14) * H], .3, i * .028); }],
         [.4, () => { if (!alive()) return; sx('swish'); const from = pt(boss, 'hand'); folder(from, [HX() + W * .01, HY() - H * .02], .2, () => { if (!alive()) return; burst(HX(), HY(), 12, ['rgba(255,255,255,1)', 'rgba(120,170,255,1)'], .6); land(col, soft, .8); if (!lite) textPop(HX(), HY() - H * .2, 'BỘP!', '#ffffff', .08); }); }]
@@ -1966,10 +2205,10 @@ createBattle = function createArena(root) {
     // dự phòng (trạm khác): lao tới đánh cận chiến
     const wpn = bossWeapon(), xs = boss.x, x1 = home(hero) + 46 * S;
     play(boss, .86, (k, t) => {
-      if (t < .26) return { pose: Chibi.cycle('run1', 'run2', t * 4.5), x: lerp(xs, x1, ease(t / .26)), weapon: wpn, mood: 'angry', sp: 'atk' };
+      if (t < .26) return { pose: RUNP(boss, t * 4.5, true), x: lerp(xs, x1, ease(t / .26)), weapon: wpn, mood: 'angry' };
       if (t < .44) return { pose: K([[0, 'raise'], [.55, 'raise'], [1, 'chop']], (t - .26) / .18), x: x1, weapon: wpn, mood: 'angry', sp: 'atk' };
       const kk = (t - .44) / .42;
-      return { pose: K([[0, 'chop'], [.3, 'walk1'], [.65, 'walk2'], [1, idle]], kk), x: lerp(x1, x0, ease(kk)), weapon: wpn, sp: kk < .25 ? 'atk' : 'idle' };
+      return { pose: kk < .25 ? MIX(P.chop, idle, kk / .25) : RUNP(boss, kk * 2.4, false, 1 - ease((kk - .25) / .75)), x: lerp(x1, x0, ease(kk)), weapon: wpn, sp: kk < .25 ? 'atk' : 'idle' };
     }, [[.42, () => { if (!alive()) return; sx('ding'); land(col, soft, 1); }]]);
     return { impactAt: 420 };
   }
@@ -2271,14 +2510,16 @@ createBattle = function createArena(root) {
     // bóng dưới chân
     g.globalAlpha = .34 * Math.max(.25, 1 - air / (H * .5)) * a.alpha; g.fillStyle = '#000';
     g.beginPath(); g.ellipse(a.x, GY + 2, Math.min(o.w * t.k * .42, t.hh * .34) * (1 - Math.min(.5, air / (H * .8))), 5 * S, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
-    // bóng mờ khi lao nhanh
-    const col = GHOST[a === hero ? 'hero' : look] || '#ffffff';
-    for (const gh of a.ghosts) { g.globalAlpha = gh.a * a.alpha; blitSpr(gh.o, tinted(gh.o, col), gh.x, gh.y, gh.t); }
+    // bóng mờ khi lao nhanh (lớp WebGL tự vẽ nếu có)
+    const col = GHOST[a === hero ? 'hero' : look] || '#ffffff', useGL = !!rg();
+    if (!useGL) for (const gh of a.ghosts) { g.globalAlpha = gh.a * a.alpha; blitSpr(gh.o, tinted(gh.o, col), gh.x, gh.y, gh.t); }
     // hào quang
     const aura = a === hero ? (tier >= 2 ? 'rgba(64,255,214,1)' : null) : (rage ? 'rgba(255,60,40,1)' : look === 'shadow' ? 'rgba(185,90,255,1)' : null);
     if (aura) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .55 + Math.sin(clock * 5) * .15; blob(a.x, y0 - t.hh * .5, t.hh * .62, aura.replace(/[\d.]+\)$/, '.5)'), 1); g.restore(); }
     g.globalAlpha = a.alpha;
     const wp = warpOf(a, o, t, lastDt);
+    if (useGL && glActor(a, o, t)) { g.globalAlpha = 1; return; }
+    a.rigOn = false;
     blitSpr(o, o.img, a.x, y0, t, wp);
     if (a.flash > 0) { g.globalAlpha = Math.min(1, a.flash) * .8 * a.alpha; blitSpr(o, tinted(o, a.flashCol), a.x, y0, t, wp); }
     g.globalAlpha = 1;
@@ -2288,7 +2529,7 @@ createBattle = function createArena(root) {
     const o = sprOf(a), v = dt > 0 ? Math.abs(a.x - a.px) / dt : 0;
     if (dt > 0) a.vx += ((a.x - a.px) / dt - a.vx) * Math.min(1, dt * 14);
     if (o && !RM && dt > 0 && (v > W * 1.1 || (a.act && Math.abs(a.y) > H * .1 && v > W * .4))) {
-      a.gAcc += dt; if (a.gAcc > .034) { a.gAcc = 0; a.ghosts.push({ o, x: a.x, y: GY + a.y, t: sprXf(a, o), a: .3 }); if (a.ghosts.length > 4) a.ghosts.shift(); }
+      a.gAcc += dt; if (a.gAcc > .034) { a.gAcc = 0; a.ghosts.push({ o: a.rigOn && a.rigO ? a.rigO : o, x: a.x, y: GY + a.y, t: sprXf(a, o), a: .3, M: a.rigOn && a.rigM ? Float32Array.from(a.rigM) : null, X: a.rigX, R: a.rigOn ? a.rigR : null }); if (a.ghosts.length > 5) a.ghosts.shift(); }
     }
     a.px = a.x;
   }
@@ -2296,6 +2537,13 @@ createBattle = function createArena(root) {
     const so = sprOf(a);
     if (so) {
       drawSprActor(a, so);
+      if (rg()) { topQ.push(() => actorTop(a)); return; }
+      actorTop(a);
+      return;
+    }
+    drawChibiActor(a);
+  }
+  function actorTop(a) {
       if (a === hero && cur.armor > 0 && a.state !== 'down') {
         const [cx, cy] = pt(a, 'chest'), hh = charH(a);
         g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .16 + cur.armor * .09;
@@ -2308,8 +2556,8 @@ createBattle = function createArena(root) {
         const hx = a.x + (a === hero ? -charH(a) * .3 : 0), hy = GY + a.y - charH(a) * (a === hero ? .25 : .62);
         for (let i = 0; i < 3; i++) { const an = clock * 4 + i * 2.1; Chibi.star(g, hx + Math.cos(an) * 16 * S, hy + Math.sin(an) * 5 * S, 4 * S, an, '#FFD91F', '#fff'); }
       }
-      return;
-    }
+  }
+  function drawChibiActor(a) {
     const sc = a.spec.scale || 1, air = Math.max(0, -a.y);
     g.globalAlpha = .3 * Math.max(.25, 1 - air / (H * .5)) * a.alpha; g.fillStyle = '#000';
     g.beginPath(); g.ellipse(a.x, GY + 2, 24 * S * sc * (1 - Math.min(.5, air / (H * .8))), 5 * S, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
@@ -2338,19 +2586,24 @@ createBattle = function createArena(root) {
     if (on) raf = requestAnimationFrame(loop);
   }
   function frame(now) {
-    const realDt = Math.max(0, Math.min(.05, (now - last) / 1000)), frozen = now < freezeUntil, dt = frozen ? 0 : realDt * (now < slowUntil ? slowK : 1); last = now;
+    const realDt = Math.max(0, Math.min(.05, (now - last) / 1000)) * dbgK, frozen = now < freezeUntil, dt = frozen ? 0 : realDt * (now < slowUntil ? slowK : 1); last = now;
     clock += dt;
     stepActor(hero, dt); stepActor(boss, dt);
     trackGhost(hero, dt); trackGhost(boss, dt); lastDt = dt;
+    if (!RM && dt > 0) for (const a of [hero, boss]) if (a.y > -3 && Math.abs(a.vx) > W * .5 && a.alpha > .5 && Math.random() < dt * 22) parts.push({ x: a.x - Math.sign(a.vx) * 10 * S, y: GY - 2, vx: -Math.sign(a.vx) * rnd(20, 60), vy: -rnd(10, 40), g: 0, life: .45, max: .45, r: rnd(5, 9) * S, col: 'rgba(214,200,176,1)', kind: 'smoke' });
     pressTick(dt);
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const GLon = !!rg();
+    g = gBase; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    if (GLon) { gTop.setTransform(1, 0, 0, 1, 0, 0); gTop.clearRect(0, 0, cvTop.width, cvTop.height); RG.clearAll(); }
     let sx = 0, sy = 0;
     if (shakeT > 0) { shakeT -= dt; const a = shakeA * Math.max(0, shakeT) / .3; sx = rnd(-a, a); sy = rnd(-a, a); if (shakeT <= 0) shakeA = 0; }
     zoom += (zoomTo - zoom) * Math.min(1, dt * 6);
     g.save(); g.translate(sx, sy);
     const tfx = focusX != null ? focusX : (hero.x + boss.x) / 2, tfy = focusY != null ? focusY : GY - H * .3;
     camFX += (tfx - camFX) * Math.min(1, realDt * 7); camFY += (tfy - camFY) * Math.min(1, realDt * 7);
-    if (Math.abs(zoom - 1) > .002) { const zx = camFX, zy = camFY; g.translate(zx, zy); g.scale(zoom, zoom); g.translate(-zx, -zy); }
+    const zm = Math.abs(zoom - 1) > .002 ? zoom : 1;
+    if (zm !== 1) { const zx = camFX, zy = camFY; g.translate(zx, zy); g.scale(zoom, zoom); g.translate(-zx, -zy); }
+    CAM = [dpr * zm, 0, dpr * (sx + camFX - zm * camFX), 0, dpr * zm, dpr * (sy + camFY - zm * camFY)];
     g.drawImage(bg, 0, 0, W, H);
     ambient(dt);
     dark += (darkTo - dark) * Math.min(1, dt * 8);
@@ -2361,6 +2614,12 @@ createBattle = function createArena(root) {
     // ai đang tấn công thì vẽ sau (đứng trước)
     const bossFront = boss.act && boss.x < home(boss) - 20 * S;
     if (bossFront) { drawActor(hero); drawActor(boss); } else { drawActor(boss); drawActor(hero); }
+    if (GLon) {
+      // sang lớp trên: cùng phép rung / phóng to như lớp nền
+      g.restore(); g = gTop; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.save(); g.translate(sx, sy);
+      if (zm !== 1) { g.translate(camFX, camFY); g.scale(zm, zm); g.translate(-camFX, -camFY); }
+      while (topQ.length) topQ.shift()();
+    }
     // hạt
     for (let i = parts.length - 1; i >= 0; i--) {
       const p = parts[i]; p.life -= dt; if (p.life <= 0) { parts.splice(i, 1); continue; }
@@ -2382,13 +2641,16 @@ createBattle = function createArena(root) {
     if (rage && !RM) { rageAcc += dt; if (rageAcc > .12) { rageAcc = 0; parts.push({ x: boss.x + rnd(-W * .08, W * .08), y: GY, vx: rnd(-10, 10), vy: -rnd(40, 80), g: 0, life: 1.1, max: 1.1, r: rnd(3, 6), col: look === 'shadow' ? C.purple : look === 'night' ? C.cyan : 'rgba(255,90,40,1)', kind: 'glow' }); } }
     g.restore();
     // khung âm bản (impact frame) – đảo màu cả sân trong tích tắc lúc đòn nặng chạm
-    if (now < invertUntil) { g.globalCompositeOperation = 'difference'; g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over'; }
+    const inv = now < invertUntil;
+    if (GLon) { if (inv !== root.classList.contains('inv')) root.classList.toggle('inv', inv); }
+    else if (inv) { g.globalCompositeOperation = 'difference'; g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over'; }
     // lớp màn hình: cut-in hô tên chiêu (không bị khựng hình)
     for (let i = overlays.length - 1; i >= 0; i--) {
       const o = overlays[i]; o.t += realDt; const k = Math.min(1, o.t / o.dur);
       g.globalAlpha = 1; o.draw(k); if (k >= 1) overlays.splice(i, 1);
     }
     g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+    g = gBase;
   }
   function run() { if (!raf && on) { last = performance.now(); raf = requestAnimationFrame(loop); } }
 
@@ -2397,6 +2659,7 @@ createBattle = function createArena(root) {
     W = Math.max(1, r.width); H = Math.max(1, r.height);
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     S = H * .0056; GY = H * .88;
+    if (RG) { RG.size(cv.width, cv.height); cvTop.width = cv.width; cvTop.height = cv.height; }
     paintBg();
     if (!hero.act) hero.x = home(hero); if (!boss.act) boss.x = home(boss);
   }
@@ -2460,8 +2723,8 @@ createBattle = function createArena(root) {
       const it = q('.intro'); if (it) q('.intro .nm span').textContent = stageName || '';
       hero.state = boss.state = 'idle'; boss.dizzy = 0;
       const hx = home(hero), bxh = home(boss);
-      play(hero, .7, k => ({ pose: k < .85 ? Chibi.cycle('run1', 'run2', k * 3) : MIX(P.run1, P.stance, (k - .85) / .15), x: lerp(-W * .2, hx, eOut(k)) }));
-      play(boss, .9, k => ({ pose: k < .85 ? Chibi.cycle('walk1', 'walk2', k * 3) : MIX(P.walk1, idlePose(boss), (k - .85) / .15), x: lerp(W * 1.2, bxh, eOut(k)) }));
+      play(hero, .75, k => ({ pose: k < .8 ? RUNP(hero, k * 3.2, true) : MIX(RUNP(hero, 2.56, true), P.stance, ease((k - .8) / .2)), x: lerp(-W * .2, hx, eOut(k)) }));
+      play(boss, .95, k => ({ pose: k < .8 ? RUNP(boss, k * 2.6, false) : MIX(RUNP(boss, 2.08, false), idlePose(boss), ease((k - .8) / .2)), x: lerp(W * 1.2, bxh, eOut(k)) }));
       if (!RM && vsBox) {
         anim(vsBox, [{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: 1, offset: .62 }, { opacity: 0 }], 1500, 'linear');
         anim(heroP, [{ transform: 'translateX(-60%)' }, { transform: 'none', offset: .3 }, { transform: 'none' }], 1500, 'cubic-bezier(.16,1,.3,1)');
@@ -2508,6 +2771,7 @@ createBattle = function createArena(root) {
       if (sayEl) sayEl.classList.remove('on');
     },
     dispose() { on = false; if (raf) cancelAnimationFrame(raf); },
+    _slow(k) { dbgK = k; },
     get _state() { return { hero: { x: Math.round(hero.x), y: Math.round(hero.y), act: !!hero.act, st: hero.state }, boss: { x: Math.round(boss.x), act: !!boss.act, st: boss.state }, look, fx: fxs.length, parts: parts.length, press: { on: pressOn, t: +pressT.toFixed(2), left: +pressLeft.toFixed(1) }, raf: !!raf, on }; }
   };
 };
@@ -2912,6 +3176,7 @@ const WorldMap = (() => {
     W = Math.max(1, r.width); H = Math.max(1, r.height);
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     u = W / VIEW; VH = H / u; GY = Math.round(VH * .82);
+    layoutLayers();
     const rs = Math.max(.5, u * Math.min(dpr, 1.5));
     if (Math.abs(rs - LRS) > .01) { LRS = rs; for (const k in LC) delete LC[k]; LQ.length = 0; GT = {}; CLOUD = {}; }
   }
@@ -3426,7 +3691,7 @@ const WorldMap = (() => {
   }
 
   /* ---------- cổng trạm kiểu cổng tam quan, rào chắn ---------- */
-  const GATE_COL = ['#b5482e', '#a3142a', '#7a3d22', '#3f2f7a', '#5b2a6b'];
+  const GATE_COL = ['#b5482e', '#a3142a', '#7a3d22', '#3f2f7a', '#5b2a6b'], gateRS = [];
   function drawGates() {
     STAGES.forEach((s, i) => {
       const gx = SX(gateX(i)); if (gx < -120 || gx > W + 120) return;
@@ -3456,10 +3721,19 @@ const WorldMap = (() => {
       if (!done) {
         const img = bossImg(s.look), m = BOSS_M[s.look];
         if (img.complete && img.naturalWidth) {
-          const k = 92 * u / 520, bx = gx + 20 * u, by = y + Math.sin(clock * 2 + i) * .8 * u;
+          const k = 92 * u / 520, bx = gx + 20 * u, by = y;
           g.save(); g.globalAlpha = open ? .5 : .25; g.globalCompositeOperation = 'lighter'; glowDot(g, bx, by - 46 * u, 46 * u, s.look === 'shadow' ? 'rgba(185,90,255,.5)' : 'rgba(255,120,80,.4)'); g.restore();
-          g.globalAlpha = .3; g.fillStyle = '#000'; g.beginPath(); g.ellipse(bx, y + 1, 16 * u, 3.4 * u, 0, 0, 6.283); g.fill();
-          g.globalAlpha = open ? 1 : .55; g.drawImage(img, bx - m[2] * k, by - m[3] * k, m[0] * k, m[1] * k); g.globalAlpha = 1;
+          g.globalAlpha = .3; g.fillStyle = '#000'; g.beginPath(); g.ellipse(bx, y + 1, 16 * u, 3.4 * u, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
+          const R = open ? (Rig.get(s.look + '-idle') || Rig.load(s.look + '-idle')) : null;
+          let drawn = false;
+          if (R && R.ok && mrg()) {
+            const P = Chibi.POSES, near = clamp(1 - (Math.abs(hero.x - gateX(i)) - 40) / 160, 0, 1), t2 = clock + i * 1.7;
+            const idle = Object.assign({}, P.stand, { lean: Math.sin(t2 * 1.2) * .045, head: Math.sin(t2 * .9) * .08, aF: P.stand.aF + Math.sin(t2 * 1.5) * .1, aB: P.stand.aB - Math.sin(t2 * 1.5) * .08, lF: P.stand.lF + Math.sin(t2 * 1.2) * .04, lB: P.stand.lB + Math.sin(t2 * 1.2) * .04 });
+            const pz = near > 0 ? Chibi.mix(idle, Object.assign({}, P.point, { aF: P.point.aF + Math.sin(clock * 7) * .12 }), near * .75) : idle;
+            if (!gateRS[i]) gateRS[i] = {};
+            drawn = !!rigBlit(R, img, pz, P.stand, MGAIN[s.look] || MGAIN.hero, 1, gateRS[i], bx, by, 0, 1, 1, 92 * u, 1, m, null, 1);
+          }
+          if (!drawn) { g.globalAlpha = open ? 1 : .55; g.drawImage(img, bx - m[2] * k, by + Math.sin(clock * 2 + i) * .8 * u - m[3] * k, m[0] * k, m[1] * k); g.globalAlpha = 1; }
         }
       }
     });
@@ -3487,7 +3761,10 @@ const WorldMap = (() => {
       const nx = NPC_X[n.id], x = SX(nx); if (x < -50 || x > W + 50) return;
       const met = !!prog.met[n.id], face = hero.x < nx ? -1 : 1, near = Math.abs(hero.x - nx) < 40;
       g.globalAlpha = .3; g.fillStyle = '#000'; g.beginPath(); g.ellipse(x, GY * u + 1, 12 * u, 3 * u, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
-      Chibi.draw(g, Chibi.SPECS[n.id], { x, y: GY * u, s: u * .72, face, pose: Chibi.POSES[met ? 'stand' : 'wave'], time: clock, mood: 'calm-smile' });
+      const P0 = Chibi.POSES, tt = clock + nx * .01;
+      const pz = met ? Object.assign({}, P0.stand, { bob: Math.sin(tt * 2.4) * .8, aF: P0.stand.aF + Math.sin(tt * 1.6) * .06, head: Math.sin(tt * .9) * .06 + (near ? -.08 : 0), lean: Math.sin(tt * 1.2) * .03 })
+        : Object.assign({}, P0.wave, { aF: P0.wave.aF + Math.sin(tt * 7) * .32, eF: P0.wave.eF + Math.sin(tt * 7 + .6) * .35, bob: Math.abs(Math.sin(tt * 3.5)) * -1.4, head: Math.sin(tt * 3.5) * .05 });
+      Chibi.draw(g, Chibi.SPECS[n.id], { x, y: GY * u, s: u * .72, face, pose: pz, time: clock, mood: 'calm-smile' });
       const by = (GY - 92) * u + Math.sin(clock * 4) * 2 * u;
       if (!met || near) {
         g.save(); g.translate(x, by); g.scale(u, u);
@@ -3563,6 +3840,20 @@ const WorldMap = (() => {
       if (shadowImg.complete && shadowImg.naturalWidth) {
         if (!shadowTint) { const c2 = document.createElement('canvas'); c2.width = shadowImg.naturalWidth; c2.height = shadowImg.naturalHeight; const x2 = c2.getContext('2d'); x2.drawImage(shadowImg, 0, 0); x2.globalCompositeOperation = 'source-atop'; x2.fillStyle = 'rgba(22,6,42,.82)'; x2.fillRect(0, 0, c2.width, c2.height); shadowTint = c2; }
         const hh = (m.big ? 96 : 62) * u, k = hh / 520, br = 1 + Math.sin(t * 3) * .015;
+        const R = Rig.get('shadow-idle') || Rig.load('shadow-idle');
+        if (R && R.ok && mrg()) {
+          const P = Chibi.POSES, mv = m.range && !duel ? Math.abs(Math.cos(clock * .7 + m.ph)) : 0;
+          const pz = mv > .15 ? Rig.gait(P.stance, clock * 1.6 + m.ph, false, mv) : Object.assign({}, P.stance, { aF: P.stance.aF + Math.sin(t * 2) * .15, lean: P.stance.lean + Math.sin(t * 1.4) * .05 });
+          if (!m.rs) m.rs = {};
+          g.restore(); g.save();
+          g.globalCompositeOperation = 'lighter'; g.globalAlpha = .55; glowDot(g, x, y - hh * .5, hh * .7, 'rgba(185,90,255,.55)'); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+          const X = rigBlit(R, shadowImg, pz, P.stance, MGAIN.shadow, 1, m.rs, x, y, 0, 1, br, hh, -f, [276, 520, 138, 520], [22 / 255, 6 / 255, 42 / 255, .8], m.flash > 0 ? .55 + .45 * Math.sin(clock * 60) : 1);
+          if (X) { const e = rigPtX(R, X, 2, [90, 44]); onTop(() => { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .8 + .2 * Math.sin(t * 7); glowDot(g, e[0], e[1], 10 * u * (m.big ? 1.4 : 1), 'rgba(210,140,255,.95)'); g.restore(); }); }
+          if (Math.random() < .15) puff(m.x + rnd(-8, 8), GY - rnd(10, 40), 1, ['rgba(185,90,255,.7)'], 10, 30);
+          g.restore();
+          onTop(() => monLabel(m, x, T));
+          return;
+        }
         g.translate(x, y); g.scale(f * -1, br);
         g.globalCompositeOperation = 'lighter'; g.globalAlpha = .35; g.drawImage(shadowTint, -138 * k - 3 * u, -520 * k - 2 * u, 276 * k + 6 * u, 520 * k + 4 * u); g.globalCompositeOperation = 'source-over';
         g.globalAlpha = m.flash > 0 ? .55 + .45 * Math.sin(clock * 60) : 1; g.drawImage(shadowTint, -138 * k, -520 * k, 276 * k, 520 * k);
@@ -3571,6 +3862,10 @@ const WorldMap = (() => {
       if (Math.random() < .15) puff(m.x + rnd(-8, 8), GY - rnd(10, 40), 1, ['rgba(185,90,255,.7)'], 10, 30);
     }
     g.restore();
+    onTop(() => monLabel(m, x, T));
+  }
+  /** tên "Đại …" và dấu "!" phía trên quái (vẽ ở lớp trên cùng) */
+  function monLabel(m, x, T) {
     const topY = (GY - (m.type === 'bong' ? (m.big ? 104 : 70) : T.h * (m.big ? 1.85 : 1.2) + 12)) * u;
     if (m.big) { g.save(); g.font = `800 ${7 * u}px system-ui`; g.textAlign = 'center'; g.textBaseline = 'middle'; const label = 'Đại ' + T.name, tw = g.measureText(label).width + 10 * u; g.fillStyle = 'rgba(22,23,27,.82)'; RR(g, x - tw / 2, topY - 14 * u, tw, 11 * u, 5.5 * u); g.fill(); g.fillStyle = '#ff9a7a'; g.fillText(label, x, topY - 8.4 * u); g.restore(); }
     if (m.alert > 0) { g.save(); g.fillStyle = '#ff3b30'; g.strokeStyle = '#ffffff'; g.lineWidth = 2 * u; g.font = `900 ${16 * u}px system-ui`; g.textAlign = 'center'; g.strokeText('!', x, topY - (m.big ? 18 : 2) * u); g.fillText('!', x, topY - (m.big ? 18 : 2) * u); g.restore(); }
@@ -3582,43 +3877,110 @@ const WorldMap = (() => {
   function tintImg(img, col) { const k = img.src + col; if (HTINT[k]) return HTINT[k]; const c2 = document.createElement('canvas'); c2.width = img.naturalWidth; c2.height = img.naturalHeight; const x2 = c2.getContext('2d'); x2.drawImage(img, 0, 0); x2.globalCompositeOperation = 'source-atop'; x2.fillStyle = col; x2.fillRect(0, 0, c2.width, c2.height); return (HTINT[k] = c2); }
   const trail = []; let trailT = 0;
   function heroPose() { return Chibi.POSES.stand; }
+  /* v11 · khung xương trên bản đồ (dùng chung bộ vẽ WebGL cho Ā Bǎo, boss ở cổng, Bóng Ninja) */
+  let lookAhead = .42, mshakeT = 0, mshakeA = 0, mfreeze = 0;
+  /** rung máy quay (đơn vị bản đồ) + khựng hình (giây) khi đánh trúng */
+  function mapHit(shake, freeze) { if (REDUCED) return; mshakeT = Math.max(mshakeT, .28); mshakeA = Math.max(mshakeA, shake); mfreeze = Math.max(mfreeze, freeze || 0); }
+  let MRG = null, mapDt = 0, portrait = false, gBaseM = null, cvTopM = null, gTopM = null;
+  const topQM = [];
+  const mrg = () => {
+    if (REDUCED || portrait) return null;
+    if (MRG === null) {
+      MRG = Rig.renderer() || false;
+      if (MRG) {
+        MRG.cv.className = 'city-gl'; MRG.cv.setAttribute('aria-hidden', 'true'); cv.after(MRG.cv);
+        cvTopM = document.createElement('canvas'); cvTopM.className = 'city-gl'; cvTopM.setAttribute('aria-hidden', 'true'); MRG.cv.after(cvTopM); gTopM = cvTopM.getContext('2d');
+        layoutLayers();
+      }
+    }
+    return MRG || null;
+  };
+  function layoutLayers() {
+    if (!MRG) return;
+    MRG.size(cv.width, cv.height); cvTopM.width = cv.width; cvTopM.height = cv.height;
+    for (const c2 of [MRG.cv, cvTopM]) { c2.style.left = cv.offsetLeft + 'px'; c2.style.top = cv.offsetTop + 'px'; c2.style.width = cv.offsetWidth + 'px'; c2.style.height = cv.offsetHeight + 'px'; }
+  }
+  /** chạy fn trên lớp trên cùng (đè lên nhân vật WebGL); không có WebGL thì chạy ngay */
+  const onTop = fn => { if (MRG && !portrait) topQM.push(fn); else fn(); };
+  const MGAIN = { hero: { arm: 1, leg: 1 }, trainee: { arm: .5, leg: .9 }, hotel: { arm: .45, leg: .9 }, factory: { arm: .8, leg: 1 }, night: { arm: .75, leg: 1 }, shadow: { arm: 1, leg: 1 } };
+  function rigBlit(R, img, p, ref, gain, plant, st, x, y, rot, sx, sy, hh, f, meta, tint, alpha, extra, ghosts, gtint) {
+    const r = mrg(); if (!r || !r.ok) return null;
+    Rig.pose(R, p, ref, gain, plant, extra, st, mapDt);
+    const k = hh / 520, X = Rig.modelX(x, y, rot, sx, sy, -hh * .45, k, f, meta[2], meta[3], dpr);
+    if (ghosts) for (const gh of ghosts) r.draw(R, img, gh.M, gh.X2 || gh.X, gtint, gh.a);
+    r.draw(R, img, R.M, X, tint, alpha);
+    return X;
+  }
+  const rigPtX = (R, X, bone, q) => { const v = Rig.xf(R, bone, q); return [(X[0] * v[0] + X[1] * v[1] + X[2]) / dpr, (X[3] * v[0] + X[4] * v[1] + X[5]) / dpr]; };
+  const HEX = new Float32Array(11), CYAN = [.5, .89, 1, 1], REDT = [1, .35, .27, 0];
+  function heroRigPose(sp) {
+    const P = Chibi.POSES, ref = P.stand;
+    let p;
+    if (hero.act) {
+      const k = Math.min(1, hero.act.t / hero.act.dur);
+      if (hero.act.type === 'atk') p = Chibi.key([[0, 'stand'], [.22, 'windup'], [.4, 'chop'], [.7, 'sweep'], [1, 'stand']], k);
+      else if (hero.act.type === 'hurt') p = Chibi.key([[0, 'hurt'], [.55, 'hurt'], [1, 'stand']], k);
+      else p = Chibi.key([[0, 'stand'], [.28, 'victory'], [.72, 'victory'], [1, 'stand']], k);
+    } else if (!hero.grounded) {
+      const v = clamp(hero.vy / 330, -1, 1);
+      p = v > .15 ? Chibi.mix(P.jump, P.crouch, .25) : Chibi.mix(P.jump, P.stand, clamp((.15 - v) / 1.1, 0, .75));
+    } else if (sp > 6) p = Rig.gait(ref, hero.ph, sp > 100, Math.min(1, sp / 100));
+    else p = ref;
+    if (hero.land > 0) p = Chibi.mix(p, P.crouch, hero.land * .6);
+    return p;
+  }
   function drawHero() {
     const ti = heroTier(), img = HERO_SPR[ti], m = HERO_M[ti];
     const x = SX(hero.x), y = (GY - hero.y) * u, sp = Math.abs(hero.vx), moving = sp > 8 && hero.grounded;
     g.globalAlpha = .32; g.fillStyle = '#000'; g.beginPath(); g.ellipse(x, GY * u + 1, 15 * u * (1 - Math.min(.5, hero.y / 120)), 3.6 * u, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
-    if (!img.complete || !img.naturalWidth) {
-      Chibi.draw(g, Chibi.SPECS.hero, { x, y, s: u * .62, face: hero.face, pose: Chibi.POSES.stand, time: clock, tier: ti });
-      return;
-    }
-    let ax = 0, rot = 0, sx = 1, sy = 1, by = 0;
-    if (moving) { const ph = hero.ph * Math.PI; by = -Math.abs(Math.sin(ph)) * (sp > 90 ? 4.6 : 2.8) * u; rot = hero.face * Math.min(1, sp / 170) * .1 + Math.sin(ph) * .025; const st = Math.abs(Math.cos(ph)); sy = 1 - st * .035; sx = 1 + st * .025; }
-    else if (hero.grounded) { const br = Math.sin(clock * 2.4); sy = 1 + br * .014; sx = 1 - br * .007; }
-    if (!hero.grounded) { const v = clamp(hero.vy / 330, -1, 1); sy = 1 + v * .08; sx = 1 - v * .05; rot = -hero.face * .06 * v; }
-    if (hero.land > 0) { sy *= 1 - hero.land * .13; sx *= 1 + hero.land * .1; }
-    let atkK = -1;
+    if (!img.complete || !img.naturalWidth) { Chibi.draw(g, Chibi.SPECS.hero, { x, y, s: u * .62, face: hero.face, pose: Chibi.POSES.stand, time: clock, tier: ti }); return; }
+    let ax = 0, rot = 0, atkK = -1;
     if (hero.act) {
       const k = Math.min(1, hero.act.t / hero.act.dur);
-      if (hero.act.type === 'atk') { atkK = k; ax = Math.sin(Math.min(1, k * 1.6) * Math.PI) * 34 * u * hero.face; rot = hero.face * (k < .28 ? -.18 * (k / .28) : .26 * (1 - k)); sy *= k < .28 ? 1 - .08 * (k / .28) : 1 + .05 * (1 - k); }
-      else if (hero.act.type === 'hurt') rot = -hero.face * .3 * (1 - k);
-      else if (hero.act.type === 'cheer') { by -= Math.sin(k * Math.PI) * 12 * u; rot = Math.sin(k * Math.PI * 2) * .06; }
+      if (hero.act.type === 'atk') { atkK = k; ax = Math.sin(Math.min(1, k * 1.6) * Math.PI) * 34 * u * hero.face; }
+      else if (hero.act.type === 'hurt') rot = -hero.face * .22 * (1 - k);
     }
-    const k2 = HH * u / 520;
-    // bóng mờ khi chạy nhanh / lao chém
-    if ((sp > 140 && hero.grounded) || atkK > 0) { trailT += 1 / 60; if (trailT > .045) { trailT = 0; trail.push({ x: hero.x + ax / u, y: hero.y - by / u, face: hero.face, rot, a: .32 }); if (trail.length > 5) trail.shift(); } }
-    for (let i = trail.length - 1; i >= 0; i--) { const tr = trail[i]; tr.a -= .02; if (tr.a <= 0) { trail.splice(i, 1); continue; } g.save(); g.globalAlpha = tr.a; g.translate(SX(tr.x), (GY - tr.y) * u); g.rotate(tr.rot); g.scale(tr.face, 1); g.drawImage(tintImg(img, '#7fe3ff'), -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2); g.restore(); }
-    if (ti >= 2) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .4 + .12 * Math.sin(clock * 5); glowDot(g, x + ax, y + by - HH * .5 * u, HH * .62 * u, 'rgba(64,255,214,.5)'); g.restore(); }
-    g.save(); g.translate(x + ax, y + by); g.rotate(rot); g.scale(hero.face * sx, sy);
-    g.drawImage(img, -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2);
-    if (hero.flash > 0) { g.globalAlpha = Math.min(1, hero.flash) * .75; g.drawImage(tintImg(img, '#ff5a46'), -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2); }
+    if (ti >= 2) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .4 + .12 * Math.sin(clock * 5); glowDot(g, x + ax, y - HH * .5 * u, HH * .62 * u, 'rgba(64,255,214,.5)'); g.restore(); }
+    const R = Rig.get('hero' + (ti + 1)) || Rig.load('hero' + (ti + 1));
+    if (R && R.ok && mrg()) {
+      const p = heroRigPose(sp), br = Math.sin(clock * 2.4);
+      HEX[1] = br * .025; HEX[2] = Math.sin(clock * 1.7) * .03; HEX[3] = br * .03; HEX[5] = -br * .03;
+      if (!hero.rs) hero.rs = {};
+      for (const gh of trail) { const nx = SX(gh.wx); gh.sx = nx; gh.X2 = [gh.X[0], gh.X[1], gh.X[2] + (nx - gh.sx0) * dpr, gh.X[3], gh.X[4], gh.X[5]]; }
+      let sx = 1, sy = 1;
+      if (!hero.grounded) { const v = clamp(hero.vy / 330, -1, 1); sy = 1 + v * .05; sx = 1 - v * .03; }
+      const X = rigBlit(R, img, p, Chibi.POSES.stand, MGAIN.hero, hero.grounded ? 1 : .35, hero.rs, x + ax, y, rot, sx, sy, HH * u, hero.face, m,
+        hero.flash > 0 ? [REDT[0], REDT[1], REDT[2], Math.min(1, hero.flash) * .75] : null, 1, HEX, trail, CYAN);
+      // bóng mờ (tư thế thật của từng khoảnh khắc) khi chạy nhanh / lao chém
+      if (X && ((sp > 140 && hero.grounded) || atkK > 0)) { trailT += mapDt; if (trailT > .05) { trailT = 0; trail.push({ M: Float32Array.from(R.M), X, wx: hero.x + ax / u, sx0: x + ax, sx: x + ax, a: .3 }); if (trail.length > 5) trail.shift(); } }
+      for (let i = trail.length - 1; i >= 0; i--) { trail[i].a -= mapDt * 1.4; if (trail[i].a <= 0) trail.splice(i, 1); }
+      if (X) hero.handPt = rigPtX(R, X, 4, R.d.pts.hand);
+      if (sp > 120 && hero.grounded && !REDUCED) onTop(() => windLines(x, y, sp));
+    } else {
+      const k2 = HH * u / 520; let by = 0, sx = 1, sy = 1;
+      if (moving) { by = -Math.abs(Math.sin(hero.ph * Math.PI)) * 3.5 * u; rot += hero.face * .08; }
+      g.save(); g.translate(x + ax, y + by); g.rotate(rot); g.scale(hero.face * sx, sy);
+      g.drawImage(img, -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2);
+      if (hero.flash > 0) { g.globalAlpha = Math.min(1, hero.flash) * .75; g.drawImage(tintImg(img, '#ff5a46'), -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2); }
+      g.restore();
+    }
+    // vệt chém khi hạ quái (đè lên người)
+    if (atkK > .22 && atkK < .7) onTop(() => slashArc(x, y, ax, atkK));
+  }
+  function windLines(x, y, sp) {
+    g.save(); g.globalAlpha = Math.min(.55, (sp - 120) / 80); g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineCap = 'round';
+    for (let i = 0; i < 4; i++) { const ph = (clock * 3.2 + i * .27) % 1, yy = y - (14 + i * 15) * u, len = (18 + i * 6) * u * (1 - ph), xx = x - hero.face * (16 + ph * 46) * u; g.lineWidth = (1.6 - i * .2) * u; g.globalAlpha = Math.min(.55, (sp - 120) / 80) * (1 - ph); g.beginPath(); g.moveTo(xx, yy); g.lineTo(xx - hero.face * len, yy); g.stroke(); }
     g.restore();
-    // vệt chém khi hạ quái
-    if (atkK > .22 && atkK < .7) {
-      const kk = (atkK - .22) / .48, cx = x + ax + hero.face * 18 * u, cy = y - HH * .5 * u, R = 34 * u, a0 = hero.face > 0 ? -2.2 : -.94, a1 = hero.face > 0 ? .9 : -4.04;
+  }
+  function slashArc(x, y, ax, atkK) {
+    {
+      const kk = (atkK - .22) / .48, cx = x + ax + hero.face * 18 * u, cy = y - HH * .5 * u, Rr = 36 * u, a0 = hero.face > 0 ? -2.2 : -.94, a1 = hero.face > 0 ? .9 : -4.04;
       const a = a0 + (a1 - a0) * Math.min(1, kk * 1.8);
       g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = 1 - kk;
-      g.strokeStyle = 'rgba(255,214,60,1)'; g.lineWidth = 9 * u * (1 - kk * .6); g.lineCap = 'round'; g.beginPath(); g.arc(cx, cy, R, Math.min(a0, a), Math.max(a0, a)); g.stroke();
-      g.strokeStyle = '#ffffff'; g.lineWidth = 3 * u * (1 - kk * .6); g.beginPath(); g.arc(cx, cy, R, Math.min(a0, a), Math.max(a0, a)); g.stroke();
+      g.strokeStyle = 'rgba(255,214,60,1)'; g.lineWidth = 10 * u * (1 - kk * .6); g.lineCap = 'round'; g.beginPath(); g.arc(cx, cy, Rr, Math.min(a0, a), Math.max(a0, a)); g.stroke();
+      g.strokeStyle = '#ffffff'; g.lineWidth = 3.4 * u * (1 - kk * .6); g.beginPath(); g.arc(cx, cy, Rr, Math.min(a0, a), Math.max(a0, a)); g.stroke();
       g.restore();
+      if (kk < .5 && Math.random() < .6) puff(hero.x + hero.face * (30 + Math.random() * 20), GY - 30 - Math.random() * 30, 1, ['#FFD91F', '#ffffff'], 70, 10);
     }
   }
 
@@ -3666,12 +4028,14 @@ const WorldMap = (() => {
 
   /* ---------- hạt hiệu ứng ---------- */
   function puff(x, y, n, cols, sp = 60, up = 0) { for (let k = 0; k < n; k++) { const a = rnd(0, 6.283), v = rnd(.3, 1) * sp; fx.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - up, life: rnd(.4, .8), max: .8, r: rnd(1.5, 3.5), c: cols[k % cols.length] }); } }
+  function ring2(x, y, r, c) { fx.push({ x, y, vx: 0, vy: 0, life: .4, max: .4, ring: r, c }); }
   function floatTxt(x, y, txt, c) { fx.push({ x, y, vx: 0, vy: -30, life: 1.1, max: 1.1, txt, c }); }
   function drawFx(dt) {
     for (let k = fx.length - 1; k >= 0; k--) {
       const p = fx[k]; p.life -= dt; if (p.life <= 0) { fx.splice(k, 1); continue; }
-      p.x += p.vx * dt; p.y += p.vy * dt; if (!p.txt) p.vy += 120 * dt;
+      p.x += p.vx * dt; p.y += p.vy * dt; if (!p.txt && !p.ring) p.vy += 120 * dt;
       g.globalAlpha = Math.min(1, p.life / p.max * 1.5);
+      if (p.ring) { const k = 1 - p.life / p.max; g.save(); g.globalAlpha = (1 - k) * .9; g.strokeStyle = p.c; g.lineWidth = (5 * (1 - k) + 1) * u; g.beginPath(); g.arc(SX(p.x), p.y * u, p.ring * u * (.2 + .8 * (1 - Math.pow(1 - k, 3))), 0, 6.283); g.stroke(); g.restore(); continue; }
       if (p.txt) { g.fillStyle = p.c || '#FFD91F'; g.strokeStyle = '#16171B'; g.lineWidth = 3 * u; g.font = `900 ${11 * u}px system-ui`; g.textAlign = 'center'; g.strokeText(p.txt, SX(p.x), p.y * u); g.fillText(p.txt, SX(p.x), p.y * u); }
       else { g.fillStyle = p.c; g.beginPath(); g.arc(SX(p.x), p.y * u, p.r * u, 0, 6.283); g.fill(); }
     }
@@ -3693,10 +4057,11 @@ const WorldMap = (() => {
     const bx = blockX();
     hero.x = clamp(hero.x + hero.vx * dt, 16, bx);
     if (hero.x >= bx - .5 && hero.vx > 20 && clock - wallBump > 1.6) { wallBump = clock; const i = distAt(bx + 30); toast(`🔒 Hạ boss ${STAGES[i - 1].lv} để mở đường tới ${DIST[i].name}`); playSfx('hurt'); vib(40); hero.auto = null; }
-    hero.ph += dt * (Math.abs(hero.vx) > 90 ? 2.6 : 1.8) * (Math.abs(hero.vx) > 8 ? 1 : 0);
+    hero.ph += dt * Math.abs(hero.vx) / 64;
+    { const stp = Math.floor(hero.ph * 2); if (stp !== hero.step) { hero.step = stp; if (hero.grounded && Math.abs(hero.vx) > 40) puff(hero.x - hero.face * 5, GY - 1, 3, ['rgba(255,255,255,.55)', 'rgba(220,210,190,.6)'], 22, 14); } }
     // nhảy
     if (!hero.grounded) { hero.vy -= 950 * dt; hero.y += hero.vy * dt; if (hero.y <= 0) { hero.y = 0; hero.vy = 0; hero.grounded = true; hero.land = 1; puff(hero.x, GY, 6, ['rgba(255,255,255,.8)'], 40, 10); } }
-    else if (Math.abs(hero.vx) > 90 && Math.random() < dt * 8) puff(hero.x - hero.face * 6, GY - 1, 1, ['rgba(255,255,255,.6)'], 20, 20);
+
     // khu đang đứng → thẻ trạm
     const di = distAt(hero.x);
     if (di !== cur) { cur = di; renderCard(); $('cityPlace').textContent = DIST[di].name; }
@@ -3716,8 +4081,9 @@ const WorldMap = (() => {
       if (Math.abs(hero.x - NPC_X[n.id]) < 30 && NPC_X[n.id] <= blockX()) { stopHero(); hero.face = hero.x < NPC_X[n.id] ? 1 : -1; talk(n, null); break; }
     }
     // camera
-    const want = clamp(hero.x - VIEW * .42, 0, L - VIEW);
-    camX += (want - camX) * Math.min(1, dt * 6);
+    lookAhead += ((hero.face > 0 ? .36 : .62) - lookAhead) * Math.min(1, dt * 2.2);
+    const want = clamp(hero.x - VIEW * lookAhead, 0, L - VIEW);
+    camX += (want - camX) * Math.min(1, dt * 5);
     // nút hành động theo ngữ cảnh
     updateAction();
   }
@@ -3788,8 +4154,9 @@ const WorldMap = (() => {
     if (!duel) return;
     const c = $('duelFace'); const r = c.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1), w = Math.max(1, Math.round(r.width * d));
     c.width = w; c.height = w; const x = c.getContext('2d');
-    const tall = duel.m.type === 'bong', keep = { g, u, camX, GY }; g = x; u = w / (tall ? 84 : 66); camX = 0; GY = tall ? 76 : 52;
+    const tall = duel.m.type === 'bong', keep = { g, u, camX, GY }; g = x; u = w / (tall ? 84 : 66); camX = 0; GY = tall ? 76 : 52; portrait = true;
     try { const m = Object.assign({}, duel.m, { x: tall ? 42 : 33, big: false, act: null, alert: 0, flash: 0, face: -1 }); drawMon(m); } catch (e) {}
+    portrait = false;
     g = keep.g; u = keep.u; camX = keep.camX; GY = keep.GY;
   }
   function answer(i, b) {
@@ -3814,7 +4181,8 @@ const WorldMap = (() => {
     if (d.ok) {
       m.dying = true; // quái sắp gục: không cho mở trận đấu mới trong lúc nhát chém đang bay tới
       hero.act = { type: 'atk', t: 0, dur: .6, ev: { at: .3, f: () => {
-        m.dead = true; m.flash = 0; Snd.sfx('slam'); vib(40);
+        m.dead = true; m.flash = 0; Snd.sfx('slam'); vib(40); mapHit(m.big ? 6 : 3.5, m.big ? .09 : .05);
+        ring2(m.x, GY - (m.big ? 30 : 18), m.big ? 70 : 46, '#FFD91F');
         puff(m.x, GY - 14, 22, ['#FFD91F', '#ffffff', MON_COL[m.type], '#2ec4b6'], 120, 40);
         const gain = m.big ? 30 : 10; prog.xp = (prog.xp || 0) + gain;
         if (m.big) { prog.gk = prog.gk || {}; prog.gk[DIST[m.d].key] = true; }
@@ -3824,7 +4192,7 @@ const WorldMap = (() => {
       Snd.sfx('swish');
     } else {
       m.act = { type: 'atk', t: 0, dur: .5, ev: { at: .25, f: () => {
-        hero.flash = 1; hero.act = { type: 'hurt', t: 0, dur: .55 }; hero.vx = -hero.face * 260;
+        hero.flash = 1; hero.act = { type: 'hurt', t: 0, dur: .55 }; hero.vx = -hero.face * 260; mapHit(4, .06); ring2(hero.x, GY - 36, 40, '#ff5a46');
         if (hero.grounded) { hero.grounded = false; hero.vy = 160; }
         puff(hero.x, GY - 30, 12, ['#ff5a46', '#ffffff'], 90, 20); Snd.sfx('slam'); vib(80);
       } } };
@@ -3838,13 +4206,26 @@ const WorldMap = (() => {
     raf = 0;
     if (!$('sMap').classList.contains('on')) { saveX(); return; }
     const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now;
-    try { update(dt); draw(dt); } catch (e) { console.warn(e); }
+    try {
+      if (mfreeze > 0) mfreeze -= dt; else update(dt);
+      const cam0 = camX;
+      if (mshakeT > 0) { mshakeT -= dt; camX += (Math.random() * 2 - 1) * mshakeA * Math.max(0, mshakeT) / .28; if (mshakeT <= 0) mshakeA = 0; }
+      draw(mfreeze > 0 ? 0 : dt);
+      camX = cam0;
+    } catch (e) { console.warn(e); }
     raf = requestAnimationFrame(loop);
   }
   function draw(dt) {
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mapDt = dt;
+    if (!gBaseM) gBaseM = g;
+    g = gBaseM; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const GL = mrg();
+    if (GL) { GL.clearAll(); gTopM.setTransform(1, 0, 0, 1, 0, 0); gTopM.clearRect(0, 0, cvTopM.width, cvTopM.height); }
     drawSky(); drawLayers(); drawGround(); drawWalkers(); drawProps(); drawGates(); drawNpcs();
-    mons.forEach(drawMon); drawHero(); drawFx(dt); drawFront(); drawPost();
+    mons.forEach(drawMon); drawHero();
+    if (GL) { g = gTopM; g.setTransform(dpr, 0, 0, dpr, 0, 0); while (topQM.length) topQM.shift()(); }
+    drawFx(dt); drawFront(); drawPost();
+    g = gBaseM;
   }
   function saveX() { prog.cx = Math.round(hero.x); save(); }
   function toast(msg) {
@@ -4029,6 +4410,7 @@ const WorldMap = (() => {
     get duel() { return duel ? { q: duel.q.id, m: duel.m.id, done: !!duel.done } : null; },
     get mons() { return mons.map(m => ({ id: m.id, x: Math.round(m.x), dead: m.dead, big: m.big, d: m.d })); },
     _tp(x) { hero.x = x; camX = clamp(hero.x - VIEW * .42, 0, L - VIEW); },
+    _clearMons() { mons.forEach(m => { m.dead = true; }); },
     gateX, NPC_X
   };
 })();
