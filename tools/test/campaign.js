@@ -26,6 +26,7 @@ const SP = process.argv[2] || require('path').join(__dirname, 'out'), W = +proce
         if (!st.act) { B.forceCorrect(); return 'battle'; }
         // v12 đánh thật: trả lời câu tuyệt chiêu, né đúng lúc, nạp đầy thì tung tuyệt chiêu, còn lại bấm đánh
         if (document.getElementById('sGame').classList.contains('asking')) { B.forceCorrect(); return 'battle'; }
+        if (st.word) { const bs = [...document.querySelectorAll('#parryOpts button')]; if (bs[st.word.ok]) bs[st.word.ok].dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); return 'fight'; }
         const A = B.battle._state.act, pd = id => document.getElementById(id).dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
         if (A && A.hitIn > 0 && A.hitIn < .4) { pd('abD'); return 'fight'; }
         if (st.energy >= 100) { document.getElementById('abU').click(); return 'fight'; }

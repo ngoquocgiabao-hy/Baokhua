@@ -82,8 +82,12 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
      - chi co ngắn dọc trục xương (`PR.*[1]`) để giả chiều sâu, vì tranh nhìn 3/4.
   3. Đổi góc mượt bằng lò xo theo độ cứng `STIFF`. Khớp xa mềm hơn nên theo sau một nhịp.
   4. Bám đất: chân thấp nhất luôn ở mặt đất.
-- **Dáng đi / chạy:** `Rig.gait(ref, phase, run, amt)`. Chân đối xứng, gối co khi đưa chân lên, tay vung ngược chân.
-  - Pha phải **tăng** khi đi về phía mặt nhìn.
+- **Dáng đi / chạy (v13):** `Rig.gait(ref, phase, run, amt)` là chu kỳ bước kiểu hoạt hình cắt giấy.
+  - Mỗi chân có pha q: 0 → 0,5 là **trụ** (đùi lùi đều từ trước ra sau, gối hơi chùng); 0,5 → 1 là **bước** (đùi đưa lên trước, gối co mạnh nhấc bàn chân). Gối luôn chỉ về hướng đi.
+  - Hai chân lệch nửa nhịp, tay vung ngược chân, chạy (`run`) có pha bay (`hop`).
+  - Tư thế trả về có `ip = 1`: khi đó `angles()` dùng hệ số `PRI` (xoay hẳn trong mặt tranh, gần như không co chi) thay cho `PR` (phối cảnh). Đứng/ra đòn vẫn dùng `PR`.
+  - Bản v12 (nhấc gối co theo chiều sâu) bị nén quá mạnh → chân gần như không nhúc nhích, nhìn như trượt. Đã bỏ.
+  - Pha phải **tăng** khi đi về phía mặt nhìn. Bản đồ: `hero.ph += dt·|v|/64`.
   - Đi ngược hướng mặt thì đổi sang nhảy lùi (`backstep` trong sân đấu), không dùng dáng đi tới.
 - **Vẽ:**
   - `Rig.renderer()` tạo canvas WebGL.
@@ -113,6 +117,14 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
   - Lúc boss ra đòn có giáp cứng (`atkUntil`).
   - Tướng miễn đòn khi `hero.inv > 0` (né, lướt chém). Né sát lúc đòn chạm là "né đẹp" (`dodged`).
   - `_state.act.hitIn` là thời gian tới lúc đòn chạm (nút Né nhấp nháy, bài kiểm thử dùng).
+- **v13 · bộ đệm phím:** bấm lúc tướng đang ra đòn / nút còn hồi ≤ 0,3 giây thì nhớ 0,35 giây (`actBuf`) và tự ra đòn khi rảnh. Bấm Tuyệt chiêu lúc đang ra đòn → `st.ultQ`, mở câu hỏi ngay khi xong đòn.
+- **v13 · câu hỏi tuyệt chiêu vừa 1 màn:** `fitAsk()` đo các phần đang hiện rồi thu sân đấu (96–250px) cho câu hỏi + đáp án nằm gọn trong màn, không phải cuộn khi đồng hồ chạy. Đáp án ngắn xếp 2 cột (`#opts.two`).
+- **v13 · CHIÊU CHỮ (đỡ đòn bằng nghĩa từ):**
+  - Hẹn giờ `st.wordT` (đếm khi boss không gồng / không ra đòn), mỗi `WORD_EVERY[trạm]` giây boss gồng một chiêu chữ.
+  - `wordPool(trạm)`: từ ngắn (≤ 4 chữ Hán) có pinyin + nghĩa, lấy từ đáp án có `optionPy/optionVi`, `STAGES[].learn`, từ người đã gặp. Ưu tiên từ đúng trạm.
+  - `wordStart()` → sân đấu `wordCharge([zh, py], giây)` (bong bóng chỉ có chữ Hán + pinyin, boss gồng tím, dừng nhịp đánh thường); khay nút đổi thành 3 nghĩa (`#parryPad`, phím 1/2/3), thời gian `WORD_SEC[trạm]` (lần đầu ×1,25).
+  - `wordAnswer(i)`: đúng → `wordResolve(true)` (ĐỠ CHỮ, boss khựng, tướng lướt chém phản đòn, sát thương `k.b × 1,9`, +26 nộ); sai/hết giờ → `wordResolve(false)` = `counter()`, sát thương ×1,5, hiện nghĩa đúng, từ vào `st.parryMiss` → Sổ ôn cuối trận.
+- **v13 · chuỗi HIT + phản đòn:** mỗi đòn trúng `st.hits++` (mất sau 2,4 giây không đánh hoặc khi trúng đòn), +5% sát thương mỗi 5 hit (tối đa +30%), hiện ở `#hitCount`. Trong 1,2 giây sau NÉ ĐẸP (`st.counterUntil`), đòn kế là PHẢN ĐÒN ×1,8.
 - **Nền chuyển động:** `bgVideo(look)` phát `v4/motion/<look>.mp4|.webm` vào lớp nền mỗi khung, phủ `bgOv` (tông màu + sàn tối). Lỗi thì dùng ảnh `paintBg`.
 
 ## 4. Sân đấu (`createArena`)
@@ -136,7 +148,9 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
   - `playHeroAttack(kind, info)`, `playBossAttack()`;
   - `intro`, `ko`, `down`, `reset`;
   - `setStage`, `setVisual`, `setRage`, `pressure`;
-  - `_slow`, `_state`.
+  - `_slow`, `_state`;
+  - v13: `wordCharge(word, sec)`, `wordResolve(ok)`, `pop(txt, col, onBoss)`.
+- **Tỉ lệ:** `S = min(H, W·0,97)·0,0056` – sân cao (khay nút dính đáy màn) không làm nhân vật to quá bề ngang.
 
 ## 5. Bản đồ (`WorldMap`)
 - **Thế giới:**
@@ -159,6 +173,9 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
   - bong bóng `speech(x, y, [chữ Hán, pinyin, nghĩa])` cho người đi đường (`line`/`after`) và boss ở cổng (`taunt`);
   - Ā Bǎo vẫy tay khi gần người quen, đứng lâu thì ngó quanh / vươn vai.
 - **Đấu quái:** `pickQ`, `startDuel`, `openDuel`, `answer`, `finishDuel` (đúng: chém hạ quái +⭐; sai: bị đẩy lùi).
+- **v13 · Chữ vàng:** `buildGold()` đặt 4 đồng mỗi khu (`GOLD_AT`, từ `wordPool(khu)`; đồng 2 và 4 ở trên cao, phải nhảy). `grabGold` nhặt khi chạm → toast chữ Hán + pinyin + nghĩa, đọc to, +5 ⭐, lưu `prog.gold[id]`; HUD `hudXp()`; Sổ từ có mục Chữ vàng.
+- **v13 · chạm rào:** `hero.blocked` → tốc độ về 0 và đứng yên (trước đây chạy tại chỗ). Vệt bóng mờ chỉ hiện khi lướt chém / chạy rất nhanh (> 230), không hiện khi đi thường.
+- **Móc kiểm thử (v13):** `_hold(1)` dừng vòng lặp, `_step(dt, n)` bước tay từng khung, `_key(-1|0|1)` giữ hướng đi, `_scr()` toạ độ màn hình của Ā Bǎo. Dùng để quay đúng 30 khung/giây bất kể tốc độ chụp.
 
 ## 6. Thêm nội dung nhanh
 | Muốn | Làm |
@@ -169,6 +186,13 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
 | Thêm chiêu tướng | Viết hàm như `tamTieu` (trả `{impactAt}`), gọi trong `phiTieu`/`playHeroAttack`. Tên chiêu thêm vào `SKN` (đủ 3 dòng). |
 | Thêm boss mới | Tranh `v4/sprites/<look>-idle|atk|ko.webp` + `SPRITE`/`SPR_X`/`CH`/`BOSS_COL`/`GHOST`/`GAIN`, tranh VS `v4/vs`, nền `v4/bg`, khung xương `v4/rig/<look>-idle.json`, nhánh mới trong `bossAttack`. |
 | Đổi hạn ưu đãi | `SALE_END`, `OFFER_*`, `INVITE_*` trong game.html và `saleEnd` trong index.html. |
+
+## 6b. Phông chữ (v13)
+- `UIF` (chữ Việt: phông hệ thống có đủ dấu) và `ZHF` (chữ Hán: PingFang SC / Noto Sans CJK SC…) khai báo đầu tệp, dùng cho mọi chữ vẽ trên canvas.
+- CSS: phông Trung chỉ gắn qua `[lang^="zh"]`. **Không** đặt `font-family` phông Trung vào class chung (trước đây `.talk-opts button b` làm đáp án tiếng Việt trong thẻ đấu quái bị vẽ bằng phông Trung → trên iPhone chữ có dấu bị trộn phông).
+- Đầu khối module có bộ tự gắn `lang="zh-CN"`: mọi đoạn chữ Hán nằm lẫn trong câu Việt được bọc `<span lang="zh-CN">` (chạy lúc mở trang và theo dõi nội dung chèn sau bằng MutationObserver).
+- Không dùng ký tự hiếm dễ hiện ô vuông (ví dụ `⤒`, `∘`, emoji mới như 🥷). Nút nhảy dùng SVG.
+- Kiểm: `node tools/test/fonts.js 390 844` (đi qua mọi màn, báo chữ Việt dùng phông Trung, chữ Hán thiếu `lang`, ký tự hiếm).
 
 ## 7. Hiệu năng
 - Cảnh 3 lớp được vẽ sẵn theo khu và chỉ giữ 3 khu trong bộ nhớ (`LC`/`LQ`). Khu kế tiếp được dựng sẵn khi máy rảnh.

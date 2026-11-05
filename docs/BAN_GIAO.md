@@ -20,7 +20,7 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
 | Nơi | Nội dung |
 |---|---|
 | `main` (trang thật) | Bản đăng 01/11: tên miền, trang chủ có game Khách sạn, Khách sạn v5. **Game Đánh Boss trên trang thật vẫn là bản cũ "Đánh Boss v4 (3D · 2 chặng)".** |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v12 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v13 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
 | Bản xem thử (riêng tư) | https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
@@ -39,6 +39,12 @@ Lịch sử chính của game Đánh Boss trên nhánh:
   - tuyệt chiêu phải trả lời đúng câu hỏi; độ khó tăng theo trạm;
   - dáng đi nhấc gối hợp tranh nhìn chính diện (sửa lỗi chân đi ngược);
   - nền sân đấu là video lặp dựng bằng Remotion.
+- **v13:**
+  - sửa lỗi phông chữ tiếng Việt (đáp án tiếng Việt bị vẽ bằng phông Trung trong thẻ đấu quái/hội thoại; ký tự ⤒ hiện ô vuông); tự gắn `lang="zh-CN"` cho chữ Hán;
+  - dáng đi/chạy mới kiểu hoạt hình cắt giấy (bản v12 chân gần như đứng yên, nhìn như trượt); chạm rào đứng yên; bỏ vệt mờ khi đi thường;
+  - trận đánh: khay nút dính đáy màn, câu hỏi tuyệt chiêu vừa 1 màn (trước đây 10/20 câu tràn ở 360×640), bộ đệm phím, câu nghe trên máy không có giọng Trung vẫn hiện chữ + pinyin;
+  - lối chơi mới: **Chiêu chữ** (đỡ đòn bằng cách chọn đúng nghĩa từ), **chuỗi HIT**, **phản đòn** sau né đẹp, **Chữ vàng** nhặt trên bản đồ;
+  - Sổ ôn có thêm từ chiêu chữ đỡ hụt; Sổ từ có mục Chữ vàng.
 - **v11.1:**
   - sửa dáng đi;
   - thêm chào hỏi, khiêu chiến, phản ứng của quái;
@@ -51,7 +57,7 @@ index_1.html      chuyển hướng link cũ về /
 404.html          trang lỗi
 membership.html   trang thẻ hội viên
 khachsan.html     game Khách sạn
-game.html         game Đánh Boss (≈5.400 dòng, xem docs/KY_THUAT_GAME.md)
+game.html         game Đánh Boss (≈6.100 dòng, xem docs/KY_THUAT_GAME.md)
 CNAME             baokhua.com
 v4/               ảnh, âm thanh dùng chung
   sprites/        tranh nhân vật đã tách nền: hero1..3, <boss>-idle|atk|ko
@@ -109,6 +115,7 @@ bash tools/test/run-all.sh                         # bộ kiểm thử chính, i
 | `tools/test/feint.js` | (Kiểu `quiz`) Boss đánh nhử lúc chờ trả lời không được trừ máu. |
 | `tools/test/perf.js` | Khung hình/giây bản đồ và trận, gom lỗi/cảnh báo console. |
 | `tools/test/gait.js` | Chân chạm đất phải lùi về sau khi chạy tới (chống lỗi "đi lùi ngược"). |
+| `tools/test/fonts.js` | (v13) Đi qua mọi màn có chữ: chữ Việt không được dùng phông Trung, chữ Hán phải có `lang="zh-CN"`, không có ký tự hiếm dễ hiện ô vuông. |
 | `tools/test/slowmo.js` `maprun.js` `districts.js` `interact.js` | Chụp ảnh / quay chậm để nhìn bằng mắt. |
 
 Móc kiểm thử có sẵn trong game (`window.__bao`):
@@ -116,6 +123,8 @@ Móc kiểm thử có sẵn trong game (`window.__bao`):
 - Trả lời thay người chơi: `forceCorrect()`, `forceWrong()`.
 - Ra chiêu: `battle.playHeroAttack(...)`, `battle.playBossAttack()`.
 - Quay chậm: `battle._slow(k)`.
+- Bản đồ bước tay từng khung (v13): `WorldMap._hold(1)`, `WorldMap._step(dt, n)`, `WorldMap._key(-1|0|1)`, `WorldMap._scr()`.
+- Chiêu chữ (v13): `wordPool(trạm)`, `wordStart()`, `st.word` (đang gồng: `.ok` là chỉ số đáp án đúng), `st.wordT` (giây tới chiêu chữ kế).
 - Truy cập thẳng: `Rig`, `Chibi`.
 - `window.__forceGL = 1` (đặt trước khi tải trang) ép bật WebGL trên máy không có card đồ hoạ.
 
@@ -142,7 +151,7 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 
 ## 8. Việc đang chờ / đề xuất làm tiếp (theo thứ tự ưu tiên)
 **Chờ Bảo:**
-1. "duyệt đăng" game v11 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
+1. "duyệt đăng" game v13 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
 2. 4 câu hỏi về giá: 299k là giá gì; giá sau 11/11; thẻ có gồm Zoom không; có gia hạn hoa hồng giới thiệu không.
 3. Chỉnh Google Form theo góp ý cũ.
 4. Khoá `GEMINI_API_KEY` để có giọng người thật.
@@ -163,8 +172,9 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 - **Khung xương làm cong một bức tranh.** Vì vậy:
   - động tác quá lớn (vung tay quá đầu) vẫn hơi kéo giãn;
   - không quay người được.
-- **Tranh nhìn 3/4 nên đưa tay chân trước – sau phải giả chiều sâu** (xoay ít + co ngắn, `PR` trong module `Rig`). Nếu thấy gập ngang thì giảm hệ số xoay `PR.*[0]`.
-- **Cân bằng đánh thật chưa thử với người chơi thật:** chỉnh `ACT_DIFF` (máu boss, nhịp đòn, giây báo trước, sát thương) và `ACT_HERO` sau khi cho vài học viên chơi thử.
+- **Tranh nhìn 3/4 nên đưa tay chân trước – sau phải giả chiều sâu** (xoay ít + co ngắn, `PR` trong module `Rig`). Nếu thấy gập ngang thì giảm hệ số xoay `PR.*[0]`. Riêng khi đi/chạy (v13) dùng `PRI` (xoay trong mặt tranh) để bước chân thấy rõ; muốn bước nhỏ lại thì giảm `T`/`K` trong `Rig.gait`.
+- **Kiểm chuyển động phải quay đúng nhịp:** chụp ảnh mất ~0,25 giây/khung nên ảnh chụp liên tiếp bị lệch pha (nhìn như chân rung tại chỗ). Dùng `WorldMap._hold/_step` để bước đúng 1/30 giây mỗi khung.
+- **Cân bằng đánh thật chưa thử với người chơi thật:** chỉnh `ACT_DIFF` (máu boss, nhịp đòn, giây báo trước, sát thương), `ACT_HERO`, `WORD_EVERY` / `WORD_SEC` (nhịp và thời gian chiêu chữ) sau khi cho vài học viên chơi thử.
 - **Lỗi "đi lùi ngược" / "chân ngược" đã sửa ở v11.1 và v12.** Boss lùi về bằng nhảy lùi (`backstep`). Khi viết động tác mới:
   - nhân vật di chuyển ngược hướng mặt thì dùng nhảy lùi hoặc lộn;
   - không dùng dáng đi tới.
@@ -175,6 +185,6 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 - Chủ dự án: Bảo. Liên lạc qua kênh nội bộ của đội. Không ghi số điện thoại hay thông tin cá nhân vào repo.
 - Drive "BAO KHUA - SO CAI":
   - `01_LENH_HANG_NGAY`: lệnh.
-  - `02_BAO_CAO`: báo cáo, gồm `BAO_CAO_05-11_GAME_DANH_BOSS_V9/V10/V11`.
+  - `02_BAO_CAO`: báo cáo, gồm `BAO_CAO_05-11_GAME_DANH_BOSS_V9/V10/V11/V12/V13`.
   - `04_GAME`: ảnh gốc, video Veo.
 - Báo cáo bàn giao bản Drive: `02_BAO_CAO/BAN_GIAO_05-11_CHO_NGUOI_TIEP_THEO`.

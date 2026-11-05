@@ -12,7 +12,8 @@ for sz in "360 640" "390 844"; do
   echo "== Trọn 5 trạm $1×$2"; node tools/test/campaign.js "$OUT" $1 $2 > "$OUT/campaign-$1.json"; python3 -c "import json,sys; d=json.load(open('$OUT/campaign-$1.json')); print('qua', d['cleared'], 'trạm · lỗi', d['errs'], '· gọi ngoài', d['ext']); sys.exit(0 if d['cleared']==5 and not d['errs'] and not d['ext'] else 1)" || ok=0
 done
 echo "== Đánh thật (HSK0 và HSK4, né đúng lúc)"; node tools/test/fight.js "$OUT" 0 gioi > "$OUT/fight0.json" && node tools/test/fight.js "$OUT" 4 gioi > "$OUT/fight4.json"
-python3 -c "import json,sys; r=json.load(open('$OUT/fight0.json'))+json.load(open('$OUT/fight4.json')); [print('  HSK%d'%x['stage'], 'thắng' if x['win'] else 'THUA', 'máu %d/%d'%(x['heroLeft'],x['heroMax']), 'câu %d/%d'%(x['correct'],x['asked']), x['errs']) for x in r]; sys.exit(0 if all(x['win'] and not x['errs'] for x in r) else 1)" || ok=0
+python3 -c "import json,sys; r=json.load(open('$OUT/fight0.json'))+json.load(open('$OUT/fight4.json')); [print('  HSK%d'%x['stage'], 'thắng' if x['win'] else 'THUA', 'máu %d/%d'%(x['heroLeft'],x['heroMax']), 'câu %d/%d'%(x['correct'],x['asked']), 'đỡ chữ', x.get('parry'), 'hit', x.get('hitMax'), x['errs']) for x in r]; sys.exit(0 if all(x['win'] and not x['errs'] for x in r) else 1)" || ok=0
 echo "== Khung hình/giây + console"; node tools/test/perf.js
 echo "== Pha chân khi chạy"; node tools/test/gait.js || ok=0
+for sz in "360 640" "390 844"; do set -- $sz; echo "== Phông chữ Việt/Trung $1×$2"; node tools/test/fonts.js $1 $2 | tail -2 || ok=0; done
 [ $ok = 1 ] && echo "KẾT QUẢ: ĐẠT" || { echo "KẾT QUẢ: CÓ LỖI"; exit 1; }
