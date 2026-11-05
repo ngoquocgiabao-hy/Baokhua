@@ -1285,7 +1285,7 @@ createBattle = function createArena(root) {
   const lerp = (a, b, k) => a + (b - a) * k;
 
   /* ---------- diễn viên ---------- */
-  function mk(kind) { return { kind, spec: kind === 'hero' ? Chibi.SPECS.hero : Chibi.SPECS.hotel, side: kind === 'hero' ? 1 : -1, x: 0, y: 0, rot: 0, alpha: 1, act: null, flash: 0, flashCol: '#ffffff', mood: null, weapon: undefined, pose: P.stance, state: 'idle', dizzy: 0, sp: 'idle', px: 0, ghosts: [], gAcc: 0 }; }
+  function mk(kind) { return { kind, spec: kind === 'hero' ? Chibi.SPECS.hero : Chibi.SPECS.hotel, side: kind === 'hero' ? 1 : -1, x: 0, y: 0, rot: 0, alpha: 1, act: null, flash: 0, flashCol: '#ffffff', mood: null, weapon: undefined, pose: P.stance, state: 'idle', dizzy: 0, sp: 'idle', px: 0, ghosts: [], gAcc: 0, vx: 0, bx: 0, bv: 0 }; }
   const hero = mk('hero'), boss = mk('boss');
   const home = a => a === hero ? W * .27 : W * .73;
   function idlePose(a) {
@@ -1314,6 +1314,10 @@ createBattle = function createArena(root) {
     if (a.state === 'victory') { a.pose = MIX(P.victory, P.wave, (Math.sin(clock * 8) + 1) / 2); a.y = -Math.abs(Math.sin(clock * 6)) * 14 * S; a.mood = 'happy'; a.x = home(a); return; }
     if (a.state === 'gloat') { a.pose = P.cross; a.y = -Math.abs(Math.sin(clock * 9)) * 3 * S; a.mood = 'happy'; a.x = home(a); return; }
     const base = idlePose(a);
+    // v9: đứng chờ có hồn – tướng nhún như võ sĩ, mỗi boss một kiểu
+    if (a === hero) a.y = -Math.abs(Math.sin(clock * 4.2)) * 3.2 * S;
+    else if (look === 'shadow') a.y = -Math.abs(Math.sin(clock * 3.6)) * 2.6 * S;
+    else if (look === 'trainee') a.y = -Math.abs(Math.sin(clock * 7)) * .9 * S;
     a.pose = Object.assign({}, base, { bob: base.bob + br * 1.3, aF: base.aF + br * .04 });
     a.mood = null;
     a.x = home(a) + (a === boss && rage ? rnd(-1.4, 1.4) : 0);
@@ -1504,14 +1508,49 @@ createBattle = function createArena(root) {
     } });
   }
 
+  /* ---------- v9 · ĐÁNH NHỬ TRONG LÚC CHỜ TRẢ LỜI ----------
+     Boss lao tới đánh định kỳ, Ā Bǎo tự đỡ hoặc né. Chỉ là diễn – không trừ máu, không ảnh hưởng điểm.
+     Càng gần hết giờ, boss đánh càng dồn. Câu "Nghe" thì boss im tiếng để không át giọng đọc. */
+  let pressOn = false, pressT = 0, pressLeft = 20, pressTok = 0, pressQuiet = false;
+  function pressure(on, secs, quiet) { pressOn = !!on && !RM; pressTok++; pressLeft = secs || 20; pressQuiet = !!quiet; pressT = quiet ? 4.5 : 2.4 + Math.random(); }
+  function pressTick(dt) {
+    if (!pressOn) return;
+    pressLeft -= dt;
+    if (hero.act || boss.act || hero.state !== 'idle' || boss.state !== 'idle') return;
+    pressT -= dt;
+    if (pressT > 0) return;
+    pressT = pressLeft < 6 ? rnd(1.6, 2.4) : rnd(3.4, 5);
+    bossAttack(true);
+  }
+  function sfxP(kind) { if (!pressQuiet) Snd.sfx(kind); }
+  /** tướng đỡ đòn (khiên xanh, lùi nửa bước) hoặc nhảy lùi né */
+  function heroGuard(power) {
+    if (hero.state !== 'idle') return;
+    const x0 = home(hero), dodge = Math.random() < .45;
+    if (dodge) {
+      play(hero, .5, k => ({ pose: K([[0, 'crouch'], [.25, 'jump'], [.75, 'jump'], [1, 'stance']], k), x: x0 - Math.sin(k * Math.PI) * 30 * S, y: -Math.sin(k * Math.PI) * H * .13, mood: 'angry' }));
+      burst(HX() + W * .03, HY(), 6, ['rgba(255,255,255,1)'], .35);
+    } else {
+      hero.flash = .55; hero.flashCol = '#9fe8ff';
+      play(hero, .42, k => ({ pose: K([[0, 'stance'], [.2, 'hurt'], [1, 'stance']], k), x: x0 - Math.sin(Math.min(1, k * 1.6) * Math.PI * .5) * (1 - k) * 14 * S * power, mood: 'angry' }));
+      const sx = HX() + W * .05, sy = HY();
+      fxs.push({ t: 0, dur: .32, draw(k) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = 1 - k; g.strokeStyle = 'rgba(120,220,255,1)'; g.lineWidth = 5 * (1 - k) + 1.5; g.beginPath(); g.arc(sx - W * .03, sy, H * (.16 + .08 * k), -1.05, 1.05); g.stroke(); g.globalCompositeOperation = 'source-over'; } });
+      burst(sx, sy, 10, [C.cyan, C.white, C.gold], .55);
+      if (!pressQuiet) Snd.sfx('ding');
+    }
+  }
+
   /* ---------- BOSS PHẢN ĐÒN (mỗi trạm một kiểu) ---------- */
-  function bossAttack() {
+  function bossAttack(feint) {
     const col = BOSS_COL[look] || BOSS_COL.hotel, soft = col.replace(/[\d.]+\)$/, '.9)'), x0 = home(boss), idle = idlePose(boss);
+    const tok = pressTok, alive = () => !feint || (pressOn && tok === pressTok);
+    const land = (c1, c2, pw) => { if (!alive()) return; if (feint) { heroGuard(pw); return; } land0(c1, c2, pw); };
+    const sx = k => feint ? sfxP(k) : Snd.sfx(k);
     if (look === 'night') {
       // Quản lý ca đêm: bước lên, rọi đèn pin thành một luồng sáng rồi "tia kỷ luật" lao tới
       play(boss, .75, k => ({ pose: K([[0, idle], [.25, 'point'], [.75, 'point'], [1, idle]], k), x: x0 - Math.sin(k * Math.PI) * 12 * S, mood: 'angry', weapon: 'flashlight', sp: k > .12 && k < .82 ? 'atk' : 'idle' }), [
         [.18, () => {
-          Snd.sfx('zap'); const from = pt(boss, 'hand');
+          if (!alive()) return; sx('zap'); const from = pt(boss, 'hand');
           fxs.push({ t: 0, dur: .32, draw(k) {
             const a = .85 * (1 - k * .5), sp = H * (.06 + .2 * k), tx = HX(), ty = HY();
             const gr = g.createLinearGradient(from[0], from[1], tx, ty); gr.addColorStop(0, 'rgba(220,245,255,.95)'); gr.addColorStop(1, 'rgba(90,200,255,0)');
@@ -1527,8 +1566,8 @@ createBattle = function createArena(root) {
       // Hắc Ninja: lùi nửa bước rồi ném liền 3 phi tiêu tím
       const ev = [];
       [.1, .18, .26].forEach((at, i) => ev.push([at, () => {
-        Snd.sfx('swish'); const from = pt(boss, 'hand'), to = [HX() + W * .01, HY() + (i - 1) * H * .06];
-        projectile(from, to, .19, 0, 'dark', () => { burst(to[0], to[1], 8, [C.purple, C.white], .5); if (i === 2) land(col, soft, 1.2); else heroHit(.5); });
+        if (!alive()) return; sx('swish'); const from = pt(boss, 'hand'), to = [HX() + W * .01, HY() + (i - 1) * H * .06];
+        projectile(from, to, .19, 0, 'dark', () => { if (!alive()) return; burst(to[0], to[1], 8, [C.purple, C.white], .5); if (i === 2) land(col, soft, 1.2); else if (!feint) heroHit(.5); });
       }]));
       play(boss, .7, (k, t) => {
         const i = Math.min(2, Math.floor(t / .08)), lt = t - .04 - i * .08;
@@ -1538,17 +1577,17 @@ createBattle = function createArena(root) {
       return { impactAt: 450 };
     }
     // cận chiến: lễ tân (chuông) · tổ trưởng (cờ lê)
-    const wpn = bossWeapon(), clumsy = look === 'trainee';
-    let x1 = hero.x + 46 * S;
+    const wpn = bossWeapon(), clumsy = look === 'trainee', xs = boss.x;
+    let x1 = home(hero) + 46 * S;
     play(boss, .86, (k, t) => {
-      if (t < .26) return { pose: Chibi.cycle('run1', 'run2', t * 4.5), x: lerp(x0, x1, ease(t / .26)), weapon: wpn, mood: clumsy ? 'nervous' : 'angry', rot: clumsy ? Math.sin(t * 40) * .08 : 0, sp: 'atk' };
+      if (t < .26) return { pose: Chibi.cycle('run1', 'run2', t * 4.5), x: lerp(xs, x1, ease(t / .26)), weapon: wpn, mood: clumsy ? 'nervous' : 'angry', rot: clumsy ? Math.sin(t * 40) * .08 : 0, sp: 'atk' };
       if (t < .44) return { pose: K([[0, 'raise'], [.55, 'raise'], [1, 'chop']], (t - .26) / .18), x: x1, weapon: wpn, mood: 'angry', sp: 'atk' };
       const kk = (t - .44) / .42;
       return { pose: K([[0, 'chop'], [.3, 'walk1'], [.65, 'walk2'], [1, idle]], kk), x: lerp(x1, x0, ease(kk)), weapon: wpn, sp: kk < .25 ? 'atk' : 'idle' };
-    }, [[.42, () => { Snd.sfx(look === 'factory' ? 'zap' : 'ding'); land(col, soft, clumsy ? .7 : 1); }]]);
+    }, [[.42, () => { if (!alive()) return; sx(look === 'factory' ? 'zap' : 'ding'); land(col, soft, clumsy ? .7 : 1); }]]);
     return { impactAt: 420 };
   }
-  function land(col, soft, power) {
+  function land0(col, soft, power) {
     const x = HX(), y = HY();
     shake(.3, H * .03 * power); hitStop(70);
     burst(x, y, Math.round(20 * power), [col, C.white, look === 'factory' ? C.gold : 'rgba(255,190,170,1)'], .7);
@@ -1705,13 +1744,45 @@ createBattle = function createArena(root) {
     const sq = Math.max(-.12, Math.min(.12, -(p.bob || 0) * .007));
     return { hh, k, rot, sx: 1 - sq * .6, sy: 1 + sq, f: o.x.flip ? -1 : 1 };
   }
-  function blitSpr(o, img, x, y, t) {
+  function blitSpr(o, img, x, y, t, wp) {
     g.save(); g.translate(x, y);
     const py = -t.hh * .45; g.translate(0, py); g.rotate(t.rot); g.scale(t.sx, t.sy); g.translate(0, -py);
     g.scale(t.f, 1);
-    g.drawImage(img, -o.ax * t.k, -o.gy * t.k, o.w * t.k, o.h * t.k);
+    if (!wp || RM) { g.drawImage(img, -o.ax * t.k, -o.gy * t.k, o.w * t.k, o.h * t.k); g.restore(); return; }
+    // v9 · uốn hình: cắt thành lát ngang, mỗi lát lệch theo độ cao (gốc ở chân) → người cong, thở, tóc khăn bay
+    const k = t.k, N = 14, sw = img.naturalWidth || img.width, sh = img.naturalHeight || img.height;
+    const top = -o.gy * k, Hd = o.h * k, Hc = 520 * k, fw = wp.fwd;
+    const disp = u => { const uu = Math.max(0, u); return fw * Hc * (wp.bend * Math.pow(uu, 1.6) + wp.flutter * Math.sin(clock * 9 + uu * 7) * Math.max(0, uu - .68) + wp.jit * Math.sin(clock * 55 + uu * 13)); };
+    for (let i = 0; i < N; i++) {
+      const s0 = i / N, s1 = (i + 1) / N, yT = top + s0 * Hd, yB = top + s1 * Hd;
+      const dT = disp(-yT / Hc), dB = disp(-yB / Hc), c = (dT - dB) / (yT - yB);
+      g.save(); g.transform(1, 0, c, 1, dT - c * yT, 0);
+      g.drawImage(img, 0, s0 * sh, sw, (s1 - s0) * sh + 1, -o.ax * k, yT, o.w * k, (yB - yT) + .7);
+      g.restore();
+    }
     g.restore();
   }
+  const FLUT = { hero: .014, shadow: .02, trainee: .006, hotel: .004, factory: .004, night: .005 };
+  /** độ uốn mục tiêu của người: theo dáng (nghiêng), quán tính khi lao/dừng, nhịp thở đung đưa */
+  function warpOf(a, o, t, dt) {
+    const p = a.pose || P.stand, isH = a === hero, ph = clock + (isH ? 0 : 1.7);
+    let tgt = (p.lean || 0) * .62 + Math.sin(ph * 1.7) * .02;
+    tgt += Math.max(-.16, Math.min(.16, a.vx * a.side / (W * 2.2)));
+    if (!isH && !a.act) {
+      if (look === 'trainee') tgt += Math.sin(clock * 6.5) * .02;            // bồn chồn
+      else if (look === 'hotel') tgt += Math.sin(clock * 1.1) * .03;         // khoanh tay, nghiêng nghiêng
+      else if (look === 'factory') tgt += Math.sin(clock * 2.2) * .025;      // thở nặng
+      else if (look === 'night') tgt += Math.sin(clock * 1.5) * .04;         // đung đưa đèn pin
+    }
+    if (a.state === 'down') tgt = 0;
+    // lò xo: đổ người theo quán tính rồi nảy lại
+    if (dt > 0) { a.bv += ((tgt - a.bx) * 150 - a.bv * 11) * dt; a.bx += a.bv * dt; }
+    const br = Math.sin(clock * 2.7 + (isH ? 0 : 1.3)) * (look === 'factory' && !isH ? .022 : .013);
+    t.sy *= 1 + br; t.sx *= 1 - br * .5;
+    const fwd = isH ? 1 : (t.f === -1 ? 1 : -1);
+    return { bend: a.bx, flutter: FLUT[isH ? 'hero' : look] || .005, jit: Math.min(1, a.flash) * .018, fwd };
+  }
+  let lastDt = 0;
   function drawSprActor(a, o) {
     const t = sprXf(a, o), air = Math.max(0, -a.y), y0 = GY + a.y;
     // bóng dưới chân
@@ -1724,13 +1795,15 @@ createBattle = function createArena(root) {
     const aura = a === hero ? (tier >= 2 ? 'rgba(64,255,214,1)' : null) : (rage ? 'rgba(255,60,40,1)' : look === 'shadow' ? 'rgba(185,90,255,1)' : null);
     if (aura) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .55 + Math.sin(clock * 5) * .15; blob(a.x, y0 - t.hh * .5, t.hh * .62, aura.replace(/[\d.]+\)$/, '.5)'), 1); g.restore(); }
     g.globalAlpha = a.alpha;
-    blitSpr(o, o.img, a.x, y0, t);
-    if (a.flash > 0) { g.globalAlpha = Math.min(1, a.flash) * .8 * a.alpha; blitSpr(o, tinted(o, a.flashCol), a.x, y0, t); }
+    const wp = warpOf(a, o, t, lastDt);
+    blitSpr(o, o.img, a.x, y0, t, wp);
+    if (a.flash > 0) { g.globalAlpha = Math.min(1, a.flash) * .8 * a.alpha; blitSpr(o, tinted(o, a.flashCol), a.x, y0, t, wp); }
     g.globalAlpha = 1;
   }
   function trackGhost(a, dt) {
     for (let i = a.ghosts.length - 1; i >= 0; i--) { a.ghosts[i].a -= dt * 2.4; if (a.ghosts[i].a <= 0) a.ghosts.splice(i, 1); }
     const o = sprOf(a), v = dt > 0 ? Math.abs(a.x - a.px) / dt : 0;
+    if (dt > 0) a.vx += ((a.x - a.px) / dt - a.vx) * Math.min(1, dt * 14);
     if (o && !RM && dt > 0 && (v > W * 1.1 || (a.act && Math.abs(a.y) > H * .1 && v > W * .4))) {
       a.gAcc += dt; if (a.gAcc > .034) { a.gAcc = 0; a.ghosts.push({ o, x: a.x, y: GY + a.y, t: sprXf(a, o), a: .3 }); if (a.ghosts.length > 4) a.ghosts.shift(); }
     }
@@ -1785,7 +1858,8 @@ createBattle = function createArena(root) {
     const frozen = now < freezeUntil, dt = frozen ? 0 : Math.max(0, Math.min(.05, (now - last) / 1000)); last = now;
     clock += dt;
     stepActor(hero, dt); stepActor(boss, dt);
-    trackGhost(hero, dt); trackGhost(boss, dt);
+    trackGhost(hero, dt); trackGhost(boss, dt); lastDt = dt;
+    pressTick(dt);
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
     let sx = 0, sy = 0;
     if (shakeT > 0) { shakeT -= dt; const a = shakeA * Math.max(0, shakeT) / .3; sx = rnd(-a, a); sy = rnd(-a, a); if (shakeT <= 0) shakeA = 0; }
@@ -1865,8 +1939,9 @@ createBattle = function createArena(root) {
       }
       tier = t;
     },
-    playHeroAttack(kind) { hush(); return kind === 'long_ha' ? longHa() : kind === 'chem_gio' ? chemGio() : phiTieu(); },
-    playBossAttack() { hush(); return bossAttack(); },
+    playHeroAttack(kind) { hush(); pressure(false); hero.act = null; return kind === 'long_ha' ? longHa() : kind === 'chem_gio' ? chemGio() : phiTieu(); },
+    playBossAttack() { hush(); pressure(false); boss.act = null; hero.act = null; return bossAttack(false); },
+    pressure,
     flashBoss() {},
     playLevelUp() {
       Snd.sfx('ding');
@@ -1901,6 +1976,7 @@ createBattle = function createArena(root) {
     },
     /** hạ boss: văng ra, nằm sõng soài, sao xoay trên đầu; tướng nhảy mừng */
     ko() {
+      pressure(false);
       const k0 = q('.ko'); darkTo = 0; zoomTo = 1; rage = false; root.classList.remove('rage');
       Snd.sfx('slam'); shake(.4, H * .04); whiteFlash(.7); hitStop(140);
       const x0 = boss.x, push = Math.max(-20 * S, Math.min(30 * S, W - 70 * S * (boss.spec.scale || 1) - x0));
@@ -1917,6 +1993,7 @@ createBattle = function createArena(root) {
     },
     /** tướng gục */
     down() {
+      pressure(false);
       Snd.sfx('slam'); shake(.35, H * .03); burst(HX(), HY(), 24, [C.red, C.white], .8);
       const x0 = hero.x, back = Math.max(0, Math.min(30 * S, x0 - 70 * S));
       const so = !!sprOf(hero);
@@ -1924,6 +2001,7 @@ createBattle = function createArena(root) {
       hero.state = 'down'; boss.state = 'gloat';
     },
     reset() {
+      pressure(false);
       hero.act = boss.act = null; hero.state = boss.state = 'idle'; hero.flash = boss.flash = 0;
       hero.x = home(hero); boss.x = home(boss); hero.y = boss.y = 0; hero.rot = boss.rot = 0;
       rage = false; root.classList.remove('rage', 'down-boss', 'down-hero');
@@ -1931,7 +2009,7 @@ createBattle = function createArena(root) {
       if (sayEl) sayEl.classList.remove('on');
     },
     dispose() { on = false; if (raf) cancelAnimationFrame(raf); },
-    get _state() { return { hero: { x: Math.round(hero.x), y: Math.round(hero.y), act: !!hero.act, st: hero.state }, boss: { x: Math.round(boss.x), act: !!boss.act, st: boss.state }, look, fx: fxs.length, parts: parts.length }; }
+    get _state() { return { hero: { x: Math.round(hero.x), y: Math.round(hero.y), act: !!hero.act, st: hero.state }, boss: { x: Math.round(boss.x), act: !!boss.act, st: boss.state }, look, fx: fxs.length, parts: parts.length, press: { on: pressOn, t: +pressT.toFixed(2), left: +pressLeft.toFixed(1) }, raf: !!raf, on }; }
   };
 };
 
@@ -2841,6 +2919,8 @@ function startStage(si) {
       if (battle.reset) battle.reset();
       battle.setStage(stage.key); syncVisual();
       if (battle.intro) battle.intro(`${stage.lv} · ${stage.name}`, stage.taunt);
+      // câu đầu đã hiện trước khi dọn sân → bật lại nhịp boss đánh nhử
+      if (battle.pressure && st && !locked && !st._ended) { const q0 = st.list[st.i]; battle.pressure(true, Math.max(3, qSeconds() - (Date.now() - qStart) / 1000), q0 && q0.type === 'listen'); }
     }
   });
   syncVisual();
@@ -2937,6 +3017,7 @@ function ask() {
   ti.style.transition = `transform ${QS}s linear`; ti.style.transform = 'scaleX(0)';
   qStart = Date.now(); clearInterval(timerId); lastTickSec = -1;
   const tt0 = $('timerTxt'); if (tt0) tt0.textContent = QS;
+  if (battle && battle.pressure) battle.pressure(true, QS, q.type === 'listen');
   timerId = setInterval(() => {
     const left = QS - (Date.now() - qStart) / 1000;
     const sec = Math.max(0, Math.ceil(left));
@@ -3056,6 +3137,7 @@ function pickSkill(willKill, fast) {
 
 function resolve(ok, btn) {
   if (!st || st._ended || locked) return;
+  if (battle && battle.pressure) battle.pressure(false);
   locked = true; clearInterval(timerId); freezeTimer();
   st.answered = (st.answered || 0) + 1;
   const q = st.list[st.i];
