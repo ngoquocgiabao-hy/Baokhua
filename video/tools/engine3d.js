@@ -63,9 +63,10 @@ const sideMat = { sun: new THREE.MeshStandardMaterial({ color: C.sun, roughness:
                   denim: new THREE.MeshStandardMaterial({ color: C.denim, roughness: .35, metalness: .08 }),
                   hot: new THREE.MeshStandardMaterial({ color: C.hot, roughness: .35, metalness: .05 }),
                   minion: new THREE.MeshStandardMaterial({ color: C.minion, roughness: .3, metalness: .06 }),
-                  black: new THREE.MeshStandardMaterial({ color: C.black, roughness: .38, metalness: .25 }) };
+                  black: new THREE.MeshStandardMaterial({ color: C.black, roughness: .38, metalness: .25 }),
+                  paper: new THREE.MeshStandardMaterial({ color: '#EDE7DA', roughness: .85, metalness: 0 }) };
 const backMat = new THREE.MeshStandardMaterial({ color: C.deep, roughness: .4 });
-const backMats = { black: new THREE.MeshStandardMaterial({ color: C.black, roughness: .38, metalness: .25 }), minion: sideMat.minion };
+const backMats = { black: new THREE.MeshStandardMaterial({ color: C.black, roughness: .38, metalness: .25 }), minion: sideMat.minion, paper: sideMat.paper };
 const shTex = shadowTexture();
 const groups = [];
 
@@ -94,7 +95,22 @@ function panelTexture(P, w, h) {
 async function imageTexture(G, w, h) {
   const img = new Image(); img.src = G.img; await img.decode();
   const W = 1024, H = Math.round(1024 * h / w), cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-  const g = cv.getContext('2d'), k = Math.max(W / img.width, H / img.height);
+  const g = cv.getContext('2d');
+  if (G.frame === 'polaroid') {   // ảnh lấy liền: viền trắng ngà, chú thích viết dưới
+    const m = 46, mb = G.caption ? 200 : 46, iw = W - 2 * m, ih = H - m - mb;
+    g.fillStyle = '#F6F1E7'; g.fillRect(0, 0, W, H);
+    const k2 = Math.max(iw / img.width, ih / img.height), fx = G.fx ?? .5, fy = G.fy ?? .5;
+    g.save(); g.beginPath(); g.rect(m, m, iw, ih); g.clip();
+    g.drawImage(img, m + (iw - img.width * k2) * fx, m + (ih - img.height * k2) * fy, img.width * k2, img.height * k2);
+    g.restore();
+    if (G.caption) {
+      let size = 64; g.font = `800 ${size}px "Inter Display"`;
+      while (g.measureText(G.caption).width > W - 90 && size > 30) { size -= 3; g.font = `800 ${size}px "Inter Display"`; }
+      g.fillStyle = '#1b1b1b'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(G.caption, W / 2, H - mb / 2);
+    }
+    const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 8; return tx;
+  }
+  const k = Math.max(W / img.width, H / img.height);
   g.drawImage(img, (W - img.width * k) / 2, (H - img.height * k) / 2 * (G.focusTop ? .2 : 1), img.width * k, img.height * k);
   if (G.label) {
     g.fillStyle = C.black; g.fillRect(0, H - 150, W, 150);
@@ -221,8 +237,8 @@ function renderAt(t) {
 }
 
 const ready = (async () => {
-  await Promise.all([document.fonts.load('400 120px "WenQuanYi Zen Hei"', S.glyphs || '宝'), document.fonts.load('900 120px "Inter Display"', '0123456789★')]);
-  await document.fonts.load('900 80px "JetBrains Mono"', 'A0'); for (const G of S.groups) await buildGroup(G); (S.bursts || []).forEach(buildBurst); (S.rings || []).forEach(buildRing);
+  await Promise.allSettled([document.fonts.load('400 120px "WenQuanYi Zen Hei"', S.glyphs || '宝'), document.fonts.load('900 120px "Inter Display"', '0123456789★')]);   // phông lỗi thì dùng phông dự phòng, không dừng
+  await document.fonts.load('900 80px "JetBrains Mono"', 'A0').catch(() => {}); for (const G of S.groups) await buildGroup(G); (S.bursts || []).forEach(buildBurst); (S.rings || []).forEach(buildRing);
   renderAt(0);
 })();
 window.__hf = window.__hf || {}; window.__hf.buildReady = window.__hf.buildReady || {};

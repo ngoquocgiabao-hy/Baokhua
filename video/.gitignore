@@ -1,3 +1,8 @@
 out/
 node_modules/
 assets/*.mp4
+story/photos/
+story/build_story*.mjs
+story/CAPTIONS_*.md
+story/thumbs_story.cjs
+__pycache__/

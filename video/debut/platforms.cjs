@@ -5,9 +5,11 @@ const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 
 const V = path.resolve(__dirname, '..'), ROOT = path.resolve(V, '..');
-const EVER = process.argv.includes('--evergreen');
+const STORY2 = process.argv.includes('--story2');       // bản 2: mở bằng khoảnh khắc nhận giải
+const STORY = STORY2 || process.argv.includes('--story');           // video "Chuyện thật": bảng hai bên dùng bản không ghi ngày
+const EVER = STORY || process.argv.includes('--evergreen');
 const OUT = path.join(V, 'out');
-const TAG = EVER ? 'DEBUT_EVERGREEN' : 'DEBUT';
+const TAG = STORY2 ? 'CHUYEN_THAT_V2' : STORY ? 'CHUYEN_THAT' : EVER ? 'DEBUT_EVERGREEN' : 'DEBUT';
 const MASTER = path.join(OUT, `BAOKHUA_${TAG}_9x16.mp4`);
 const Y = '#FCE029', K = '#0B0B0C', W = '#FFFBEA';
 const URL_GAME = 'ngoquocgiabao-hy.github.io/Baokhua';
@@ -85,6 +87,11 @@ function thumb(img) {
   </body></html>`;
 }
 
+// ảnh bìa của video cá nhân nằm ở story/thumbs_story.cjs (ngoài git: repo công khai, CLAUDE.md luật 3)
+const STORY_THUMBS = fs.existsSync(path.join(V, 'story/thumbs_story.cjs')) ? require(path.join(V, 'story/thumbs_story.cjs'))({ BASE, Y, K, W }) : {};
+const thumbStory = (img) => STORY_THUMBS.thumbStory(img);
+const thumbStory2 = (img) => STORY_THUMBS.thumbStory2(img);
+
 (async () => {
   const b = await chromium.launch();
   const shot = async (html, w, h, file) => {
@@ -97,6 +104,8 @@ function thumb(img) {
   await shot(wide(), 1920, 1080, pw);
   await shot(feed(), 1080, 1350, pf);
   if (!EVER) await shot(thumb(path.join(ROOT, 'v4/ninja_tier3_long_ha.jpg')), 1280, 720, path.join(OUT, 'BAOKHUA_DEBUT_YOUTUBE_THUMB.jpg'));
+  if (STORY && !STORY2) await shot(thumbStory(path.join(V, 'story/photos/p03_lanh_su_nam_ninh.jpg')), 1280, 720, path.join(OUT, 'BAOKHUA_CHUYEN_THAT_YOUTUBE_THUMB.jpg'));
+  if (STORY2) await shot(thumbStory2(path.join(V, 'story/photos/n09_cup_chung_nhan.jpg')), 1280, 720, path.join(OUT, 'BAOKHUA_CHUYEN_THAT_V2_YOUTUBE_THUMB.jpg'));
   await b.close();
   if (process.argv.includes('--panels')) return;
   if (!fs.existsSync(MASTER)) { console.log('Chưa có', MASTER, '(mới làm bảng)'); return; }
@@ -106,6 +115,6 @@ function thumb(img) {
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-loop', '1', '-i', pf, '-i', MASTER, '-filter_complex',
     '[1:v]scale=760:1350:flags=lanczos[v];[0:v][v]overlay=160:0:shortest=1,format=yuv420p[o]', '-map', '[o]', '-map', '1:a', ...enc, path.join(OUT, `BAOKHUA_${TAG}_4x5.mp4`)]);
   // ảnh bìa dọc: khung logo cuối
-  execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-ss', '45.2', '-i', MASTER, '-frames:v', '1', '-q:v', '2', path.join(OUT, `BAOKHUA_${TAG}_COVER_9x16.jpg`)]);
+  execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-ss', STORY2 ? '1.9' : STORY ? '30.6' : '45.2', '-i', MASTER, '-frames:v', '1', '-q:v', '2', path.join(OUT, `BAOKHUA_${TAG}_COVER_9x16.jpg`)]);
   console.log('Đã làm 16:9, 4:5, ảnh bìa cho', TAG);
 })();

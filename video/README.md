@@ -56,3 +56,8 @@ cd out/debut && npx hyperframes render -o ../BAOKHUA_DEBUT_9x16_master.mp4    # 
 node debut/platforms.cjs [--evergreen]     # 16:9, 4:5, ảnh bìa (cần bản 9:16 đã nén ở out/)
 ```
 Chú thích từng nền tảng: `debut/CAPTIONS_DEBUT.md`. Mọi dữ kiện về Bảo lấy từ trang chủ đã công khai.
+
+## Video cá nhân (`story/`)
+Công cụ chung nằm trong git: `story/music_story.py`, `story/music_story2.py` (nhạc piano 84 BPM viết bằng code), ảnh polaroid trong `tools/engine3d.js`, tham số `--story`/`--story2` của `debut/platforms.cjs`.
+Kịch bản, chú thích, ảnh bìa và ảnh cá nhân (`story/build_story*.mjs`, `story/CAPTIONS_*.md`, `story/thumbs_story.cjs`, `story/photos/`) để ngoài git, vì repo công khai (CLAUDE.md luật 3). Bản sao kịch bản và chú thích cất ở Drive `BAO KHUA - SO CAI/07_TU_LIEU_VIDEO`.
+Không bao giờ đưa vào video: ảnh gốc chưa che thông tin, ảnh trẻ em, ảnh có nội dung chính trị, tài liệu nội bộ của công ty.
