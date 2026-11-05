@@ -95,6 +95,26 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
   - Bản đồ: `#cityCv` → `.city-gl` → lớp trên.
   - Muốn vẽ đè lên nhân vật thì đẩy hàm vẽ vào `topQ` (sân đấu) hoặc `onTop(fn)` (bản đồ).
 
+## 3b. Đánh thật (v12, `FIGHT_MODE = 'act'`)
+- **Phía game** (khối chính, sau `startStage`):
+  - `actBegin` bật trận sau màn mở.
+  - `actPress('a'|'b'|'d')` là các nút Phi tiêu / Chém / Né, có hồi chiêu `ACT_HERO.cd`.
+  - `actDamage` trừ máu boss:
+    - giáp vàng ở 50% máu chỉ còn 35% sát thương;
+    - đòn thường không hạ boss dưới 8% máu.
+  - `actHurt` trừ máu tướng khi boss đánh trúng.
+  - `actUlt` mở câu hỏi tuyệt chiêu (dùng lại `ask()`).
+  - `actResolve` xử lý trả lời: đúng thì tung chiêu `heroAct('ult', i)`; sai thì `counter()` + `showExplain`.
+  - `actResume` quay lại trận.
+  - Phím tắt: J/1 phi tiêu · K/2 chém · L/Space/3 né · U/4/Enter tuyệt chiêu.
+- **Phía sân đấu:**
+  - `fight(on, diff, onHit, onEvent)` bật trận; `fightPause`, `heroAct(kind, n)`, `counter()`, `setShield(v)`.
+  - `actTick` là bộ não boss: đếm `every` → báo trước `tele` (nháy đỏ, "!") → `bossAttack(false, token)`.
+  - Lúc boss ra đòn có giáp cứng (`atkUntil`).
+  - Tướng miễn đòn khi `hero.inv > 0` (né, lướt chém). Né sát lúc đòn chạm là "né đẹp" (`dodged`).
+  - `_state.act.hitIn` là thời gian tới lúc đòn chạm (nút Né nhấp nháy, bài kiểm thử dùng).
+- **Nền chuyển động:** `bgVideo(look)` phát `v4/motion/<look>.mp4|.webm` vào lớp nền mỗi khung, phủ `bgOv` (tông màu + sàn tối). Lỗi thì dùng ảnh `paintBg`.
+
 ## 4. Sân đấu (`createArena`)
 - **Diễn viên:**
   - Mỗi diễn viên có `{x, y, rot, alpha, pose, act, state, flash, sp ('idle'|'atk'|'ko'), ghosts, rs}`.

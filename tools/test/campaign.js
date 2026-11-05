@@ -23,7 +23,13 @@ const SP = process.argv[2] || require('path').join(__dirname, 'out'), W = +proce
       if (document.getElementById('sGame').classList.contains('on')) {
         const st = B.st; if (!st || st._ended) return 'ended';
         if (document.getElementById('exNext')) { document.getElementById('exNext').click(); return 'next'; }
-        B.forceCorrect(); return 'battle';
+        if (!st.act) { B.forceCorrect(); return 'battle'; }
+        // v12 đánh thật: trả lời câu tuyệt chiêu, né đúng lúc, nạp đầy thì tung tuyệt chiêu, còn lại bấm đánh
+        if (document.getElementById('sGame').classList.contains('asking')) { B.forceCorrect(); return 'battle'; }
+        const A = B.battle._state.act, pd = id => document.getElementById(id).dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        if (A && A.hitIn > 0 && A.hitIn < .4) { pd('abD'); return 'fight'; }
+        if (st.energy >= 100) { document.getElementById('abU').click(); return 'fight'; }
+        pd(Math.random() < .55 ? 'abA' : 'abB'); return 'fight';
       }
       if (document.querySelector('#talkOverlay.on')) {
         const bs = [...document.querySelectorAll('#talkOpts button')].filter(x => x.offsetParent !== null);
@@ -64,7 +70,7 @@ const SP = process.argv[2] || require('path').join(__dirname, 'out'), W = +proce
     }
     if (s === 'near') { await p.evaluate(() => document.getElementById('btnEnterStage').click()); await p.waitForTimeout(600); }
     if (s.startsWith('other')) { log.push(s); await p.waitForTimeout(500); }
-    await p.waitForTimeout(s === 'battle' ? 1400 : s === 'walk' ? 120 : s.startsWith('duel') || s.startsWith('talk') ? 450 : 700);
+    await p.waitForTimeout(s === 'fight' ? 150 : s === 'battle' ? 1400 : s === 'walk' ? 120 : s.startsWith('duel') || s.startsWith('talk') ? 450 : 700);
   }
   await p.screenshot({ path: O + 'end.png' });
   const fin = await p.evaluate(() => ({ prog: { u: window.__bao.prog.unlock, met: Object.keys(window.__bao.prog.met), gk: window.__bao.prog.gk, xp: window.__bao.prog.xp }, screens: [...document.querySelectorAll('.on')].map(e => e.id).filter(Boolean) }));

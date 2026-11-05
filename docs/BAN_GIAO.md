@@ -20,7 +20,7 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
 | Nơi | Nội dung |
 |---|---|
 | `main` (trang thật) | Bản đăng 01/11: tên miền, trang chủ có game Khách sạn, Khách sạn v5. **Game Đánh Boss trên trang thật vẫn là bản cũ "Đánh Boss v4 (3D · 2 chặng)".** |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v11.1 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v12 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
 | Bản xem thử (riêng tư) | https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
@@ -34,6 +34,11 @@ Lịch sử chính của game Đánh Boss trên nhánh:
   - chiêu thức điện ảnh, mỗi boss một tuyệt chiêu;
   - bản đồ vẽ lại 3 lớp.
 - **v11:** khung xương WebGL, tay chân cử động thật.
+- **v12:**
+  - đánh boss thật: tự bấm Phi tiêu / Chém / Né, boss báo trước rồi tấn công thật;
+  - tuyệt chiêu phải trả lời đúng câu hỏi; độ khó tăng theo trạm;
+  - dáng đi nhấc gối hợp tranh nhìn chính diện (sửa lỗi chân đi ngược);
+  - nền sân đấu là video lặp dựng bằng Remotion.
 - **v11.1:**
   - sửa dáng đi;
   - thêm chào hỏi, khiêu chiến, phản ứng của quái;
@@ -51,12 +56,14 @@ CNAME             baokhua.com
 v4/               ảnh, âm thanh dùng chung
   sprites/        tranh nhân vật đã tách nền: hero1..3, <boss>-idle|atk|ko
   rig/            khung xương của tranh (lưới + trọng số), sinh bằng tools/art/rig.py
+  motion/         nền sân đấu chuyển động (video lặp mp4 + webm)
   vs/ bg/ art/    tranh màn VS, phông sân đấu, tranh màn bắt đầu
   audio/          tiếng đánh, nhạc nền (ogg)
 tools/
   art/  cut.py build.py         tách nền ảnh boss gốc → sprites + bảng SPRITE
         joints.js rig.py        ước lượng khớp (MediaPipe) → dựng khung xương v4/rig
         video2sheet.py veo/     video Veo nền xanh → dải khung hình; khung đầu + câu lệnh Veo
+  motion/ src/ render.sh        nền sân đấu chuyển động (Remotion) → v4/motion
   voice/ collect.js gen_gemini.py  gom câu tiếng Trung → tạo giọng Gemini (cần GEMINI_API_KEY)
   test/  *.js run-all.sh        kiểm thử tự động bằng Playwright (xem mục 5)
 docs/   BAN_GIAO.md (tệp này), KY_THUAT_GAME.md
@@ -98,7 +105,8 @@ bash tools/test/run-all.sh                         # bộ kiểm thử chính, i
 |---|---|
 | `tools/test/campaign.js` | Máy tự chơi trọn 5 trạm bằng phím. Đạt khi qua 5 trạm, không lỗi console, không gọi ngoài. `GL=1` ép bật khung xương. |
 | `tools/test/city.js` | Gặp người, đấu quái, nhảy qua quái nhỏ, Đại quái (sai rồi đúng), tới cổng, vào trận. |
-| `tools/test/feint.js` | Boss đánh nhử lúc chờ trả lời không được trừ máu. |
+| `tools/test/fight.js` | Đánh thật: máy tự đánh từng trạm (kiểu `gioi` né đúng lúc, kiểu `kem` không né) → thắng/thua, máu mất, số câu hỏi. |
+| `tools/test/feint.js` | (Kiểu `quiz`) Boss đánh nhử lúc chờ trả lời không được trừ máu. |
 | `tools/test/perf.js` | Khung hình/giây bản đồ và trận, gom lỗi/cảnh báo console. |
 | `tools/test/gait.js` | Chân chạm đất phải lùi về sau khi chạy tới (chống lỗi "đi lùi ngược"). |
 | `tools/test/slowmo.js` `maprun.js` `districts.js` `interact.js` | Chụp ảnh / quay chậm để nhìn bằng mắt. |
@@ -129,6 +137,7 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 | Thêm / thay tranh boss | Ảnh gốc ở Drive `04_GAME/ANH_BOSS_04-11` → `tools/art/cut.py` (tách nền) → `tools/art/build.py` → dán bảng `SPRITE` vào `game.html` (trong `createArena`). |
 | Khung xương cho tranh mới | `node tools/art/joints.js <tên>` (cài MediaPipe theo đầu tệp) → `python3 tools/art/rig.py <tên>` → `v4/rig/<tên>.json`. Kiểm tra bằng `tools/test/slowmo.js`. Tranh nên đứng thẳng, tay chân tách khỏi thân, nhìn 3/4. |
 | Giọng đọc Gemini | Thêm `GEMINI_API_KEY` vào cài đặt môi trường (không dán vào chat) → `node tools/voice/collect.js` → `python3 tools/voice/gen_gemini.py` → đổi `VOICE_FILES = true` trong game.html. |
+| Nền sân đấu chuyển động | Sửa `tools/motion/src/ArenaBg.tsx` → `cd tools/motion && npm i && bash render.sh` (máy chặn tải trình duyệt thì đặt `BROWSER=` tới Chromium có sẵn). Giấy phép Remotion: nhóm tối đa 3 người dùng không cần mua giấy phép công ty. |
 | Hoạt hình từng khung (Veo) | Khung đầu nền xanh và câu lệnh ở `tools/art/veo/PROMPTS.md`. Bảo làm video trong Google Flow → bỏ vào Drive `04_GAME/VEO_KHUNG_DAU_05-11` → `tools/art/video2sheet.py` → nối vào sân đấu (chưa làm phần nối). |
 
 ## 8. Việc đang chờ / đề xuất làm tiếp (theo thứ tự ưu tiên)
@@ -155,7 +164,8 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
   - động tác quá lớn (vung tay quá đầu) vẫn hơi kéo giãn;
   - không quay người được.
 - **Tranh nhìn 3/4 nên đưa tay chân trước – sau phải giả chiều sâu** (xoay ít + co ngắn, `PR` trong module `Rig`). Nếu thấy gập ngang thì giảm hệ số xoay `PR.*[0]`.
-- **Lỗi "đi lùi ngược" đã sửa ở v11.1.** Boss lùi về bằng nhảy lùi (`backstep`). Khi viết động tác mới:
+- **Cân bằng đánh thật chưa thử với người chơi thật:** chỉnh `ACT_DIFF` (máu boss, nhịp đòn, giây báo trước, sát thương) và `ACT_HERO` sau khi cho vài học viên chơi thử.
+- **Lỗi "đi lùi ngược" / "chân ngược" đã sửa ở v11.1 và v12.** Boss lùi về bằng nhảy lùi (`backstep`). Khi viết động tác mới:
   - nhân vật di chuyển ngược hướng mặt thì dùng nhảy lùi hoặc lộn;
   - không dùng dáng đi tới.
 - **Giọng đọc phụ thuộc giọng tiếng Trung có trên máy.** Máy không có giọng thì game hiện pinyin và chỉ cách cài.

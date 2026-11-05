@@ -8,6 +8,7 @@ const SP = process.argv[2] || require('path').join(__dirname, 'out'), si = +proc
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }); const errs = [];
   p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
+  await p.addInitScript(() => { window.__fightMode = 'quiz'; });   // đánh nhử chỉ có ở kiểu cũ
   await p.goto(BASE + '/game.html'); await p.waitForTimeout(400);
   await p.evaluate(si => { const B = window.__bao; B.prog.unlock = 4; B.prog.met._intro = true; B.startStage(si); }, si);
   // chờ tới lúc boss bắt đầu lao (đánh nhử)
