@@ -1,0 +1,890 @@
+[
+ {
+  "text": "你好！我是新来的。",
+  "role": "boss",
+  "py": "Nǐ hǎo! Wǒ shì xīn lái de.",
+  "vi": "Xin chào! Em là người mới."
+ },
+ {
+  "text": "你好",
+  "role": "learn",
+  "py": "nǐ hǎo",
+  "vi": "Xin chào"
+ },
+ {
+  "text": "谢谢",
+  "role": "learn",
+  "py": "xièxie",
+  "vi": "Cảm ơn"
+ },
+ {
+  "text": "对不起",
+  "role": "learn",
+  "py": "duìbuqǐ",
+  "vi": "Xin lỗi"
+ },
+ {
+  "text": "再见",
+  "role": "learn",
+  "py": "zàijiàn",
+  "vi": "Tạm biệt"
+ },
+ {
+  "text": "你好！请出示护照。",
+  "role": "boss",
+  "py": "Nǐ hǎo! Qǐng chūshì hùzhào.",
+  "vi": "Xin chào! Xin xuất trình hộ chiếu."
+ },
+ {
+  "text": "你叫什么名字？",
+  "role": "learn",
+  "py": "Nǐ jiào shénme míngzi?",
+  "vi": "Bạn tên là gì?"
+ },
+ {
+  "text": "这个多少钱？",
+  "role": "learn",
+  "py": "Zhège duōshao qián?",
+  "vi": "Cái này bao nhiêu tiền?"
+ },
+ {
+  "text": "我想办理入住。",
+  "role": "learn",
+  "py": "Wǒ xiǎng bànlǐ rùzhù.",
+  "vi": "Tôi muốn làm thủ tục nhận phòng."
+ },
+ {
+  "text": "你迟到了！",
+  "role": "boss",
+  "py": "Nǐ chídào le!",
+  "vi": "Cậu đến muộn rồi!"
+ },
+ {
+  "text": "我已经下班了。",
+  "role": "learn",
+  "py": "Wǒ yǐjīng xiàbān le.",
+  "vi": "Tôi đã tan ca rồi."
+ },
+ {
+  "text": "因为下雨，所以我不去了。",
+  "role": "learn",
+  "py": "Yīnwèi xià yǔ, suǒyǐ wǒ bú qù le.",
+  "vi": "Vì trời mưa nên tôi không đi nữa."
+ },
+ {
+  "text": "他比我高。",
+  "role": "learn",
+  "py": "Tā bǐ wǒ gāo.",
+  "vi": "Anh ấy cao hơn tôi."
+ },
+ {
+  "text": "这么晚了，你还在这儿？",
+  "role": "boss",
+  "py": "Zhème wǎn le, nǐ hái zài zhèr?",
+  "vi": "Muộn thế này rồi mà cậu còn ở đây?"
+ },
+ {
+  "text": "请把护照给我。",
+  "role": "learn",
+  "py": "Qǐng bǎ hùzhào gěi wǒ.",
+  "vi": "Xin đưa hộ chiếu cho tôi."
+ },
+ {
+  "text": "我的手机被偷了。",
+  "role": "learn",
+  "py": "Wǒ de shǒujī bèi tōu le.",
+  "vi": "Điện thoại của tôi bị trộm rồi."
+ },
+ {
+  "text": "如果您不满意，我就给您换房间。",
+  "role": "learn",
+  "py": "Rúguǒ nín bù mǎnyì, wǒ jiù gěi nín huàn fángjiān.",
+  "vi": "Nếu quý khách không hài lòng, tôi sẽ đổi phòng cho quý khách."
+ },
+ {
+  "text": "想上山顶？先打败我！",
+  "role": "boss",
+  "py": "Xiǎng shàng shāndǐng? Xiān dǎbài wǒ!",
+  "vi": "Muốn lên đỉnh núi? Hạ ta trước đã!"
+ },
+ {
+  "text": "不仅干净，而且服务很好。",
+  "role": "learn",
+  "py": "Bùjǐn gānjìng, érqiě fúwù hěn hǎo.",
+  "vi": "Không những sạch mà dịch vụ còn rất tốt."
+ },
+ {
+  "text": "即使加班，我们也会按时交货。",
+  "role": "learn",
+  "py": "Jíshǐ jiābān, wǒmen yě huì ànshí jiāohuò.",
+  "vi": "Dù phải tăng ca, chúng tôi cũng giao hàng đúng hạn."
+ },
+ {
+  "text": "非常抱歉给您带来不便。",
+  "role": "learn",
+  "py": "Fēicháng bàoqiàn gěi nín dàilái búbiàn.",
+  "vi": "Rất xin lỗi đã gây bất tiện cho quý khách."
+ },
+ {
+  "text": "王爷爷",
+  "role": "npc",
+  "py": "Wáng yéye",
+  "vi": "ông Vương"
+ },
+ {
+  "text": "你好！",
+  "role": "npc",
+  "py": "Nǐ hǎo!",
+  "vi": "Xin chào!"
+ },
+ {
+  "text": "再见！",
+  "role": "npc",
+  "py": "Zàijiàn!",
+  "vi": "Tạm biệt!"
+ },
+ {
+  "text": "对不起！",
+  "role": "npc",
+  "py": "Duìbuqǐ!",
+  "vi": "Xin lỗi!"
+ },
+ {
+  "text": "你真棒！",
+  "role": "npc",
+  "py": "Nǐ zhēn bàng!",
+  "vi": "Cháu giỏi quá!"
+ },
+ {
+  "text": "真棒",
+  "role": "npc",
+  "py": "zhēn bàng",
+  "vi": "giỏi quá"
+ },
+ {
+  "text": "李阿姨",
+  "role": "npc",
+  "py": "Lǐ āyí",
+  "vi": "cô Lý"
+ },
+ {
+  "text": "请问，酒店在哪儿？",
+  "role": "npc",
+  "py": "Qǐngwèn, jiǔdiàn zài nǎr?",
+  "vi": "Xin hỏi, khách sạn ở đâu?"
+ },
+ {
+  "text": "在那儿。",
+  "role": "npc",
+  "py": "Zài nàr.",
+  "vi": "Ở đằng kia."
+ },
+ {
+  "text": "我不知道。",
+  "role": "npc",
+  "py": "Wǒ bù zhīdào.",
+  "vi": "Tôi không biết."
+ },
+ {
+  "text": "谢谢。",
+  "role": "npc",
+  "py": "Xièxie.",
+  "vi": "Cảm ơn."
+ },
+ {
+  "text": "谢谢你！",
+  "role": "npc",
+  "py": "Xièxie nǐ!",
+  "vi": "Cảm ơn cháu!"
+ },
+ {
+  "text": "酒店",
+  "role": "npc",
+  "py": "jiǔdiàn",
+  "vi": "khách sạn"
+ },
+ {
+  "text": "在哪儿",
+  "role": "npc",
+  "py": "zài nǎr",
+  "vi": "ở đâu"
+ },
+ {
+  "text": "在那儿",
+  "role": "npc",
+  "py": "zài nàr",
+  "vi": "ở đằng kia"
+ },
+ {
+  "text": "陈师傅",
+  "role": "npc",
+  "py": "Chén shīfu",
+  "vi": "bác thợ cả Trần"
+ },
+ {
+  "text": "等一下！请戴安全帽。",
+  "role": "npc",
+  "py": "Děng yíxià! Qǐng dài ānquánmào.",
+  "vi": "Đợi chút! Xin đội mũ bảo hộ."
+ },
+ {
+  "text": "好的，我马上戴。",
+  "role": "npc",
+  "py": "Hǎo de, wǒ mǎshàng dài.",
+  "vi": "Vâng, cháu đội ngay."
+ },
+ {
+  "text": "我不要。",
+  "role": "npc",
+  "py": "Wǒ bú yào.",
+  "vi": "Cháu không cần."
+ },
+ {
+  "text": "很好，安全第一！",
+  "role": "npc",
+  "py": "Hěn hǎo, ānquán dì yī!",
+  "vi": "Tốt lắm, an toàn là trên hết!"
+ },
+ {
+  "text": "安全帽",
+  "role": "npc",
+  "py": "ānquánmào",
+  "vi": "mũ bảo hộ"
+ },
+ {
+  "text": "马上",
+  "role": "npc",
+  "py": "mǎshàng",
+  "vi": "ngay lập tức"
+ },
+ {
+  "text": "安全第一",
+  "role": "npc",
+  "py": "ānquán dì yī",
+  "vi": "an toàn là trên hết"
+ },
+ {
+  "text": "小美",
+  "role": "npc",
+  "py": "Xiǎo Měi",
+  "vi": "Tiểu Mỹ"
+ },
+ {
+  "text": "我太累了，机器又坏了。",
+  "role": "npc",
+  "py": "Wǒ tài lèi le, jīqì yòu huài le.",
+  "vi": "Mình mệt quá, máy lại hỏng rồi."
+ },
+ {
+  "text": "别担心，我帮你把机器修好。",
+  "role": "npc",
+  "py": "Bié dānxīn, wǒ bāng nǐ bǎ jīqì xiūhǎo.",
+  "vi": "Đừng lo, mình giúp bạn sửa máy."
+ },
+ {
+  "text": "机器被你弄坏了。",
+  "role": "npc",
+  "py": "Jīqì bèi nǐ nònghuài le.",
+  "vi": "Máy bị bạn làm hỏng rồi."
+ },
+ {
+  "text": "我要下班了。",
+  "role": "npc",
+  "py": "Wǒ yào xiàbān le.",
+  "vi": "Mình sắp tan ca rồi."
+ },
+ {
+  "text": "虽然很累，但是有你真好！",
+  "role": "npc",
+  "py": "Suīrán hěn lèi, dànshì yǒu nǐ zhēn hǎo!",
+  "vi": "Tuy mệt nhưng có bạn thật tốt!"
+ },
+ {
+  "text": "太累了",
+  "role": "npc",
+  "py": "tài lèi le",
+  "vi": "mệt quá"
+ },
+ {
+  "text": "别担心",
+  "role": "npc",
+  "py": "bié dānxīn",
+  "vi": "đừng lo"
+ },
+ {
+  "text": "修好",
+  "role": "npc",
+  "py": "xiūhǎo",
+  "vi": "sửa xong"
+ },
+ {
+  "text": "张师父",
+  "role": "npc",
+  "py": "Zhāng shīfu",
+  "vi": "sư phụ Trương"
+ },
+ {
+  "text": "年轻人，学中文难不难？",
+  "role": "npc",
+  "py": "Niánqīng rén, xué Zhōngwén nán bu nán?",
+  "vi": "Chàng trai, học tiếng Trung có khó không?"
+ },
+ {
+  "text": "不仅有意思，而且很有用！",
+  "role": "npc",
+  "py": "Bùjǐn yǒu yìsi, érqiě hěn yǒuyòng!",
+  "vi": "Không những thú vị mà còn rất có ích!"
+ },
+ {
+  "text": "太难了，我不学了。",
+  "role": "npc",
+  "py": "Tài nán le, wǒ bù xué le.",
+  "vi": "Khó quá, cháu bỏ học."
+ },
+ {
+  "text": "我没去过中国。",
+  "role": "npc",
+  "py": "Wǒ méi qùguo Zhōngguó.",
+  "vi": "Cháu chưa từng đến Trung Quốc."
+ },
+ {
+  "text": "好！即使遇到困难，也不要放弃。",
+  "role": "npc",
+  "py": "Hǎo! Jíshǐ yùdào kùnnan, yě búyào fàngqì.",
+  "vi": "Tốt! Dù gặp khó khăn cũng đừng bỏ cuộc."
+ },
+ {
+  "text": "不仅而且",
+  "role": "npc",
+  "py": "bùjǐn… érqiě…",
+  "vi": "không những… mà còn…"
+ },
+ {
+  "text": "有用",
+  "role": "npc",
+  "py": "yǒuyòng",
+  "vi": "có ích"
+ },
+ {
+  "text": "放弃",
+  "role": "npc",
+  "py": "fàngqì",
+  "vi": "bỏ cuộc"
+ },
+ {
+  "text": "加油！",
+  "role": "npc",
+  "py": "Jiāyóu!",
+  "vi": "Cố lên!"
+ },
+ {
+  "text": "看招！",
+  "role": "hero",
+  "py": "Kàn zhāo!",
+  "vi": "Đỡ chiêu!"
+ },
+ {
+  "text": "请问您几位？",
+  "role": "question",
+  "py": "Qǐngwèn nín jǐ wèi?",
+  "vi": "Xin hỏi quý khách có mấy vị?"
+ },
+ {
+  "text": "退房",
+  "role": "question",
+  "py": "tuìfáng",
+  "vi": "Trả phòng / check-out"
+ },
+ {
+  "text": "请出示您的护照。",
+  "role": "question",
+  "py": "Qǐng chūshì nín de hùzhào.",
+  "vi": "Xin xuất trình hộ chiếu của anh/chị."
+ },
+ {
+  "text": "早餐几点开始？",
+  "role": "question",
+  "py": "Zǎocān jǐ diǎn kāishǐ?",
+  "vi": "Bữa sáng bắt đầu lúc mấy giờ?"
+ },
+ {
+  "text": "您的房间在八楼。",
+  "role": "question",
+  "py": "Nín de fángjiān zài bā lóu.",
+  "vi": "Phòng của anh/chị ở tầng tám."
+ },
+ {
+  "text": "退房时间是中午十二点。",
+  "role": "question",
+  "py": "Tuìfáng shíjiān shì zhōngwǔ shí'èr diǎn.",
+  "vi": "Giờ trả phòng là 12 giờ trưa."
+ },
+ {
+  "text": "电梯在那边。",
+  "role": "question",
+  "py": "Diàntī zài nàbiān.",
+  "vi": "Thang máy ở bên kia."
+ },
+ {
+  "text": "WiFi密码是多少？",
+  "role": "question",
+  "py": "WiFi mìmǎ shì duōshǎo?",
+  "vi": "Mật khẩu WiFi là bao nhiêu?"
+ },
+ {
+  "text": "洗手间在哪里？",
+  "role": "question",
+  "py": "Xǐshǒujiān zài nǎlǐ?",
+  "vi": "Nhà vệ sinh ở đâu?"
+ },
+ {
+  "text": "我每天坐公交车去上班。",
+  "role": "question",
+  "py": "Wǒ měitiān zuò gōngjiāochē qù shàngbān.",
+  "vi": "Tôi mỗi ngày đi xe buýt đi làm."
+ },
+ {
+  "text": "这是您的房卡。",
+  "role": "question",
+  "py": "Zhè shì nín de fángkǎ.",
+  "vi": "Đây là thẻ phòng của anh/chị."
+ },
+ {
+  "text": "不客气。",
+  "role": "question",
+  "py": "Bú kèqi.",
+  "vi": "Không có gì."
+ },
+ {
+  "text": "请戴护目镜。",
+  "role": "question",
+  "py": "Qǐng dài hùmùjìng.",
+  "vi": "Xin hãy đeo kính bảo hộ."
+ },
+ {
+  "text": "我想学汉语。",
+  "role": "question",
+  "py": "Wǒ xiǎng xué Hànyǔ.",
+  "vi": "Tôi muốn học tiếng Trung."
+ },
+ {
+  "text": "电梯",
+  "role": "question",
+  "py": "diàntī",
+  "vi": "Thang máy"
+ },
+ {
+  "text": "我们五点下班。",
+  "role": "question",
+  "py": "Wǒmen ____ diǎn xiàbān.",
+  "vi": "Chúng tôi tan ca lúc … giờ."
+ },
+ {
+  "text": "我坐公交车去上班。",
+  "role": "question",
+  "py": "Wǒ ____ qù shàngbān.",
+  "vi": "Tôi đi … đi làm."
+ },
+ {
+  "text": "不用谢。",
+  "role": "question",
+  "py": "Bú yòng xiè.",
+  "vi": "Không cần cảm ơn."
+ },
+ {
+  "text": "往海边走。",
+  "role": "question",
+  "py": "Wǎng hǎibiān zǒu.",
+  "vi": "Đi về phía biển."
+ },
+ {
+  "text": "请戴安全帽。",
+  "role": "question",
+  "py": "Qǐng dài ānquánmào.",
+  "vi": "Xin hãy đội mũ bảo hộ."
+ },
+ {
+  "text": "机器坏了。",
+  "role": "question",
+  "py": "Jīqì huài le.",
+  "vi": "Máy hỏng rồi."
+ },
+ {
+  "text": "我叫宝，我是越南人。",
+  "role": "question",
+  "py": "Wǒ jiào Bǎo, wǒ shì Yuènán rén.",
+  "vi": "Tôi tên Bảo, tôi là người Việt Nam."
+ },
+ {
+  "text": "学习",
+  "role": "question",
+  "py": "xuéxí",
+  "vi": "Học / học tập"
+ },
+ {
+  "text": "下班",
+  "role": "question",
+  "py": "xiàbān",
+  "vi": "Tan ca / hết giờ làm"
+ },
+ {
+  "text": "车间在哪里？",
+  "role": "question",
+  "py": "Chējiān zài nǎlǐ?",
+  "vi": "Phân xưởng ở đâu?"
+ },
+ {
+  "text": "这个有质量问题。",
+  "role": "question",
+  "py": "Zhège yǒu zhìliàng wèntí.",
+  "vi": "Cái này có vấn đề chất lượng."
+ },
+ {
+  "text": "需要维修。",
+  "role": "question",
+  "py": "Xūyào wéixiū.",
+  "vi": "Cần sửa chữa."
+ },
+ {
+  "text": "上班",
+  "role": "question",
+  "py": "shàngbān",
+  "vi": "Đi làm / vào ca"
+ },
+ {
+  "text": "这是不良品。",
+  "role": "question",
+  "py": "Zhè shì bùliángpǐn.",
+  "vi": "Đây là hàng lỗi."
+ },
+ {
+  "text": "请戴护目镜",
+  "role": "question",
+  "py": "Qǐng dài hùmùjìng",
+  "vi": "护目镜 (hùmùjìng) = kính bảo hộ; 安全帽 (ānquánmào) = mũ bảo hộ."
+ },
+ {
+  "text": "请去打卡",
+  "role": "question",
+  "py": "Qǐng qù dǎkǎ",
+  "vi": "打卡 (dǎkǎ) = chấm công."
+ },
+ {
+  "text": "今天加班吗？",
+  "role": "question",
+  "py": "Jīntiān jiābān ma?",
+  "vi": "加班 (jiābān) = làm thêm, tăng ca."
+ },
+ {
+  "text": "仓库在那边",
+  "role": "question",
+  "py": "Cāngkù zài nàbiān",
+  "vi": "仓库 (cāngkù) = kho; 车间 (chējiān) = phân xưởng."
+ },
+ {
+  "text": "这是样品",
+  "role": "question",
+  "py": "Zhè shì yàngpǐn",
+  "vi": "样品 (yàngpǐn) = hàng mẫu; 成品 (chéngpǐn) = thành phẩm; 原料 (yuánliào) = nguyên liệu."
+ },
+ {
+  "text": "请稍等，老板马上到",
+  "role": "question",
+  "py": "Qǐng shāo děng, lǎobǎn mǎshàng dào",
+  "vi": "老板 (lǎobǎn) = sếp, giám đốc; 马上 (mǎshàng) = ngay."
+ },
+ {
+  "text": "请准备灭火器",
+  "role": "question",
+  "py": "Qǐng zhǔnbèi mièhuǒqì",
+  "vi": "灭火器 (mièhuǒqì) = bình chữa cháy."
+ },
+ {
+  "text": "这批货已通过质检",
+  "role": "question",
+  "py": "Zhè pī huò yǐ tōngguò zhìjiǎn",
+  "vi": "这批货 (zhè pī huò) = lô hàng này; 通过 (tōngguò) = đạt; 质检 (zhìjiǎn) = kiểm tra chất lượng."
+ },
+ {
+  "text": "请跟我来车间",
+  "role": "question",
+  "py": "Qǐng gēn wǒ lái chējiān",
+  "vi": "跟我来 (gēn wǒ lái) = đi theo tôi; 车间 (chējiān) = phân xưởng."
+ },
+ {
+  "text": "大家去紧急集合点！",
+  "role": "question",
+  "py": "Dàjiā qù jǐnjí jíhé diǎn!",
+  "vi": "紧急集合点 (jǐnjí jíhé diǎn) = điểm tập kết khẩn cấp."
+ },
+ {
+  "text": "马",
+  "role": "question",
+  "py": "mǎ",
+  "vi": "马 = con ngựa · thanh 3: hạ xuống rồi lên"
+ },
+ {
+  "text": "妈",
+  "role": "question",
+  "py": "mā",
+  "vi": "妈 = mẹ · thanh 1: cao và ngang"
+ },
+ {
+  "text": "三",
+  "role": "question",
+  "py": "sān",
+  "vi": "Ba (số 3)"
+ },
+ {
+  "text": "十",
+  "role": "question",
+  "py": "shí",
+  "vi": "Mười (số 10)"
+ },
+ {
+  "text": "八",
+  "role": "question",
+  "py": "bā",
+  "vi": "Tám (số 8)"
+ },
+ {
+  "text": "我是越南人。",
+  "role": "question",
+  "py": "Wǒ shì Yuènán rén.",
+  "vi": "Tôi là người Việt Nam."
+ },
+ {
+  "text": "我",
+  "role": "question",
+  "py": "wǒ",
+  "vi": "Tôi"
+ },
+ {
+  "text": "不是",
+  "role": "question",
+  "py": "bú shì",
+  "vi": "Không phải"
+ },
+ {
+  "text": "现在几点？",
+  "role": "question",
+  "py": "Xiànzài jǐ diǎn?",
+  "vi": "Bây giờ mấy giờ?"
+ },
+ {
+  "text": "我想喝茶。",
+  "role": "question",
+  "py": "Wǒ xiǎng hē chá.",
+  "vi": "Tôi muốn uống trà."
+ },
+ {
+  "text": "这是我的书。",
+  "role": "question",
+  "py": "Zhè shì wǒ ____ shū.",
+  "vi": "Đây là sách của tôi."
+ },
+ {
+  "text": "你去哪儿？",
+  "role": "question",
+  "py": "Nǐ qù nǎr?",
+  "vi": "Bạn đi đâu?"
+ },
+ {
+  "text": "今天",
+  "role": "question",
+  "py": "jīntiān",
+  "vi": "Hôm nay"
+ },
+ {
+  "text": "我有两个孩子。",
+  "role": "question",
+  "py": "Wǒ yǒu liǎng ge háizi.",
+  "vi": "Tôi có hai đứa con."
+ },
+ {
+  "text": "我会说汉语。",
+  "role": "question",
+  "py": "Wǒ huì ____ Hànyǔ.",
+  "vi": "Tôi biết nói tiếng Trung."
+ },
+ {
+  "text": "明天见！",
+  "role": "question",
+  "py": "Míngtiān jiàn!",
+  "vi": "Mai gặp lại!"
+ },
+ {
+  "text": "我不喝咖啡。",
+  "role": "question",
+  "py": "Wǒ bù hē kāfēi.",
+  "vi": "Tôi không uống cà phê."
+ },
+ {
+  "text": "我已经吃饭了。",
+  "role": "question",
+  "py": "Wǒ yǐjīng chī fàn le.",
+  "vi": "Tôi đã ăn cơm rồi."
+ },
+ {
+  "text": "你去过中国吗？",
+  "role": "question",
+  "py": "Nǐ qùguo Zhōngguó ma?",
+  "vi": "Bạn từng đến Trung Quốc chưa?"
+ },
+ {
+  "text": "火车要开了。",
+  "role": "question",
+  "py": "Huǒchē yào kāi le.",
+  "vi": "Tàu sắp chạy rồi."
+ },
+ {
+  "text": "正在工作",
+  "role": "question",
+  "py": "zhèngzài gōngzuò",
+  "vi": "Đang làm việc"
+ },
+ {
+  "text": "我生病了，想请假。",
+  "role": "question",
+  "py": "Wǒ shēngbìng le, xiǎng qǐngjià.",
+  "vi": "Tôi bị ốm, muốn xin nghỉ."
+ },
+ {
+  "text": "从酒店到机场要一个小时。",
+  "role": "question",
+  "py": "Cóng jiǔdiàn ____ jīchǎng yào yí ge xiǎoshí.",
+  "vi": "Từ khách sạn đến sân bay mất một tiếng."
+ },
+ {
+  "text": "请假",
+  "role": "question",
+  "py": "qǐngjià",
+  "vi": "Xin nghỉ phép"
+ },
+ {
+  "text": "你的中文说得很好。",
+  "role": "question",
+  "py": "Nǐ de Zhōngwén shuō de hěn hǎo.",
+  "vi": "Bạn nói tiếng Trung rất giỏi."
+ },
+ {
+  "text": "请把护照放在桌子上。",
+  "role": "question",
+  "py": "Qǐng bǎ hùzhào fàng zài zhuōzi shang.",
+  "vi": "Xin đặt hộ chiếu lên bàn."
+ },
+ {
+  "text": "他虽然很累，但是还在工作。",
+  "role": "question",
+  "py": "Tā ____ hěn lèi, dànshì hái zài gōngzuò.",
+  "vi": "Anh ấy tuy rất mệt nhưng vẫn đang làm việc."
+ },
+ {
+  "text": "天气越来越冷了。",
+  "role": "question",
+  "py": "Tiānqì yuè lái yuè lěng le.",
+  "vi": "Trời càng ngày càng lạnh."
+ },
+ {
+  "text": "他一边吃饭，一边看手机。",
+  "role": "question",
+  "py": "Tā yìbiān chī fàn, ____ kàn shǒujī.",
+  "vi": "Anh ấy vừa ăn cơm vừa xem điện thoại."
+ },
+ {
+  "text": "这台机器有问题，需要马上检查。",
+  "role": "question",
+  "py": "Zhè tái jīqì yǒu wèntí, xūyào mǎshàng jiǎnchá.",
+  "vi": "Máy này có vấn đề, cần kiểm tra ngay."
+ },
+ {
+  "text": "满意",
+  "role": "question",
+  "py": "mǎnyì",
+  "vi": "Hài lòng"
+ },
+ {
+  "text": "检查",
+  "role": "question",
+  "py": "jiǎnchá",
+  "vi": "Kiểm tra"
+ },
+ {
+  "text": "我已经把工作做完了。",
+  "role": "question",
+  "py": "Wǒ yǐjīng bǎ gōngzuò zuò wán le.",
+  "vi": "Tôi đã làm xong việc rồi."
+ },
+ {
+  "text": "这家酒店不仅干净，而且服务也很好。",
+  "role": "question",
+  "py": "Zhè jiā jiǔdiàn bùjǐn gānjìng, ____ fúwù yě hěn hǎo.",
+  "vi": "Khách sạn này không những sạch sẽ mà dịch vụ cũng rất tốt."
+ },
+ {
+  "text": "无论遇到什么问题，都可以联系我。",
+  "role": "question",
+  "py": "Wúlùn yùdào shénme wèntí, dōu kěyǐ liánxì wǒ.",
+  "vi": "Dù gặp vấn đề gì, đều có thể liên hệ tôi."
+ },
+ {
+  "text": "按照规定，客人必须在十二点前退房。",
+  "role": "question",
+  "py": "Ànzhào guīdìng, kèrén bìxū zài shí'èr diǎn qián tuìfáng.",
+  "vi": "Theo quy định, khách phải trả phòng trước 12 giờ."
+ },
+ {
+  "text": "由于天气原因，航班推迟了。",
+  "role": "question",
+  "py": "Yóuyú tiānqì yuányīn, hángbān tuīchí le.",
+  "vi": "Do thời tiết, chuyến bay bị hoãn."
+ },
+ {
+  "text": "非常抱歉给您带来不便，我们马上处理。",
+  "role": "question",
+  "py": "Fēicháng bàoqiàn gěi nín dàilái búbiàn, wǒmen mǎshàng chǔlǐ.",
+  "vi": "Rất xin lỗi đã gây bất tiện cho quý khách, chúng tôi xử lý ngay."
+ },
+ {
+  "text": "既然大家都同意了，我们就开始吧。",
+  "role": "question",
+  "py": "____ dàjiā dōu tóngyì le, wǒmen jiù kāishǐ ba.",
+  "vi": "Mọi người đã đồng ý rồi thì chúng ta bắt đầu thôi."
+ },
+ {
+  "text": "效率",
+  "role": "question",
+  "py": "xiàolǜ",
+  "vi": "Hiệu suất, năng suất"
+ },
+ {
+  "text": "我做了三年前台，有丰富的经验。",
+  "role": "question",
+  "py": "Wǒ zuòle sān nián qiántái, yǒu fēngfù de jīngyàn.",
+  "vi": "Tôi đã làm lễ tân 3 năm, có kinh nghiệm phong phú."
+ },
+ {
+  "text": "随着游客越来越多，酒店需要更多会说中文的员工。",
+  "role": "question",
+  "py": "Suízhe yóukè yuè lái yuè duō, jiǔdiàn xūyào gèng duō huì shuō Zhōngwén de yuángōng.",
+  "vi": "Khách du lịch ngày càng đông, khách sạn cần thêm nhân viên biết nói tiếng Trung."
+ },
+ {
+  "text": "安全第一！",
+  "role": "question",
+  "py": "Ānquán dì yī!",
+  "vi": "An toàn là trên hết!"
+ },
+ {
+  "text": "别担心。",
+  "role": "question",
+  "py": "Bié dānxīn.",
+  "vi": "Đừng lo."
+ },
+ {
+  "text": "即使遇到困难，也不要放弃。",
+  "role": "question",
+  "py": "Jíshǐ yùdào kùnnan, ____ búyào fàngqì.",
+  "vi": "Dù gặp khó khăn cũng đừng bỏ cuộc."
+ }
+]
