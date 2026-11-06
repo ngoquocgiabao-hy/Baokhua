@@ -1,0 +1,8 @@
+**/__pycache__/
+tools/art/node_modules/
+tools/art/package*.json
+tools/art/pose_heavy.task
+tools/motion/node_modules/
+tools/motion/out/
+tools/motion/public/
+tools/test/out/
