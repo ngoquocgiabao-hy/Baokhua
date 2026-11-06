@@ -28,7 +28,7 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 2. Tạo `story/episodes/<mã>.json` theo mẫu ở đầu `series/chuthat.mjs`. Trường `box` là khung chữ tính bằng điểm ảnh của ảnh đó. Mở ảnh bằng trình xem có toạ độ, hoặc vẽ lưới bằng ImageMagick.
 3. Chạy `node series/chuthat.mjs story/episodes/<mã>.json`, xem trước, rồi `cd out/<mã> && npx hyperframes render -o ../<TÊN>_master.mp4`.
 4. Nén bản đăng: `ffmpeg -i ..._master.mp4 -c:v libx264 -crf 20 -preset slow -maxrate 18M -bufsize 36M -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart <TÊN>_9x16.mp4`.
-5. Nghĩa và pinyin phải qua Gemini kiểm trước khi đăng. Chữ chỉ lấy từ ảnh thật, không tự bịa.
+5. Nghĩa và pinyin phải qua Gemini kiểm trước khi đăng (mục 5). Chữ chỉ lấy từ ảnh thật, không tự bịa.
 
 ### Kết cấu chuẩn cho video 1–3 phút (F8 và các thể loại dài)
 1. **Gây hit (3–5 giây):** một câu hỏi hoặc mâu thuẫn, ví dụ "借 là mượn hay cho mượn?".
@@ -83,7 +83,8 @@ Mục tiêu: sau 14 ngày biết 2 thể loại nào kéo người vào nhóm Za
 - Ảnh đưa vào video phải che: số CCCD hoặc định danh, ngày sinh, số hiệu chứng chỉ, số thẻ. Làm mờ màn hình tài liệu nội bộ.
 - Không đưa vào video: mặt trẻ em, nội dung chính trị, tài liệu hay sản phẩm nội bộ của công ty, mặt người lạ khi ảnh không phải sự kiện công khai.
 - Không ghi "miễn phí", không nhắc hoàn tiền, không nhắc S-VIP, không hứa ngày mở 6–10★.
-- Tiếng Trung luôn kèm pinyin có dấu và nghĩa Việt; Gemini kiểm trước khi đăng.
+- Tiếng Trung luôn kèm pinyin có dấu và nghĩa Việt; Gemini kiểm trước khi đăng:
+  `GEMINI_API_KEY=... python3 tools/gemini_check.py . out/KIEM.json story/episodes/<mã>.json`. Kết quả OK, XEM (lỗi nhỏ) hoặc SUA (phải sửa). Khoá chỉ đặt trong biến môi trường hoặc cài đặt môi trường, không ghi vào repo. Gói miễn phí chỉ chạy bản Flash, và chỉ gửi nội dung sẽ đăng công khai.
 - Bot không tự đăng, không nhắn người thật. Bảo đăng bằng tài khoản của mình.
 - Không né cơ chế chống bot của nền tảng. Video TikTok cũ thì Bảo lưu từ máy hoặc từ ứng dụng rồi gửi lại.
 
@@ -91,5 +92,5 @@ Mục tiêu: sau 14 ngày biết 2 thể loại nào kéo người vào nhóm Za
 1. Dựng lại 24 video F3/F4 với CTA mới.
 2. Bảo gửi bản gốc của 4 video TikTok đầu tiên (từ thư viện ảnh trên máy) để làm thêm tư liệu F1.
 3. Bảo chụp 10 biển hiệu tiếng Trung quanh Bãi Cháy để làm F6. Không chê bai cơ sở cụ thể nào.
-4. Gemini kiểm pinyin và nghĩa của F1 bản 2, F2 tập 1–2.
+4. ~~Gemini kiểm pinyin và nghĩa~~: xong 06/11 cho F1 bản 2, F2 tập 1–2, F8 tập 1 và 24 video bài giảng (125 mục, 0 lỗi phải sửa). Còn chờ Bảo duyệt thêm dấu 。 cho 5 câu nhà máy trong `QUESTIONS_RAW`.
 5. Lập bảng số liệu thử thị trường trên Drive (mẫu ở mục 3).
