@@ -273,9 +273,9 @@ Bảo hỏi có làm được hình 3D bằng các công cụ AI hiện có mà 
 | Tầng | Cách làm | Dùng cho | Chi phí |
 |---|---|---|---|
 | 1. Dựng bằng code | Claude Code viết khối hình học Three.js (hộp, trụ, cầu, khối tròn), màu theo bảng màu thương hiệu, ánh sáng và bóng đổ | Phòng, tường, sàn, đồ nội thất, nhân vật chibi có khớp (hông, vai, cổ), hiệu ứng | 0 đồng |
-| 2. Blender chạy bằng script | Blender (miễn phí, mã nguồn mở) chạy không màn hình, Claude Code viết script Python dựng mô hình cong, chi tiết hơn, khung xương và hoạt ảnh, xuất GLB | Mặt tiền khách sạn, du thuyền, bể bơi, nhân vật cần dáng mềm hơn | 0 đồng (cần cài Blender vào môi trường) |
+| 2. Blender chạy bằng script | Blender (mã nguồn mở, không mất phí) chạy không màn hình, Claude Code viết script Python dựng mô hình cong, chi tiết hơn, khung xương và hoạt ảnh, xuất GLB | Mặt tiền khách sạn, du thuyền, bể bơi, nhân vật cần dáng mềm hơn | 0 đồng (cần cài Blender vào môi trường) |
 | 3. Bộ mô hình giấy phép CC0 | Kenney, KayKit (CC0, dùng thương mại không cần ghi tên), Quaternius (kiểm giấy phép từng gói); đổi màu theo thương hiệu, ghép lại | Đồ vật phụ (đèn, chậu cây, hành lý, bếp) để đỡ công | 0 đồng; ghi từng gói vào `assets/LICENSES.md` |
-| 4. AI tạo mô hình từ ảnh (tuỳ chọn) | Mô hình mở như TRELLIS, Hunyuan3D chạy trên máy có card đồ hoạ mạnh của Bảo (nếu có); dịch vụ trực tuyến bản miễn phí thường giới hạn lượt và ràng buộc giấy phép nên không dùng cho hình chính | Thử nhanh ý tưởng | 0 đồng nếu có máy phù hợp |
+| 4. AI tạo mô hình từ ảnh (tuỳ chọn) | Mô hình mở như TRELLIS, Hunyuan3D chạy trên máy có card đồ hoạ mạnh của Bảo (nếu có); dịch vụ trực tuyến ở gói không trả tiền thường giới hạn lượt và ràng buộc giấy phép nên không dùng cho hình chính | Thử nhanh ý tưởng | 0 đồng nếu có máy phù hợp |
 
 Không dùng: mô hình, nhân vật, tên, giao diện lấy từ game khác (mục 4).
 
@@ -302,9 +302,9 @@ Một nguồn hình dùng chung cho cả game và video: cảnh 3D của game c�
 | Công cụ | Giấy phép | Dùng cho | Ghi chú |
 |---|---|---|---|
 | `tools/hotel/capture.js` (đã có) | Của dự án | Quay thẳng cảnh game thành MP4 9:16 cho TikTok, Reels | Bước tay từng khung 1/30 giây rồi ghép bằng FFmpeg; 11 giây video quay trong khoảng 35 giây trên máy chủ không card đồ hoạ |
-| HyperFrames (HeyGen) | Apache 2.0, dùng thương mại miễn phí | Video ghép chữ, hiệu ứng, cảnh Three.js viết bằng HTML | Có kỹ năng cho Claude Code; cần Node 22 và FFmpeg (môi trường đã có). Studio miễn phí, gói Pro trả phí thì không dùng |
-| Remotion | Miễn phí cho nhóm tối đa 3 người | Video dựng bằng React (đã dùng cho nền sân đấu game Đánh Boss) | Nhóm lớn hơn 3 người thì phải mua giấy phép công ty |
-| OpenMontage | AGPL-3.0 | Quy trình làm video có kịch bản, lồng tiếng, phụ đề | Dùng như công cụ riêng, đặt ngoài repo; video làm ra được dùng tự do. **Không chép mã hay tệp kỹ năng của nó vào repo Bảo Khựa** (sẽ kéo theo nghĩa vụ AGPL). Đường không cần khoá API: Piper TTS đọc offline, Remotion, HyperFrames, FFmpeg, kho ảnh và video miễn phí. Nhà cung cấp tạo video trên mây tính phí thì không bật |
+| HyperFrames (HeyGen) | Apache 2.0, dùng thương mại không tính phí | Video ghép chữ, hiệu ứng, cảnh Three.js viết bằng HTML | Có kỹ năng cho Claude Code; cần Node 22 và FFmpeg (môi trường đã có). bản Studio thường không tính phí, gói Pro trả phí thì không dùng |
+| Remotion | Không tính phí cho nhóm tối đa 3 người | Video dựng bằng React (đã dùng cho nền sân đấu game Đánh Boss) | Nhóm lớn hơn 3 người thì phải mua giấy phép công ty |
+| OpenMontage | AGPL-3.0 | Quy trình làm video có kịch bản, lồng tiếng, phụ đề | Dùng như công cụ riêng, đặt ngoài repo; video làm ra được dùng tự do. **Không chép mã hay tệp kỹ năng của nó vào repo Bảo Khựa** (sẽ kéo theo nghĩa vụ AGPL). Đường không cần khoá API: Piper TTS đọc offline, Remotion, HyperFrames, FFmpeg, kho ảnh và video mở (không tính phí). Nhà cung cấp tạo video trên mây tính phí thì không bật |
 | Google Flow / Veo | Theo gói Google của Bảo | Cảnh quay điện ảnh ngắn | Chỉ dùng trong lượt có sẵn của gói hiện tại |
 
 Giọng đọc: Gemini (khi có khoá, mục 6.6) hoặc Piper TTS chạy offline (kiểm giấy phép từng giọng trước khi dùng).
