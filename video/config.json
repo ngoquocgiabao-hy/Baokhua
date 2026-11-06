@@ -3,25 +3,144 @@
   "brand": "BẢO KHỰA 阿宝",
   "cta": {
     "line1": "Chơi game Khách sạn Bảo Khựa",
-    "line2": "Lớp Zoom khai giảng 20:00 thứ Tư 04/11",
+    "line2": "Lớp Zoom nhóm nhỏ · 20:00 thứ 2 – 4 – 6",
     "button": "Link game + nhóm Zalo ở bio"
   },
-  "hashtags": ["#hoctiengtrung", "#tiengtrungletan", "#halong", "#baichay", "#baokhua"],
+  "hashtags": [
+    "#hoctiengtrung",
+    "#tiengtrungletan",
+    "#halong",
+    "#baichay",
+    "#baokhua"
+  ],
   "tuvung": [
-    { "id": "tv01", "title": "Khách trong phòng đang làm gì?", "words": ["sleep", "tv", "read"] },
-    { "id": "tv02", "title": "Khách trong phòng đang làm gì? (2)", "words": ["work", "phone", "eat"] },
-    { "id": "tv03", "title": "Tiện ích khách sạn", "words": ["gym", "swim", "meeting"] },
-    { "id": "tv04", "title": "Ở sảnh khách sạn", "words": ["desk", "lift", "hotel"] },
-    { "id": "tv05", "title": "Tối nay đi đâu?", "words": ["cafe", "seafood", "mart", "ktv"] },
-    { "id": "tv06", "title": "Xe cộ trên phố", "words": ["moto", "car", "taxi"] },
-    { "id": "tv07", "title": "Đi lại quanh Bãi Cháy", "words": ["bus", "bike", "walk"] },
-    { "id": "tv08", "title": "Người trên phố biển", "words": ["jog", "vendor", "selfie"] },
-    { "id": "tv09", "title": "Ra vịnh Hạ Long", "words": ["junk", "cruise", "bay"] },
-    { "id": "tv10", "title": "Ngày và đêm ở Bãi Cháy", "words": ["sun", "moon", "firework"] },
-    { "id": "tv11", "title": "Đường bao biển", "words": ["beach", "palm", "lamp"] },
-    { "id": "tv12", "title": "Vui chơi Bãi Cháy", "words": ["road", "wheel", "pool"] },
-    { "id": "tv13", "title": "Người trong khách sạn", "words": ["garden", "staff", "guest"] },
-    { "id": "tv14", "title": "Phòng và mặt bằng", "words": ["view", "empty", "rent"] }
+    {
+      "id": "tv01",
+      "title": "Khách trong phòng đang làm gì?",
+      "words": [
+        "sleep",
+        "tv",
+        "read"
+      ]
+    },
+    {
+      "id": "tv02",
+      "title": "Khách trong phòng đang làm gì? (2)",
+      "words": [
+        "work",
+        "phone",
+        "eat"
+      ]
+    },
+    {
+      "id": "tv03",
+      "title": "Tiện ích khách sạn",
+      "words": [
+        "gym",
+        "swim",
+        "meeting"
+      ]
+    },
+    {
+      "id": "tv04",
+      "title": "Ở sảnh khách sạn",
+      "words": [
+        "desk",
+        "lift",
+        "hotel"
+      ]
+    },
+    {
+      "id": "tv05",
+      "title": "Tối nay đi đâu?",
+      "words": [
+        "cafe",
+        "seafood",
+        "mart",
+        "ktv"
+      ]
+    },
+    {
+      "id": "tv06",
+      "title": "Xe cộ trên phố",
+      "words": [
+        "moto",
+        "car",
+        "taxi"
+      ]
+    },
+    {
+      "id": "tv07",
+      "title": "Đi lại quanh Bãi Cháy",
+      "words": [
+        "bus",
+        "bike",
+        "walk"
+      ]
+    },
+    {
+      "id": "tv08",
+      "title": "Người trên phố biển",
+      "words": [
+        "jog",
+        "vendor",
+        "selfie"
+      ]
+    },
+    {
+      "id": "tv09",
+      "title": "Ra vịnh Hạ Long",
+      "words": [
+        "junk",
+        "cruise",
+        "bay"
+      ]
+    },
+    {
+      "id": "tv10",
+      "title": "Ngày và đêm ở Bãi Cháy",
+      "words": [
+        "sun",
+        "moon",
+        "firework"
+      ]
+    },
+    {
+      "id": "tv11",
+      "title": "Đường bao biển",
+      "words": [
+        "beach",
+        "palm",
+        "lamp"
+      ]
+    },
+    {
+      "id": "tv12",
+      "title": "Vui chơi Bãi Cháy",
+      "words": [
+        "road",
+        "wheel",
+        "pool"
+      ]
+    },
+    {
+      "id": "tv13",
+      "title": "Người trong khách sạn",
+      "words": [
+        "garden",
+        "staff",
+        "guest"
+      ]
+    },
+    {
+      "id": "tv14",
+      "title": "Phòng và mặt bằng",
+      "words": [
+        "view",
+        "empty",
+        "rent"
+      ]
+    }
   ],
   "hoinhanh": {
     "per_video": 3,
@@ -41,5 +160,6 @@
       "Khai giảng 20:00 thứ Tư 04/11",
       "Đăng ký sớm 960.000đ đến 20:00 thứ Ba 03/11"
     ]
-  }
+  },
+  "_ghi_chu_cta": "Câu kêu gọi dùng lâu dài (không ghi ngày). Đổi ngày khai giảng khoá mới thì sửa ở đây rồi dựng lại."
 }

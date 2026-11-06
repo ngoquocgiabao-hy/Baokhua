@@ -61,3 +61,12 @@ Chú thích từng nền tảng: `debut/CAPTIONS_DEBUT.md`. Mọi dữ kiện v�
 Công cụ chung nằm trong git: `story/music_story.py`, `story/music_story2.py` (nhạc piano 84 BPM viết bằng code), ảnh polaroid trong `tools/engine3d.js`, tham số `--story`/`--story2` của `debut/platforms.cjs`.
 Kịch bản, chú thích, ảnh bìa và ảnh cá nhân (`story/build_story*.mjs`, `story/CAPTIONS_*.md`, `story/thumbs_story.cjs`, `story/photos/`) để ngoài git, vì repo công khai (CLAUDE.md luật 3). Bản sao kịch bản và chú thích cất ở Drive `BAO KHUA - SO CAI/07_TU_LIEU_VIDEO`.
 Không bao giờ đưa vào video: ảnh gốc chưa che thông tin, ảnh trẻ em, ảnh có nội dung chính trị, tài liệu nội bộ của công ty.
+
+## Series "Chữ thật · ảnh thật" (`series/`)
+Phóng kính lúp vào chữ Hán có thật trong ảnh, dựng chữ thành quân bài 3D, kèm pinyin, nghĩa, nơi chụp. Kết bằng câu hỏi "Bạn đọc được mấy chữ?". 120 BPM, mỗi chữ 4 giây.
+```bash
+node series/chuthat.mjs story/episodes/ct01.json      # dữ liệu tập để ngoài git
+cd out/ct01 && npx hyperframes render -o ../BAOKHUA_CHU_THAT_T1_9x16_master.mp4
+```
+Nhạc dùng chung cho series ngắn: `series/music_series.py` (120 BPM, dài theo số đoạn).
+Kế hoạch thử thị trường, bài giảng 3D hằng ngày và quy tắc bàn giao: **`video/HANDOFF.md`**.

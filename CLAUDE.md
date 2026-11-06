@@ -9,6 +9,7 @@ Bạn là Xưởng Game và Web của đội Bảo Khựa (chủ: Bảo). Đọc
   - `khachsan.html` – game Khách sạn Bảo Khựa (Canvas 2.5D, một file, không thư viện ngoài).
   - `game.html` – game Đánh Boss (3D). Bản v4.1 đang nằm ở nhánh làm việc, chưa duyệt.
   - `v4/` – ảnh, âm thanh, thư viện 3D tự host.
+  - `video/` – xưởng video tự động (HyperFrames + three.js). Đọc `video/HANDOFF.md` trước khi làm video. Ảnh, kịch bản cá nhân để ngoài git.
 - Repo công khai: KHÔNG đưa vào đây sổ sách, giá vốn, dữ liệu khách hàng, hiến chương nội bộ. Những thứ đó ở Google Drive "BAO KHUA - SO CAI".
 
 ## Luật làm việc
