@@ -20,7 +20,7 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
 | Nơi | Nội dung |
 |---|---|
 | `main` (trang thật) | Bản đăng 01/11: tên miền, trang chủ có game Khách sạn, Khách sạn v5. **Game Đánh Boss trên trang thật vẫn là bản cũ "Đánh Boss v4 (3D · 2 chặng)".** |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v13 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v14 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
 | Bản xem thử (riêng tư) | https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
@@ -39,6 +39,10 @@ Lịch sử chính của game Đánh Boss trên nhánh:
   - tuyệt chiêu phải trả lời đúng câu hỏi; độ khó tăng theo trạm;
   - dáng đi nhấc gối hợp tranh nhìn chính diện (sửa lỗi chân đi ngược);
   - nền sân đấu là video lặp dựng bằng Remotion.
+- **v14:**
+  - sửa dứt điểm méo hình nhân vật: khoá biên độ từng khớp (`LIM`), hạ hệ số tay boss có tay che thân; dáng đi/chạy thành **bước nảy** (chân giữ nguyên hình, cả người nảy + lắc như khối cứng);
+  - bài kiểm `tools/test/gait.js` viết lại: đi/chạy không uốn chân, có nảy, mọi tư thế của 8 nhân vật trong giới hạn an toàn (bản v13 không đạt: chân bị bẻ 1,35 rad);
+  - lối chơi: **nhiệm vụ hằng ngày** (3 cái/ngày, thưởng ⭐), **Tủ đồ** đổi màu phi tiêu bằng ⭐, **rương** khi nhặt đủ 4 chữ vàng một khu.
 - **v13:**
   - sửa lỗi phông chữ tiếng Việt (đáp án tiếng Việt bị vẽ bằng phông Trung trong thẻ đấu quái/hội thoại; ký tự ⤒ hiện ô vuông); tự gắn `lang="zh-CN"` cho chữ Hán;
   - dáng đi/chạy mới kiểu hoạt hình cắt giấy (bản v12 chân gần như đứng yên, nhìn như trượt); chạm rào đứng yên; bỏ vệt mờ khi đi thường;
@@ -114,8 +118,9 @@ bash tools/test/run-all.sh                         # bộ kiểm thử chính, i
 | `tools/test/fight.js` | Đánh thật: máy tự đánh từng trạm (kiểu `gioi` né đúng lúc, kiểu `kem` không né) → thắng/thua, máu mất, số câu hỏi. |
 | `tools/test/feint.js` | (Kiểu `quiz`) Boss đánh nhử lúc chờ trả lời không được trừ máu. |
 | `tools/test/perf.js` | Khung hình/giây bản đồ và trận, gom lỗi/cảnh báo console. |
-| `tools/test/gait.js` | Chân chạm đất phải lùi về sau khi chạy tới (chống lỗi "đi lùi ngược"). |
+| `tools/test/gait.js` | (v14) Dáng nhân vật: đi/chạy không uốn chân + có nảy; 14 tư thế × 8 nhân vật không vượt giới hạn uốn (chống lỗi xé hình). |
 | `tools/test/fonts.js` | (v13) Đi qua mọi màn có chữ: chữ Việt không được dùng phông Trung, chữ Hán phải có `lang="zh-CN"`, không có ký tự hiếm dễ hiện ô vuông. |
+| `tools/test/poses.js` | (v14) Bảng tư thế 8 nhân vật (`poses`, `walk`, `run`) để soi xé hình bằng mắt trước khi chỉnh `LIM`/`GAIN`. |
 | `tools/test/slowmo.js` `maprun.js` `districts.js` `interact.js` | Chụp ảnh / quay chậm để nhìn bằng mắt. |
 
 Móc kiểm thử có sẵn trong game (`window.__bao`):
@@ -151,7 +156,7 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 
 ## 8. Việc đang chờ / đề xuất làm tiếp (theo thứ tự ưu tiên)
 **Chờ Bảo:**
-1. "duyệt đăng" game v13 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
+1. "duyệt đăng" game v14 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
 2. 4 câu hỏi về giá: 299k là giá gì; giá sau 11/11; thẻ có gồm Zoom không; có gia hạn hoa hồng giới thiệu không.
 3. Chỉnh Google Form theo góp ý cũ.
 4. Khoá `GEMINI_API_KEY` để có giọng người thật.
@@ -172,7 +177,7 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 - **Khung xương làm cong một bức tranh.** Vì vậy:
   - động tác quá lớn (vung tay quá đầu) vẫn hơi kéo giãn;
   - không quay người được.
-- **Tranh nhìn 3/4 nên đưa tay chân trước – sau phải giả chiều sâu** (xoay ít + co ngắn, `PR` trong module `Rig`). Nếu thấy gập ngang thì giảm hệ số xoay `PR.*[0]`. Riêng khi đi/chạy (v13) dùng `PRI` (xoay trong mặt tranh) để bước chân thấy rõ; muốn bước nhỏ lại thì giảm `T`/`K` trong `Rig.gait`.
+- **Tranh vẽ chính diện chỉ uốn được rất ít** (v14). Mọi khớp bị khoá trong `LIM`; dáng đi là bước nảy, không bẻ chân. Muốn động tác lớn hơn thì làm bằng cả thân (lao, xoay, nảy) và hiệu ứng, hoặc vẽ thêm khung hình. Trước khi nới `LIM`/`GAIN` phải chạy `tools/test/gait.js` và xem bảng tư thế (cách làm: vẽ `Rig.pose` của từng tư thế lên một canvas WebGL, xem mục 3 `docs/KY_THUAT_GAME.md`).
 - **Kiểm chuyển động phải quay đúng nhịp:** chụp ảnh mất ~0,25 giây/khung nên ảnh chụp liên tiếp bị lệch pha (nhìn như chân rung tại chỗ). Dùng `WorldMap._hold/_step` để bước đúng 1/30 giây mỗi khung.
 - **Cân bằng đánh thật chưa thử với người chơi thật:** chỉnh `ACT_DIFF` (máu boss, nhịp đòn, giây báo trước, sát thương), `ACT_HERO`, `WORD_EVERY` / `WORD_SEC` (nhịp và thời gian chiêu chữ) sau khi cho vài học viên chơi thử.
 - **Lỗi "đi lùi ngược" / "chân ngược" đã sửa ở v11.1 và v12.** Boss lùi về bằng nhảy lùi (`backstep`). Khi viết động tác mới:

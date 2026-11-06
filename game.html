@@ -655,6 +655,32 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
 .rv-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.12)}
 .rv-item:first-of-type{border-top:0}
 .rv-sub{font-size:12px;font-weight:900;color:#d9b8ff;margin-top:8px}
+/* v14 · nhiệm vụ hằng ngày + tủ đồ */
+.quest-strip{display:flex;gap:8px;margin-top:-2px}
+.qs-main{flex:1;min-width:0;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;background:#16171B;color:#fff;border:2px solid #FFD91F;border-radius:14px;padding:7px 10px;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+.qs-ic{grid-row:span 2;font-size:22px}
+.qs-tx{min-width:0}.qs-tx b{display:block;font-size:13px;color:#FFD91F}.qs-tx b i{font-style:normal;color:#fff;margin-left:4px}
+.qs-tx small{display:block;font-size:11.5px;opacity:.88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qs-bar{grid-column:2;display:block;height:5px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:4px}
+.qs-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#40ffd6,#FFD91F);transition:width .3s}
+.qs-shop{flex:none;width:64px;display:grid;place-items:center;align-content:center;gap:1px;font-size:22px;background:#FFD91F;color:#16171B;border:2px solid #16171B;border-radius:14px;box-shadow:0 4px 0 #16171B}
+.qs-shop small{font-size:10.5px;font-weight:900}
+.quest-list{display:grid;gap:8px}
+.qi{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(255,255,255,.08);border-radius:12px;padding:9px 11px}
+.qi .ic{font-size:20px}.qi b{display:block;font-size:13.5px}.qi .pb2{display:block;height:6px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:5px}
+.qi .pb2 i{display:block;height:100%;background:linear-gradient(90deg,#40ffd6,#FFD91F)}
+.qi .rw{font-size:12px;font-weight:900;color:#FFD91F;white-space:nowrap}.qi.done{background:rgba(64,255,214,.14)}.qi.done .rw{color:#40ffd6}
+.shop-bal{font-weight:900;color:#FFD91F;margin:2px 0 8px}
+.shop-list{display:grid;gap:8px}
+.si{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;border:2px solid transparent}
+.si.on{border-color:#40ffd6;background:rgba(64,255,214,.12)}
+.si svg{width:40px;height:40px;display:block;filter:drop-shadow(0 0 6px var(--gl))}
+.si b{display:block;font-size:14px}.si .zh2{font-size:12.5px;opacity:.92}.si .zh2 span[lang]{font-weight:900;font-size:15px;margin-right:4px}
+.si button{border:2px solid #16171B;border-radius:11px;background:#FFD91F;color:#16171B;font-weight:900;font-size:13px;padding:8px 10px;min-width:74px;box-shadow:0 3px 0 #16171B}
+.si button[disabled]{background:#4a4f5c;color:#c9ccd4;box-shadow:none}
+.si.on button,.si.on button[disabled]{background:#40ffd6;color:#16171B;box-shadow:0 3px 0 #16171B}
+.q-toast{position:fixed;left:50%;top:12px;z-index:200;transform:translate(-50%,-30px);opacity:0;pointer-events:none;max-width:calc(100% - 24px);width:max-content;background:#16171B;color:#fff;border:2px solid #FFD91F;border-radius:14px;padding:9px 14px;font-size:13.5px;font-weight:800;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.45);transition:opacity .25s,transform .25s}
+.q-toast.on{opacity:1;transform:translate(-50%,0)}
 .rv-item .t{flex:1;min-width:0}
 .rv-item .zh{font-size:18px;margin:0}
 .rv-item .py,.rv-item .vi{font-size:12px;margin:0}
@@ -874,6 +900,10 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
    <div class="map-hint" id="mapHint" hidden>Giữ ◀ ▶ để đi · bấm nút nhảy để vượt quái nhỏ · chạm vào người, quái hay cổng để đi tới</div>
    <div class="map-toast" id="mapToast" role="status" aria-live="polite"></div>
   </div>
+  <div class="quest-strip">
+   <button type="button" class="qs-main" id="questBtn" aria-label="Mở nhiệm vụ hôm nay"><span class="qs-ic">🎯</span><span class="qs-tx"><b>Nhiệm vụ hôm nay <i id="questCount">0/3</i></b><small id="questNow"></small></span><span class="qs-bar"><i id="questBar"></i></span></button>
+   <button type="button" class="qs-shop" id="shopBtn" aria-label="Mở tủ đồ phi tiêu">🛍️<small>Tủ đồ</small></button>
+  </div>
   <button class="btn" type="button" id="btnEnterStage">▶ Vào trận</button>
   <div class="station-card" id="stationCard" aria-live="polite"></div>
   <a class="map-cta" id="mapCta" href="membership.html" target="_blank" rel="noopener" data-offer-hold>🔥 11.11 · Học thật cùng Bảo: thẻ 1 năm 299k, đến 23:59 ngày 11/11 →</a>
@@ -1000,6 +1030,24 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
   <button class="btn" type="button" id="wordsClose">Đóng</button>
  </div>
 </div>
+<div class="overlay" id="questOverlay" role="dialog" aria-modal="true" aria-labelledby="questTitle">
+ <div class="talk-card">
+  <h3 id="questTitle">🎯 Nhiệm vụ hôm nay</h3>
+  <p class="talk-narr">3 nhiệm vụ mới mỗi ngày. Xong mỗi nhiệm vụ +15 ⭐, xong cả 3 thêm +25 ⭐. Sao chỉ dùng trong game (đổi màu phi tiêu ở Tủ đồ).</p>
+  <div class="quest-list" id="questList"></div>
+  <button class="btn" type="button" id="questClose">Đóng</button>
+ </div>
+</div>
+<div class="overlay" id="shopOverlay" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+ <div class="talk-card">
+  <h3 id="shopTitle">🛍️ Tủ đồ phi tiêu</h3>
+  <p class="talk-narr">Dùng ⭐ kiếm trong game để đổi màu phi tiêu khi đánh boss. Sao chỉ dùng trong game, không đổi ra tiền hay quà.</p>
+  <div class="shop-bal" id="shopBal"></div>
+  <div class="shop-list" id="shopList"></div>
+  <button class="btn" type="button" id="shopClose">Đóng</button>
+ </div>
+</div>
+<div class="q-toast" id="qToast" role="status" aria-live="polite"></div>
 <div class="overlay center" id="clearOverlay" role="dialog" aria-modal="true">
  <div class="clear-card">
   <h3 id="clearTitle">HẠ BOSS!</h3>
@@ -1443,23 +1491,27 @@ const Rig = (() => {
      Nếu chỉ xoay trong mặt phẳng tranh, gối và khuỷu sẽ gập ngang như gãy. Nên mỗi khớp chỉ xoay một phần (hệ số [0])
      và chi bị co ngắn theo trục khi đưa ra trước/sau (hệ số [1]) — giống phối cảnh thật. */
   const PR = { ua: [.8, .3], fa: [.7, .25], th: [.42, .6], sh: [.22, .55] };
-  /* v13: khi đi/chạy (p.ip = 1) chân tay xoay hẳn trong mặt tranh như hoạt hình cắt giấy (gối luôn hướng về phía trước,
-     gần như không co ngắn) → bước chân thấy rõ. Đứng/ra đòn (ip = 0) vẫn dùng phối cảnh PR như cũ. */
-  const PRI = { ua: [.9, .08], fa: [.85, .06], th: [.96, .1], sh: [.92, .08] };
+  /* v14 · KHOÁ BIÊN ĐỘ: uốn một bức tranh vẽ chính diện quá tay là xé hình (rách áo, tay rời thân, đũng quần kéo dài).
+     Đã đo từng khớp bằng bảng tư thế: trong các khoảng dưới đây hình luôn sạch → mọi tư thế bị giới hạn trong đó.
+     Động tác mạnh (lao tới, xoay, nảy, nén giãn) làm bằng cả thân + hiệu ứng, không bẻ tay chân. */
+  const LIM = { aF: [-.5, .5], eF: [-.35, .35], aB: [-.5, .3], eB: [-.5, .5], lF: [-.3, .3], kF: [-.45, .1], lB: [-.3, .3], kB: [-.45, .1], lean: [-.25, .25], head: [-.3, .3] };
+  const lim = (k, v) => { const r = LIM[k]; return v < r[0] ? r[0] : v > r[1] ? r[1] : v; };
   const SC = new Float32Array(NB).fill(1);
   const fore = (dv, q) => Math.max(.5, 1 - q * Math.pow(Math.sin(Math.min(Math.abs(dv), Math.PI / 2)), 2));
   function angles(p, ref, fs, gain) {
-    const d = k => (p[k] || 0) - (ref[k] || 0), s = -fs, ga = gain ? gain.arm : 1, gl = gain ? gain.leg : 1, lean = d('lean');
-    const ip = Math.max(0, Math.min(1, p.ip || 0)), R = (k, j) => PR[k][j] + (PRI[k][j] - PR[k][j]) * ip;
-    const aF = (d('aF') + lean * .45) * ga, eF = d('eF') * ga, aB = (d('aB') + lean * .45) * ga, eB = d('eB') * ga;
-    const lF = d('lF') * gl, kF = d('kF') * gl, lB = d('lB') * gl, kB = d('kB') * gl;
+    const d = k => (p[k] || 0) - (ref[k] || 0), s = -fs, ga = gain ? gain.arm : 1, gl = gain ? gain.leg : 1, lean = lim('lean', d('lean'));
+    const R = (k, j) => PR[k][j];
+    const aF = lim('aF', (d('aF') + lean * .45) * ga), eF = lim('eF', d('eF') * ga), aB = lim('aB', (d('aB') + lean * .45) * ga), eB = lim('eB', d('eB') * ga);
+    const lF = lim('lF', d('lF') * gl), kF = lim('kF', d('kF') * gl), lB = lim('lB', d('lB') * gl), kB = lim('kB', d('kB') * gl);
     ang[0] = s * lean * .12;
     ang[1] = s * lean * .7;
-    ang[2] = ang[1] + s * (d('head') * .85 + lean * .12);
+    ang[2] = ang[1] + s * (lim('head', d('head')) * .85 + lean * .12);
     ang[3] = s * aF * R('ua', 0); ang[4] = ang[3] + s * eF * R('fa', 0);
     ang[5] = s * aB * R('ua', 0); ang[6] = ang[5] + s * eB * R('fa', 0);
     ang[7] = s * lF * R('th', 0); ang[8] = ang[7] + s * kF * R('sh', 0);
     ang[9] = s * lB * R('th', 0); ang[10] = ang[9] + s * kB * R('sh', 0);
+    // tilt: lắc CẢ NGƯỜI như một khối cứng quanh hông (mọi xương cộng cùng một góc → không uốn chỗ nào)
+    if (p.tilt) { const tl = s * p.tilt; for (let i = 0; i < NB; i++) ang[i] += tl; }
     for (let i = 0; i < NB; i++) ang[i] = Math.max(-2.6, Math.min(2.6, ang[i]));
     SC[3] = fore(aF, R('ua', 1)); SC[4] = fore(aF + eF, R('fa', 1)); SC[5] = fore(aB, R('ua', 1)); SC[6] = fore(aB + eB, R('fa', 1));
     SC[7] = fore(lF, R('th', 1)); SC[8] = fore(lF + kF, R('sh', 1)); SC[9] = fore(lB, R('th', 1)); SC[10] = fore(lB + kB, R('sh', 1));
@@ -1502,33 +1554,21 @@ const Rig = (() => {
     solve(c, A, Sx, 0, 0);
     if (plant) {
       const pf = c.d.pts.ankF, pb = c.d.pts.ankB, g0 = Math.max(pf[1], pb[1]), low = Math.max(xf(c, 8, pf)[1], xf(c, 10, pb)[1]);
-      const dy = (g0 - low) * plant - (p.hop || 0) * 9; if (Math.abs(dy) > .3) solve(c, A, Sx, 0, dy);
+      const dy = (g0 - low) * plant - (p.hop || 0) * 24; if (Math.abs(dy) > .3) solve(c, A, Sx, 0, dy);
     }
     return c.M;
   }
-  /** v13 · chu kỳ bước kiểu hoạt hình cắt giấy. Mỗi chân có pha q (0..1):
-      q 0→0,5 = TRỤ: đùi lùi đều từ trước ra sau, gối hơi chùng (bàn chân bám đất, người lướt qua trên chân);
-      q 0,5→1 = BƯỚC: đùi đưa từ sau lên trước, gối co mạnh để nhấc bàn chân (gối luôn chỉ về hướng đi, không gập ngược).
-      Hai chân lệch nửa nhịp; tay vung ngược chân cùng bên; chạy thì có pha bay (cả hai chân rời đất).
-      Pha ph tăng theo quãng đường (WorldMap: hero.ph += dt·|v|/64) nên bàn chân trụ không bị trượt nhiều. */
+  /** v14 · BƯỚC NẢY: chân giữ nguyên hình vẽ (không uốn → không bao giờ méo), cả người nảy lên giữa mỗi bước,
+      lắc nhẹ trái–phải theo bước chân, tay đánh nhẹ ngược nhau, người nghiêng về hướng đi; chạy thì nảy cao hơn.
+      2 bước mỗi chu kỳ pha. (v11–v13 thử uốn chân theo nhiều cách: hoặc xé hình, hoặc chân đứng yên như trượt.) */
   function gait(ref, ph, run, amt = 1) {
-    const TAU = 6.2832, o = Object.assign({}, ref);
-    const T = (run ? .58 : .44) * amt, K = (run ? 1.55 : 1.1) * amt, Aa = (run ? .85 : .5) * amt;
-    const leg = q => {
-      q = ((q % 1) + 1) % 1;
-      const th = T * Math.cos(TAU * q);
-      const fl = q < .5 ? .16 * amt * Math.sin(Math.PI * q / .5) : K * Math.sin(Math.PI * Math.pow((q - .5) / .5, .7));
-      return [th + (run ? .12 : .04) * amt, -fl];
-    };
-    const F = leg(ph), B = leg(ph + .5), c = Math.cos(TAU * ph);
-    o.lF = (ref.lF || 0) * .25 + F[0]; o.kF = (ref.kF || 0) * .25 + F[1];
-    o.lB = (ref.lB || 0) * .25 + B[0]; o.kB = (ref.kB || 0) * .25 + B[1];
-    o.aF = (ref.aF || 0) - Aa * .55 * c; o.aB = (ref.aB || 0) + Aa * c;
-    o.eF = (ref.eF || 0) + (run ? .35 : .1) * amt; o.eB = (ref.eB || 0) + (run ? .6 : .2) * amt;
-    o.lean = (ref.lean || 0) + (run ? .17 : .07) * amt;
-    o.head = (ref.head || 0) - (run ? .1 : .03) * amt;
-    o.hop = run ? Math.pow(Math.abs(Math.sin(TAU * ph)), 3) * .9 * amt : 0;
-    o.ip = Math.min(1, amt * 1.4);
+    const TAU = 6.2832, o = Object.assign({}, ref), sn = Math.sin(TAU * ph);
+    o.aF = (ref.aF || 0) - (run ? .32 : .2) * amt * sn;
+    o.aB = (ref.aB || 0) + (run ? .32 : .2) * amt * sn;
+    o.lean = (ref.lean || 0) + (run ? .12 : .05) * amt;
+    o.head = (ref.head || 0) + .035 * amt * Math.cos(TAU * ph * 2);
+    o.hop = Math.pow(Math.abs(sn), .8) * (run ? .8 : .6) * amt;
+    o.tilt = .045 * amt * sn;
     return o;
   }
 
@@ -1765,7 +1805,8 @@ createBattle = function createArena(root) {
     }
     return RG || null;
   };
-  const GAIN = { hero: { arm: 1, leg: 1 }, trainee: { arm: .55, leg: .9 }, hotel: { arm: .5, leg: .9 }, factory: { arm: .8, leg: 1 }, night: { arm: .75, leg: 1 }, shadow: { arm: 1, leg: 1 } };
+  // v14: boss có tay che trước thân (khoanh tay, cầm bộ đàm, chống hông) → biên độ tay thấp để không kéo giãn vùng chồng lên áo
+  const GAIN = { hero: { arm: 1, leg: 1 }, trainee: { arm: .35, leg: .9 }, hotel: { arm: .2, leg: .9 }, factory: { arm: .45, leg: 1 }, night: { arm: .45, leg: 1 }, shadow: { arm: .25, leg: 1 } };
   const RUNP = (a, ph, run, amt = 1) => Rig.gait(idlePose(a), ph, run, amt);
   /** nhảy lùi về chỗ (k: 0→1): nhún lấy đà, bật lùi hai chân thu lại, tiếp đất khuỵu gối rồi về thế đứng — không "đi lùi ngược" */
   function backstep(k, idle) {
@@ -1992,13 +2033,13 @@ createBattle = function createArena(root) {
     fxs.push({ t: -(o.delay || 0), dur, spin: (o.spin || 26) * (to[0] > from[0] ? 1 : -1), draw(k) {
       const e = k, x = lerp(from[0], to[0], e), y = lerp(from[1], to[1], e) - Math.sin(e * Math.PI) * H * (o.curve != null ? o.curve : .05);
       hist.push([x, y]); if (hist.length > 10) hist.shift();
-      const R = H * (o.size || .042), col = o.col || C.gold;
+      const SK = o.dark ? null : curSkin(), R = H * (o.size || .042), col = o.col || (SK ? SK.trail : C.gold);
       g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
       for (let i = 1; i < hist.length; i++) { const f = i / hist.length; g.globalAlpha = f * .8; g.strokeStyle = col; g.lineWidth = R * 1.5 * f; g.beginPath(); g.moveTo(hist[i - 1][0], hist[i - 1][1]); g.lineTo(hist[i][0], hist[i][1]); g.stroke(); }
       if (hist.length > 2) { const p = hist[hist.length - 3]; g.globalAlpha = .95; g.strokeStyle = '#ffffff'; g.lineWidth = R * .35; g.beginPath(); g.moveTo(p[0], p[1]); g.lineTo(x, y); g.stroke(); }
       g.globalAlpha = .7; g.drawImage(glow(col), x - R * 2.3, y - R * 2.3, R * 4.6, R * 4.6);
       g.restore();
-      Chibi.star(g, x, y, R, this.t * this.spin, o.dark ? '#2a1240' : '#FFD91F', o.dark ? '#d38bff' : '#5ff5d8');
+      Chibi.star(g, x, y, R, this.t * this.spin, o.dark ? '#2a1240' : SK.body, o.dark ? '#d38bff' : SK.gem);
     }, end: o.onHit });
   }
   /** chỗ trúng nhẹ: sao loé + tia lửa + chớp boss */
@@ -3059,8 +3100,8 @@ createBattle = function createArena(root) {
       const it = q('.intro'); if (it) q('.intro .nm span').textContent = stageName || '';
       hero.state = boss.state = 'idle'; boss.dizzy = 0;
       const hx = home(hero), bxh = home(boss);
-      play(hero, .75, k => ({ pose: k < .8 ? RUNP(hero, k * 3.2, true) : MIX(RUNP(hero, 2.56, true), P.stance, ease((k - .8) / .2)), x: lerp(-W * .2, hx, eOut(k)) }));
-      play(boss, .95, k => ({ pose: k < .8 ? RUNP(boss, k * 2.6, false) : MIX(RUNP(boss, 2.08, false), idlePose(boss), ease((k - .8) / .2)), x: lerp(W * 1.2, bxh, eOut(k)) }));
+      play(hero, .75, k => ({ pose: k < .8 ? RUNP(hero, k * 2, true) : MIX(RUNP(hero, 1.6, true), P.stance, ease((k - .8) / .2)), x: lerp(-W * .2, hx, eOut(k)) }));
+      play(boss, .95, k => ({ pose: k < .8 ? RUNP(boss, k * 2, false) : MIX(RUNP(boss, 1.6, false), idlePose(boss), ease((k - .8) / .2)), x: lerp(W * 1.2, bxh, eOut(k)) }));
       if (!RM && vsBox) {
         anim(vsBox, [{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: 1, offset: .62 }, { opacity: 0 }], 1500, 'linear');
         anim(heroP, [{ transform: 'translateX(-60%)' }, { transform: 'none', offset: .3 }, { transform: 'none' }], 1500, 'cubic-bezier(.16,1,.3,1)');
@@ -3199,6 +3240,80 @@ if (typeof prog.unlock !== 'number') prog.unlock = 0;
 // v7: người đã gặp trên đường (từ của họ vào Sổ từ)
 if (!prog.met || typeof prog.met !== 'object') prog.met = {};
 const save = () => { try { lsSet(SAVE_KEY, JSON.stringify(prog)); } catch (e) {} };
+
+/* ===== v14 · NHIỆM VỤ HẰNG NGÀY + TỦ ĐỒ PHI TIÊU =====
+   Mỗi ngày 3 nhiệm vụ (chọn theo ngày từ QUEST_POOL), xong mỗi cái +QUEST_STAR ⭐, xong cả 3 thêm +QUEST_ALL ⭐.
+   ⭐ chỉ dùng trong game: đổi màu phi tiêu ở Tủ đồ (SKINS). Không đổi ra tiền hay quà (Nghị định 147/2024). */
+const QUEST_POOL = [
+  { id: 'gold', ic: '🪙', t: 'Nhặt {n} chữ vàng trên đường', n: 3 },
+  { id: 'mon', ic: '⚔️', t: 'Hạ {n} quái trên đường', n: 3 },
+  { id: 'parry', ic: '🛡️', t: 'Đỡ đúng {n} chiêu chữ của boss', n: 3 },
+  { id: 'perfect', ic: '💨', t: 'Né đẹp {n} lần trong trận boss', n: 4 },
+  { id: 'ult', ic: '✨', t: 'Trả lời đúng {n} câu tuyệt chiêu', n: 3 },
+  { id: 'boss', ic: '👹', t: 'Hạ {n} boss (đánh lại trạm cũ cũng được)', n: 1 },
+  { id: 'say', ic: '🔊', t: 'Bấm 🔊 nghe {n} từ trong Sổ từ', n: 5 }
+];
+const QUEST_STAR = 15, QUEST_ALL = 25;
+const SKINS = [
+  { id: 'jin', zh: '金', py: 'jīn', vi: 'vàng', name: 'Phi tiêu Vàng', price: 0, trail: 'rgba(255,217,31,1)', body: '#FFD91F', gem: '#5ff5d8' },
+  { id: 'bing', zh: '冰', py: 'bīng', vi: 'băng', name: 'Phi tiêu Băng', price: 120, trail: 'rgba(120,220,255,1)', body: '#c9f3ff', gem: '#2f8cff' },
+  { id: 'huo', zh: '火', py: 'huǒ', vi: 'lửa', name: 'Phi tiêu Lửa', price: 200, trail: 'rgba(255,110,40,1)', body: '#ff9a4d', gem: '#fff066' },
+  { id: 'lei', zh: '雷', py: 'léi', vi: 'sấm sét', name: 'Phi tiêu Lôi', price: 300, trail: 'rgba(190,120,255,1)', body: '#dcbcff', gem: '#ffffff' },
+  { id: 'long', zh: '龙', py: 'lóng', vi: 'rồng', name: 'Phi tiêu Rồng', price: 450, trail: 'rgba(64,255,214,1)', body: '#2be3b5', gem: '#ffd91f' }
+];
+function curSkin() { const id = prog && prog.skin, k = SKINS.find(x => x.id === id); return k && (k.price === 0 || (prog.owned && prog.owned[id])) ? k : SKINS[0]; }
+function dayKey() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function quests() {
+  const k = dayKey();
+  if (!prog.daily || prog.daily.day !== k || !Array.isArray(prog.daily.q)) {
+    let h = 7; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const allGold = prog.gold && Object.keys(prog.gold).length >= 20;
+    const pool = QUEST_POOL.filter(q => !(q.id === 'gold' && allGold)), pick = [];
+    while (pick.length < 3 && pool.length) { h = (Math.imul(h, 1103515245) + 12345) >>> 0; pick.push(pool.splice(h % pool.length, 1)[0]); }
+    prog.daily = { day: k, q: pick.map(q => ({ id: q.id, n: 0, goal: q.n, done: false })), all: false };
+    save();
+  }
+  return prog.daily;
+}
+const questDef = q => QUEST_POOL.find(x => x.id === q.id) || { ic: '🎯', t: q.id };
+const questText = q => questDef(q).t.replace('{n}', q.goal);
+let qToastT = 0;
+function qToast(msg) { const el = $('qToast'); if (!el) return; el.textContent = msg; el.classList.add('on'); clearTimeout(qToastT); qToastT = setTimeout(() => el.classList.remove('on'), 2600); }
+function questTick(id, k = 1) {
+  if (!prog) return;
+  const D = quests(); let changed = false;
+  for (const q of D.q) if (q.id === id && !q.done) {
+    q.n = Math.min(q.goal, q.n + k); changed = true;
+    if (q.n >= q.goal) { q.done = true; prog.xp = (prog.xp || 0) + QUEST_STAR; qToast(`🎯 Xong nhiệm vụ: ${questText(q)} · +${QUEST_STAR} ⭐`); try { Snd.star(2); } catch (e) {} }
+  }
+  if (changed && !D.all && D.q.every(q => q.done)) { D.all = true; prog.xp = (prog.xp || 0) + QUEST_ALL; setTimeout(() => qToast(`🏅 Xong cả 3 nhiệm vụ hôm nay · +${QUEST_ALL} ⭐`), 2700); }
+  if (changed) { save(); questUI(); try { WorldMap.hud(); } catch (e) {} }
+}
+function questUI() {
+  if (!prog || !$('questBtn')) return;
+  const D = quests(), done = D.q.filter(q => q.done).length, nx = D.q.find(q => !q.done);
+  $('questCount').textContent = `${done}/${D.q.length}`;
+  $('questNow').textContent = nx ? `${questDef(nx).ic} ${questText(nx)} · ${nx.n}/${nx.goal}` : '🏅 Đã xong hết – mai có nhiệm vụ mới!';
+  const tot = D.q.reduce((a, q) => a + q.n / q.goal, 0) / D.q.length;
+  $('questBar').style.width = Math.round(tot * 100) + '%';
+  const list = $('questList');
+  if (list) list.innerHTML = D.q.map(q => `<div class="qi${q.done ? ' done' : ''}"><span class="ic">${questDef(q).ic}</span><div><b>${esc(questText(q))}</b><span class="pb2"><i style="width:${Math.round(q.n / q.goal * 100)}%"></i></span></div><span class="rw">${q.done ? '✓ +' + QUEST_STAR + ' ⭐' : q.n + '/' + q.goal}</span></div>`).join('')
+    + `<div class="qi${D.all ? ' done' : ''}"><span class="ic">🏅</span><div><b>Xong cả 3 nhiệm vụ</b></div><span class="rw">${D.all ? '✓' : ''} +${QUEST_ALL} ⭐</span></div>`;
+}
+const starSvg = k => `<svg viewBox="-12 -12 24 24" aria-hidden="true" style="--gl:${k.trail}"><path d="M0-11 2.6-2.6 11 0 2.6 2.6 0 11-2.6 2.6-11 0-2.6-2.6Z" fill="${k.body}" stroke="#16171B" stroke-width="1.4" stroke-linejoin="round"/><circle r="2.6" fill="${k.gem}" stroke="#16171B" stroke-width="1"/></svg>`;
+function shopUI() {
+  const list = $('shopList'); if (!list) return;
+  const cur = curSkin(); $('shopBal').textContent = `Bạn có ⭐ ${prog.xp || 0}`;
+  list.innerHTML = SKINS.map(k => { const own = k.price === 0 || (prog.owned && prog.owned[k.id]), on = cur.id === k.id;
+    const btn = on ? '<button type="button" disabled>Đang dùng</button>' : own ? `<button type="button" data-use="${k.id}">Dùng</button>` : `<button type="button" data-buy="${k.id}"${(prog.xp || 0) < k.price ? ' disabled' : ''}>⭐ ${k.price}</button>`;
+    return `<div class="si${on ? ' on' : ''}">${starSvg(k)}<div><b>${esc(k.name)}</b><div class="zh2"><span lang="zh-CN">${k.zh}</span>${esc(k.py)} – ${esc(k.vi)}</div></div>${btn}</div>`; }).join('');
+  list.querySelectorAll('button[data-use]').forEach(b => b.onclick = () => { prog.skin = b.dataset.use; save(); playSfx('ui'); shopUI(); });
+  list.querySelectorAll('button[data-buy]').forEach(b => b.onclick = () => {
+    const k = SKINS.find(x => x.id === b.dataset.buy); if (!k || (prog.xp || 0) < k.price) return;
+    prog.xp -= k.price; prog.owned = prog.owned || {}; prog.owned[k.id] = 1; prog.skin = k.id; save();
+    try { Snd.star(2); } catch (e) {} qToast(`🛍️ Đã đổi ${k.name} (${k.zh} ${k.py} – ${k.vi})`); shopUI(); try { WorldMap.hud(); } catch (e) {}
+  });
+}
 
 function localDay(offsetDays = 0) {
   const d = new Date(Date.now() + offsetDays * 86400000);
@@ -3559,7 +3674,14 @@ const WorldMap = (() => {
       const [zh, py, vi] = c.w;
       toast(`🪙 ${zh} ${py} – ${vi}`); floatTxt(c.x, GY - c.h - 26, '+5 ⭐', '#FFD91F');
       puff(c.x, GY - c.h - 10, 14, ['#FFD91F', '#fff6c2', '#ffffff'], 70, 10);
-      Snd.star(1); vib(20); speakQuiet(zh); hudXp(); paintWords();
+      Snd.star(1); vib(20); speakQuiet(zh); hudXp(); paintWords(); questTick('gold');
+      // v14: nhặt đủ 4 chữ vàng của một khu → rương thưởng
+      const dk = c.id.split(':')[0], di = DIST.findIndex(d => d.key === dk), set = golds.filter(x => x.id.startsWith(dk + ':'));
+      prog.goldSet = prog.goldSet || {};
+      if (set.length && set.every(x => x.got) && !prog.goldSet[dk]) {
+        prog.goldSet[dk] = 1; prog.xp = (prog.xp || 0) + 20; save();
+        setTimeout(() => { toast(`🎁 Trọn bộ chữ vàng ${DIST[di].name}: +20 ⭐`); floatTxt(hero.x, GY - 70, '🎁 +20 ⭐', '#FFD91F'); puff(hero.x, GY - 40, 30, ['#FFD91F', '#40ffd6', '#ffffff'], 140, 40); Snd.star(2); hudXp(); }, 900);
+      }
     }
   }
   const toBoss = {}; // hình boss (theo tranh) đứng cạnh cổng
@@ -4360,7 +4482,7 @@ const WorldMap = (() => {
   }
   /** chạy fn trên lớp trên cùng (đè lên nhân vật WebGL); không có WebGL thì chạy ngay */
   const onTop = fn => { if (MRG && !portrait) topQM.push(fn); else fn(); };
-  const MGAIN = { hero: { arm: 1, leg: 1 }, trainee: { arm: .5, leg: .9 }, hotel: { arm: .45, leg: .9 }, factory: { arm: .8, leg: 1 }, night: { arm: .75, leg: 1 }, shadow: { arm: 1, leg: 1 } };
+  const MGAIN = { hero: { arm: 1, leg: 1 }, trainee: { arm: .35, leg: .9 }, hotel: { arm: .2, leg: .9 }, factory: { arm: .45, leg: 1 }, night: { arm: .45, leg: 1 }, shadow: { arm: .25, leg: 1 } };
   function rigBlit(R, img, p, ref, gain, plant, st, x, y, rot, sx, sy, hh, f, meta, tint, alpha, extra, ghosts, gtint) {
     const r = mrg(); if (!r || !r.ok) return null;
     Rig.pose(R, p, ref, gain, plant, extra, st, mapDt);
@@ -4532,7 +4654,7 @@ const WorldMap = (() => {
     // v13: chạm rào / mép bản đồ thì dừng hẳn (trước đây vẫn giữ tốc độ → chạy tại chỗ)
     hero.blocked = (hero.x >= bx - .5 && hero.vx > 0) || (hero.x <= 16.5 && hero.vx < 0);
     if (hero.blocked) hero.vx = 0;
-    hero.ph += dt * Math.abs(hero.vx) / 64;
+    hero.ph += dt * Math.abs(hero.vx) / 105;
     grabGold(dt);
     { const stp = Math.floor(hero.ph * 2); if (stp !== hero.step) { hero.step = stp; if (hero.grounded && Math.abs(hero.vx) > 40) puff(hero.x - hero.face * 5, GY - 1, 3, ['rgba(255,255,255,.55)', 'rgba(220,210,190,.6)'], 22, 14); } }
     // nhảy
@@ -4663,7 +4785,7 @@ const WorldMap = (() => {
         puff(m.x, GY - 14, 22, ['#FFD91F', '#ffffff', MON_COL[m.type], '#2ec4b6'], 120, 40);
         const gain = m.big ? 30 : 10; prog.xp = (prog.xp || 0) + gain;
         if (m.big) { prog.gk = prog.gk || {}; prog.gk[DIST[m.d].key] = true; }
-        save(); floatTxt(m.x, GY - 50, `+${gain} ⭐`); hudXp();
+        save(); floatTxt(m.x, GY - 50, `+${gain} ⭐`); hudXp(); questTick('mon');
         Snd.star(0); setTimeout(() => Snd.star(1), 120);
       } }, then: () => { hero.act = { type: 'cheer', t: 0, dur: .6 }; } };
       Snd.sfx('swish');
@@ -4826,7 +4948,7 @@ const WorldMap = (() => {
     // v13: chữ vàng đã nhặt
     const gg = golds.filter(c => c.got);
     box.insertAdjacentHTML('beforeend', `<div class="who">🪙 Chữ vàng nhặt trên đường · ${gg.length}/${golds.length}</div>` + (gg.length ? gg.map(c => `<div class="w"><span class="zh" lang="zh-CN">${esc(c.w[0])}</span><span class="py">${esc(c.w[1])}</span><span class="vi">${esc(c.w[2])}</span><button type="button" data-say="${esc(c.w[0])}" aria-label="Nghe">🔊</button></div>`).join('') : '<p class="words-empty">Nhảy lên nhặt các đồng chữ vàng dọc đường nhé.</p>'));
-    box.querySelectorAll('button[data-say]').forEach(b => { b.onclick = () => { initAudio(); speakQuiet(b.dataset.say); }; });
+    box.querySelectorAll('button[data-say]').forEach(b => { b.onclick = () => { initAudio(); speakQuiet(b.dataset.say); questTick('say'); }; });
     $('wordsOverlay').classList.add('on');
   }
   function renderCard() {
@@ -4897,6 +5019,7 @@ const WorldMap = (() => {
     _key(d) { keyDir = d; },
     _scr() { return { x: (hero.x - camX) * u, y: (GY - hero.y) * u, u, h: HH * u, vx: hero.vx, ph: hero.ph }; },
     _clearMons() { mons.forEach(m => { m.dead = true; }); },
+    hud() { hudXp(); },
     gateX, NPC_X
   };
 })();
@@ -4905,6 +5028,7 @@ document.addEventListener('keyup', e => WorldMap.keyUp(e));
 function openMap(opts) {
   show('sMap');
   WorldMap.open(opts || {});
+  questUI();
   playSfx('ui');
 }
 /** v4.1: bỏ tween.js — CSS transition (.bar i) tự làm mượt */
@@ -5296,7 +5420,7 @@ function actHurt(pw) {
 }
 function actEvent(name) {
   if (!actOn()) return;
-  if (name === 'perfect') { st.energy = Math.min(100, st.energy + ACT_HERO.en.perfect); st.counterUntil = performance.now() + 1200; if (!st._ctrHint) { st._ctrHint = true; showSkill('⚡ Né đẹp! Đánh ngay để PHẢN ĐÒN x1,8'); } }
+  if (name === 'perfect') { questTick('perfect'); st.energy = Math.min(100, st.energy + ACT_HERO.en.perfect); st.counterUntil = performance.now() + 1200; if (!st._ctrHint) { st._ctrHint = true; showSkill('⚡ Né đẹp! Đánh ngay để PHẢN ĐÒN x1,8'); } }
   else if (name === 'dodge') st.energy = Math.min(100, st.energy + ACT_HERO.en.dodge);
   else if (name === 'break') { st.energy = Math.min(100, st.energy + ACT_HERO.en.break); showSkill('⚡ Phá đòn!'); }
   else if (name === 'tele' && !st._teleHint) { st._teleHint = true; showSkill('⚠️ Boss sắp ra đòn – bấm 💨 Né!'); }
@@ -5347,7 +5471,7 @@ function wordAnswer(i) {
   bs.forEach((b, k) => { b.disabled = true; if (k === W2.ok) b.classList.add('ok'); else if (k === i) b.classList.add('no'); });
   const [zh, py, vi] = W2.w;
   if (ok) {
-    st.parryOk++;
+    st.parryOk++; questTick('parry');
     const r = battle.wordResolve(true);
     Snd.chime(3); vib(30);
     setTimeout(() => { if (!actOn()) return; st.hits++; st.hitT = 2.4; st.hitMax = Math.max(st.hitMax, st.hits); hitUI(true); actDamage(ACT_HERO.k.b * 1.9, false); st.energy = Math.min(100, st.energy + 26); }, (r && r.impactAt) || 480);
@@ -5409,7 +5533,7 @@ function actResolve(ok, btn) {
   if (q) { $('qZh').textContent = fullZh(q); $('qPy').textContent = fullPy(q); $('qVi').textContent = q.vi || ''; }
   if (ok) {
     st.streak++; st.correct++; st.comboMax = Math.max(st.comboMax, st.streak);
-    rememberRight(q);
+    rememberRight(q); questTick('ult');
     if (q) { const z = fullZh(q); if (z) st.lastLearned = { zh: z, py: fullPy(q), vi: q.vi || '' }; if (z && q.type !== 'listen') speakQuiet(z); }
     showComboFloat(st.streak, st.streak >= 3); Snd.chime(st.streak); vib(40);
     const k0 = ACT_HERO.ult[Math.min(3, st.ultN)];
@@ -5894,6 +6018,7 @@ function showClear(stage, stars, onNext, isFinal, opened) {
 function end(win) {
   if (!st || st._ended) return; // tránh cộng dồn 2 lần khi timer/upgrade race
   st._ended = true;
+  if (win) questTick('boss');
   if (battle && battle.fight) battle.fight(false);
   if (st.act) { st.ultOpen = false; actCloseQ(); st.word = null; wordUI(null); }
   st.pending = null;
@@ -6000,6 +6125,11 @@ function renderEnd(win, stage, info = {}) {
 $('btnStart').onclick = beginRun;
 $('btnAgain').onclick = () => { playSfx('ui'); startStage(stageIdx); };
 if ($('btnEnterStage')) $('btnEnterStage').onclick = () => WorldMap.enter();
+// v14: nhiệm vụ hằng ngày + tủ đồ
+if ($('questBtn')) $('questBtn').onclick = () => { initAudio(); playSfx('ui'); questUI(); $('questOverlay').classList.add('on'); };
+if ($('questClose')) $('questClose').onclick = () => $('questOverlay').classList.remove('on');
+if ($('shopBtn')) $('shopBtn').onclick = () => { initAudio(); playSfx('ui'); shopUI(); $('shopOverlay').classList.add('on'); };
+if ($('shopClose')) $('shopClose').onclick = () => { $('shopOverlay').classList.remove('on'); try { WorldMap.hud(); } catch (e) {} };
 if ($('btnMapBack')) $('btnMapBack').onclick = () => { renderProgress(); show('sStart'); playSfx('ui'); };
 function toggleMute() {
   muted = !muted;

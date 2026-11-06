@@ -82,12 +82,10 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
      - chi co ngắn dọc trục xương (`PR.*[1]`) để giả chiều sâu, vì tranh nhìn 3/4.
   3. Đổi góc mượt bằng lò xo theo độ cứng `STIFF`. Khớp xa mềm hơn nên theo sau một nhịp.
   4. Bám đất: chân thấp nhất luôn ở mặt đất.
-- **Dáng đi / chạy (v13):** `Rig.gait(ref, phase, run, amt)` là chu kỳ bước kiểu hoạt hình cắt giấy.
-  - Mỗi chân có pha q: 0 → 0,5 là **trụ** (đùi lùi đều từ trước ra sau, gối hơi chùng); 0,5 → 1 là **bước** (đùi đưa lên trước, gối co mạnh nhấc bàn chân). Gối luôn chỉ về hướng đi.
-  - Hai chân lệch nửa nhịp, tay vung ngược chân, chạy (`run`) có pha bay (`hop`).
-  - Tư thế trả về có `ip = 1`: khi đó `angles()` dùng hệ số `PRI` (xoay hẳn trong mặt tranh, gần như không co chi) thay cho `PR` (phối cảnh). Đứng/ra đòn vẫn dùng `PR`.
-  - Bản v12 (nhấc gối co theo chiều sâu) bị nén quá mạnh → chân gần như không nhúc nhích, nhìn như trượt. Đã bỏ.
-  - Pha phải **tăng** khi đi về phía mặt nhìn. Bản đồ: `hero.ph += dt·|v|/64`.
+- **v14 · Khoá biên độ (`LIM`):** mọi độ lệch tư thế so với tư thế gốc bị kẹp trong khoảng đã đo bằng bảng tư thế (aF ±0,5 · eF ±0,35 · aB −0,5…0,3 · eB ±0,5 · lF/lB ±0,3 · kF/kB −0,45…0,1 · lean ±0,25 · head ±0,3). Ngoài khoảng đó tranh bị xé (rách áo, tay rời thân, đũng quần kéo dài). Boss có tay che thân dùng hệ số tay thấp trong `GAIN`/`MGAIN` (lễ tân .2, ninja .25, tập sự .35, tổ trưởng/ca đêm .45).
+- **Dáng đi / chạy (v14 · bước nảy):** `Rig.gait(ref, phase, run, amt)` **không uốn chân**. Cả người nảy lên giữa mỗi bước (`hop`, 2 bước mỗi chu kỳ, `Rig.pose` nâng `hop × 24` điểm ảnh tranh), lắc trái–phải (`tilt`: cộng cùng một góc cho mọi xương nên lắc như một khối cứng), tay đánh nhẹ ngược nhau, người nghiêng về hướng đi.
+  - Lịch sử: v11 bẻ chân trong mặt tranh → xé hình; v12 nhấc gối co theo chiều sâu → chân gần như đứng yên, như trượt; v13 cắt giấy → lại xé hình. Đừng quay lại các kiểu đó. Muốn chân bước thật cần khung hình vẽ tay (dây chuyền `v4/anim/`).
+  - Pha phải **tăng** khi đi về phía mặt nhìn. Bản đồ: `hero.ph += dt·|v|/105` (≈ 3 bước nảy/giây khi đi).
   - Đi ngược hướng mặt thì đổi sang nhảy lùi (`backstep` trong sân đấu), không dùng dáng đi tới.
 - **Vẽ:**
   - `Rig.renderer()` tạo canvas WebGL.
@@ -186,6 +184,12 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
 | Thêm chiêu tướng | Viết hàm như `tamTieu` (trả `{impactAt}`), gọi trong `phiTieu`/`playHeroAttack`. Tên chiêu thêm vào `SKN` (đủ 3 dòng). |
 | Thêm boss mới | Tranh `v4/sprites/<look>-idle|atk|ko.webp` + `SPRITE`/`SPR_X`/`CH`/`BOSS_COL`/`GHOST`/`GAIN`, tranh VS `v4/vs`, nền `v4/bg`, khung xương `v4/rig/<look>-idle.json`, nhánh mới trong `bossAttack`. |
 | Đổi hạn ưu đãi | `SALE_END`, `OFFER_*`, `INVITE_*` trong game.html và `saleEnd` trong index.html. |
+
+## 6a. Nhiệm vụ hằng ngày + Tủ đồ (v14)
+- `QUEST_POOL` (7 kiểu: gold, mon, parry, perfect, ult, boss, say), `quests()` chọn 3 cái theo ngày (`prog.daily`), `questTick(id)` gọi ở các chỗ: nhặt chữ vàng, hạ quái, đỡ chữ, né đẹp, đúng câu tuyệt chiêu, thắng boss, bấm 🔊 trong Sổ từ. Thưởng `QUEST_STAR` mỗi cái, `QUEST_ALL` khi xong cả 3. Thông báo `qToast` (hiện ở mọi màn).
+- `SKINS` (5 màu phi tiêu, mỗi món có chữ Hán + pinyin + nghĩa), `curSkin()` dùng trong `shuriken()` của sân đấu. Mua bằng `prog.xp`, lưu `prog.owned`, `prog.skin`.
+- Trọn bộ chữ vàng một khu → `prog.goldSet[khu]`, +20 ⭐ (trong `grabGold`).
+- Mọi ⭐ chỉ dùng trong game, không đổi ra tiền/quà.
 
 ## 6b. Phông chữ (v13)
 - `UIF` (chữ Việt: phông hệ thống có đủ dấu) và `ZHF` (chữ Hán: PingFang SC / Noto Sans CJK SC…) khai báo đầu tệp, dùng cho mọi chữ vẽ trên canvas.

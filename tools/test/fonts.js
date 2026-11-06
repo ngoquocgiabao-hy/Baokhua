@@ -43,6 +43,9 @@ const RARE = /[⤀-⥿⟰-⟿∘\u{1F977}]/u;
       if (bs.length) (bs.find(x => x.querySelector('b') && x.querySelector('b').textContent === ok) || bs[0]).click(); else if (n && n.offsetParent) n.click(); }); await p.waitForTimeout(700);
   }
   await go('words', () => p.evaluate(() => document.getElementById('wordBtn').click()), 600);
+  await go('quests', () => p.evaluate(() => { document.getElementById('wordsClose').click(); document.getElementById('questBtn').click(); }), 500);
+  await go('shop', () => p.evaluate(() => { document.getElementById('questClose').click(); document.getElementById('shopBtn').click(); }), 500);
+  await p.evaluate(() => { document.getElementById('shopClose').click(); document.getElementById('wordBtn').click(); }); await p.waitForTimeout(300);
   await go('duel', async () => {
     await p.evaluate(() => document.getElementById('wordsClose').click()); await p.waitForTimeout(300);
     await p.evaluate(() => { const M = window.__bao.WorldMap, m = M.mons.find(x => !x.dead && x.d === M.cur); if (m) M._tp(m.x - 40); });
