@@ -32,15 +32,27 @@ const flash = (t, a = .45) => ft('#flash', `{ opacity: ${a} }`, '{ opacity: 0, d
 const fadeIn = (s, t, y = 24) => ft(s, `{ opacity: 0, y: ${y}, filter: "blur(8px)" }`, '{ opacity: 1, y: 0, filter: "blur(0px)", duration: .4, ease: "expo.out" }', t);
 const out = (s, t) => to(s, '{ opacity: 0, filter: "blur(8px)", duration: .2 }', t);
 
-/* các đoạn raw nối liền trong khoảng [t0, t1], chia đều thời gian, phóng nhẹ, cắt có chớp */
+/* các đoạn raw nối liền trong khoảng [t0, t1], chia đều thời gian, phóng nhẹ, cắt có chớp.
+   Video không bao giờ chạy quá điểm b của đoạn: đoạn quá ngắn so với ô thời gian (cần chậm hơn 0,5×)
+   thì dùng ảnh tĩnh lấy giữa đoạn, chạy Ken Burns. Raw dựng kiểu montage (mỗi cảnh 0,3–1 s) sẽ thành chuỗi ảnh động. */
+const STILLS = [];
 function footage(clips, t0, t1) {
   const seg = (t1 - t0) / clips.length;
   clips.forEach(([a, b], i) => {
-    const s0 = t0 + i * seg, s1 = s0 + seg, rate = Math.max(.5, Math.min(1.6, (b - a) / seg));
+    const s0 = t0 + i * seg, s1 = s0 + seg, need = (b - a) / seg;
     const id = uid('fv');
-    VIDS.push(`<div class="fv" id="${id}"><video id="${uid('v')}" src="raw.mp4" muted data-start="${r2(s0)}" data-duration="${r2(seg)}" data-media-start="${a}" data-playback-rate="${r2(rate)}"></video></div>`);
+    if (need >= .5) {
+      const rate = Math.min(1.6, need);
+      VIDS.push(`<div class="fv" id="${id}"><video id="${uid('v')}" src="raw.mp4" muted data-start="${r2(s0)}" data-duration="${r2(seg)}" data-media-start="${a}" data-playback-rate="${r2(rate)}"></video></div>`);
+      ft(`#${id}`, '{ scale: 1.08 }', `{ scale: 1.0, duration: ${r2(seg)}, ease: "sine.out", immediateRender: false }`, s0);
+    } else {
+      const f = `st_${STILLS.length}.jpg`;
+      STILLS.push({ t: (a + b) / 2, f });
+      VIDS.push(`<div class="fv" id="${id}"><img src="${f}" alt=""></div>`);
+      const dx = (i % 2 ? -1 : 1) * 24;
+      ft(`#${id}`, `{ scale: 1.16, x: ${-dx} }`, `{ scale: 1.02, x: ${dx}, duration: ${r2(seg)}, ease: "none", immediateRender: false }`, s0);
+    }
     set(`#${id}`, '{ opacity: 1 }', s0);
-    ft(`#${id}`, '{ scale: 1.08 }', `{ scale: 1.0, duration: ${r2(seg)}, ease: "sine.out", immediateRender: false }`, s0);
     set(`#${id}`, '{ opacity: 0 }', s1);
     if (i) flash(s0, .25);
   });
@@ -119,6 +131,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:${K}}
 .layer{position:absolute;inset:0}
 .fv{position:absolute;inset:0;opacity:0;overflow:hidden;transform-origin:50% 35%}
 .fv video{width:100%;height:100%;object-fit:cover;display:block}
+.fv img{width:100%;height:100%;object-fit:cover;display:block}
 #topshade{background:linear-gradient(180deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,0) 26%)}
 #panel{position:absolute;left:0;right:0;top:1080px;height:840px;background:linear-gradient(180deg,rgba(11,11,12,0) 0px,rgba(11,11,12,.93) 70px,${K} 120px);border-top:0}
 #panel::after{content:"";position:absolute;left:60px;right:60px;top:84px;height:6px;border-radius:3px;background:repeating-linear-gradient(-45deg,${Y} 0 14px,${K} 14px 28px)}
@@ -201,6 +214,7 @@ for (const f of ['three.module.js', 'three.core.js']) cp(path.join(T3, 'build', 
 for (const f of ['geometries/RoundedBoxGeometry.js', 'environments/RoomEnvironment.js']) { fs.mkdirSync(path.join(OUTDIR, 'addons', path.dirname(f)), { recursive: true }); fs.copyFileSync(path.join(T3, 'examples/jsm', f), path.join(OUTDIR, 'addons', f)); }
 cp(path.join(V, 'tools/engine3d.js'), 'engine3d.js');
 cp(path.join(V, 'story/raw', EP.raw), 'raw.mp4');
+for (const { t, f } of STILLS) execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-ss', String(t), '-i', path.join(OUTDIR, 'raw.mp4'), '-frames:v', '1', '-q:v', '2', path.join(OUTDIR, f)]);
 if (!fs.existsSync(path.join(OUTDIR, 'grain.png'))) execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=gray:s=256x256,noise=alls=90:allf=u', '-frames:v', '1', path.join(OUTDIR, 'grain.png')]);
 const marks = [HOOK, ...EP.blocks.map((_, i) => HOOK + i * (SA + SB) + SA), ...EP.blocks.map((_, i) => HOOK + (i + 1) * (SA + SB))].map(x => x.toFixed(2)).join(',');
 execFileSync('python3', [path.join(V, 'series/music_bed.py'), path.join(OUTDIR, 'music.wav'), String(DUR), marks], { stdio: 'ignore' });
