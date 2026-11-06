@@ -3,176 +3,52 @@
  "level": "HSK0 · BÀI 1",
  "_nguon": "Giáo trình game Khách sạn Vịnh Ā Bǎo, bài u1 Chào hỏi (你好) + giáo án khung HSK0 buổi 1 (4 thanh với ma)",
  "beats": [
-  {
-   "type": "hook",
-   "dur": 4.5,
-   "stamp": "GIÁO TRÌNH 3D · PHÂN TÍCH SÂU",
-   "line": "Sách viết **nǐ hǎo**, nhưng người Trung KHÔNG đọc như vậy 🤯",
-   "key": "你好",
-   "py": "nǐ hǎo",
-   "ask": "Bí mật nằm ở **thanh 3** 👇"
-  },
-  {
-   "type": "tones",
-   "dur": 10,
-   "tag": "01 · BẢN ĐỒ 4 THANH",
-   "title": "Cao độ chia 5 mức. Mỗi thanh là một **đường đi**",
-   "items": [
-    {
-     "zh": "妈",
-     "py": "mā",
-     "vi": "mẹ",
-     "c": [
-      5,
-      5
-     ],
-     "lab": "5 → 5"
-    },
-    {
-     "zh": "麻",
-     "py": "má",
-     "vi": "cây gai",
-     "c": [
-      3,
-      5
-     ],
-     "lab": "3 → 5"
-    },
-    {
-     "zh": "马",
-     "py": "mǎ",
-     "vi": "ngựa",
-     "c": [
-      2,
-      1,
-      4
-     ],
-     "lab": "2 → 1 → 4"
-    },
-    {
-     "zh": "骂",
-     "py": "mà",
-     "vi": "mắng",
-     "c": [
-      5,
-      1
-     ],
-     "lab": "5 → 1"
-    }
-   ],
-   "note": "Thanh 3 là thanh duy nhất **xuống thấp rồi mới lên**"
-  },
-  {
-   "type": "morph",
-   "dur": 11,
-   "tag": "02 · LUẬT VÀNG",
-   "title": "Hai thanh 3 đứng liền nhau thì sao?",
-   "chars": "你好",
-   "idx": 0,
-   "from": [
-    2,
-    1,
-    4
-   ],
-   "to": [
-    3,
-    5
-   ],
-   "rest": [
-    null,
-    [
-     2,
-     1,
-     4
-    ]
-   ],
-   "formula": "3 + 3 → **2** + 3",
-   "written": "nǐ hǎo",
-   "spoken": "**ní** hǎo",
-   "note": "Sách vẫn **viết nǐ hǎo**. Chỉ khi **nói** chữ đầu mới đổi sang thanh 2, cho dễ nói"
-  },
-  {
-   "type": "words",
-   "dur": 11.2,
-   "tag": "03 · GẶP SUỐT KHI ĐI LÀM",
-   "title": "Viết một kiểu, **đọc một kiểu**",
-   "items": [
-    {
-     "zh": "很好",
-     "written": "hěn hǎo",
-     "spoken": "**hén** hǎo",
-     "vi": "rất tốt"
-    },
-    {
-     "zh": "可以",
-     "written": "kěyǐ",
-     "spoken": "**ké**yǐ",
-     "vi": "được, có thể"
-    },
-    {
-     "zh": "水果",
-     "written": "shuǐguǒ",
-     "spoken": "**shuí**guǒ",
-     "vi": "hoa quả"
-    },
-    {
-     "zh": "洗手间",
-     "written": "xǐshǒujiān",
-     "spoken": "**xí**shǒujiān",
-     "vi": "nhà vệ sinh"
-    }
-   ]
-  },
-  {
-   "type": "half",
-   "dur": 9,
-   "tag": "04 · BÍ QUYẾT NÓI TỰ NHIÊN",
-   "title": "Thanh 3 đứng trước thanh 1, 2, 4: chỉ **xuống thấp**, không vòng lên",
-   "full": [
-    2,
-    1,
-    4
-   ],
-   "half": [
-    2,
-    1,
-    1
-   ],
-   "items": [
-    {
-     "zh": "老师",
-     "py": "lǎoshī",
-     "vi": "thầy cô"
-    },
-    {
-     "zh": "好吃",
-     "py": "hǎochī",
-     "vi": "ngon"
-    }
-   ],
-   "note": "Chữ nào cũng đọc đủ 2 → 1 → 4 thì nghe **cứng như robot** 🤖"
-  },
-  {
-   "type": "use",
-   "dur": 5.5,
-   "tag": "05 · ĐI LÀM NÓI LUÔN",
-   "zh": "你好，欢迎光临！",
-   "written": "Nǐ hǎo, huānyíng guānglín!",
-   "spoken": "**Ní** hǎo, huānyíng guānglín!",
-   "vi": "Xin chào, chào mừng quý khách!"
-  },
-  {
-   "type": "cta",
-   "dur": 7,
-   "q": "Muốn tai **nghe ra** thanh điệu?",
-   "game": [
-    "Game Khách sạn Vịnh Ā Bǎo",
-    "Chặng HSK0: hạ Cua Thanh Điệu"
-   ],
-   "online": [
-    "Học online cùng Bảo",
-    "Nhóm nhỏ, sửa thanh điệu từng người"
-   ]
-  }
+  { "type": "hook", "dur": 4.5, "stamp": "GIÁO TRÌNH 3D · PHÂN TÍCH SÂU",
+    "line": "Sách viết **nǐ hǎo**, nhưng người Trung KHÔNG đọc như vậy 🤯", "key": "你好", "py": "nǐ hǎo",
+    "ask": "Bí mật nằm ở **thanh 3** 👇",
+    "vo": "Hai chữ chào hỏi đầu tiên: sách viết một kiểu, người Trung đọc một kiểu." },
+  { "type": "tones", "dur": 9.5, "tag": "01 · BẢN ĐỒ 4 THANH", "title": "Cao độ chia 5 mức. Mỗi thanh là một **đường đi**",
+    "items": [
+      { "zh": "妈", "py": "mā", "vi": "mẹ", "c": [5, 5], "lab": "5 → 5" },
+      { "zh": "麻", "py": "má", "vi": "cây gai", "c": [3, 5], "lab": "3 → 5" },
+      { "zh": "马", "py": "mǎ", "vi": "ngựa", "c": [2, 1, 4], "lab": "2 → 1 → 4" },
+      { "zh": "骂", "py": "mà", "vi": "mắng", "c": [5, 1], "lab": "5 → 1" } ],
+    "note": "Thanh 3 là thanh duy nhất **xuống thấp rồi mới lên**",
+    "vo": "Tiếng Trung có bốn thanh, mỗi thanh là một đường đi của giọng. Thanh ba là thanh duy nhất xuống thấp rồi mới lên." },
+  { "type": "morph", "dur": 11.5, "tag": "02 · LUẬT VÀNG", "title": "Hai thanh 3 đứng liền nhau thì sao?",
+    "chars": "你好", "full": [[2, 1, 4], [2, 1, 4]], "to": [3, 5], "labels": ["你 nǐ", "好 hǎo"],
+    "bad": "Đọc đủ cả hai: xuống – lên – **xuống – lên** 😵",
+    "good": "Chữ đầu chỉ cần **đi lên** (thanh 2): giọng trơn tru ✅",
+    "formula": "3 + 3 → **2** + 3", "written": "nǐ hǎo", "spoken": "**ní** hǎo",
+    "note": "Sách vẫn **viết nǐ hǎo**. Chỉ khi **nói** chữ đầu mới đổi",
+    "vo": "Đọc đủ cả hai thanh ba thì giọng phải xuống lên hai lần, rất nặng. Nên chữ đầu đổi thành thanh hai. Sách vẫn viết thanh ba, chỉ khi nói mới đổi." },
+  { "type": "words", "dur": 10.5, "tag": "03 · GẶP SUỐT KHI ĐI LÀM", "title": "Viết một kiểu, **đọc một kiểu**",
+    "items": [
+      { "zh": "很好", "written": "hěn hǎo", "spoken": "**hén** hǎo", "vi": "rất tốt", "c": [[2, 1, 4], [2, 1, 4]], "m": 0 },
+      { "zh": "可以", "written": "kěyǐ", "spoken": "**ké**yǐ", "vi": "được, có thể", "c": [[2, 1, 4], [2, 1, 4]], "m": 0 },
+      { "zh": "水果", "written": "shuǐguǒ", "spoken": "**shuí**guǒ", "vi": "hoa quả", "c": [[2, 1, 4], [2, 1, 4]], "m": 0 },
+      { "zh": "洗手间", "written": "xǐshǒujiān", "spoken": "**xí**shǒujiān", "vi": "nhà vệ sinh", "c": [[2, 1, 4], [2, 1, 1], [5, 5]], "m": 0 } ],
+    "vo": "Gặp suốt khi đi làm: rất tốt, được, hoa quả, nhà vệ sinh. Chữ đầu đều đọc thành thanh hai." },
+  { "type": "half", "dur": 8, "tag": "04 · BÍ QUYẾT NÓI TỰ NHIÊN",
+    "title": "Thanh 3 đứng trước thanh 1, 2, 4: chỉ **xuống thấp**, không vòng lên",
+    "full": [2, 1, 4], "half": [2, 1, 1],
+    "items": [
+      { "zh": "老师", "py": "lǎoshī", "vi": "thầy cô" },
+      { "zh": "好吃", "py": "hǎochī", "vi": "ngon" } ],
+    "note": "Chữ nào cũng đọc đủ 2 → 1 → 4 thì nghe **cứng như robot** 🤖",
+    "vo": "Còn khi thanh ba đứng trước thanh một, hai, bốn, chỉ cần xuống thấp, không vòng lên. Đọc đủ mọi chỗ nghe sẽ cứng như rô bốt." },
+  { "type": "quiz", "dur": 5, "tag": "05 · ĐẾN LƯỢT BẠN", "title": "Thử nhanh 3 giây 🎯",
+    "zh": "雨伞", "ask": "Khách hỏi mượn **雨伞** (cái ô). Sách viết **yǔsǎn**, bạn đọc sao?",
+    "spoken": "**yú**sǎn", "vi": "cái ô", "rule": "3 + 3 → **2** + 3 ✅",
+    "vo": "Đến lượt bạn. Khách hỏi mượn cái ô, đọc thế nào? Ba, hai, một." },
+  { "type": "use", "dur": 5, "tag": "06 · ĐI LÀM NÓI LUÔN",
+    "zh": "你好，欢迎光临！", "written": "Nǐ hǎo, huānyíng guānglín!", "spoken": "**Ní** hǎo, huānyíng guānglín!",
+    "vi": "Xin chào, chào mừng quý khách!",
+    "vo": "Đi làm, chào khách thế này." },
+  { "type": "cta", "dur": 5.5, "q": "Muốn tai **nghe ra** thanh điệu?",
+    "cards": [["💬", "Học online cùng Bảo", "Nhóm nhỏ, sửa thanh điệu từng người"],
+              ["▶️", "Tập sau: 不 (bù – không)", "Lúc đọc **bù**, lúc đọc **bú**. Theo dõi để học tiếp"]],
+    "pill": "Link học + nhóm Zalo ở bio 👆",
+    "vo": "Muốn tai nghe ra thanh điệu, học online cùng Bảo. Tập sau: chữ không, lúc nào đọc thành bú." }
  ]
 }

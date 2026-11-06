@@ -41,7 +41,6 @@ function box(inner, left, top, w, t0, t1) { const id = uid('b'); H.push(`<div cl
 const flash = (t, a = .4) => ft('#flash', `{ opacity: ${a} }`, '{ opacity: 0, duration: .25, ease: "power2.out", immediateRender: false }', t);
 const fadeIn = (s, t, y = 24) => ft(s, `{ opacity: 0, y: ${y}, filter: "blur(8px)" }`, '{ opacity: 1, y: 0, filter: "blur(0px)", duration: .4, ease: "expo.out" }', t);
 const out = (s, t) => to(s, '{ opacity: 0, filter: "blur(8px)", duration: .2 }', t);
-const draw = (s, t, d = .8) => ft(s, '{ strokeDashoffset: 1 }', `{ strokeDashoffset: 0, duration: ${d}, ease: "power2.inOut", immediateRender: false }`, t);
 const tiles = (chars, t0, t1, y, o = {}) => {
   const nc = [...chars].length;
   const sc = o.scale ?? (nc >= 4 ? .66 : nc === 3 ? .72 : nc === 2 ? .78 : .82), sp = o.spacing ?? (nc >= 4 ? .7 : nc === 3 ? .78 : .84);
@@ -49,29 +48,56 @@ const tiles = (chars, t0, t1, y, o = {}) => {
   return sp;
 };
 
-/* đường cao độ: mức 1–5 → đường cong mượt (Catmull-Rom sang Bezier) trong khung w×h */
-function contour(pts, w, h, pad = 22) {
-  const P = pts.map((L, i) => [pad + (w - 2 * pad) * (pts.length === 1 ? .5 : i / (pts.length - 1)), pad + (5 - L) / 4 * (h - 2 * pad)]);
-  if (P.length === 2) return `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)} L${P[1][0].toFixed(1)},${P[1][1].toFixed(1)}`;
-  let d = `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`;
+/* đường cao độ: pts là mức 1–5 cách đều, hoặc cặp [x 0–1, mức]. Trả về đường SVG + điểm mẫu đều theo độ dài (để chấm sáng chạy) */
+function curve(pts, w, h, pad = 22) {
+  const P = pts.map((p, i) => {
+    const [x, L] = Array.isArray(p) ? p : [pts.length === 1 ? .5 : i / (pts.length - 1), p];
+    return [pad + (w - 2 * pad) * x, pad + (5 - L) / 4 * (h - 2 * pad)];
+  });
+  const segs = [];
   for (let i = 0; i < P.length - 1; i++) {
     const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2;
-    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
-    d += ` C${c1.map(v => v.toFixed(1)).join(',')} ${c2.map(v => v.toFixed(1)).join(',')} ${p2.map(v => v.toFixed(1)).join(',')}`;
+    const straight = P.length === 2;
+    const c1 = straight ? p1 : [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = straight ? p2 : [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    segs.push([p1, c1, c2, p2]);
   }
-  return d;
+  const f = v => v.toFixed(1);
+  const d = `M${f(P[0][0])},${f(P[0][1])}` + segs.map(([, c1, c2, p2]) => ` C${f(c1[0])},${f(c1[1])} ${f(c2[0])},${f(c2[1])} ${f(p2[0])},${f(p2[1])}`).join('');
+  const raw = [];
+  segs.forEach(([a, b, c, e]) => { for (let k = 0; k <= 40; k++) { const s = k / 40, m = 1 - s; raw.push([m * m * m * a[0] + 3 * m * m * s * b[0] + 3 * m * s * s * c[0] + s * s * s * e[0], m * m * m * a[1] + 3 * m * m * s * b[1] + 3 * m * s * s * c[1] + s * s * s * e[1]]); } });
+  const cum = [0]; for (let i = 1; i < raw.length; i++) cum.push(cum[i - 1] + Math.hypot(raw[i][0] - raw[i - 1][0], raw[i][1] - raw[i - 1][1]));
+  const L = cum[cum.length - 1], S = [];
+  for (let k = 0, j = 0; k <= 24; k++) { const want = L * k / 24; while (j < cum.length - 2 && cum[j + 1] < want) j++; const u = (want - cum[j]) / ((cum[j + 1] - cum[j]) || 1); S.push([raw[j][0] + (raw[j + 1][0] - raw[j][0]) * u, raw[j][1] + (raw[j + 1][1] - raw[j][1]) * u]); }
+  return { d, S };
 }
-/* khung biểu đồ: 5 vạch mức, các đường (id riêng để vẽ dần) */
+/* khung biểu đồ: 5 vạch mức; mỗi đường có id riêng (vẽ dần) và chấm sáng `${id}d` chạy theo */
+const SAMPLES = {};
 function graph(w, h, lines, opt = {}) {
   const pad = 22;
-  let g = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+  let g = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" overflow="visible">`;
   for (let L = 1; L <= 5; L++) {
     const y = pad + (5 - L) / 4 * (h - 2 * pad);
     g += `<line x1="${pad}" x2="${w - pad}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,${L === 1 || L === 5 ? .28 : .13})" stroke-width="2" stroke-dasharray="${L === 1 || L === 5 ? '0' : '6 8'}"/>`;
-    if (opt.axis) g += `<text x="4" y="${y + 7}" class="ax">${L}</text>`;
+    if (opt.axis) g += `<text x="-6" y="${y + 7}" class="ax" text-anchor="end">${L}</text>`;
   }
-  lines.forEach(l => { g += `<path id="${l.id}" d="${contour(l.pts, w, h, pad)}" pathLength="1" fill="none" stroke="${l.color}" stroke-width="${l.width || 11}" stroke-linecap="round" stroke-linejoin="round" ${l.dash ? 'stroke-dasharray="0.03 0.035" style="stroke-dashoffset:0"' : 'stroke-dasharray="1" style="stroke-dashoffset:1"'}/>`; });
+  (opt.split || []).forEach(x => { g += `<line x1="${pad + (w - 2 * pad) * x}" x2="${pad + (w - 2 * pad) * x}" y1="${pad - 10}" y2="${h - pad + 10}" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="4 8"/>`; });
+  (opt.labels || []).forEach(([x, s]) => { g += `<text x="${pad + (w - 2 * pad) * x}" y="${h + 42}" class="glab" text-anchor="middle">${esc(s)}</text>`; });
+  lines.forEach(l => {
+    const { d, S } = curve(l.pts, w, h, pad); SAMPLES[l.id] = S;
+    g += `<path id="${l.id}" d="${d}" pathLength="1" fill="none" stroke="${l.color}" stroke-width="${l.width || 11}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1" style="stroke-dashoffset:1"/>`;
+    if (l.dot !== false) g += `<circle id="${l.id}d" cx="${S[0][0].toFixed(1)}" cy="${S[0][1].toFixed(1)}" r="${l.r || 15}" fill="#fff" stroke="${l.color}" stroke-width="6" style="opacity:0;filter:drop-shadow(0 0 14px ${l.color})"/>`;
+  });
   return g + '</svg>';
+}
+/* vẽ đường đều tay + chấm sáng chạy đúng theo đường */
+function trace(id, t, d = .9, keepDot = true) {
+  ft(`#${id}`, '{ strokeDashoffset: 1 }', `{ strokeDashoffset: 0, duration: ${d}, ease: "none", immediateRender: false }`, t);
+  const S = SAMPLES[id]; if (!S) return;
+  set(`#${id}d`, '{ opacity: 1 }', t);
+  const kf = S.slice(1).map(p => `{ attr: { cx: ${p[0].toFixed(1)}, cy: ${p[1].toFixed(1)} }, duration: ${r2(d / (S.length - 1))}, ease: "none" }`).join(', ');
+  to(`#${id}d`, `{ keyframes: [${kf}] }`, t);
+  if (!keepDot) to(`#${id}d`, '{ opacity: 0, duration: .2 }', t + d + .15);
 }
 const header = (b, t, te) => {
   const tg = st(`<div class="tag">${esc(b.tag)}</div>`, 140, t, te - .05, '', 'l');
@@ -81,6 +107,18 @@ const header = (b, t, te) => {
   out(tg, te - .3);
 };
 const vo = (t, text) => VO.push(`| ${t.toFixed(1)} s | ${text} |`);
+const wsRows = (written, spoken, cls = '') => `<div class="ws ${cls}"><div><span class="k">Viết</span> <span class="p dim">${esc(written)}</span></div><div><span class="k">Đọc</span> <span class="p">${md(spoken)}</span></div></div>`;
+const pulse = (s, t) => ft(s, '{ scale: 1 }', '{ scale: 1.22, duration: .16, yoyo: true, repeat: 3, ease: "power1.inOut", immediateRender: false }', t);
+
+/* thanh chương: mỗi phần có thẻ (tag) là một chương, ô sáng dần theo thời gian */
+const CH = []; { let tt = 0; for (const b of EP.beats) { if (b.tag) CH.push([tt, b.dur]); tt += b.dur; } }
+if (CH.length) {
+  const c0 = CH[0][0], c1 = CH[CH.length - 1][0] + CH[CH.length - 1][1];
+  const id = uid('bar');
+  H.push(`<div class="bar clip" id="${id}" data-start="${r2(c0)}" data-duration="${r2(c1 - c0)}">${CH.map((_, i) => `<div class="seg"><i id="${id}_${i}"></i></div>`).join('')}</div>`);
+  CH.forEach(([a, d], i) => ft(`#${id}_${i}`, '{ scaleX: 0 }', `{ scaleX: 1, duration: ${r2(d)}, ease: "none", immediateRender: false }`, a));
+  ft(`#${id}`, '{ opacity: 0, y: -20 }', '{ opacity: 1, y: 0, duration: .3 }', c0);
+}
 
 /* ---------- các phần ---------- */
 let t = 0;
@@ -88,6 +126,7 @@ const marks = [];
 for (const b of EP.beats) {
   const te = t + b.dur;
   if (t > 0) { flash(t, .35); marks.push(t); }
+  if (b.vo) VO.push(`| ${t.toFixed(1)}–${te.toFixed(1)} s | **Lời dẫn:** ${b.vo} |`);
   if (b.type === 'hook') {
     const sr = st(`<div class="stamp">${esc(b.stamp)}</div>`, 140, 0, te - .05, '', 'l');
     ft(sr, '{ rotationX: -90, opacity: 0, transformPerspective: 800 }', '{ rotationX: 0, rotation: -2, opacity: 1, duration: .35, ease: "back.out(2)" }', .05);
@@ -105,72 +144,85 @@ for (const b of EP.beats) {
   if (b.type === 'tones') {
     header(b, t, te);
     const N = b.items.length, sp = .84, gw = 210, gh = 300;
-    tiles(b.items.map(i => i.zh).join(''), t + .3, te - .35, 1.42, { scale: .66, spacing: sp, enter: 'drop', stagger: .45 });
+    tiles(b.items.map(i => i.zh).join(''), t + .3, te - .35, 1.42, { scale: .66, spacing: sp, enter: 'drop', stagger: .9 });
     b.items.forEach((it, i) => {
       const cx = tileX(i, N, sp), id = uid('tn');
       const gsel = box(`${graph(gw, gh, [{ id, pts: it.c, color: TONE[i % 4] }])}<div class="lab" style="color:${TONE[i % 4]}">${esc(it.lab)}</div><div class="gpy">${esc(it.py)}</div><div class="gvi">${esc(it.vi)}</div>`, cx - gw / 2, 690, gw, t + .4, te - .05);
-      const tt = t + .5 + i * .45;
+      const tt = t + .5 + i * .9;
       fadeIn(gsel, tt, 18);
-      draw(`#${id}`, tt + .25, .9);
+      trace(id, tt + .2, .75);
+      RING.push({ t: tt + .1, x: (cx - 540) / PX, y: 1.42, size: .7, d: .4, color: TONE[i % 4] });
       out(gsel, te - .3);
-      vo(tt + .25, `${it.zh} ${it.py}`);
+      vo(tt + .2, `${it.zh} ${it.py}`);
     });
-    const nt = st(`<div class="note">${md(b.note)}</div>`, 1300, t + 3.4, te - .05);
-    fadeIn(nt, t + 3.5);
+    const nt = st(`<div class="note">${md(b.note)}</div>`, 1300, t + 4.6, te - .05);
+    fadeIn(nt, t + 4.7);
     out(nt, te - .3);
   }
   if (b.type === 'morph') {
     header(b, t, te);
-    const ch = [...b.chars], N = ch.length, sp = 1.0, gw = 230, gh = 250;
-    tiles(b.chars, t + .2, te - .35, 1.5, { scale: .88, spacing: sp });
-    const tm = t + 3.6;                                // lúc chữ đầu đổi thanh
-    ch.forEach((c, i) => {
-      const cx = tileX(i, N, sp);
-      const lines = [];
-      const a = uid('mf'), z = uid('mt');
-      if (i === b.idx) { lines.push({ id: a, pts: b.from, color: '#8a8a8a' }); lines.push({ id: z, pts: b.to, color: Y, width: 13 }); }
-      else lines.push({ id: a, pts: b.rest[i] || b.from, color: TONE[2] });
-      const gsel = box(`${graph(gw, gh, lines)}<div class="lab" id="${a}l">${i === b.idx ? '2 → 1 → 4' : '2 → 1 → 4'}</div>`, cx - gw / 2, 760, gw, t + .5, te - .05);
-      fadeIn(gsel, t + .6, 18);
-      draw(`#${a}`, t + .9 + i * .5, .8);
-      if (i === b.idx) {
-        to(`#${a}`, '{ opacity: .35, duration: .3 }', tm);
-        draw(`#${z}`, tm + .1, .7);
-        ft(`#${a}l`, '{ opacity: 1 }', '{ opacity: 0, duration: .15, immediateRender: false }', tm);
-        set(`#${a}l`, `{ textContent: "3 → 5", color: "${Y}" }`, tm + .16);
-        to(`#${a}l`, '{ opacity: 1, duration: .2 }', tm + .17);
-        RING.push({ t: tm + .1, x: (cx - 540) / PX, y: 1.5, size: 1.6, d: .5 });
-      }
-      out(gsel, te - .3);
-    });
-    const fo = st(`<div class="formula">${md(b.formula)}</div>`, 1050, tm + .2, te - .05);
-    ft(fo, '{ scale: 1.5, opacity: 0 }', '{ scale: 1, opacity: 1, duration: .4, ease: "back.out(2)" }', tm + .25);
-    const ws = st(`<div class="ws"><div><span class="k">Viết</span> <span class="p dim">${esc(b.written)}</span></div><div><span class="k">Đọc</span> <span class="p">${md(b.spoken)}</span></div></div>`, 1210, tm + .9, te - .05);
-    fadeIn(ws, tm + 1);
-    const nt = st(`<div class="note">${md(b.note)}</div>`, 1460, tm + 2.2, te - .05);
-    fadeIn(nt, tm + 2.3);
-    [fo, ws, nt].forEach(s => out(s, te - .3));
-    vo(tm + .1, `${b.chars}: đọc chậm ${b.spoken.replace(/\*/g, '')}, nhấn chữ đầu đi lên`);
+    tiles(b.chars, t + .2, te - .35, 1.78, { scale: .8, spacing: .95 });
+    const gw = 860, gh = 290, A = uid('fa'), B2 = uid('fb'), Z = uid('fz');
+    const [s1, s2] = b.full, xs = (p, a, z) => p.map((L, i) => [a + (z - a) * i / (p.length - 1), L]);
+    const gsel = box(graph(gw, gh, [
+      { id: A, pts: xs(s1, .03, .45), color: '#9a9a9a' },
+      { id: B2, pts: xs(s2, .55, .97), color: TONE[2] },
+      { id: Z, pts: xs(b.to, .03, .45), color: Y, width: 13 },
+    ], { split: [.5], labels: [[.24, b.labels[0]], [.76, b.labels[1]]] }), 110, 640, gw, t + .6, te - .05);
+    fadeIn(gsel, t + .65, 18);
+    trace(A, t + 1.0, .8); trace(B2, t + 1.85, .8);
+    const bad = st(`<div class="bad">${md(b.bad)}</div>`, 1035, t + 2.75, t + 3.95);
+    ft(bad, '{ x: -30, opacity: 0 }', '{ x: 0, opacity: 1, duration: .25, ease: "power2.out" }', t + 2.75);
+    ft(`${bad}`, '{ x: -10 }', '{ x: 10, duration: .06, repeat: 5, yoyo: true, ease: "none", immediateRender: false }', t + 3.0);
+    out(bad, t + 3.75);
+    const tm = t + 4.0;
+    to(`#${A}`, '{ opacity: .22, duration: .3 }', tm); to(`#${A}d`, '{ opacity: 0, duration: .2 }', tm);
+    trace(Z, tm + .1, .7);
+    RING.push({ t: tm + .15, x: (110 + 22 + (gw - 44) * .24 - 540) / PX, y: (960 - 640 - 120) / PX, size: 2, d: .55 });
+    const good = st(`<div class="good">${md(b.good)}</div>`, 1035, tm + .9, te - .05);
+    fadeIn(good, tm + .9, 14);
+    const fo = st(`<div class="formula">${md(b.formula)}</div>`, 1150, tm + 1.7, te - .05);
+    ft(fo, '{ scale: 1.5, opacity: 0 }', '{ scale: 1, opacity: 1, duration: .4, ease: "back.out(2)" }', tm + 1.75);
+    const ws = st(wsRows(b.written, b.spoken), 1310, tm + 2.8, te - .05);
+    fadeIn(ws, tm + 2.85);
+    pulse(`${ws} mark`, tm + 3.4);
+    const nt = st(`<div class="note">${md(b.note)}</div>`, 1530, tm + 4.3, te - .05);
+    fadeIn(nt, tm + 4.35);
+    [good, fo, ws, nt].forEach(s => out(s, te - .3));
+    vo(t + 1.0, `${b.chars}: đọc đủ hai thanh 3 (nǐ hǎo, cố ý chậm, nghe nặng)`);
+    vo(tm + .1, `${b.chars}: đọc đúng ${b.spoken.replace(/\*/g, '')}, chữ đầu đi lên`);
   }
   if (b.type === 'words') {
     header(b, t, te);
     const N = b.items.length, d = (b.dur - .5) / N;
     b.items.forEach((it, i) => {
-      const t0 = t + .4 + i * d, t1 = t0 + d;
-      tiles(it.zh, t0, t1 - .3, 1.15, { enter: ['slam', 'drop', 'flip', 'rise'][i % 4], dir: i % 2 ? -1 : 1 });
-      const c = st(`<div class="wcnt">${i + 1}/${N}</div><div class="ws"><div><span class="k">Viết</span> <span class="p dim">${esc(it.written)}</span></div><div><span class="k">Đọc</span> <span class="p">${md(it.spoken)}</span></div></div><div class="wvi">${esc(it.vi)}</div>`, 930, t0 + .25, t1 - .05);
-      fadeIn(c, t0 + .3, 16);
+      const t0 = t + .4 + i * d, t1 = t0 + d, nc = [...it.zh].length;
+      const sp = tiles(it.zh, t0, t1 - .3, 1.32, { enter: ['slam', 'drop', 'flip', 'rise'][i % 4], dir: i % 2 ? -1 : 1 });
+      it.c.forEach((p, k) => {
+        const cx = tileX(k, nc, sp), gw = 170, gh = 120, a = uid('wa'), z = uid('wz');
+        const lines = [{ id: a, pts: p, color: k === it.m ? '#9a9a9a' : TONE[2], width: 9, r: 10 }];
+        if (k === it.m) lines.push({ id: z, pts: [3, 5], color: Y, width: 10, r: 11 });
+        const gsel = box(graph(gw, gh, lines), cx - gw / 2, 790, gw, t0 + .2, t1 - .05);
+        fadeIn(gsel, t0 + .2, 10);
+        trace(a, t0 + .3, .45, false);
+        if (k === it.m) { to(`#${a}`, '{ opacity: .22, duration: .2 }', t0 + .9); trace(z, t0 + .95, .4); }
+        out(gsel, t1 - .25);
+      });
+      const c = st(`<div class="wcnt">${i + 1}/${N}</div>${wsRows(it.written, it.spoken)}<div class="wvi">${esc(it.vi)}</div>`, 960, t0 + .35, t1 - .05);
+      fadeIn(c, t0 + .4, 16);
+      pulse(`${c} mark`, t0 + 1.1);
       out(c, t1 - .25);
-      vo(t0 + .3, `${it.zh}: ${it.spoken.replace(/\*/g, '')}`);
+      vo(t0 + .4, `${it.zh}: ${it.spoken.replace(/\*/g, '')}`);
     });
   }
   if (b.type === 'half') {
     header(b, t, te);
     const gw = 760, gh = 330, f = uid('hf'), h = uid('hh');
-    const gsel = box(`${graph(gw, gh, [{ id: f, pts: b.full, color: '#8a8a8a' }, { id: h, pts: b.half, color: Y, width: 13 }], { axis: true })}<div class="leg"><span style="color:#aaa">— đọc đủ 2 → 1 → 4</span><span style="color:${Y}">— nửa thanh 3: 2 → 1</span></div>`, 160, 470, gw, t + .3, te - .05);
+    const gsel = box(`${graph(gw, gh, [{ id: f, pts: b.full, color: '#9a9a9a' }, { id: h, pts: b.half, color: Y, width: 13 }], { axis: true })}<div class="leg"><span style="color:#aaa">— đọc đủ 2 → 1 → 4</span><span style="color:${Y}">— nửa thanh 3: 2 → 1</span></div>`, 160, 470, gw, t + .3, te - .05);
     fadeIn(gsel, t + .35, 18);
-    draw(`#${f}`, t + .6, .8);
-    draw(`#${h}`, t + 1.6, .7);
+    trace(f, t + .6, .8);
+    to(`#${f}`, '{ opacity: .3, duration: .3 }', t + 1.5); to(`#${f}d`, '{ opacity: 0, duration: .2 }', t + 1.5);
+    trace(h, t + 1.6, .7);
     out(gsel, te - .3);
     const N = b.items.length, d = (b.dur - 3.4) / N;
     b.items.forEach((it, i) => {
@@ -183,13 +235,32 @@ for (const b of EP.beats) {
     });
     const nt = st(`<div class="note">${md(b.note)}</div>`, 1560, t + 3, te - .05);
     fadeIn(nt, t + 3.1);
+    ft(`${nt} mark`, '{ x: -4, skewX: -12 }', '{ x: 4, skewX: 12, duration: .05, repeat: 9, yoyo: true, ease: "steps(1)", immediateRender: false }', t + 3.6);
     out(nt, te - .3);
+  }
+  if (b.type === 'quiz') {
+    header(b, t, te);
+    tiles(b.zh, t + .2, te - .35, 1.45, { scale: .95, spacing: 1.05, enter: 'flip' });
+    const q = st(`<div class="qz">${md(b.ask)}</div>`, 840, t + .4, te - .05);
+    fadeIn(q, t + .45);
+    ['3', '2', '1'].forEach((n, k) => {
+      const c = st(`<div class="cd">${n}</div>`, 1060, t + 1.2 + k * .5, t + 1.2 + k * .5 + .48);
+      ft(c, '{ scale: 2.2, opacity: 0 }', '{ scale: 1, opacity: 1, duration: .2, ease: "power3.out" }', t + 1.2 + k * .5);
+    });
+    const tr = t + 2.75;
+    const a = st(`<div class="ans">${md(b.spoken)}</div><div class="wvi">${esc(b.vi)}</div><div class="qrule">${md(b.rule)}</div>`, 1040, tr, te - .05);
+    ft(a, '{ scale: 1.8, opacity: 0, filter: "blur(10px)" }', '{ scale: 1, opacity: 1, filter: "blur(0px)", duration: .35, ease: "back.out(1.6)" }', tr);
+    BURST.push({ t: tr, y: -.6, n: 60 }); RING.push({ t: tr, y: -.5, size: 4 });
+    flash(tr, .3);
+    [q, a].forEach(s => out(s, te - .3));
+    vo(tr, `${b.zh}: ${b.spoken.replace(/\*/g, '')}`);
   }
   if (b.type === 'use') {
     header(b, t, te);
     tiles('你好', t + .2, te - .35, 2.15, { scale: .62, spacing: .7, enter: 'pop' });
-    const u = st(`<div class="useZh">${esc(b.zh)}</div><div class="ws big"><div><span class="k">Viết</span> <span class="p dim">${esc(b.written)}</span></div><div><span class="k">Đọc</span> <span class="p">${md(b.spoken)}</span></div></div><div class="wvi">${esc(b.vi)}</div>`, 760, t + .5, te - .05);
+    const u = st(`<div class="useZh">${esc(b.zh)}</div>${wsRows(b.written, b.spoken, 'big')}<div class="wvi">${esc(b.vi)}</div>`, 760, t + .5, te - .05);
     fadeIn(u, t + .55);
+    pulse(`${u} mark`, t + 1.4);
     out(u, te - .3);
     BURST.push({ t: t + .6, y: 2.2, n: 40 });
     vo(t + .6, `${b.zh} (đọc như lễ tân thật, tươi, rõ)`);
@@ -199,11 +270,11 @@ for (const b of EP.beats) {
     const q = st(`<div class="big">${md(b.q)}</div>`, 300, t, DUR);
     ft(q, '{ scale: 1.6, opacity: 0, filter: "blur(10px)" }', '{ scale: 1, opacity: 1, filter: "blur(0px)", duration: .45, ease: "expo.out" }', t + .05);
     G3.push({ chars: '阿宝', t0: t + .5, enter: 'slam', side: 'black', back: 'black', face: { bg: Y, ink: K, ring: 'rgba(0,0,0,.2)' }, y: .55, scale: .9, spacing: .95, stagger: .1, noShadow: true });
-    const c1 = st(`<div class="opt"><i>🎮</i><div><b>${esc(b.game[0])}</b><span>${esc(b.game[1])}</span></div></div>`, 1150, t + 1.2, DUR);
-    ft(c1, '{ x: -400, opacity: 0 }', '{ x: 0, opacity: 1, duration: .45, ease: "expo.out" }', t + 1.2);
-    const c2 = st(`<div class="opt"><i>💬</i><div><b>${esc(b.online[0])}</b><span>${esc(b.online[1])}</span></div></div>`, 1330, t + 1.7, DUR);
-    ft(c2, '{ x: 400, opacity: 0 }', '{ x: 0, opacity: 1, duration: .45, ease: "expo.out" }', t + 1.7);
-    const pl = st(`<div class="pill">Link game + nhóm Zalo ở bio 👆</div>`, 1560, t + 2.4, DUR);
+    b.cards.forEach(([ic, ti, sub], k) => {
+      const c = st(`<div class="opt"><i>${ic}</i><div><b>${esc(ti)}</b><span>${md(sub)}</span></div></div>`, 1150 + k * 180, t + 1.2 + k * .5, DUR);
+      ft(c, `{ x: ${k % 2 ? 400 : -400}, opacity: 0 }`, '{ x: 0, opacity: 1, duration: .45, ease: "expo.out" }', t + 1.2 + k * .5);
+    });
+    const pl = st(`<div class="pill">${esc(b.pill)}</div>`, 1560, t + 2.4, DUR);
     ft(pl, '{ scale: .7, opacity: 0 }', '{ scale: 1, opacity: 1, duration: .4, ease: "back.out(2)" }', t + 2.4);
   }
   t = te;
@@ -257,6 +328,19 @@ mark{background:${Y};color:${K};padding:0 .12em;border-radius:6px;box-decoration
 .leg{display:flex;gap:36px;font:700 30px ${FV};margin-top:8px}
 .useZh{font:400 86px ${FZ};color:#fff;margin-bottom:28px}
 .big{font:900 92px/1.05 ${FV};letter-spacing:-.03em;text-align:center;color:#fff;text-wrap:balance}
+.bar{position:absolute;left:60px;right:60px;top:96px;height:12px;display:flex;gap:10px}
+.bar .seg{flex:1;background:rgba(255,255,255,.16);border-radius:6px;overflow:hidden}
+.bar .seg i{display:block;height:100%;background:${Y};transform-origin:0 50%;transform:scaleX(0)}
+.glab{font:400 40px ${FZ};fill:#fff}
+.bad{font:900 50px/1.2 ${FV};color:#ff6b6b;text-align:center}
+.good{font:900 50px/1.2 ${FV};color:#fff;text-align:center;text-wrap:balance}
+.ws .p mark{display:inline-block}
+.note mark{display:inline-block}
+.qz{font:800 52px/1.25 ${FV};color:#fff;text-align:center;text-wrap:balance}
+.cd{font:900 200px ${FV};color:${Y};text-shadow:0 0 40px rgba(252,224,41,.5)}
+.ans{font:800 120px ${FM};color:${Y}}
+.ans mark{display:inline-block}
+.qrule{font:800 40px ${FV};color:#fff;margin-top:18px;background:rgba(252,224,41,.08);border:3px solid rgba(252,224,41,.45);border-radius:18px;padding:10px 22px}
 .opt{display:flex;align-items:center;gap:26px;width:900px;background:rgba(255,255,255,.06);border:4px solid ${Y};border-radius:26px;padding:22px 30px}
 .opt i{font-style:normal;font-size:80px;font-family:'Noto Color Emoji'}
 .opt b{display:block;font:900 50px/1.1 ${FV};color:${Y}}

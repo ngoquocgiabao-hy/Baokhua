@@ -21,7 +21,8 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 | F6 | Chữ thật ở Hạ Long (biển hiệu tiếng Trung quanh Bãi Cháy) | `series/chuthat.mjs` | Bảo chụp biển hiệu, ghi khung chữ | Chưa có ảnh |
 | F7 | Bảo quay mặt: tiểu phẩm hai vai, POV quầy lễ tân | Quay tay, dựng bằng skill "cắt cắt" (CapCut) | Bảo quay | Chưa làm |
 | F8 | Chuyện thật · Câu thật (raw câu chuyện → câu tiếng Trung trong chuyện → điểm ăn tiền + câu đi làm → kêu gọi game và học online) | `series/cauthat.mjs` + nhạc `series/music_bed.py` | Raw video của Bảo trong `story/raw/` (ngoài git), tập trong `story/episodes/` | Tập 1 và bản short đã dựng |
-| F9 | Giáo trình 3D · phân tích sâu (≤ 60 giây: gây hit → biểu đồ, luật, ví dụ đi làm, bí quyết → câu nói ngay → kêu gọi game mới + học online) | `series/giaotrinh3d.mjs` | `giaotrinh/*.json` (công khai, lấy từ `COURSE` trong game mới và giáo án khung HSK0–HSK4) | GT01 bản mẫu đã dựng, chờ Bảo duyệt và lồng tiếng |
+| F9 | Giáo trình 3D · phân tích sâu (≤ 60 giây: gây hit → biểu đồ, luật, ví dụ đi làm, bí quyết → câu nói ngay → kêu gọi học online; chưa nhắc game mới vì game đang hoàn thiện) | `series/giaotrinh3d.mjs` | `giaotrinh/*.json` (công khai, lấy từ `COURSE` trong game mới và giáo án khung HSK0–HSK4) | GT01 v2 Bảo đã chốt hình 06/11 (thêm đồ thị thanh điệu, đếm ngược đố vui). Chờ lồng tiếng |
+| F10 | Reel comic từ raw (20–35 giây: gây hit → mỗi đoạn 3 giây một bong bóng truyện tranh chữ Hán + pinyin + nghĩa → ôn lại → kêu gọi). Kiểu "mode A" trong lệnh Grok AI Reel | `series/comic_reel.mjs` + bộ CapCut `tools/capcut_kit.cjs` | Raw của Bảo trong `story/raw/` (ngoài git), tập trong `story/episodes/` | Bơi 01 "Bơi qua cầu Bãi Cháy" đã dựng 06/11, chờ duyệt |
 
 ### Thêm một tập F2 hoặc F6 (khoảng 10 phút làm, 7 phút máy dựng)
 1. Đặt ảnh vào `story/photos/` (đã che thông tin cá nhân, xem mục 5).
@@ -29,6 +30,13 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 3. Chạy `node series/chuthat.mjs story/episodes/<mã>.json`, xem trước, rồi `cd out/<mã> && npx hyperframes render -o ../<TÊN>_master.mp4`.
 4. Nén bản đăng: `ffmpeg -i ..._master.mp4 -c:v libx264 -crf 20 -preset slow -maxrate 18M -bufsize 36M -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart <TÊN>_9x16.mp4`.
 5. Nghĩa và pinyin phải qua Gemini kiểm trước khi đăng (mục 5). Chữ chỉ lấy từ ảnh thật, không tự bịa.
+
+### Thêm một reel F10 và bộ CapCut (khoảng 20 phút làm, 2 phút máy dựng)
+1. Xem raw bằng bảng mỗi giây một khung, chọn cảnh **không có phụ đề in sẵn** (raw cũ của Bảo hay có phụ đề Trung in sẵn, để lọt vào là chữ Trung thiếu pinyin và nghĩa).
+2. Viết `story/episodes/<mã>.json` theo mẫu ở đầu `series/comic_reel.mjs`: mỗi đoạn 3 giây, cảnh (`a` giây bắt đầu, `d`, `speed` < 1 là quay chậm, `comic` bật lọc truyện tranh, `kb` in/out), bong bóng `zh/py/vi` (giữ ít nhất 2,5 giây), `sfx`, `hook`.
+3. `node series/comic_reel.mjs story/episodes/<mã>.json` → `cd out/<mã> && npx hyperframes render -o ../<TÊN>_master.mp4` → nén như mục trên. Cắt lại cảnh đã có: thêm `RECUT=1`.
+4. Gemini kiểm câu (mục 5), soát mỗi giây một khung.
+5. Bộ CapCut cho Bảo tự sửa: `NODE_PATH=$(npm root -g) node tools/capcut_kit.cjs out/<mã>` (cần `npm i -g capcut-cli` hoặc biến `CAPCUT_BIN`). Ra `out/<mã>/capcut_kit/`: thư mục dự án CapCut (lớp cảnh quay, lớp ảnh bong bóng, 3 lớp chữ Hán / pinyin / tiếng Việt để sửa, đang ẩn, lớp nhạc), cảnh đã cắt, PNG bong bóng nền trong, 3 tệp phụ đề SRT, nhạc. Đường dẫn trong dự án là đường dẫn tuyệt đối của máy dựng: trong CapCut bấm "Liên kết lại" chọn thư mục `assets` của dự án, hoặc chạy `capcut relink <dự án> --from <đường dẫn cũ> --to <đường dẫn trên máy Bảo>`. CapCut bản mới có thể từ chối dự án tạo ngoài ứng dụng; khi đó dùng cảnh, PNG và SRT trong bộ để ráp tay.
 
 ### Kết cấu chuẩn cho video 1–3 phút (F8 và các thể loại dài)
 1. **Gây hit (3–5 giây):** một câu hỏi hoặc mâu thuẫn, ví dụ "借 là mượn hay cho mượn?".
@@ -108,10 +116,10 @@ Nâng cấp hình sau này: cảnh mở đầu bằng video AI (Google Flow / Ve
 - Không né cơ chế chống bot của nền tảng. Video TikTok cũ thì Bảo lưu từ máy hoặc từ ứng dụng rồi gửi lại.
 
 ## 6. Việc còn mở
-1. F9: Bảo duyệt GT01 và lồng tiếng (`out/gt01/vo.md`); duyệt xong thì dựng GT02 → GT12 theo bảng mục 4.
-2. Game mới "Khách sạn Vịnh Ā Bǎo" chờ "duyệt đăng". F9 và F8 nhắc game mới, nên đăng sau khi game lên baokhua.com.
-3. Trailer F5: quay lại đoạn game (14–22 giây) bằng game mới, sau khi game được duyệt.
-4. Bảo gửi raw 02–04 qua chat (Drive chỉ tải được tệp dưới 5 MB) để làm F8 #2–#4.
-5. Video dài trên Drive: công cụ Drive của Claude không tải lên được tệp video lớn. Bảo kéo thả các tệp đã gửi trong chat vào `03_VIDEO/01_DA_DUYET` hoặc `02_CHO_DUYET` theo bảng `00_DANH_MUC_VIDEO` ở đó.
-6. Sổ `SO_LONG_MACH_14_NGAY`: đổi các khung 11:30 từ F3/F4 sang F9 (cần bật connector Google Sheets để Claude sửa thẳng vào tệp).
+1. F9: GT01 v2 đã chốt hình. Lồng tiếng: cần ElevenLabs (gói Starter trở lên để nhân bản giọng từ raw của Bảo, khoá API đặt qua cài đặt môi trường, không dán vào chat). Phần đọc mẫu chữ Hán vẫn dùng giọng thật của Bảo hoặc giọng nhân bản đã kiểm thanh điệu bằng máy đo cao độ. Duyệt giọng xong thì dựng GT02 → GT12 theo bảng mục 4.
+2. Game mới "Khách sạn Vịnh Ā Bǎo" đang hoàn thiện, chưa đẩy. F9, F10 hiện chỉ kêu gọi học online; khi game được "duyệt đăng" thì thêm thẻ game vào kêu gọi.
+3. F10: Bảo duyệt Bơi 01 và mở thử bộ CapCut. Tập tiếp theo lấy từ các raw bơi khác, raw TikTok, ảnh cũ.
+4. Trailer F5: quay lại đoạn game (14–22 giây) bằng game mới, sau khi game được duyệt.
+5. Tải video lớn lên Drive: dùng mã OAuth tạm (hết hạn sau khoảng 1 giờ) qua ô nhập bảo mật, tải lên bằng API resumable. Không có mã thì Bảo kéo thả theo bảng `00_DANH_MUC_VIDEO`.
+6. Sổ `SO_LONG_MACH_14_NGAY`: đổi các khung 11:30 từ F3/F4 sang F9/F10 (cần bật connector Google Sheets để Claude sửa thẳng vào tệp).
 7. Bảo chụp 10 biển hiệu tiếng Trung quanh Bãi Cháy để làm F6.
