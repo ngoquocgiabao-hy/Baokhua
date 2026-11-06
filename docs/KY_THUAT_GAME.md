@@ -206,3 +206,10 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
 - Nhân vật WebGL: mỗi tranh khoảng 400–1.000 đỉnh, rất nhẹ với card đồ hoạ.
 - Đo trên máy thử (không có card đồ hoạ): bản đồ khoảng 40–58 khung/giây, trận khoảng 60 (cách vẽ cũ).
 - Cần đo thêm trên điện thoại thật.
+
+## Chế độ sự kiện (v17, 06/11/2026) – nối với game hợp nhất `hotel/`
+- Đọc tham số ở `EV` (đầu script cấu hình). Có `EV` thì thân trang thêm lớp `ev` (ẩn màn bắt đầu, nhiệm vụ, quảng cáo thẻ) và vào thẳng sự kiện.
+- `?ev=errand&id=…&zh=…&py=…&vi=…&d=0..4`: `openMap({ errand })` → trong `WorldMap`: `errSetup` (cửa khách sạn `door`, sạp `shop`, chỉ giữ quái nhỏ trên đường), `drawErrand` (mặt tiền khách sạn, sạp tạp hoá + người bán), `openShop` / `shopPick` (dùng lại bảng đấu `#duelOverlay`), `drawCarry` (thùng hàng trước ngực), `errFinish`. Khi đi chợ không lưu vị trí bản đồ (`saveX` bỏ qua) và không tự bắt chuyện người lạ.
+- `?ev=boss&stage=N`: `startStage(N)`; màn kết thúc đổi nút thành "🏨 Về khách sạn" → `evDone`.
+- `evDone(r)`: `postMessage({ type:'bk-event', at, ev, … }, location.origin)` + `localStorage.bk_event_result`; mở riêng (không trong khung) thì chuyển về `hotel/`.
+- Kiểm: `node tools/test/hub.js` (đi trọn đi chợ và thử thách từ game hợp nhất).

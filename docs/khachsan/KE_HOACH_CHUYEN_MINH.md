@@ -521,6 +521,26 @@ Bảo trả lời ngày 06/11/2026: duyệt các đề xuất, riêng nguồn h�
 | Thời điểm mở 6–10★ | Chưa mở, chỉ hiện xem trước |
 | Có bán vật phẩm bằng tiền thật về sau không | Không ở giai đoạn 1–3; xem lại ở giai đoạn 4 sau tư vấn pháp lý |
 
+## 16. Bản 2.0: game hợp nhất `hotel/` (06/11/2026, tối)
+
+Bảo yêu cầu: "tôi cần 1 game thôi", gộp cả 3 bản đang có (game Khách sạn 2.5D, bản thử 3D, game Đánh Boss), giữ nguyên nhân vật vẽ của game Đánh Boss, bỏ boss lễ tân, đi map khi có sự kiện bất ngờ phải đi mua đồ, mua đồ từng bước từ cái bàn trang trí.
+
+**Cấu trúc 3 tầng (đã làm, nhánh làm việc, chưa đăng):**
+
+| Tầng | Tệp | Vai trò |
+|---|---|---|
+| Bên ngoài | `hotel/index.html` (tách từ `khachsan.html` v5) | Phố Bãi Cháy 2.5D, đón khách, công trình bên ngoài, HUD, các tab Mua đồ / Ôn tập / Thành tích |
+| Bên trong | `hotel/inside.html` (từ `hotel/proto`) | Sảnh 3D, tải khi bấm "Vào trong", nhận danh sách đồ đã mua qua postMessage |
+| Sự kiện | `game.html?ev=errand` · `game.html?ev=boss&stage=N` | Đi chợ trên bản đồ phố; Thử thách đánh boss; trả kết quả qua postMessage `bk-event` |
+
+**Mua đồ tầng tầng lớp lớp:** 5 khu × 5 món (Góc chờ → Quầy lễ tân → Góc trà & ánh sáng → Sảnh sang trọng → Sảnh 5 sao). Trong khu mua theo thứ tự, xong khu mới mở khu sau, khu sau còn cần đủ sao. Món đầu tiên là 桌子 (zhuōzi, cái bàn). Mua món nào trả lời tên tiếng Trung món đó; tên món vào Bộ thẻ ôn. Một số món lần đầu mua thì nhà cung cấp hết hàng → Ā Bǎo ra chợ mua (mặc cả được hoàn 30% xu).
+
+**Sao = cấp HSK:** 1★ HSK0 · 2★ HSK1 · 3★ HSK2 · 4★ HSK3 · 5★ HSK4. Lên sao mở bài học mới, khu nội thất mới, boss thử thách mới.
+
+**Boss theo HSK (không còn lễ tân):** HSK0 Cua Thanh Điệu · HSK1 Vali Khổng Lồ · HSK2 Tổ trưởng · HSK3 Quản lý ca đêm · HSK4 Hắc Ninja. Tranh lễ tân cũ thành nhân viên thuê.
+
+**Việc tiếp theo (đề xuất):** khu 6+ là tầng phòng ngủ (cảnh 3D riêng), thêm kiểu sự kiện, bản đồ đi chợ theo khu của cấp HSK, đo trên điện thoại thật, Gemini kiểm câu tiếng Trung mới (danh sách trong báo cáo Drive 06/11).
+
 ## Phụ lục A. Mở khoá theo sao (chi nhánh Bãi Cháy)
 
 | Sao | Điểm sao cần | Khu mở | Khách mới | Nhân viên mới | Chủ đề giao tiếp (mức HSK) |

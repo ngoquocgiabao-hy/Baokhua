@@ -40,7 +40,8 @@ const SP = process.argv[2] || require('path').join(__dirname, 'out'), W = +proce
   for (let i = 0; i < 80; i++) { const st = await p.evaluate(() => ({ x: window.__bao.WorldMap.hero.x, mx: window.__mx, duel: !!window.__bao.WorldMap.duel })); if (st.duel) break; if (st.mx && st.mx - st.x < 46) { await p.keyboard.press('ArrowUp'); await p.waitForTimeout(150); await shot('07jump'); await p.waitForTimeout(500); break; } await p.waitForTimeout(60); }
   await p.keyboard.up('ArrowRight');
   log.push('after jump ' + JSON.stringify(await M()));
-  if ((await M()).duel) { await p.evaluate(() => { const B = window.__bao, d = B.WorldMap.duel, q = B.QUESTIONS.find(x => x.id === d.q); [...document.querySelectorAll('#duelOpts button')].find(b => b.querySelector('b').textContent === q.options[q.answer]).click(); }); await p.waitForTimeout(400); await p.evaluate(() => document.getElementById('duelNext').click()); await p.waitForTimeout(1200); }
+  if ((await M()).duel) { await p.waitForFunction(() => document.getElementById('duelOverlay').classList.contains('on') && document.querySelectorAll('#duelOpts button').length, null, { timeout: 5000 }).catch(() => {});   // bảng đấu mở sau 0,38 giây
+    await p.evaluate(() => { const B = window.__bao, d = B.WorldMap.duel, q = B.QUESTIONS.find(x => x.id === d.q); [...document.querySelectorAll('#duelOpts button')].find(b => b.querySelector('b').textContent === q.options[q.answer]).click(); }); await p.waitForTimeout(400); await p.evaluate(() => document.getElementById('duelNext').click()); await p.waitForTimeout(1200); }
   // đại quái chặn đường: trả lời sai trước
   await walkUntil(() => !!window.__bao.WorldMap.duel, 8000); await p.waitForTimeout(700);
   log.push('big duel ' + JSON.stringify(await M()));

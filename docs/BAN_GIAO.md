@@ -16,18 +16,23 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
   - `game.html`: Đánh Boss "Hành trình HSK0 → HSK4". Tự điều khiển Ā Bǎo qua thành phố Hạ Long thu nhỏ, gặp người, đấu quái, vào 5 trạm đánh boss bằng câu hỏi.
 - Repo **công khai**. Sổ sách, giá vốn, dữ liệu học viên, hiến chương nội bộ chỉ để ở Google Drive "BAO KHUA - SO CAI".
 
-## 0. Ưu tiên dự án (06/11/2026)
+## 0. Ưu tiên dự án (06/11/2026, tối)
 
-- **Dự án chính: game Khách sạn mới** (mô phỏng xây và quản lý khách sạn 3D, quốc tế). Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md`. Cách cải tiến liên tục: `docs/khachsan/KAIZEN.md`. Bảo đã duyệt hướng đi ngày 06/11 (mục 15 của kế hoạch). Đang ở giai đoạn 0 (2 tuần, mục 10.1): bản thử v0.2 ở `hotel/proto/` (sảnh 3D dựng 100% bằng code, kiểu hoạt hình dễ thương; giáo trình 6 bài HSK0 → HSK4, thẻ từ, ôn kiểu Anki, nhắc ôn; cài như app), kiểm bằng `node tools/test/hotel.js`; video `teaser.mp4` quay bằng `tools/hotel/capture.js`. Hình 3D và video làm không tốn thêm chi phí (mục 8.2–8.3 của kế hoạch). Chưa lên App Store, CH Play; tập trung web và PWA (mục 9.5).
-- **Game Đánh Boss là game nhánh:** đóng băng tính năng ở v16, chỉ sửa lỗi. Tổng kết: `docs/TONG_KET_GAME_DANH_BOSS.md`.
-- `khachsan.html` v5 tiếp tục chạy trên baokhua.com cho đến khi bản mới đạt chuẩn và Bảo duyệt đăng.
+- **Chỉ còn 1 game chủ lực: `hotel/` – Khách sạn Vịnh Ā Bǎo**, gộp cả 3 bản đang có theo yêu cầu của Bảo:
+  - **Bên ngoài:** phố Bãi Cháy 2.5D (tách từ `khachsan.html` v5, tệp gốc giữ nguyên): đón khách, trả lời tiếng Trung, xây công trình.
+  - **Bên trong:** sảnh 3D (`hotel/inside.html`, từ bản thử `hotel/proto/`): lúc đầu trống, mua đồ **từng món, từng khu** (5 khu × 5 món, món đầu là 桌子 cái bàn). Mỗi món hiện ra trong sảnh, Ā Bǎo tự làm việc (đứng quầy, tưới cây, rót trà, chơi đàn, đẩy xe hành lý…).
+  - **Sự kiện:** hết hàng hoặc khách cần đồ gấp thì Ā Bǎo ra chợ (bản đồ phố của game Đánh Boss, `game.html?ev=errand`); Thử thách đánh boss theo cấp HSK (`game.html?ev=boss`). Nhân vật giữ nguyên tranh vẽ của game Đánh Boss.
+  - Sao = cấp HSK (1★ HSK0 → 5★ HSK4). Giáo trình 6 bài, khách nói câu có từ của bài đang học; ôn thẻ kiểu Anki, nhắc ôn, cài như app.
+- Boss HSK0/HSK1 không còn là lễ tân: thay bằng quái **Cua Thanh Điệu** và **Vali Khổng Lồ**; tranh lễ tân cũ thành nhân viên thuê (người tốt) trong khách sạn.
+- Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md` (mục 16, bản 2.0). Cách cải tiến: `docs/khachsan/KAIZEN.md`.
+- `khachsan.html` v5 và `game.html` vẫn chạy trên baokhua.com cho đến khi Bảo gõ "duyệt đăng" bản hợp nhất.
 
 ## 2. Hiện trạng (06/11/2026)
 | Nơi | Nội dung |
 |---|---|
 | `main` (trang thật) | Bản đăng 06/11 (Bảo duyệt đăng): game Đánh Boss v16, trang chủ 11.11 (ưu đãi thẻ năm 299k đến 23:59 11/11, không ghi ngày khai giảng), trang thẻ hội viên 11.11, Khách sạn v5. Commit `0036e89`. |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Như `main` cộng: bản thử game Khách sạn mới v0.2 `hotel/proto/`, công cụ quay video `tools/hotel/capture.js`, kiểm thử `tools/test/hotel.js`, trang chủ có 2 nút 3D Chơi game / Học online + bảng chọn game. Phần này **chưa đăng**, chờ Bảo gõ "duyệt đăng". |
-| Bản xem thử (riêng tư) | Game Đánh Boss: https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Bản thử 3D Khách sạn: https://claude.ai/artifact/75dWtZMQe9gUqRtUXTGyfQ. Chỉ người được chia sẻ mới mở được. |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Như `main` cộng: **game hợp nhất `hotel/`** (phố 2.5D + sảnh 3D + sự kiện), game Đánh Boss v17 (quái thay lễ tân, chế độ sự kiện, đi map tự nhiên hơn), trang chủ mượt hơn và nút Chơi game vào thẳng `hotel/`, bản thử `hotel/proto/` (lưu trữ), kiểm thử `tools/test/hub.js`. Phần này **chưa đăng**, chờ Bảo gõ "duyệt đăng". |
+| Bản xem thử (riêng tư) | **Trang chủ mới + game hợp nhất (06/11 tối): https://claude.ai/artifact/11BpTQMHGXtai6EN5Bt9oB** (bản xem thử trỏ thẳng `hotel/index.html`). Game Đánh Boss: https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Bản thử 3D Khách sạn: https://claude.ai/artifact/75dWtZMQe9gUqRtUXTGyfQ. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
 - **v6:** 5 trạm HSK0–HSK4, ngân hàng câu theo cấp.
@@ -168,13 +173,15 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 ## 8. Việc đang chờ / đề xuất làm tiếp (theo thứ tự ưu tiên)
 **Chờ Bảo:**
 1. Sau 23:59 ngày 11/11 các dòng ưu đãi tự ẩn; cần Bảo chốt chữ ưu đãi mới (nếu có) cho `index.html`, `membership.html`, `game.html` (`SALE_END`, `OFFER_*`).
-1a. Duyệt phong cách hình 3D sau giai đoạn 0 (xem bản thử `hotel/proto/`).
+1a. Chơi thử game hợp nhất `hotel/` và duyệt: thứ tự 25 món nội thất, giá xu, nhịp sự kiện đi chợ (5–8 khách một lần), 2 quái thay lễ tân. Sau đó gõ "duyệt đăng" nếu đạt.
+1b. Chia sẻ thư mục baokhua trên Mac qua Remote Control (Claude desktop: Settings → Claude Code → Remote Control) nếu muốn Claude đối chiếu tệp trên máy; hiện chưa thấy thư mục nào được chia sẻ.
 2. Câu hỏi về giá còn treo: giá sau 11/11 ghi "giá 11.11" hay giữ "đại giảm giá"; có gia hạn "Rủ bạn +7 ngày" không. Đã chốt (V45/V51): thẻ 99k/299k là gói tự học, không gồm lớp Zoom; lớp Zoom đang hoãn.
 3. Chỉnh Google Form theo góp ý cũ.
 4. Khoá `GEMINI_API_KEY` để có giọng người thật.
 5. Video Veo nếu muốn hoạt hình vẽ tay từng khung.
 
 **Đề xuất kỹ thuật:**
+0. Game hợp nhất: thêm món cho khu 6+ (tầng phòng ngủ: 床 giường, 枕头 gối, 毛巾 khăn…) cần cảnh 3D phòng riêng; nhiều kiểu sự kiện hơn (khách VIP, mất điện, đoàn khách); bản đồ đi chợ theo khu của cấp HSK.
 1. **Đo trên điện thoại thật** (Android tầm trung, iPhone): khung hình/giây bản đồ và trận. Nếu giật thì:
    - giảm `dpr` tối đa xuống 1.5;
    - giảm số lớp cảnh;

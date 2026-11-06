@@ -16,5 +16,6 @@ python3 -c "import json,sys; r=json.load(open('$OUT/fight0.json'))+json.load(ope
 echo "== Khung hình/giây + console"; node tools/test/perf.js
 echo "== Dáng nhân vật (không xé hình)"; node tools/test/gait.js || ok=0
 for sz in "360 640" "390 844"; do set -- $sz; echo "== Phông chữ Việt/Trung $1×$2"; node tools/test/fonts.js $1 $2 | tail -2 || ok=0; done
+for sz in "360 640" "390 844"; do set -- $sz; echo "== Game hợp nhất hotel/ $1×$2"; node tools/test/hub.js "$OUT" $1 $2 > "$OUT/hub-$1.txt"; r=$?; tail -1 "$OUT/hub-$1.txt"; [ $r = 0 ] || ok=0; done
 echo "== Game Khách sạn mới (hotel/proto)"; node tools/test/hotel.js "$OUT" | tail -1 | grep -q "ĐẠT$" && echo "Game Khách sạn mới: ĐẠT" || { echo "Game Khách sạn mới: KHÔNG ĐẠT"; ok=0; }
 [ $ok = 1 ] && echo "KẾT QUẢ: ĐẠT" || { echo "KẾT QUẢ: CÓ LỖI"; exit 1; }

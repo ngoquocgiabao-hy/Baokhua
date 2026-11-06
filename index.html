@@ -19,7 +19,9 @@
 <meta name="theme-color" content="#FFD91F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+SC:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap" rel="stylesheet">
+<!-- chữ Hán chỉ tải đúng các chữ trang đang dùng (668 KB → ~106 KB); thêm chữ Hán mới lên trang thì cập nhật chuỗi text= -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&display=swap&text=%E3%80%82%E4%B8%80%E4%B8%89%E4%B8%8B%E4%B8%8D%E4%B8%93%E4%B8%9A%E4%B8%AA%E4%B8%AD%E4%B8%B4%E4%B9%9D%E4%B9%9F%E4%B9%A0%E4%BA%86%E4%BA%8C%E4%BA%A4%E4%BA%BA%E4%BB%AC%E4%BB%B7%E4%BB%BB%E4%BC%81%E4%BC%9A%E4%BD%8F%E4%BD%9C%E4%BD%A0%E4%BD%BF%E4%BE%BF%E4%BF%A1%E5%85%89%E5%85%A5%E5%85%AD%E5%86%99%E5%87%BA%E5%88%B0%E5%8A%9E%E5%8A%9F%E5%8A%A0%E5%8A%A1%E5%8D%81%E5%8D%88%E5%8D%8A%E5%8D%97%E5%8D%A1%E5%8D%B3%E5%8E%82%E5%8F%8B%E5%8F%A3%E5%90%88%E5%90%AB%E5%90%AC%E5%95%86%E5%9B%BD%E5%9C%A8%E5%A4%9A%E5%A5%BD%E5%A6%82%E5%AD%A6%E5%AE%89%E5%AE%9C%E5%AE%9D%E5%AE%A2%E5%AF%BC%E5%B0%91%E5%B0%B1%E5%B7%A5%E5%B7%B2%E5%B8%88%E5%B9%B3%E5%BA%97%E5%BC%80%E5%BE%AE%E6%82%A8%E6%83%85%E6%83%B3%E6%84%8F%E6%88%90%E6%88%91%E6%88%BF%E6%8A%8A%E6%8A%A4%E6%8C%89%E6%8D%A2%E6%96%87%E6%97%85%E6%97%A9%E6%97%B6%E6%98%AF%E6%9C%8B%E6%9C%8D%E6%9C%AA%E6%9C%BA%E6%9D%A5%E6%9E%9C%E6%A0%BC%E6%A2%A6%E6%A5%BC%E6%AC%A2%E6%B0%94%E6%B1%89%E6%B2%B9%E6%B8%B8%E6%B9%BE%E6%BB%A1%E7%82%B9%E7%83%AD%E7%85%A7%E7%8E%A9%E7%8F%AD%E7%90%86%E7%94%9F%E7%9A%84%E7%A4%BA%E7%AC%91%E7%BB%8F%E7%BB%99%E7%BF%BB%E8%80%81%E8%80%83%E8%A2%AB%E8%AF%91%E8%AF%AD%E8%AF%B4%E8%AF%B7%E8%AF%BB%E8%B0%A2%E8%B4%A7%E8%B4%A8%E8%B6%8A%E8%B7%AF%E8%BF%8E%E8%BF%99%E9%80%80%E9%85%92%E9%87%8F%E9%92%B1%E9%97%AE%E9%97%B4%E9%98%BF%E9%A4%90%E9%BE%99%EF%BC%81%EF%BC%8C" rel="stylesheet">
 <script>document.documentElement.classList.add('js')</script>
 <style>
 /* ---------- token ---------- */
@@ -340,28 +342,6 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
 .dock .dock__game{background:linear-gradient(155deg,#ff9a5a,#ff4d6d);color:#fff;box-shadow:0 4px 0 #9e1f3a;border:2px solid var(--ink);overflow:visible}
 .dock .dock__game::before{content:"";position:absolute;inset:-5px;border-radius:999px;border:2.5px solid #ff9a5a;opacity:0;animation:b3dPing 2.4s ease-out infinite;pointer-events:none}
 /* bảng chọn game */
-.gpick{position:fixed;inset:0;z-index:90;background:rgba(12,18,30,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;display:flex;align-items:flex-end;justify-content:center}
-.gpick.on{opacity:1;visibility:visible}
-.gpick__panel{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--paper);border:3px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .45s var(--ease-out);perspective:900px}
-.gpick.on .gpick__panel{transform:none}
-@media (min-width:700px){.gpick{align-items:center}.gpick__panel{border-radius:28px;border-bottom:3px solid var(--ink)}}
-.gpick__head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.gpick__head h3{flex:1;font-size:20px;font-weight:800}
-.gpick__x{border:2.5px solid var(--ink);background:#fff;border-radius:12px;width:40px;height:40px;font-size:16px;font-weight:800;cursor:pointer}
-.gcard{display:flex;gap:12px;align-items:stretch;background:#fff;border:2.5px solid var(--ink);border-radius:20px;padding:9px;margin-bottom:12px;color:var(--ink);text-decoration:none;box-shadow:0 5px 0 var(--ink);transform-origin:50% 0;opacity:0;transform:rotateX(-35deg) translateY(16px);transition:transform .5s var(--ease-spring),opacity .35s,box-shadow .15s}
-.gpick.on .gcard{opacity:1;transform:none}
-.gpick.on .gcard:nth-of-type(2){transition-delay:.06s}.gpick.on .gcard:nth-of-type(3){transition-delay:.12s}
-.gcard:active{transform:translateY(4px)!important;box-shadow:0 1px 0 var(--ink)}
-.gcard--hot{background:linear-gradient(150deg,#fff7c2,#ffe07a)}
-.gcard__img{width:92px;flex:none;border-radius:14px;overflow:hidden;border:2px solid var(--ink);background:#cfeaf7}
-.gcard__img img{width:100%;height:100%;object-fit:cover;display:block}
-.gcard__tx{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0}
-.gcard__tag{align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.06em;background:#ff5d73;color:#fff;border-radius:999px;padding:2px 8px;border:2px solid var(--ink)}
-.gcard__tx b{font-size:16.5px;line-height:1.2}
-.gcard__tx small{font-size:12.5px;line-height:1.4;opacity:.8}
-.gcard__go{align-self:flex-start;margin-top:4px;font-size:12.5px;font-weight:800;color:var(--denim)}
-.gpick__learn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:999px;background:var(--denim);color:#fff;font-weight:800;text-decoration:none;border:2.5px solid var(--ink);box-shadow:0 4px 0 var(--ink);margin-top:4px}
-.gpick__note{font-size:11.5px;text-align:center;opacity:.7;margin-top:10px}
 /* chuyển cảnh vào game: vòng tròn vàng nở ra từ chỗ bấm */
 .portal{position:fixed;inset:0;z-index:100;pointer-events:none;visibility:hidden}
 .portal.on{visibility:visible;pointer-events:auto}
@@ -543,6 +523,17 @@ body.gaming .progress{opacity:0}
   .js .ring-box{height:auto;perspective:none} .js .ring{display:flex;width:auto;height:auto;transform:none}
   .js .ring li{position:static;transform:none;min-width:220px}
 }
+/* 06/11 · mượt hơn (đo bằng Chromium, CPU chậm 4×): bớt lớp hiệu ứng chạy mãi, chống nhảy bố cục */
+@property --sp{syntax:'<number>';inherits:false;initial-value:1}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+@media (max-width:479px){.eyebrow--rot{min-height:49px;align-content:flex-start}}
+.btn{will-change:auto}
+.btn--main::after{animation-iteration-count:2}
+.portal span::before{animation-play-state:paused}.portal.on span::before{animation-play-state:running}
+.svc{backdrop-filter:none}
+.nav.is-stuck{background:rgba(255,217,31,.97);backdrop-filter:none;-webkit-backdrop-filter:none}
+.dock{backdrop-filter:none;-webkit-backdrop-filter:none}
+@keyframes salePulse{50%{transform:scale(1.08)}}
 </style>
 </head>
 <body>
@@ -589,7 +580,7 @@ body.gaming .progress{opacity:0}
       </h1>
       <p class="sub fade" style="--dl:.85s">Mình là Bảo. Mình sống và làm việc 5 năm ở Trung Quốc, từng làm quản lý tiếp đón ở resort 5 sao và kỹ sư chất lượng ở tập đoàn TCL. Mình dạy thứ tiếng Trung bạn mang đi làm được ngay.</p>
       <div class="duo fade" id="duo" style="--dl:1.05s">
-        <button type="button" class="b3d b3d--game" data-open="games" aria-haspopup="dialog">
+        <button type="button" class="b3d b3d--game" data-open="games">
           <span class="b3d__float"><span class="b3d__body">
             <span class="b3d__layer" style="--z:0" aria-hidden="true"></span><span class="b3d__layer" style="--z:5" aria-hidden="true"></span><span class="b3d__layer" style="--z:10" aria-hidden="true"></span>
             <span class="b3d__face"><span class="b3d__ico" aria-hidden="true"><span class="mcube"><i>🎮</i><i>🏨</i><i>🛎️</i><i>⭐</i><i></i><i></i></span></span>
@@ -737,25 +728,24 @@ body.gaming .progress{opacity:0}
   <div class="wrap game__grid">
     <div>
       <span class="eyebrow reveal">Học bằng game · chơi ngay trên trang</span>
-      <h2 class="reveal" style="--i:1">Làm lễ tân <em>Khách sạn Bảo Khựa.</em></h2>
-      <p class="lead reveal" style="--i:2">Khách Trung xếp hàng ở cửa. Trả lời đúng tiếng Trung để có xu, giữ khách hài lòng, rồi xây khách sạn từ 1★ lên 5★. Phố Bãi Cháy chuyển ngày đêm, chạm vào xe, quán, người qua đường để học từ mới.</p>
+      <h2 class="reveal" style="--i:1">Làm chủ <em>Khách sạn Vịnh Ā Bǎo.</em></h2>
+      <p class="lead reveal" style="--i:2">Khách Trung xếp hàng ở cửa. Trả lời đúng tiếng Trung để có xu, mua đồ cho sảnh từng món một, từ cái bàn đầu tiên tới sảnh 5 sao. Hết hàng thì Ā Bǎo tự ra chợ mua, quái lạc vào sảnh thì đánh boss. 1★ là HSK0, 5★ là HSK4.</p>
       <ul class="feats">
         <li class="reveal"><i aria-hidden="true">🛎️</i><b>46 câu tình huống thật</b><span>Quầy lễ tân, nhà hàng, nhà máy. Câu nào cũng có pinyin và nghĩa Việt.</span></li>
         <li class="reveal" style="--i:1"><i aria-hidden="true">😊</i><b>Khách biết chờ, biết bực</b><span>Đón nhanh, trả lời đủ câu thì khách mới hài lòng và boa thêm.</span></li>
         <li class="reveal" style="--i:2"><i aria-hidden="true">🔊</i><b>Nghe giọng phổ thông</b><span>Mỗi câu đúng được đọc trọn để bạn nghe và nói theo.</span></li>
-        <li class="reveal" style="--i:3"><i aria-hidden="true">🏗️</i><b>Xây từ 1★ lên 5★</b><span>Mua món nào phải chọn đúng tên tiếng Trung món đó.</span></li>
+        <li class="reveal" style="--i:3"><i aria-hidden="true">🛋️</i><b>Sảnh 3D, mua đồ từng món</b><span>Mua món nào phải chọn đúng tên tiếng Trung món đó. Đi chợ, đánh boss, ôn thẻ từ mỗi ngày.</span></li>
       </ul>
       <div class="game__cta reveal" style="--i:4">
-        <a class="btn btn--main" href="khachsan.html">Chơi toàn màn hình
+        <a class="btn btn--main" href="hotel/">Chơi toàn màn hình
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></a>
-        <a class="btn btn--ghost" href="game.html">⚔️ Chế độ Đánh Boss</a>
       </div>
     </div>
     <div class="phone-wrap reveal" style="--i:2">
       <div class="phone" id="phone">
         <div class="phone__screen" id="phoneScreen">
           <span class="phone__notch" aria-hidden="true"></span>
-          <button class="poster" id="playHere" type="button" aria-label="Chơi game Khách sạn Bảo Khựa ngay trong trang">
+          <button class="poster" id="playHere" type="button" aria-label="Chơi game Khách sạn Vịnh Ā Bǎo ngay trong trang">
             <img src="v4/game-poster.jpg" alt="Khách sạn Bảo Khựa 5 sao về đêm trong game" width="540" height="1074" loading="lazy" decoding="async">
             <span class="poster__cta"><span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 001.5.86l12.4-7.5a1 1 0 000-1.72L8.5 3.64A1 1 0 007 4.5z"/></svg></span>
               <b>Chơi ngay tại đây</b><small>Không cần tải ứng dụng · tiến độ lưu trên máy bạn</small></span>
@@ -835,8 +825,8 @@ body.gaming .progress{opacity:0}
       <li class="road__st road__st--peak reveal" style="--i:4"><span class="road__lv">HSK4</span><span class="road__tm">Tháng 9–12 · Đỉnh</span><h3>Họp, đàm phán, phỏng vấn</h3><p>Không những… mà còn…, dù… cũng… Nói trôi chảy trong cuộc họp và buổi phỏng vấn xin việc.</p><p class="road__ex"><b class="han" lang="zh-CN">即使加班，我们也会按时交货。</b> <i>Jíshǐ jiābān, wǒmen yě huì ànshí jiāohuò.</i> · Dù phải tăng ca, chúng tôi cũng giao hàng đúng hạn.</p></li>
     </ol>
     <div class="road__cta reveal">
-      <a class="btn btn--main magnet" href="game.html">🥷 Chơi thử trạm HSK0</a>
-      <span class="road__note">Game Đánh Boss đi đúng 5 chặng này. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.</span>
+      <a class="btn btn--main magnet" href="hotel/">🎮 Chơi game theo lộ trình này</a>
+      <span class="road__note">Game Khách sạn Vịnh Ā Bǎo đi đúng 5 chặng này: 1★ HSK0 → 5★ HSK4, mỗi chặng một boss thử thách. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.</span>
     </div>
   </div>
 </section>
@@ -942,30 +932,11 @@ body.gaming .progress{opacity:0}
 </section>
 </main>
 
-<footer><div class="wrap"><span>© 2026 Bảo Khựa <span class="han">阿宝</span> · China-ready · baokhua.com</span><span><a href="khachsan.html">Game Khách sạn</a> · <a href="membership.html">Thẻ hội viên</a> · Hạ Long, Quảng Ninh</span></div></footer>
+<footer><div class="wrap"><span>© 2026 Bảo Khựa <span class="han">阿宝</span> · China-ready · baokhua.com</span><span><a href="hotel/">Game Khách sạn</a> · <a href="membership.html">Thẻ hội viên</a> · Hạ Long, Quảng Ninh</span></div></footer>
 
 <div class="dock" id="dock">
-  <button type="button" class="btn btn--main dock__game" data-open="games" aria-haspopup="dialog">🎮 Chơi game</button>
+  <button type="button" class="btn btn--main dock__game" data-open="games">🎮 Chơi game</button>
   <a class="btn btn--ghost" href="membership.html" data-go>📚 Học online</a>
-</div>
-<div class="gpick" id="gpick" role="dialog" aria-modal="true" aria-labelledby="gpickTitle">
-  <div class="gpick__panel">
-    <div class="gpick__head"><h3 id="gpickTitle">🎮 Chọn game để chơi</h3><button type="button" class="gpick__x" aria-label="Đóng">✕</button></div>
-    <a class="gcard gcard--hot" href="hotel/proto/" data-go>
-      <span class="gcard__img"><img src="hotel/proto/poster.jpg" alt="Sảnh khách sạn 3D trong game Khách sạn Vịnh Ā Bǎo" width="432" height="528" loading="lazy" decoding="async"></span>
-      <span class="gcard__tx"><span class="gcard__tag">MỚI · 3D · BẢN THỬ</span><b>Khách sạn Vịnh Ā Bǎo</b><small>Đón khách, lên sao, mở bài học HSK0 → HSK4. Thẻ từ và ôn tập mỗi ngày.</small><span class="gcard__go">Chơi ngay →</span></span>
-    </a>
-    <a class="gcard" href="khachsan.html" data-go>
-      <span class="gcard__img"><img src="v4/game-poster.jpg" alt="Khách sạn Bảo Khựa 5 sao về đêm" width="540" height="1074" loading="lazy" decoding="async"></span>
-      <span class="gcard__tx"><b>Khách sạn Bảo Khựa</b><small>Trả lời đúng tiếng Trung để có xu, xây khách sạn từ 1★ lên 5★.</small><span class="gcard__go">Chơi ngay →</span></span>
-    </a>
-    <a class="gcard" href="game.html" data-go>
-      <span class="gcard__img"><img src="v4/art/hero1.jpg" alt="Ā Bǎo, nhân vật chính game Đánh Boss" loading="lazy" decoding="async"></span>
-      <span class="gcard__tx"><b>Đánh Boss HSK0 → HSK4</b><small>Đi qua 5 trạm, đánh boss, đỡ chiêu chữ bằng nghĩa từ.</small><span class="gcard__go">Chơi ngay →</span></span>
-    </a>
-    <a class="gpick__learn" href="membership.html" data-go>📚 Muốn học bài bản? Học online với Bảo</a>
-    <p class="gpick__note">Chơi ngay trên trình duyệt, không cần tải ứng dụng. Tiến độ lưu trên máy bạn.</p>
-  </div>
 </div>
 <div class="portal" id="portal" aria-hidden="true"><i></i><span>Đang vào…</span></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1015,16 +986,16 @@ const CONFIG = {
   let ticking = false;
   const onScroll = () => {
     const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
+    const r = tl.getBoundingClientRect(), tops = scrubs.map(el => el.getBoundingClientRect().top);   // đọc hết trước, ghi sau (không ép trình duyệt tính lại bố cục giữa chừng)
     nav.classList.toggle('is-stuck', y > 20);
     dock.classList.toggle('is-on', !window.__duoSeen && y < max - 500);   // 06/11: thanh dưới có nút Chơi game / Học online hiện ngay từ đầu, ẩn khi 2 nút 3D lớn đang trong tầm nhìn
     bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-    const r = tl.getBoundingClientRect();
     tl.style.setProperty('--p', Math.min(1, Math.max(0, (vh * .75 - r.top) / r.height)).toFixed(3));
-    for (const el of scrubs) {                      // 0 khi vừa ló ở đáy màn hình, 1 khi lên tới 72% chiều cao
-      const t = el.getBoundingClientRect().top;
-      if (t > vh * 1.2 || t < -vh) continue;
-      el.style.setProperty('--sp', Math.min(1, Math.max(0, (vh - t) / (vh * .28))).toFixed(3));
-    }
+    scrubs.forEach((el, i) => {                     // 0 khi vừa ló ở đáy màn hình, 1 khi lên tới 72% chiều cao
+      const t = tops[i]; if (t > vh * 1.2 || t < -vh) return;
+      const v = Math.min(1, Math.max(0, (vh - t) / (vh * .28))).toFixed(3);
+      if (el._sp !== v) { el._sp = v; el.style.setProperty('--sp', v); }
+    });
     ticking = false;
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
@@ -1127,6 +1098,7 @@ const CONFIG = {
     ctx.fillStyle = '#FFD91F'; ctx.font = `900 ${s * .66}px "Noto Serif SC","Songti SC",serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('宝', W / 2, H / 2 + s * .03); ctx.restore();
   };
+  const FONTS = {};
   const draw = () => {
     ctx.clearRect(0, 0, W, H);
     const R = Math.min(W, H) * .4, cy = Math.cos(rotY), sy = Math.sin(rotY), cx = Math.cos(rotX), sx = Math.sin(rotX);
@@ -1136,12 +1108,14 @@ const CONFIG = {
       return { sx: W / 2 + x1 * R * k, sy: H / 2 + y1 * R * k, z: z2, k, c: p.c, hot: p.hot };
     }).sort((a, b) => a.z - b.z);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    let sealed = false;
+    let sealed = false, lastF = '';
     for (const p of P) {
-      if (!sealed && p.z >= 0) { seal(R); sealed = true; }
+      if (!sealed && p.z >= 0) { seal(R); sealed = true; lastF = ''; }
       ctx.globalAlpha = .1 + (p.z + 1) / 2 * .88;
       ctx.fillStyle = p.hot ? '#1E5AA8' : '#16171B';
-      ctx.font = `${p.hot ? 900 : 700} ${Math.max(9, R * .09 * p.k)}px "Noto Serif SC","Songti SC",serif`;
+      const px = Math.round(Math.max(9, R * .09 * p.k)), key = (p.hot ? 'h' : 'n') + px;   // cỡ chữ làm tròn + nhớ chuỗi phông: không gán ctx.font mới cho từng chữ mỗi khung
+      const f = FONTS[key] || (FONTS[key] = `${p.hot ? 900 : 700} ${px}px "Noto Serif SC","Songti SC",serif`);
+      if (f !== lastF) { ctx.font = f; lastF = f; }
       ctx.fillText(p.c, p.sx, p.sy);
     }
     if (!sealed) seal(R); ctx.globalAlpha = 1;
@@ -1253,7 +1227,7 @@ const CONFIG = {
     poster.addEventListener('click', () => {
       if (frame) return;
       frame = document.createElement('iframe');
-      frame.src = 'khachsan.html'; frame.title = 'Game Khách sạn Bảo Khựa'; frame.allow = 'autoplay';
+      frame.src = 'hotel/'; frame.title = 'Game Khách sạn Vịnh Ā Bǎo'; frame.allow = 'autoplay';
       scr.appendChild(frame); phone.classList.add('is-live');
       if (innerWidth < 900) document.body.classList.add('gaming');
       const r = phone.getBoundingClientRect();
@@ -1281,24 +1255,25 @@ const CONFIG = {
 /* ---- 2 nút 3D + bảng chọn game + chuyển cảnh (06/11) ---- */
 (function () {
   const q = s => document.querySelector(s), qa = s => [...document.querySelectorAll(s)];
-  const pick = q('#gpick'), portal = q('#portal'); if (!pick || !portal) return;
+  const portal = q('#portal'); if (!portal) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  const GAME = 'hotel/';   // 1 game chủ lực: Khách sạn Vịnh Ā Bǎo (phố 2.5D + sảnh 3D + sự kiện đi chợ, đánh boss)
   let pre = false;
-  const prefetch = () => { if (pre) return; pre = true; ['hotel/proto/', 'hotel/proto/three.module.min.js', 'khachsan.html', 'game.html'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
-  const open = () => { prefetch(); pick.classList.add('on'); document.documentElement.style.overflow = 'hidden'; };
-  const close = () => { pick.classList.remove('on'); document.documentElement.style.overflow = ''; };
-  qa('[data-open="games"]').forEach(b => { b.addEventListener('click', e => { e.preventDefault(); open(); }); b.addEventListener('pointerenter', prefetch, { once: true }); });
-  pick.addEventListener('click', e => { if (e.target === pick || e.target.closest('.gpick__x')) close(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && pick.classList.contains('on')) close(); });
-  qa('[data-go]').forEach(a => a.addEventListener('click', e => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
-    e.preventDefault(); const r = a.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2, url = a.href;
+  // chỉ tải trước đúng trang game lúc người chơi chạm/rê vào nút (không tải 3D, không tải game khác)
+  const prefetch = () => { if (pre) return; pre = true; const l = document.createElement('link'); l.rel = 'prefetch'; l.href = GAME; document.head.appendChild(l); };
+  const go = (el, url) => {
+    const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
     if (reduce) { location.href = url; return; }
     const d = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
     portal.style.setProperty('--x', x + 'px'); portal.style.setProperty('--y', y + 'px'); portal.style.setProperty('--s', (d / 20 + 2).toFixed(1));
     portal.classList.add('on'); setTimeout(() => { location.href = url; }, 560);
+  };
+  qa('[data-open="games"]').forEach(b => { b.addEventListener('click', e => { e.preventDefault(); prefetch(); go(b, GAME); }); b.addEventListener('pointerenter', prefetch, { once: true }); b.addEventListener('pointerdown', prefetch, { once: true }); });
+  qa('[data-go]').forEach(a => a.addEventListener('click', e => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    e.preventDefault(); go(a, a.href);
   }));
-  addEventListener('pageshow', () => { portal.classList.remove('on'); close(); });
+  addEventListener('pageshow', () => { portal.classList.remove('on'); });
   // nghiêng khối 3D theo chuột (máy tính); điện thoại dùng chuyển động nổi sẵn có
   if (fine && !reduce) qa('.b3d').forEach(b => { const body = b.querySelector('.b3d__body'); let raf = 0, rx = 0, ry = 0;
     b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); ry = ((e.clientX - r.left) / r.width - .5) * 26; rx = -((e.clientY - r.top) / r.height - .5) * 24;

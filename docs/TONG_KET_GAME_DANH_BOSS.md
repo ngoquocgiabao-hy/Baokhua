@@ -111,3 +111,8 @@ Kết quả lần chạy cuối ghi trong báo cáo Drive `BAO_CAO_06-11_GAME_DA
 2. File giọng đọc Gemini (`VOICE_FILES = true`) khi có khoá.
 3. Cân bằng `ACT_DIFF`, `WORD_EVERY`, `WORD_SEC` sau buổi chơi thử với học viên.
 4. Dùng lại Ā Bǎo làm nhân vật quản lý trong game Khách sạn để hai game nối với nhau.
+
+## Bổ sung v17 (06/11/2026, tối): thành sự kiện của game hợp nhất `hotel/`
+- **Bỏ boss lễ tân.** HSK0: **Cua Thanh Điệu** (phun bong bóng mang 4 thanh ā á ǎ à, kẹp càng "CẮP!"). HSK1: **Vali Khổng Lồ** (nhảy đè "RẦM!", tung quần áo). Vẽ bằng code (`tools/art/monsters.js`), không khung xương, cỡ theo bề ngang sân để không đè tướng trên màn dọc. Tranh lễ tân cũ chuyển sang `v4/staff/` làm nhân viên thuê trong khách sạn.
+- **Chế độ sự kiện** (`EV` đầu script): `?ev=errand&id&zh&py&vi&d` = đi chợ (cửa khách sạn → sạp tạp hoá → nói đúng tên món → trả tiền → ôm thùng hàng về); `?ev=boss&stage=N` = vào thẳng trận. Kết quả gửi `postMessage({type:'bk-event'…})` cho khung cha và lưu `localStorage.bk_event_result`.
+- **Đi map tự nhiên hơn:** nhún lấy đà khi bắt đầu bước, tăng tốc mềm, ngả người theo gia tốc, đi bộ nảy thấp hơn chạy, đầu giữ thăng bằng; thao tác mới: trả tiền, cúi nhặt / đặt hàng, ôm thùng hàng.
