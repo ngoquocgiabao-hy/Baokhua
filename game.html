@@ -20,6 +20,20 @@
 /* v13 · phông chữ: chữ Việt luôn dùng phông hệ thống có đủ dấu; chữ Hán dùng phông Trung (gắn lang="zh-CN") */
 const UIF = 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif';
 const ZHF = '"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Source Han Sans SC","Microsoft YaHei",sans-serif';
+/* v17 · CHẾ ĐỘ SỰ KIỆN: game Khách sạn (hotel/index.html) mở trang này trong khung để chơi 1 sự kiện rồi quay về.
+   ?ev=errand&id=zhuozi&zh=桌子&py=zhuōzi&vi=cái bàn&d=0 → đi chợ mua đồ cho khách sạn (bản đồ phố)
+   ?ev=boss&stage=0..4 → Thử thách: đánh boss 1 trạm (sân đấu)
+   Kết quả: postMessage({ type:'bk-event', ... }) về khung cha cùng nguồn + lưu localStorage 'bk_event_result' (mở riêng thì game Khách sạn đọc khi tải). */
+const EV = (() => { try { const q = new URLSearchParams(location.search), ev = q.get('ev'); if (ev !== 'errand' && ev !== 'boss') return null; return { ev, id: (q.get('id') || '').slice(0, 24), zh: (q.get('zh') || '').slice(0, 8), py: (q.get('py') || '').slice(0, 40), vi: (q.get('vi') || '').slice(0, 40), d: Math.max(0, Math.min(4, +q.get('d') || 0)), stage: Math.max(0, Math.min(4, +q.get('stage') || 0)) }; } catch (e) { return null; } })();
+const EMBED = (() => { try { return window.parent !== window; } catch (e) { return true; } })();
+let evSent = false;
+function evDone(r) {
+  if (evSent) return; evSent = true;
+  const o = Object.assign({ type: 'bk-event', at: Date.now() }, r);
+  try { localStorage.setItem('bk_event_result', JSON.stringify(o)); } catch (e) {}
+  try { if (EMBED) window.parent.postMessage(o, location.origin); } catch (e) {}
+  if (!EMBED) setTimeout(() => { location.href = 'hotel/'; }, 200);
+}
 /* ===== CẤU HÌNH ===== */
 const GAME_URL = "https://baokhua.com/game.html";
 const ZALO_LINK = "https://zalo.me/g/16yx8ptwane8ggwrnyxl";
@@ -35,12 +49,12 @@ const TIMER_WARN_SECONDS = 5; // còn ≤5s: thanh giờ đỏ + tiếng tích t
    n = số câu mỗi trận · sec = giây mỗi câu · hit = hệ số sát thương boss · pyHelp = hiện pinyin ở đáp án chữ Hán
    learn = câu mẫu học trước khi vào trận [Hán, pinyin, nghĩa Việt] */
 const STAGES = [
-  { id:0, key:'hsk0', lv:'HSK0', time:'Tuần 1–2', name:'Làng Pinyin', place:'Bãi Cháy', boss:'Lễ tân tập sự', look:'trainee',
-    taunt:['你好！我是新来的。','Nǐ hǎo! Wǒ shì xīn lái de.','Xin chào! Em là người mới.'],
+  { id:0, key:'hsk0', lv:'HSK0', time:'Tuần 1–2', name:'Làng Pinyin', place:'Bãi Cháy', boss:'Cua Thanh Điệu', look:'trainee',
+    taunt:['四个声调，你会吗？','Sì ge shēngdiào, nǐ huì ma?','Bốn thanh điệu, cậu biết không?'],
     n:8, sec:30, hit:.6, pyHelp:true, badge:'🌱HSK0', goal:'4 thanh điệu · chào hỏi · số đếm',
     learn:[['你好','nǐ hǎo','Xin chào'],['谢谢','xièxie','Cảm ơn'],['对不起','duìbuqǐ','Xin lỗi'],['再见','zàijiàn','Tạm biệt']] },
-  { id:1, key:'hsk1', lv:'HSK1', time:'Tháng 1–2', name:'Quầy lễ tân', place:'Bãi Cháy', boss:'Lễ tân khó tính', look:'hotel',
-    taunt:['你好！请出示护照。','Nǐ hǎo! Qǐng chūshì hùzhào.','Xin chào! Xin xuất trình hộ chiếu.'],
+  { id:1, key:'hsk1', lv:'HSK1', time:'Tháng 1–2', name:'Quầy lễ tân', place:'Bãi Cháy', boss:'Vali Khổng Lồ', look:'hotel',
+    taunt:['我是大行李箱！请出示护照！','Wǒ shì dà xínglixiāng! Qǐng chūshì hùzhào!','Ta là vali khổng lồ! Xuất trình hộ chiếu đi!'],
     n:10, sec:25, hit:.8, pyHelp:true, badge:'🛎️HSK1', goal:'câu hỏi cơ bản · tiếp khách nhận phòng',
     learn:[['你叫什么名字？','Nǐ jiào shénme míngzi?','Bạn tên là gì?'],['这个多少钱？','Zhège duōshao qián?','Cái này bao nhiêu tiền?'],['我想办理入住。','Wǒ xiǎng bànlǐ rùzhù.','Tôi muốn làm thủ tục nhận phòng.']] },
   { id:2, key:'hsk2', lv:'HSK2', time:'Tháng 3–5', name:'Nhà máy Cẩm Phả', place:'Cẩm Phả', boss:'Tổ trưởng', look:'factory',
@@ -593,6 +607,7 @@ h1{font-size:21px;text-align:center;line-height:1.25}h2{font-size:17px;text-alig
 .duel-q b{font-weight:800;font-size:22px;line-height:1.3}
 .duel-q i{font-size:13px;color:#1e5aa8}
 .duel-q span{font-size:13px;opacity:.85}
+.duel-q .dq .need{font-size:inherit;opacity:1;color:#d62839}
 .duel-q .btn{margin-top:6px;padding:8px;background:#16171B;color:#FFD91F;box-shadow:none;border:0}
 .talk-opts button i.py-hide{display:none}
 .talk-opts.done button i.py-hide{display:block}
@@ -860,18 +875,26 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
 .tiers figcaption{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-align:center;background:linear-gradient(transparent,rgba(0,0,0,.85))}
 .tiers figcaption b{display:block;font-size:13px;letter-spacing:0;color:#FFD91F;text-transform:none}
 @media (prefers-reduced-motion:reduce){.artbox img,.pv-vs,.vs-badge.low,.arena-wrap.rage .rage-ov{animation:none!important}}
+/* v17 · chế độ sự kiện (mở từ game Khách sạn): ẩn phần hành trình, nhiệm vụ, quảng cáo thẻ */
+body.ev #sStart,body.ev .quest-strip,body.ev #btnEnterStage,body.ev #stationCard,body.ev #mapCta,body.ev .hsk-note,body.ev #inviteCard,body.ev .map-head .map-pills #mapProg{display:none!important}
+.err-bar{position:absolute;left:8px;right:8px;top:36px;z-index:3;display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:14px;background:rgba(22,23,27,.84);color:#fff;font-weight:700;font-size:13px;line-height:1.3;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
+.err-bar[hidden]{display:none}
+.err-bar .ic{font-size:18px}
+.err-bar b[lang]{font-size:16px;color:#FFD91F;font-weight:800}
+.err-bar i{font-style:normal;opacity:.9}
+.err-bar .st{margin-left:auto;font-size:12px;color:#7fffd4;white-space:nowrap}
 </style>
 </head>
 <body>
 <div id="app">
  <div class="screen on" id="sStart">
   <h1 class="title-v5">⚔️ Bảo Khựa 阿宝 · <span>Đánh Boss</span></h1>
-  <div class="poster-vs" role="img" aria-label="Ā Bǎo đấu Boss Lễ tân khó tính">
+  <div class="poster-vs" role="img" aria-label="Ā Bǎo đấu Boss Vali Khổng Lồ">
    <div class="pnl hero"><div class="artbox"><img src="v4/art/hero1.jpg" alt="" decoding="async"></div></div>
    <div class="pnl boss"><div class="artbox"><img src="v4/vs/hotel.jpg" alt="" decoding="async"></div></div>
    <svg class="split" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="57" y1="-2" x2="43" y2="102" stroke="#16171B" stroke-width="9" vector-effect="non-scaling-stroke"/><line x1="57" y1="-2" x2="43" y2="102" stroke="#FFD91F" stroke-width="3.5" vector-effect="non-scaling-stroke"/></svg>
    <span class="pv-vs">VS</span>
-   <span class="pv-tag hero">Ā BǍO 阿宝</span><span class="pv-tag boss">LỄ TÂN KHÓ TÍNH</span>
+   <span class="pv-tag hero">Ā BǍO 阿宝</span><span class="pv-tag boss">VALI KHỔNG LỒ</span>
    <button type="button" class="mute-btn" id="muteBtn" aria-label="Tắt/bật tiếng" title="Âm thanh">🔊</button>
   </div>
   <button class="btn" type="button" id="btnStart">▶ VÀO HÀNH TRÌNH</button>
@@ -904,6 +927,7 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
    </div>
    <div class="map-hint" id="mapHint" hidden>Giữ ◀ ▶ để đi (giữ lâu thì chạy nhanh) · nút nhảy để vượt quái nhỏ, nhặt chữ vàng · chạm vào người, quái hay cổng để đi tới</div>
    <div class="map-toast" id="mapToast" role="status" aria-live="polite"></div>
+   <div class="err-bar" id="errBar" hidden></div>
   </div>
   <div class="quest-strip">
    <button type="button" class="qs-main" id="questBtn" aria-label="Mở nhiệm vụ hôm nay"><span class="qs-ic">🎯</span><span class="qs-tx"><b>Nhiệm vụ hôm nay <i id="questCount">0/3</i></b><small id="questNow"></small></span><span class="qs-bar"><i id="questBar"></i></span></button>
@@ -920,7 +944,7 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
   <div class="fhud">
    <div class="fh hero"><div class="top"><span class="nm">Ā Bǎo · <b id="heroLvl">Lv1</b></span><span class="hp-num" id="heroTxt">0/0</span></div><div class="bar hero-bar" id="heroHp"><i></i></div></div>
    <div class="vs-badge" id="vsBadge"><div><b id="timerTxt">20</b><small>GIÂY</small></div></div>
-   <div class="fh boss"><div class="top"><span class="nm" id="bossName">Boss Lễ Tân</span><span class="hp-num" id="bossTxt">0/0</span></div><div class="bar boss-bar" id="bossHp"><span class="trail"></span><i></i></div></div>
+   <div class="fh boss"><div class="top"><span class="nm" id="bossName">Boss</span><span class="hp-num" id="bossTxt">0/0</span></div><div class="bar boss-bar" id="bossHp"><span class="trail"></span><i></i></div></div>
   </div>
   <div class="arena-wrap" id="arena">
    <div class="stage-art">
@@ -1700,15 +1724,17 @@ createBattle = function createArena(root) {
   const vsBox = q('.stage-art'), heroP = q('.pnl.hero'), bossP = q('.pnl.boss');
   const heroImg = q('#heroArt'), bossImg = q('#bossArt'), btag = q('.btag'), sayEl = q('#saybox');
   const HERO_ART = ['v4/art/hero1.jpg', 'v4/art/hero2.jpg', 'v4/art/hero3.jpg'];
-  const BOSS_TAG = { trainee:'TẬP SỰ', night:'CA ĐÊM', shadow:'HSK4 · TRÙM CUỐI' };
-  const BOSS_COL = { trainee:'rgba(255,120,190,1)', hotel:'rgba(255,70,50,1)', factory:'rgba(255,150,30,1)', night:'rgba(90,200,255,1)', shadow:'rgba(185,90,255,1)' };
+  const BOSS_TAG = { trainee:'HSK0 · THANH ĐIỆU', hotel:'HSK1 · HÀNH LÝ', night:'CA ĐÊM', shadow:'HSK4 · TRÙM CUỐI' };
+  const BOSS_COL = { trainee:'rgba(255,120,80,1)', hotel:'rgba(80,140,255,1)', factory:'rgba(255,150,30,1)', night:'rgba(90,200,255,1)', shadow:'rgba(185,90,255,1)' };
   const RM = REDUCED, P = Chibi.POSES, K = Chibi.key, MIX = Chibi.mix;
   /* v8 · NHÂN VẬT THEO TRANH: hình cắt từ ảnh minh hoạ (v4/sprites/*.webp).
      [rộng, cao, neo x (giữa chân), mặt đất y] tính theo khung cao 520px; cùng một nhân vật thì cùng tỉ lệ.
-     hit = điểm ra đòn (tỉ lệ theo khung hình), flip = lật ngang để đánh về phía tướng (bên trái). */
-  const SPRITE = {"trainee-idle":[132,520,66,520],"trainee-atk":[249,510,131,504],"trainee-ko":[168,410,101,402],"hotel-idle":[132,520,66,520],"hotel-atk":[216,509,115,512],"hotel-ko":[315,328,130,331],"factory-idle":[236,520,118,520],"factory-atk":[345,511,188,511],"factory-ko":[344,383,190,391],"night-idle":[258,520,129,520],"night-atk":[317,503,150,502],"night-ko":[399,400,189,439],"shadow-idle":[276,520,138,520],"shadow-atk":[478,430,272,569],"shadow-ko":[309,392,151,410],"hero1":[272,520,136,520],"hero2":[463,566,247,525],"hero3":[261,543,145,522]};
-  const SPR_X = { 'trainee-atk': { flip: true, hit: [.85, .3] }, 'hotel-atk': { flip: true, hit: [.85, .25] }, 'factory-atk': { hit: [.12, .25] }, 'night-atk': { hit: [.33, .37] }, 'shadow-atk': { hit: [.15, .45] }, hero1: { hit: [.82, .38] }, hero2: { hit: [.7, .55] }, hero3: { hit: [.85, .47] } };
-  const CH = { hero: .6, trainee: .66, hotel: .7, factory: .72, night: .73, shadow: .74 }; // chiều cao khi đứng, theo chiều cao sân
+     hit = điểm ra đòn (tỉ lệ theo khung hình), flip = lật ngang để đánh về phía tướng (bên trái).
+     06/11/2026: trainee = Cua Thanh Điệu, hotel = Vali Khổng Lồ (quái vẽ bằng code, tools/art/monsters.js), thay 2 boss lễ tân;
+     2 quái này không có khung xương (NORIG), cử động bằng uốn hình + nảy. */
+  const SPRITE = {"trainee-idle":[640,520,320,506],"trainee-atk":[830,500,490,486],"trainee-ko":[660,380,330,366],"hotel-idle":[380,520,190,508],"hotel-atk":[470,520,250,508],"hotel-ko":[620,340,310,328],"factory-idle":[236,520,118,520],"factory-atk":[345,511,188,511],"factory-ko":[344,383,190,391],"night-idle":[258,520,129,520],"night-atk":[317,503,150,502],"night-ko":[399,400,189,439],"shadow-idle":[276,520,138,520],"shadow-atk":[478,430,272,569],"shadow-ko":[309,392,151,410],"hero1":[272,520,136,520],"hero2":[463,566,247,525],"hero3":[261,543,145,522]};
+  const SPR_X = { 'trainee-atk': { hit: [.07, .37] }, 'hotel-atk': { hit: [.2, .62] }, 'factory-atk': { hit: [.12, .25] }, 'night-atk': { hit: [.33, .37] }, 'shadow-atk': { hit: [.15, .45] }, hero1: { hit: [.82, .38] }, hero2: { hit: [.7, .55] }, hero3: { hit: [.85, .47] } };
+  const CH = { hero: .6, trainee: .5, hotel: .62, factory: .72, night: .73, shadow: .74 }; // chiều cao khi đứng, theo chiều cao sân (cua dẹt và rộng nên thấp hơn)
   const SPR = {};
   function spr(name) {
     let o = SPR[name];
@@ -1745,7 +1771,7 @@ createBattle = function createArena(root) {
   /* ---------- diễn viên ---------- */
   function mk(kind) { return { kind, spec: kind === 'hero' ? Chibi.SPECS.hero : Chibi.SPECS.hotel, side: kind === 'hero' ? 1 : -1, x: 0, y: 0, rot: 0, alpha: 1, act: null, flash: 0, flashCol: '#ffffff', mood: null, weapon: undefined, pose: P.stance, state: 'idle', dizzy: 0, sp: 'idle', px: 0, ghosts: [], gAcc: 0, vx: 0, bx: 0, bv: 0 }; }
   const hero = mk('hero'), boss = mk('boss');
-  const home = a => a === hero ? W * .27 : W * .73;
+  const home = a => a === hero ? W * .27 : W * (look === 'trainee' ? .76 : .73);
   function idlePose(a) {
     if (a === hero) return P.stance;
     return look === 'hotel' ? P.cross : look === 'trainee' ? P.stand : P.stance;
@@ -1776,9 +1802,10 @@ createBattle = function createArena(root) {
     // v9: đứng chờ có hồn – tướng nhún như võ sĩ, mỗi boss một kiểu
     if (a === hero) a.y = -Math.abs(Math.sin(clock * 4.2)) * 3.2 * S;
     else if (look === 'shadow') a.y = -Math.abs(Math.sin(clock * 3.6)) * 2.6 * S;
-    else if (look === 'trainee') a.y = -Math.abs(Math.sin(clock * 7)) * .9 * S;
+    else if (look === 'trainee') a.y = -Math.abs(Math.sin(clock * 7)) * 1.4 * S;   // cua nhún lạch bạch
+    else if (look === 'hotel') { const hp = Math.max(0, Math.sin(clock * 2.4)); a.y = -hp * hp * hp * 6 * S; }   // vali nảy tưng tưng
     a.pose = Object.assign({}, base, { bob: base.bob + br * 1.3, aF: base.aF + br * .04 });
-    // v11.1 · mỗi người một dáng chờ: tướng nhún thủ thế, lễ tân tập sự đổi chân bồn chồn, lễ tân khó tính gõ chân,
+    // v11.1 · mỗi người một dáng chờ: tướng nhún thủ thế, cua bò ngang nhún lạch bạch, vali nảy tưng tưng,
     // tổ trưởng thở nặng vai, quản lý ca đêm đưa đèn pin qua lại, Hắc Ninja nhún chân sẵn sàng
     const P2 = a.pose, c1 = Math.sin(clock * 1.6), c2 = Math.sin(clock * 3.1);
     if (a === hero) {
@@ -1796,12 +1823,14 @@ createBattle = function createArena(root) {
     else if (look === 'night') { P2.aF += Math.sin(clock * 1.1) * .18; P2.head += Math.sin(clock * 1.1 + .4) * .06; }
     else if (look === 'shadow') { P2.kF -= Math.abs(Math.sin(clock * 3.6)) * .2; P2.kB -= Math.abs(Math.sin(clock * 3.6)) * .18; P2.aF += Math.sin(clock * 3.6) * .06; }
     a.mood = null;
-    a.x = home(a) + (a === boss && rage ? rnd(-1.4, 1.4) : 0);
+    a.x = home(a) + (a === boss && rage ? rnd(-1.4, 1.4) : 0) + (a === boss && look === 'trainee' && !RM ? Math.sin(clock * 1.3) * W * .014 : 0);   // cua bò ngang qua lại
   }
   /** điểm trên người (px): 'hand' | 'chest' | 'head' */
   function sprName(a) { return a === hero ? 'hero' + (tier + 1) : look + '-' + (a.sp || 'idle'); }
   function sprOf(a) { const o = spr(sprName(a)); if (o && o.ok) return o; const f = a === hero ? null : spr(look + '-idle'); return f && f.ok ? f : null; }
-  function charH(a) { return H * (a === hero ? CH.hero : (CH[look] || .7)); }
+  // quái bề ngang lớn (cua, vali): chiều cao còn bị giới hạn theo bề ngang sân để không đè lên tướng trên màn điện thoại dọc
+  const WMAX = { trainee: .42, hotel: .5 };
+  function charH(a) { return a === hero ? H * CH.hero : Math.min(H * (CH[look] || .7), WMAX[look] ? W * WMAX[look] : 1e9); }
   function pt(a, which) {
     const o = sprOf(a);
     if (!o) return Chibi.point(a.spec, { x: a.x, y: GY + a.y, s: S, face: a.side, pose: a.pose }, which);
@@ -1835,7 +1864,8 @@ createBattle = function createArena(root) {
     if (k < .72) { const q = (k - .18) / .54; return { pose: MIX(P.crouch, P.jump, Math.sin(q * Math.PI) * .7), y: -Math.sin(q * Math.PI) * H * .075, sq: .06 * Math.sin(q * Math.PI) }; }
     const q = (k - .72) / .28; return { pose: MIX(P.crouch, idle, ease(q)), sq: -.1 * (1 - q) };
   }
-  function rigName(a) { return a === hero ? 'hero' + (tier + 1) : (a.sp === 'atk' || a.sp === 'ko' || a.state === 'down') ? null : look + '-idle'; }
+  const NORIG = { trainee: 1, hotel: 1 };   // quái vẽ bằng code: không có v4/rig/*.json
+  function rigName(a) { return a === hero ? 'hero' + (tier + 1) : (NORIG[look] || a.sp === 'atk' || a.sp === 'ko' || a.state === 'down') ? null : look + '-idle'; }
   function rigOf(a) { if (!rg()) return null; const n = rigName(a); if (!n) return null; const R = Rig.get(n) || Rig.load(n); return R && R.ok ? R : null; }
   const GHOSTC = {}, BREATH = new Float32Array(11);
   const tintOf = a => a.flash > 0 ? [...Rig.hexRGB(a.flashCol), Math.min(1, a.flash) * .8] : null;
@@ -2372,7 +2402,7 @@ createBattle = function createArena(root) {
   }
 
   /* ---------- v10 · TUYỆT CHIÊU CỦA BOSS (trả lời sai) ----------
-     Lễ tân tập sự: Bão giấy tờ · Lễ tân khó tính: Chuông phạt · Tổ trưởng: Cờ lê xoáy + dậm đất
+     Cua Thanh Điệu: Bong bóng thanh điệu + kẹp càng · Vali Khổng Lồ: Nhảy đè RẦM! + tung quần áo · Tổ trưởng: Cờ lê xoáy + dậm đất
      Quản lý ca đêm: Đèn pha kỷ luật · Hắc Ninja: Ảnh phân thân sát. Lúc chờ trả lời (feint) chỉ diễn bản nhẹ, tướng đỡ được. */
   function bossAttack(feint, actTok) {
     const col = BOSS_COL[look] || BOSS_COL.hotel, soft = col.replace(/[\d.]+\)$/, '.9)'), x0 = home(boss), idle = idlePose(boss);
@@ -2386,26 +2416,33 @@ createBattle = function createArena(root) {
     const sx = k => feint ? sfxP(k) : Snd.sfx(k);
     const lite = !!feint;
     if (look === 'trainee') {
-      // chạy lóng ngóng lên nửa sân, vấp, tung cả xấp giấy tờ bay rào rào rồi ném luôn cặp hồ sơ
-      const xs = boss.x, x1 = lerp(home(hero), x0, .55);
+      // Cua Thanh Điệu: bò ngang lạch bạch lên nửa sân, giơ càng, phun bong bóng mang 4 thanh (ā á ǎ à), rồi kẹp càng "CẮP!" và bò ngang về chỗ
+      const xs = boss.x, x1 = lerp(home(hero), x0, .5);
       play(boss, .95, (k, t) => {
-        if (t < .24) return { pose: RUNP(boss, t * 4.2, true), x: lerp(xs, x1, ease(t / .24)), rot: Math.sin(t * 38) * .05, mood: 'nervous' };
-        if (t < .36) return { pose: 'raise', x: x1, sp: 'atk', rot: -.1 * ((t - .24) / .12), sq: .06 };
-        if (t < .58) return { pose: 'chop', x: x1, sp: 'atk', rot: .08, sq: -.04 };
-        const kk = (t - .58) / .37; return Object.assign(backstep(kk, idle), { x: lerp(x1, x0, ease(kk)), sp: kk < .2 ? 'atk' : 'idle' });
+        if (t < .24) { const q = t / .24; return { pose: idle, x: lerp(xs, x1, ease(q)), y: -Math.abs(Math.sin(q * Math.PI * 5)) * H * .016, rot: Math.sin(q * Math.PI * 10) * .05, mood: 'angry' }; }
+        if (t < .38) return { pose: idle, x: x1, sp: 'atk', rot: -.05 * ((t - .24) / .14), sq: .05 };
+        if (t < .58) { const q = (t - .38) / .2; return { pose: idle, x: x1 - W * .035 * Math.sin(q * Math.PI), sp: 'atk', rot: .06 * Math.sin(q * Math.PI), sq: -.05 }; }
+        const kk = (t - .58) / .37; return { pose: idle, x: lerp(x1, x0, ease(kk)), y: -Math.abs(Math.sin(kk * Math.PI * 4)) * H * .012, sp: kk < .15 ? 'atk' : 'idle' };   // cua bò ngang về, không quay lưng
       }, [
-        [.26, () => { if (!alive()) return; sx('paper'); const n = lite ? 4 : 9; for (let i = 0; i < n; i++) paperSheet(pt(boss, 'hand'), [HX() + rnd(-.06, .06) * W, HY() + rnd(-.18, .14) * H], .3, i * .028); }],
-        [.4, () => { if (!alive()) return; sx('swish'); const from = pt(boss, 'hand'); folder(from, [HX() + W * .01, HY() - H * .02], .2, () => { if (!alive()) return; burst(HX(), HY(), 12, ['rgba(255,255,255,1)', 'rgba(120,170,255,1)'], .6); land(col, soft, .8); if (!lite) textPop(HX(), HY() - H * .2, 'BỘP!', '#ffffff', .08); }); }]
+        [.26, () => { if (!alive()) return; sx('bubble'); const n = lite ? 3 : 7, TN = ['ā', 'á', 'ǎ', 'à']; for (let i = 0; i < n; i++) toneBubble(pt(boss, 'hand'), [HX() + rnd(-.07, .07) * W, HY() + rnd(-.2, .12) * H], .42, i * .05, TN[i % 4]); }],
+        [.42, () => { if (!alive()) return; sx('snap'); const h = pt(boss, 'hand'); flare(h[0], h[1], H * .06, 'rgba(255,140,90,1)', .2); burst(HX(), HY(), 12, ['rgba(255,255,255,1)', 'rgba(255,120,80,1)', 'rgba(150,215,255,1)'], .6); land(col, soft, .8); if (!lite) textPop(HX(), HY() - H * .2, 'CẮP!', '#ffffff', .08); }]
       ]);
       return { impactAt: 600 };
     }
     if (look === 'hotel') {
-      // chỉ tay ra lệnh → chuông gọi phục vụ khổng lồ rơi từ trên xuống úp vào tướng: DING! sóng âm toả vòng
-      play(boss, .85, k => ({ pose: K([[0, idle], [.18, 'point'], [.8, 'point'], [1, idle]], k), x: x0 - Math.sin(k * Math.PI) * 18 * S, rot: -Math.sin(k * Math.PI) * .05, mood: 'angry', sp: k > .1 && k < .85 ? 'atk' : 'idle' }), [
-        [.1, () => { if (!alive()) return; const h = pt(boss, 'hand'); flare(h[0], h[1], H * .08, C.gold, .25); if (!lite) speedLines(.5, 'r', { x: HX(), y: HY() - H * .2, a: .25 }); }],
-        [.16, () => { if (!alive()) return; sx('whoosh'); bellDrop(lite, () => { if (!alive()) return; sx('bell'); land(col, soft, 1); }); }]
+      // Vali Khổng Lồ: nhún lấy đà, bật nhảy vồng qua sân rồi đè "RẦM!" xuống trước mặt tướng (đất rung, sóng bụi), há khoá kéo tung quần áo, nảy về chỗ
+      const xs = boss.x, x1 = lerp(home(hero), x0, lite ? .62 : .3);
+      play(boss, lite ? .85 : 1.05, (k, t) => {
+        const T = lite ? .85 : 1.05, a = t / T;
+        if (a < .16) return { pose: idle, x: xs, sq: -.12 * (a / .16), mood: 'angry' };
+        if (a < .5) { const q = (a - .16) / .34; return { pose: idle, x: lerp(xs, x1, ease(q)), y: -Math.sin(q * Math.PI) * H * (lite ? .14 : .3), rot: -.35 * Math.sin(q * Math.PI), sq: .08, sp: 'atk' }; }
+        if (a < .62) { const q = (a - .5) / .12; return { pose: idle, x: x1, sq: -.16 * (1 - q), sp: 'atk' }; }
+        const q = (a - .62) / .38; return { pose: idle, x: lerp(x1, x0, ease(q)), y: -Math.abs(Math.sin(q * Math.PI * 2)) * H * .05, sp: q < .25 ? 'atk' : 'idle' };
+      }, [
+        [.06, () => { if (!alive()) return; sx('whoosh'); }],
+        [lite ? .44 : .52, () => { if (!alive()) return; sx('slam'); shake(lite ? .18 : .34, H * (lite ? .015 : .035)); groundDust(boss.x, lite ? 6 : 14, 1.1); if (!lite) { debris(boss.x, GY - 4, 8); textPop(boss.x, GY - H * .42, 'RẦM!', '#FFD91F', .11); } clothesBurst(lite); land(col, soft, 1); }]
       ]);
-      return { impactAt: 480 };
+      return { impactAt: lite ? 480 : 560 };
     }
     if (look === 'factory') {
       // ném cờ lê xoáy như boomerang (trúng rồi bay về tay), sau đó dậm đất tạo sóng chấn chạy dọc mặt đất
@@ -2480,53 +2517,35 @@ createBattle = function createArena(root) {
     heroHit(power);
   }
   /* --- đạo cụ của boss --- */
-  function paperSheet(from, to, dur, delay) {
-    const wob = rnd(0, 6), sp = rnd(10, 18), sz = H * rnd(.038, .052);
+  /** bong bóng mang dấu thanh (ā á ǎ à): Cua Thanh Điệu phun ra, vỡ "bụp" khi chạm tướng */
+  function toneBubble(from, to, dur, delay, ch) {
+    const wob = rnd(0, 6), R = H * rnd(.032, .046);
     fxs.push({ t: -delay, dur, draw(k) {
-      const x = lerp(from[0], to[0], k), y = lerp(from[1], to[1], k) - Math.sin(k * Math.PI) * H * .14 + Math.sin(k * 9 + wob) * H * .025;
-      g.save(); g.translate(x, y); g.rotate(this.t * sp * .45 + wob); g.scale(Math.max(.15, Math.abs(Math.cos(this.t * sp))), 1);
-      g.fillStyle = '#ffffff'; g.strokeStyle = '#aab2c0'; g.lineWidth = 1;
-      g.fillRect(-sz * .5, -sz * .66, sz, sz * 1.32); g.strokeRect(-sz * .5, -sz * .66, sz, sz * 1.32);
-      g.fillStyle = '#8f99a8'; for (let i = 0; i < 4; i++) g.fillRect(-sz * .34, -sz * .44 + i * sz * .24, sz * .68 * (i === 3 ? .55 : 1), Math.max(1, sz * .06));
-      g.fillStyle = '#e63946'; g.beginPath(); g.arc(sz * .22, sz * .4, sz * .1, 0, 6.283); g.fill();
+      const x = lerp(from[0], to[0], k) + Math.sin(k * 7 + wob) * H * .02, y = lerp(from[1], to[1], k) - Math.sin(k * Math.PI) * H * .1;
+      g.save(); g.translate(x, y); g.scale(1 + Math.sin(this.t * 14 + wob) * .06, 1 - Math.sin(this.t * 14 + wob) * .06);
+      g.globalAlpha = .85; g.fillStyle = 'rgba(190,235,255,.55)'; g.strokeStyle = 'rgba(60,140,200,.9)'; g.lineWidth = Math.max(1, R * .1);
+      g.beginPath(); g.arc(0, 0, R, 0, 6.283); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.ellipse(-R * .38, -R * .38, R * .22, R * .14, -.6, 0, 6.283); g.fill();
+      g.globalAlpha = 1; g.fillStyle = '#1d4f86'; g.font = `900 ${Math.round(R * 1.15)}px ${UIF}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch, 0, R * .05);
       g.restore();
-    }, end: () => burst(to[0], to[1], 3, ['rgba(255,255,255,1)'], .3) });
+    }, end: () => { burst(to[0], to[1], 4, ['rgba(190,235,255,1)', 'rgba(255,255,255,1)'], .35); ring(to[0], to[1], H * .06, 'rgba(190,235,255,.9)', .25, 2); } });
   }
-  function folder(from, to, dur, onHit) {
-    fxs.push({ t: 0, dur, draw(k) {
-      const x = lerp(from[0], to[0], k), y = lerp(from[1], to[1], k) - Math.sin(k * Math.PI) * H * .06, R = H * .07;
-      g.save(); g.translate(x, y); g.rotate(-this.t * 18);
-      g.fillStyle = '#2f5fbf'; g.strokeStyle = '#16171B'; g.lineWidth = 1.5; g.fillRect(-R, -R * .72, R * 2, R * 1.44); g.strokeRect(-R, -R * .72, R * 2, R * 1.44);
-      g.fillStyle = '#ffffff'; g.fillRect(-R * .55, -R * .3, R * 1.1, R * .3);
-      g.restore();
-    }, end: onHit });
-  }
-  /** chuông gọi phục vụ (quầy lễ tân) khổng lồ */
-  function drawBell(x, y, R, rot, a) {
-    g.save(); g.globalAlpha = a; g.translate(x, y); g.rotate(rot);
-    g.fillStyle = '#2b2118'; g.strokeStyle = '#120c06'; g.lineWidth = Math.max(1.5, R * .05);
-    g.beginPath(); g.ellipse(0, R * .62, R * 1.12, R * .2, 0, 0, 6.283); g.fill(); g.stroke();
-    g.fillRect(-R * 1.12, R * .45, R * 2.24, R * .17);
-    const gr = g.createLinearGradient(-R, 0, R, 0); gr.addColorStop(0, '#8a5d08'); gr.addColorStop(.3, '#ffe9a0'); gr.addColorStop(.55, '#f2b31a'); gr.addColorStop(1, '#6e4706');
-    g.fillStyle = gr; g.strokeStyle = '#3d2a05';
-    g.beginPath(); g.moveTo(-R, R * .48); g.bezierCurveTo(-R, -R * .62, R, -R * .62, R, R * .48); g.closePath(); g.fill(); g.stroke();
-    g.fillStyle = '#c9ced8'; g.fillRect(-R * .06, -R * .62, R * .12, R * .26);
-    g.fillStyle = '#e9eef5'; g.beginPath(); g.ellipse(0, -R * .66, R * .2, R * .08, 0, 0, 6.283); g.fill(); g.stroke();
-    g.globalAlpha = a * .7; g.fillStyle = '#fffbe6'; g.beginPath(); g.ellipse(-R * .45, -R * .02, R * .1, R * .3, .5, 0, 6.283); g.fill();
-    g.restore();
-  }
-  function bellDrop(lite, onLand) {
-    const tx = HX(), R = H * (lite ? .09 : .13), y0 = -H * .3, y1 = GY + Math.min(0, hero.y) - charH(hero) * 1.02 - R * .55;
-    fxs.push({ t: 0, dur: .3, draw(k) {
-      const y = lerp(y0, y1, k * k);
-      g.save(); g.globalAlpha = .25 * k; g.fillStyle = '#000'; g.beginPath(); g.ellipse(tx, GY + 2, R * 1.2 * (.4 + .6 * k), 5 * S, 0, 0, 6.283); g.fill(); g.restore();
-      drawBell(tx, y, R, Math.sin(this.t * 26) * .06, 1);
-    }, end: () => {
-      if (onLand) onLand();
-      fxs.push({ t: 0, dur: .65, draw(k) { const sw = Math.sin(k * 42) * .22 * (1 - k); drawBell(tx, y1 - (lite ? eOut(k) * H * .12 : 0), R, sw, 1 - eIn(k)); } });
-      for (let i = 0; i < (lite ? 1 : 3); i++) ring(tx, y1 + R * .2, H * (.24 + i * .13), 'rgba(255,217,31,.9)', .5, 5, i * .08);
-      if (!lite) { textPop(tx + W * .1, y1 - R * .6, 'DING!', '#FFD91F'); for (let i = 0; i < 4; i++) burst(tx, y1 - R * .2, 3, [C.gold, C.white], .5); }
-    } });
+  /** Vali Khổng Lồ đè xuống: há khoá kéo, quần áo, tất, khăn bay tung toé */
+  function clothesBurst(lite) {
+    const x0 = boss.x, y0 = GY - charH(boss) * .45, COL = ['#ff6b8f', '#FFD91F', '#7fd6c2', '#ffffff', '#5aa0ff'];
+    for (let i = 0; i < (lite ? 3 : 7); i++) {
+      const vx = rnd(-.55, .25) * W, vy = -rnd(.45, .8) * H, c = COL[i % COL.length], kind = i % 3, sp = rnd(-9, 9), w = H * rnd(.04, .06);
+      fxs.push({ t: -i * .02, dur: .8, draw(k) {
+        const t = this.t, x = x0 + vx * t, y = y0 + vy * t + H * 1.6 * t * t;
+        g.save(); g.globalAlpha = k > .8 ? (1 - k) * 5 : 1; g.translate(x, y); g.rotate(t * sp);
+        g.fillStyle = c; g.strokeStyle = '#2a1716'; g.lineWidth = Math.max(1, w * .08);
+        g.beginPath();
+        if (kind === 0) { g.moveTo(-w * .5, -w * .4); g.lineTo(-w * .2, -w * .55); g.lineTo(w * .2, -w * .55); g.lineTo(w * .5, -w * .4); g.lineTo(w * .32, -w * .15); g.lineTo(w * .3, w * .5); g.lineTo(-w * .3, w * .5); g.lineTo(-w * .32, -w * .15); g.closePath(); }   // áo phông
+        else if (kind === 1) { g.moveTo(-w * .15, -w * .5); g.lineTo(w * .12, -w * .5); g.lineTo(w * .12, w * .2); g.quadraticCurveTo(w * .12, w * .45, w * .45, w * .45); g.lineTo(w * .45, w * .62); g.lineTo(-w * .05, w * .62); g.quadraticCurveTo(-w * .15, w * .6, -w * .15, w * .3); g.closePath(); }   // tất
+        else { g.rect(-w * .55, -w * .18, w * 1.1, w * .36); }   // khăn
+        g.fill(); g.stroke(); g.restore();
+      } });
+    }
   }
   function drawWrench(x, y, L, ang) {
     g.save(); g.translate(x, y); g.rotate(ang);
@@ -2757,7 +2776,7 @@ createBattle = function createArena(root) {
       c.strokeStyle = 'rgba(120,90,50,.18)'; c.lineWidth = 1;
       for (let i = -6; i <= 6; i++) { c.beginPath(); c.moveTo(W / 2 + i * W * .08, GY); c.lineTo(W / 2 + i * W * .2, H); c.stroke(); }
       for (let i = 1; i < 4; i++) { const yy = GY + (H - GY) * Math.pow(i / 4, 1.4); c.beginPath(); c.moveTo(0, yy); c.lineTo(W, yy); c.stroke(); }
-      if (look === 'trainee') { c.fillStyle = 'rgba(89,214,138,.9)'; c.font = `800 ${Math.round(H * .045)}px ${UIF}`; c.fillText('TRAINING DAY', W * .75, H * .36); }
+      if (look === 'trainee') { c.fillStyle = 'rgba(255,120,80,.92)'; c.font = `900 ${Math.round(H * .05)}px ${UIF}`; c.fillText('ā á ǎ à', W * .75, H * .36); }   // biển 4 thanh điệu (cua lạc vào sảnh)
     } else if (look === 'factory') {
       rect(0, 0, W, GY, lg(0, 0, 0, GY, [[0, '#5d6676'], [1, '#434b59']]));
       for (let i = 0; i < 7; i++) { rect(W * (.04 + i * .14), H * .06, W * .1, H * .14, 'rgba(170,215,240,.55)'); c.strokeStyle = '#2d333d'; c.lineWidth = 2; c.strokeRect(W * (.04 + i * .14), H * .06, W * .1, H * .14); }
@@ -3249,7 +3268,7 @@ const SKILLS = [
   { id:'long_ha', name:'Long Hạ', emoji:'🐉', mult:1.8, finisher:true }
 ];
 const TOPIC_LABEL = { hotel:'Khách sạn', factory:'Nhà máy', hsk:'Giao tiếp', pinyin:'Pinyin & chào hỏi', story:'📖 Người quen trên đường' };
-const BOSS_ICON = { trainee:'🔰', hotel:'👹', factory:'🏭', night:'🌙', shadow:'⚔️' };
+const BOSS_ICON = { trainee:'🦀', hotel:'🧳', factory:'🏭', night:'🌙', shadow:'⚔️' };
 /** giây cho mỗi câu ở trạm hiện tại (HSK0 chậm rãi hơn cho người mới) */
 function qSeconds() { const s = STAGES[stageIdx]; return (s && s.sec) || QUESTION_SECONDS; }
 const TYPE_LABEL = { mc:'Trắc nghiệm', listen:'Nghe', order:'Sắp xếp', fill:'Điền từ', situ:'Tình huống' };
@@ -3547,6 +3566,8 @@ const Snd = (() => {
       else if (kind === 'clang') { tone('square', 880, 860, 0.3, 0.05); tone('triangle', 1320, 1300, 0.38, 0.05); tone('sine', 2650, 2600, 0.3, 0.03); noise(0.05, 0.15); }
       else if (kind === 'paper') { noise(0.12, 0.1); noise(0.1, 0.08, 0.08); noise(0.14, 0.07, 0.17); }
       else if (kind === 'vanish') { noise(0.32, 0.1); tone('sine', 900, 180, 0.3, 0.04); }
+      else if (kind === 'bubble') { tone('sine', 420, 1300, 0.09, 0.07); tone('sine', 620, 1700, 0.08, 0.06, 0.07); tone('sine', 520, 1500, 0.08, 0.05, 0.14); tone('sine', 700, 1900, 0.07, 0.04, 0.2); }
+      else if (kind === 'snap') { noise(0.05, 0.22); tone('square', 1900, 500, 0.07, 0.06); tone('triangle', 900, 300, 0.1, 0.05, 0.02); }
       else if (kind === 'bell') { tone('triangle', 1760, 1760, 1.0, 0.13); tone('sine', 3520, 3520, 0.7, 0.05); tone('sine', 880, 880, 0.9, 0.06); noise(0.04, 0.12); }
     } catch (e) {}
   }
@@ -3731,7 +3752,9 @@ const WorldMap = (() => {
   }
   const toBoss = {}; // hình boss (theo tranh) đứng cạnh cổng
   const bossImg = look => { if (!toBoss[look]) { const i = new Image(); i.decoding = 'async'; i.src = 'v4/sprites/' + look + '-idle.webp'; toBoss[look] = i; } return toBoss[look]; };
-  const BOSS_M = { trainee: [132, 520, 66, 520], hotel: [132, 520, 66, 520], factory: [236, 520, 118, 520], night: [258, 520, 129, 520], shadow: [276, 520, 138, 520] };
+  const BOSS_M = { trainee: [640, 520, 320, 506], hotel: [380, 520, 190, 508], factory: [236, 520, 118, 520], night: [258, 520, 129, 520], shadow: [276, 520, 138, 520] };
+  // quái cạnh cổng (không khung xương): sc = cỡ so với người, sh = bóng, say = độ cao bong bóng lời thách
+  const MON_GATE = { trainee: { sc: .62, sh: 30, say: 66 }, hotel: { sc: .82, sh: 18, say: 90 } };
 
   /* ---------- màu ---------- */
   const hx = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
@@ -4328,20 +4351,31 @@ const WorldMap = (() => {
       if (!done) {
         const img = bossImg(s.look), m = BOSS_M[s.look];
         if (img.complete && img.naturalWidth) {
-          const k = 92 * u / 520, bx = gx + 20 * u, by = y;
+          const mon = MON_GATE[s.look], k = 92 * u / 520 * (mon ? mon.sc : 1), bx = gx + 20 * u, by = y;
+          const near = clamp(1 - (Math.abs(hero.x - gateX(i)) - 40) / 160, 0, 1), t2 = clock + i * 1.7;
           g.save(); g.globalAlpha = open ? .5 : .25; g.globalCompositeOperation = 'lighter'; glowDot(g, bx, by - 46 * u, 46 * u, s.look === 'shadow' ? 'rgba(185,90,255,.5)' : 'rgba(255,120,80,.4)'); g.restore();
-          g.globalAlpha = .3; g.fillStyle = '#000'; g.beginPath(); g.ellipse(bx, y + 1, 16 * u, 3.4 * u, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
-          const R = open ? (Rig.get(s.look + '-idle') || Rig.load(s.look + '-idle')) : null;
+          g.globalAlpha = .3; g.fillStyle = '#000'; g.beginPath(); g.ellipse(bx, y + 1, (mon ? mon.sh : 16) * u, 3.4 * u, 0, 0, 6.283); g.fill(); g.globalAlpha = 1;
+          const R = open && !mon ? (Rig.get(s.look + '-idle') || Rig.load(s.look + '-idle')) : null;
           let drawn = false;
           if (R && R.ok && mrg()) {
-            const P = Chibi.POSES, near = clamp(1 - (Math.abs(hero.x - gateX(i)) - 40) / 160, 0, 1), t2 = clock + i * 1.7;
+            const P = Chibi.POSES;
             const idle = Object.assign({}, P.stand, { lean: Math.sin(t2 * 1.2) * .045, head: Math.sin(t2 * .9) * .08, aF: P.stand.aF + Math.sin(t2 * 1.5) * .1, aB: P.stand.aB - Math.sin(t2 * 1.5) * .08, lF: P.stand.lF + Math.sin(t2 * 1.2) * .04, lB: P.stand.lB + Math.sin(t2 * 1.2) * .04 });
             const pz = near > 0 ? Chibi.mix(idle, Object.assign({}, P.point, { aF: P.point.aF + Math.sin(clock * 7) * .12 }), near * .75) : idle;
             if (!gateRS[i]) gateRS[i] = {};
             drawn = !!rigBlit(R, img, pz, P.stand, MGAIN[s.look] || MGAIN.hero, 1, gateRS[i], bx, by, 0, 1, 1, 92 * u, 1, m, null, 1);
-            if (near > .15 && !talking && !duel && s.taunt) onTop(() => speech(bx, by - 100 * u, s.taunt, '#e63946', clamp(near * 1.6, 0, 1)));
           }
-          if (!drawn) { g.globalAlpha = open ? 1 : .55; g.drawImage(img, bx - m[2] * k, by + Math.sin(clock * 2 + i) * .8 * u - m[3] * k, m[0] * k, m[1] * k); g.globalAlpha = 1; }
+          if (!drawn) {
+            // quái vẽ bằng code (cua, vali) không có khung xương: cử động cả khối – cua bò ngang, vali nảy lắc; Ā Bǎo tới gần thì rung tức tối
+            let ox = 0, oy = Math.sin(clock * 2 + i) * .8 * u, rot = 0, sx = 1, sy = 1;
+            if (mon && open && !REDUCED) {
+              if (s.look === 'trainee') { ox = Math.sin(t2 * 1.4) * 7 * u; const st = Math.abs(Math.sin(t2 * 7)); oy = -st * 1.6 * u; rot = Math.sin(t2 * 7) * .035; }
+              else { const hop = Math.max(0, Math.sin(t2 * 3.1)); oy = -hop * 4.5 * u; rot = Math.sin(t2 * 1.55) * .07; sy = hop < .08 ? .95 : 1 + hop * .03; sx = 2 - sy; }
+              if (near > .3) rot += Math.sin(clock * 15) * .045 * near;
+            }
+            g.save(); g.globalAlpha = open ? 1 : .55; g.translate(bx + ox, by + oy); g.rotate(rot); g.scale(sx, sy);
+            g.drawImage(img, -m[2] * k, -m[3] * k, m[0] * k, m[1] * k); g.restore(); g.globalAlpha = 1;
+          }
+          if (open && near > .15 && !talking && !duel && s.taunt) onTop(() => speech(bx, by - (mon ? mon.say : 100) * u, s.taunt, '#e63946', clamp(near * 1.6, 0, 1)));
         }
       }
     });
@@ -4550,11 +4584,23 @@ const WorldMap = (() => {
       const k = Math.min(1, hero.act.t / hero.act.dur);
       if (hero.act.type === 'atk') p = Chibi.key([[0, 'stand'], [.22, 'windup'], [.4, 'chop'], [.7, 'sweep'], [1, 'stand']], k);
       else if (hero.act.type === 'hurt') p = Chibi.key([[0, 'hurt'], [.55, 'hurt'], [1, 'stand']], k);
+      // v17: trả tiền (chìa tay) · cúi nhặt / đặt thùng hàng · cúi chào
+      else if (hero.act.type === 'pay') p = Chibi.key([[0, 'stand'], [.3, 'point'], [.75, 'point'], [1, 'stand']], k);
+      else if (hero.act.type === 'pick') p = Chibi.key([[0, 'stand'], [.4, 'crouch'], [.62, 'crouch'], [1, 'stand']], k);
+      else if (hero.act.type === 'bow') p = Chibi.key([[0, 'stand'], [.35, 'bow'], [.7, 'bow'], [1, 'stand']], k);
       else p = Chibi.key([[0, 'stand'], [.28, 'victory'], [.72, 'victory'], [1, 'stand']], k);
     } else if (!hero.grounded) {
       const v = clamp(hero.vy / 330, -1, 1);
       p = v > .15 ? Chibi.mix(P.jump, P.crouch, .25) : Chibi.mix(P.jump, P.stand, clamp((.15 - v) / 1.1, 0, .75));
-    } else if (sp > 6 && !hero.blocked) p = Rig.gait(ref, hero.ph, sp > 100, Math.min(1, sp / 100));
+    } else if (sp > 6 && !hero.blocked) {
+      // v17 · đi tự nhiên hơn: đi bộ nảy thấp (chạy mới nảy cao), người ngả theo gia tốc (bắt đầu chạy thì chúi tới,
+      // hãm lại thì ngả sau), đầu giữ thăng bằng ngược với nhịp lắc thân, tay đánh theo tốc độ
+      const run = sp > 100;
+      p = Rig.gait(ref, hero.ph, run, Math.min(1, sp / 100));
+      p.hop *= run ? (hero.sprint ? .95 : .8) : .6;
+      p.lean += clamp((hero.acc || 0) * hero.face / 2400, -.1, .14);
+      p.head -= (p.tilt || 0) * .8;
+    }
     else {
       p = Object.assign({}, ref);
       const nearN = STORY.some(n => Math.abs(hero.x - NPC_X[n.id]) < 70) && !talking && !duel;
@@ -4575,11 +4621,14 @@ const WorldMap = (() => {
         else { p.kF -= Math.abs(Math.sin(clock * 3)) * .12; p.kB -= Math.abs(Math.sin(clock * 3)) * .12; }
       }
     }
+    // v17: ôm thùng hàng trước ngực – hai tay giữ thùng (không đánh tay), người hơi ngả sau vì nặng
+    if (errand && errand.st === 'back' && !(hero.act && hero.act.type !== 'cheer')) { const r0 = Chibi.POSES.stand; p = Object.assign({}, p, { aF: (r0.aF || 0) + .45, eF: (r0.eF || 0) - .3, aB: (r0.aB || 0) + .28, eB: (r0.eB || 0) - .25, lean: (p.lean || 0) - .05 }); }
     if (hero.brake > 0) p = Chibi.mix(p, { lean: -.25, head: .08, bob: 0, aF: .7, eF: .5, aB: -.5, eB: .4, lF: .45, kF: -.35, lB: -.2, kB: -.45, wpn: 0 }, Math.min(1, hero.brake * 4));
     if (hero.pump > 0) { const w = Math.sin(Math.min(1, hero.pump / .5) * Math.PI); p = Chibi.mix(p, Object.assign({}, P.victory, { aB: p.aB, eB: p.eB }), w * .75); }
     if (hero.flip) p = Chibi.mix(p, P.crouch, .7);
     if (hero.skid > 0) p = Chibi.mix(p, { lean: -.32, head: .1, bob: 0, aF: 1.1, eF: .6, aB: -.7, eB: .4, lF: .55, kF: -.25, lB: -.15, kB: -.55, wpn: 0 }, Math.min(1, hero.skid * 5));
     if (hero.land > 0) p = Chibi.mix(p, P.crouch, hero.land * .6);
+    if (hero.kick > 0 && hero.grounded) p = Chibi.mix(p, Object.assign({}, P.crouch, { lean: .12 }), Math.sin(hero.kick / .16 * Math.PI) * .45);
     return p;
   }
   function drawHero() {
@@ -4613,6 +4662,7 @@ const WorldMap = (() => {
       if (X && ((sp > 190 && hero.grounded) || atkK > 0)) { trailT += mapDt; if (trailT > .05) { trailT = 0; trail.push({ M: Float32Array.from(R.M), X, wx: hero.x + ax / u, sx0: x + ax, sx: x + ax, a: .3 }); if (trail.length > 5) trail.shift(); } }
       for (let i = trail.length - 1; i >= 0; i--) { trail[i].a -= mapDt * 1.4; if (trail[i].a <= 0) trail.splice(i, 1); }
       if (X) hero.handPt = rigPtX(R, X, 4, R.d.pts.hand);
+      if (errand && errand.st === 'back' && hero.handPt) { const hp = hero.handPt; onTop(() => drawCarry(hp[0], hp[1])); }
       // v16: tung phi tiêu lên rồi bắt lại (lúc đứng chờ) · vệt gió theo nắm đấm (đấm gió)
       if (hero.toss > 0 && hero.handPt) { const hp = hero.handPt, k = hero.toss; onTop(() => { const yy = hp[1] - k * 26 * u; g.save(); g.translate(hp[0], yy); g.rotate(clock * 14); Chibi.star(g, 0, 0, 4.2 * u, 0, (typeof curSkin === 'function' ? curSkin().body : '#FFD91F'), '#5ff5d8'); g.restore(); }); }
       if (hero.punch > 0 && hero.handPt && Math.sin(clock * 15) > .6) { const hp = hero.handPt; onTop(() => { g.save(); g.globalAlpha = .6 * hero.punch; g.strokeStyle = '#fff'; g.lineWidth = 1.4 * u; g.lineCap = 'round'; for (let i = -1; i <= 1; i++) { g.beginPath(); g.moveTo(hp[0] + hero.face * 4 * u, hp[1] + i * 3 * u); g.lineTo(hp[0] + hero.face * 12 * u, hp[1] + i * 3 * u); g.stroke(); } g.restore(); }); }
@@ -4624,6 +4674,7 @@ const WorldMap = (() => {
       g.drawImage(img, -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2);
       if (hero.flash > 0) { g.globalAlpha = Math.min(1, hero.flash) * .75; g.drawImage(tintImg(img, '#ff5a46'), -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2); }
       g.restore();
+      if (errand && errand.st === 'back') drawCarry(x + hero.face * 10 * u, y + by - HH * .48 * u);
     }
     // vệt chém khi hạ quái (đè lên người)
     if (atkK > .22 && atkK < .7) onTop(() => slashArc(x, y, ax, atkK));
@@ -4777,8 +4828,140 @@ const WorldMap = (() => {
     g.globalAlpha = 1;
   }
 
+  /* ---------- v17 · SỰ KIỆN ĐI CHỢ (game Khách sạn gọi: game.html?ev=errand&id=…&zh=…&py=…&vi=…&d=…) ----------
+     Khách sạn cần đồ gấp → Ā Bǎo chạy ra phố: tới sạp tạp hoá, nói đúng tên món bằng tiếng Trung, trả tiền, bê thùng hàng về cửa khách sạn.
+     Đường đi có quái nhỏ (nhảy qua hoặc đấu 1 câu) và chữ vàng; không dẫn tới cổng trạm. Xong thì báo về game Khách sạn (evDone). */
+  const ERR_WORDS = [
+    { id: 'zhuozi', zh: '桌子', py: 'zhuōzi', vi: 'cái bàn' }, { id: 'yizi', zh: '椅子', py: 'yǐzi', vi: 'cái ghế' },
+    { id: 'hua', zh: '花', py: 'huā', vi: 'hoa' }, { id: 'deng', zh: '灯', py: 'dēng', vi: 'đèn' },
+    { id: 'beizi', zh: '杯子', py: 'bēizi', vi: 'cái cốc' }, { id: 'maojin', zh: '毛巾', py: 'máojīn', vi: 'khăn tắm' },
+    { id: 'cha', zh: '茶', py: 'chá', vi: 'trà' }, { id: 'shuiguo', zh: '水果', py: 'shuǐguǒ', vi: 'hoa quả' },
+    { id: 'chuang', zh: '床', py: 'chuáng', vi: 'giường' }, { id: 'zhentou', zh: '枕头', py: 'zhěntou', vi: 'cái gối' },
+    { id: 'ditan', zh: '地毯', py: 'dìtǎn', vi: 'tấm thảm' }, { id: 'jingzi', zh: '镜子', py: 'jìngzi', vi: 'cái gương' },
+    { id: 'zhong', zh: '钟', py: 'zhōng', vi: 'đồng hồ' }, { id: 'dianshi', zh: '电视', py: 'diànshì', vi: 'ti vi' },
+    { id: 'shafa', zh: '沙发', py: 'shāfā', vi: 'ghế sô-pha' }, { id: 'kafei', zh: '咖啡', py: 'kāfēi', vi: 'cà phê' }
+  ];
+  const SHOPKEEPER = { skin: '#f0c9a2', hair: 'bun', hairCol: '#3b2a22', mood: 'calm-smile', outfit: { kind: 'tee', top: '#ff8a5c', trim: '#ffffff', pants: '#36507a', boots: '#16171B' } };
+  const SHOP_HI = ['你好！你要买什么？', 'Nǐ hǎo! Nǐ yào mǎi shénme?', 'Chào cậu! Cậu muốn mua gì?'];
+  const SHOP_OK = ['好的，给你！', 'Hǎo de, gěi nǐ!', 'Được rồi, của cậu đây!'];
+  let errand = null;
+  function errSetup(o) {
+    const d = clamp(o.d | 0, 0, DIST.length - 1), x0 = DIST[d].x0;
+    const w = o.zh ? { id: o.id || 'x', zh: o.zh, py: o.py || '', vi: o.vi || '' } : (ERR_WORDS.find(x => x.id === o.id) || ERR_WORDS[0]);
+    errand = { w, d, door: x0 + 52, shop: x0 + 590, st: 'go', tries: 0, t0: clock, opts: null };
+    hero.x = errand.door + 16; hero.face = 1; camX = clamp(hero.x - VIEW * .3, 0, L - VIEW);
+    mons.forEach(m => { if (m.d !== d || m.big) m.dead = true; });   // chỉ giữ quái nhỏ trên đường đi
+    errUI();
+  }
+  function errUI() {
+    const b = $('errBar'); if (!b) return;
+    b.hidden = !errand; if (!errand) return;
+    const e = errand, W0 = `<b lang="zh-CN">${esc(e.w.zh)}</b> <i>${esc(e.w.py)}</i> · ${esc(e.w.vi)}`;
+    b.innerHTML = e.st === 'go' ? `<span class="ic">🛒</span><span>Mua ${W0}</span><span class="st">tới sạp ▶</span>`
+      : e.st === 'back' ? `<span class="ic">📦</span><span>Đã mua ${W0}</span><span class="st">◀ về khách sạn</span>`
+      : `<span class="ic">✅</span><span>Đã mang ${W0} về khách sạn!</span>`;
+  }
+  const errNearShop = () => errand && errand.st === 'go' && Math.abs(hero.x - errand.shop) < 30;
+  function drawErrand() {
+    if (!errand) return;
+    const e = errand, yb = GY * u;
+    // cửa khách sạn: mặt tiền kem, cửa kính, mái hiên sọc xanh ngọc, biển hiệu, 2 đèn lồng
+    let x = SX(e.door - 18);
+    if (x > -150 && x < W + 80) {
+      g.save(); g.translate(x, yb); g.scale(u, u);
+      g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(4, 1, 58, 4, 0, 0, 6.283); g.fill();
+      g.fillStyle = LG(g, 0, -128, 0, 0, [[0, '#fff3da'], [1, '#f0d7a8']]); RR(g, -50, -128, 108, 128, 5); g.fill(); g.strokeStyle = '#7a5a3a'; g.lineWidth = 1.6; g.stroke();
+      for (const wx of [-40, 34]) { g.fillStyle = LG(g, 0, -112, 0, -80, [[0, '#bfe6f5'], [1, '#86c9e2']]); RR(g, wx, -112, 16, 26, 2); g.fill(); g.stroke(); }
+      g.fillStyle = LG(g, 0, -74, 0, 0, [[0, '#c9ecf8'], [1, '#79bfd9']]); RR(g, -14, -72, 36, 72, 3); g.fill(); g.stroke();
+      g.beginPath(); g.moveTo(4, -72); g.lineTo(4, 0); g.stroke(); g.fillStyle = '#d4a72c'; g.fillRect(-2, -38, 2.4, 9); g.fillRect(7, -38, 2.4, 9);
+      for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? '#ffffff' : '#2ec4b6'; g.beginPath(); g.moveTo(-26 + i * 7.5, -86); g.lineTo(-26 + (i + 1) * 7.5, -86); g.lineTo(-24 + (i + 1) * 7.5, -76); g.lineTo(-24 + i * 7.5, -76); g.closePath(); g.fill(); }
+      g.strokeStyle = '#16171B'; g.lineWidth = 1; g.strokeRect(-26, -86, 60, 10);
+      g.fillStyle = '#16171B'; RR(g, -36, -126, 80, 15, 4); g.fill(); g.fillStyle = '#FFD91F'; g.font = '900 8px ' + UIF; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('Ā BǍO HOTEL', 4, -118.5);
+      [-30, 40].forEach((o, q) => { const sw = Math.sin(clock * 2 + q * 2) * .1; g.save(); g.translate(o, -84); g.rotate(sw); g.fillStyle = '#e8343a'; g.beginPath(); g.ellipse(0, 9, 6, 7.5, 0, 0, 6.283); g.fill(); g.fillStyle = '#d4a72c'; g.fillRect(-3, 1, 6, 2); g.fillRect(-3, 15.5, 6, 2); g.restore(); });
+      if (e.st === 'back') { const a = .55 + .45 * Math.sin(clock * 6); g.globalAlpha = a; g.fillStyle = '#FFD91F'; g.beginPath(); g.moveTo(4, -150); g.lineTo(-6, -164); g.lineTo(14, -164); g.closePath(); g.fill(); g.globalAlpha = 1; }
+      g.restore();
+    }
+    // sạp tạp hoá: mái bạt sọc đỏ trắng, quầy gỗ, thùng hàng, người bán đứng sau quầy
+    x = SX(e.shop + 20);
+    if (x > -120 && x < W + 120) {
+      const near = clamp(1 - (Math.abs(hero.x - e.shop) - 20) / 90, 0, 1), tt = clock;
+      g.save(); g.translate(x, yb); g.scale(u, u);
+      g.fillStyle = 'rgba(0,0,0,.2)'; g.beginPath(); g.ellipse(0, 1, 50, 4, 0, 0, 6.283); g.fill();
+      g.fillStyle = '#7a5434'; g.fillRect(-44, -96, 4, 96); g.fillRect(40, -96, 4, 96);
+      g.restore();
+      // người bán (sau quầy)
+      const bow = near > .6 && e.st === 'go' ? Math.max(0, Math.sin(tt * 2.2)) * .5 : 0;
+      const pz = Chibi.mix(Object.assign({}, Chibi.POSES.stand, { bob: Math.sin(tt * 2.4) * .8, aF: Chibi.POSES.stand.aF + Math.sin(tt * 1.6) * .08, head: Math.sin(tt * .9) * .06 }), near > .4 && e.st === 'go' ? Chibi.POSES.wave : Chibi.POSES.stand, near > .4 && e.st === 'go' ? .7 : 0);
+      Chibi.draw(g, SHOPKEEPER, { x: x + 6 * u, y: yb - 6 * u, s: u * .7, face: hero.x < e.shop ? -1 : 1, pose: bow ? Chibi.mix(pz, Chibi.POSES.bow, bow) : pz, time: clock, mood: 'calm-smile' });
+      g.save(); g.translate(x, yb); g.scale(u, u);
+      // quầy + thùng hàng
+      g.fillStyle = LG(g, 0, -34, 0, 0, [[0, '#c98f5e'], [1, '#8a5a36']]); RR(g, -46, -34, 92, 34, 3); g.fill(); g.strokeStyle = '#4a2e1a'; g.lineWidth = 1.4; g.stroke();
+      g.strokeStyle = 'rgba(74,46,26,.35)'; g.lineWidth = 1; for (let i = 1; i < 4; i++) { g.beginPath(); g.moveTo(-46 + i * 23, -32); g.lineTo(-46 + i * 23, -2); g.stroke(); }
+      [['#ff6b8f', -38], ['#FFD91F', -22], ['#7fd6c2', -6], ['#8fb8ff', 10], ['#ffb38a', 26]].forEach(([c, ox], i) => { g.fillStyle = c; RR(g, ox, -44 - (i % 2) * 3, 13, 11 + (i % 2) * 3, 2); g.fill(); g.strokeStyle = '#4a2e1a'; g.lineWidth = 1; g.stroke(); });
+      // mái bạt
+      for (let i = 0; i < 10; i++) { g.fillStyle = i % 2 ? '#ffffff' : '#e8343a'; g.beginPath(); g.moveTo(-50 + i * 10, -100); g.lineTo(-50 + (i + 1) * 10, -100); g.lineTo(-50 + (i + 1) * 10, -86); g.quadraticCurveTo(-45 + i * 10, -80, -50 + i * 10, -86); g.closePath(); g.fill(); }
+      g.strokeStyle = '#7a2a1a'; g.lineWidth = 1.2; g.strokeRect(-50, -100, 100, 14);
+      // biển 杂货 (tạp hoá)
+      g.fillStyle = '#FFD91F'; RR(g, -24, -118, 48, 16, 4); g.fill(); g.strokeStyle = '#16171B'; g.lineWidth = 1.2; g.stroke();
+      g.fillStyle = '#16171B'; g.font = `900 10px ${ZHF}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('杂货', 0, -110);
+      if (e.st === 'go') { const a = .55 + .45 * Math.sin(clock * 6); g.globalAlpha = a; g.fillStyle = '#FFD91F'; g.beginPath(); g.moveTo(0, -124); g.lineTo(-8, -136); g.lineTo(8, -136); g.closePath(); g.fill(); g.globalAlpha = 1; }
+      g.restore();
+      if (near > .2 && e.st === 'go' && !talking && !duel) onTop(() => speech(x, (GY - 128) * u, SHOP_HI, '#ff8a5c', clamp(near * 1.5, 0, 1)));
+    }
+  }
+  /** thùng hàng Ā Bǎo ôm trước ngực (đã mua) */
+  function drawCarry(hx, hy) {
+    const k = u * 1.4, bob = Math.sin(hero.ph * 12.566) * .8 * u;
+    g.save(); g.translate(hx + hero.face * 3 * k, hy - 4 * k + bob); g.rotate(hero.face * .05);
+    g.fillStyle = '#d9a46a'; g.strokeStyle = '#6b4426'; g.lineWidth = 1.2 * k; RR(g, -11 * k, -10 * k, 22 * k, 17 * k, 2 * k); g.fill(); g.stroke();
+    g.fillStyle = '#c48a4e'; g.fillRect(-11 * k, -10 * k, 22 * k, 4 * k); g.fillStyle = '#FFD91F'; g.fillRect(-2 * k, -10 * k, 4 * k, 17 * k);
+    g.fillStyle = '#16171B'; g.font = `900 ${6.5 * k}px ${ZHF}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(errand ? errand.w.zh.slice(0, 2) : '', 0, 2.5 * k);
+    g.restore();
+  }
+  function openShop() {
+    if (!errand || errand.st !== 'go' || talking || duel) return;
+    stopHero(); hero.face = hero.x < errand.shop ? 1 : -1; talking = true;
+    const e = errand, pool = ERR_WORDS.filter(w => w.zh !== e.w.zh), opts = [e.w];
+    while (opts.length < 4 && pool.length) opts.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    e.opts = shuffle(opts);
+    $('duelName').textContent = 'Cô Hoa · sạp tạp hoá 杂货';
+    $('duelRole').textContent = `Khách sạn cần: ${e.w.vi} · nói đúng tên món bằng tiếng Trung để mua`;
+    $('duelQ').innerHTML = `<p class="dq">Cô bán hàng hỏi:</p><b lang="zh-CN">${esc(SHOP_HI[0])}</b><i>${esc(SHOP_HI[1])}</i><span>${esc(SHOP_HI[2])}</span><p class="dq" style="margin-top:8px">Chọn món khách sạn cần (<span class="need">${esc(e.w.vi)}</span>):</p>`;
+    const box = $('duelOpts'); box.innerHTML = ''; box.classList.remove('done'); $('duelRes').hidden = true; $('duelNext').hidden = true;
+    e.opts.forEach(w => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = `<b lang="zh-CN">${esc(w.zh)}</b><i>${esc(w.py)}</i>`; b.onclick = () => shopPick(w, b); box.appendChild(b); });
+    $('duelOverlay').classList.add('on');
+    requestAnimationFrame(() => { try { const c = $('duelFace'), r = c.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1), w = Math.max(1, Math.round(r.width * d)); c.width = c.height = w; const x2 = c.getContext('2d'); Chibi.draw(x2, SHOPKEEPER, { x: w * .5, y: w * .98, s: w / 80, face: -1, pose: Chibi.POSES.wave, time: clock, mood: 'calm-smile' }); } catch (er) {} });
+    speakQuiet(SHOP_HI[0]); playSfx('ui');
+  }
+  function shopPick(w, b) {
+    const e = errand; if (!e || e.st !== 'go') return;
+    const ok = w.zh === e.w.zh, box = $('duelOpts'); e.tries++;
+    [...box.children].forEach(x => { x.disabled = true; }); box.classList.add('done');
+    b.classList.add(ok ? 'ok' : 'no');
+    if (!ok) { const rb = [...box.children].find(x => x.querySelector('b').textContent === e.w.zh); if (rb) rb.classList.add('ok'); }
+    const res = $('duelRes'); res.hidden = false;
+    res.innerHTML = ok ? `<b>✓ ${esc(SHOP_OK[2])}</b><div class="w"><span class="zh" lang="zh-CN">${esc(SHOP_OK[0])}</span><span class="py">${esc(SHOP_OK[1])}</span></div><div class="vi">Mua được <span lang="zh-CN">${esc(e.w.zh)}</span> ${esc(e.w.py)} · ${esc(e.w.vi)}</div>`
+      : `<b>✗ Chưa đúng – món cần mua là</b><div class="w"><span class="zh" lang="zh-CN">${esc(e.w.zh)}</span><span class="py">${esc(e.w.py)}</span></div><div class="vi">${esc(e.w.vi)} · <span lang="zh-CN">${esc(w.zh)}</span> ${esc(w.py)} là “${esc(w.vi)}”</div>`;
+    speakQuiet(ok ? SHOP_OK[0] : e.w.zh); playSfx(ok ? 'crit' : 'hurt');
+    const nb = $('duelNext'); nb.hidden = false; nb.textContent = ok ? '💰 Trả tiền, bê hàng về' : '↻ Nói lại';
+    revealBtn(nb);
+    nb.onclick = () => {
+      $('duelOverlay').classList.remove('on'); talking = false;
+      if (!ok) { setTimeout(openShop, REDUCED ? 0 : 250); return; }
+      // trả tiền (đồng xu bay sang người bán) → cúi nhặt thùng hàng → quay về
+      hero.act = { type: 'pay', t: 0, dur: .7, ev: { at: .3, f: () => { Snd.star(0); puff(errand.shop - 4, GY - 46, 8, ['#FFD91F', '#ffffff'], 50, 14); floatTxt(errand.shop, GY - 70, '💰'); } },
+        then: () => { hero.act = { type: 'pick', t: 0, dur: .6, ev: { at: .35, f: () => { errand.st = 'back'; errUI(); Snd.sfx('swish'); puff(hero.x + hero.face * 8, GY - 10, 6, stepCols(), 40, 10); } }, then: () => { hero.face = -1; toast('📦 Bê hàng về khách sạn ◀'); } }; } };
+    };
+  }
+  function errFinish() {
+    const e = errand; if (!e || e.st !== 'back') return;
+    e.st = 'done'; errUI(); stopHero(); hero.face = -1;
+    hero.act = { type: 'pick', t: 0, dur: .6, ev: { at: .35, f: () => { puff(e.door, GY - 8, 14, ['#FFD91F', '#ffffff', '#2ec4b6'], 80, 20); Snd.star(1); setTimeout(() => Snd.star(2), 140); } }, then: () => { hero.act = { type: 'cheer', t: 0, dur: .8 }; } };
+    setTimeout(() => { if (typeof evDone === 'function') evDone({ ev: 'errand', id: e.w.id, zh: e.w.zh, ok: true, tries: e.tries, sec: Math.round(clock - e.t0) }); }, REDUCED ? 300 : 1500);
+  }
+
   /* ---------- luật chơi mỗi khung ---------- */
-  function blockX() { for (let i = 1; i < DIST.length; i++) if (i > unlockedIdx()) return wallX(i) - 16; return L - 20; }
+  function blockX() { if (errand) return errand.shop + 60; for (let i = 1; i < DIST.length; i++) if (i > unlockedIdx()) return wallX(i) - 16; return L - 20; }
   function update(dt) {
     clock += dt;
     hero.flash = Math.max(0, hero.flash - dt * 3); hero.land = Math.max(0, (hero.land || 0) - dt * 5); hero.skid = Math.max(0, (hero.skid || 0) - dt);
@@ -4787,7 +4970,7 @@ const WorldMap = (() => {
     // v16: đang mở bảng (Sổ từ, Nhiệm vụ, Tủ đồ…) thì Ā Bǎo đứng lại, không tự đi, không ai bắt chuyện
     const ovOn = !!document.querySelector('.overlay.on');
     if (ovOn && !talking && !duel) { hero.auto = null; padDir = 0; keyDir = 0; }
-    const busy = talking || duel || ovOn || (hero.act && hero.act.type !== 'cheer');
+    const busy = talking || duel || ovOn || (hero.act && hero.act.type !== 'cheer') || (errand && errand.st === 'done');
     let dir = busy ? 0 : (padDir || keyDir);
     if (!dir && hero.auto && !busy) { const d = hero.auto.x - hero.x; if (Math.abs(d) < 4) { const a = hero.auto; hero.auto = null; if (a.cb) a.cb(); } else dir = Math.sign(d); }
     if (dir && hero.grounded && Math.abs(hero.vx) > 70 && Math.sign(hero.vx) === -dir) { hero.skid = .22; if (Math.random() < .7) puff(hero.x + Math.sign(hero.vx) * 6, GY - 1, 1, ['rgba(225,215,195,.75)'], 34, 10); }
@@ -4799,8 +4982,13 @@ const WorldMap = (() => {
     const sprint = !hero.auto && hero.holdT > .6;
     if (sprint && !hero.sprint) { puff(hero.x - hero.face * 8, GY - 2, 8, stepCols(), 70, 16); Snd.sfx('swish'); }
     hero.sprint = sprint;
-    const tv = dir * (hero.auto ? 170 : sprint ? 215 : 150);
-    hero.vx += (tv - hero.vx) * Math.min(1, dt * (hero.act && hero.act.type === 'hurt' ? 3 : 12));
+    const tv = dir * (hero.auto ? 170 : sprint ? 215 : 150) * (errand && errand.st === 'back' ? .82 : 1);   // bê hàng thì đi chậm hơn
+    // v17: từ đứng yên mà bắt đầu đi → nhún lấy đà 0,12 giây; tăng tốc mềm hơn (trước: giật lên vận tốc tối đa ngay)
+    if (dir && hero.grounded && Math.abs(hero.vx) < 12 && !(hero.kick > 0) && !busy) hero.kick = .16;
+    hero.kick = Math.max(0, (hero.kick || 0) - dt);
+    const pvx = hero.vx, accR = hero.act && hero.act.type === 'hurt' ? 3 : Math.abs(tv) > Math.abs(hero.vx) ? 8 : 11;
+    hero.vx += (tv - hero.vx) * Math.min(1, dt * accR);
+    if (dt > 0) hero.acc = (hero.acc || 0) + ((hero.vx - pvx) / dt - (hero.acc || 0)) * Math.min(1, dt * 10);
     const bx = blockX();
     hero.x = clamp(hero.x + hero.vx * dt, 16, bx);
     if (hero.x >= bx - .5 && hero.vx > 20 && clock - wallBump > 1.6) { wallBump = clock; const i = distAt(bx + 30); toast(`🔒 Hạ boss ${STAGES[i - 1].lv} để mở đường tới ${DIST[i].name}`); playSfx('hurt'); vib(40); hero.auto = null; }
@@ -4813,7 +5001,7 @@ const WorldMap = (() => {
     if (!dir && hero.grounded && Math.abs(hero.vx) > 95 && !(hero.brake > 0)) { hero.brake = .3; puff(hero.x + hero.face * 5, GY - 1, 6, stepCols(), 45, 8); }
     hero.brake = Math.max(0, (hero.brake || 0) - dt); hero.pump = Math.max(0, (hero.pump || 0) - dt);
     hero.toss = 0; hero.punch = 0;
-    hero.ph += dt * Math.abs(hero.vx) / 105;
+    hero.ph += dt * Math.abs(hero.vx) / (Math.abs(hero.vx) > 100 ? 112 : 118);   // nhịp bước chậm lại chút cho đỡ líu ríu
     grabGold(dt);
     { const stp = Math.floor(hero.ph * 2); if (stp !== hero.step) { hero.step = stp; if (hero.grounded && Math.abs(hero.vx) > 40) stepFx(stp); } }
     // nhảy
@@ -4846,9 +5034,14 @@ const WorldMap = (() => {
       if (Math.abs(hero.x - m.x) < (m.big ? 22 : 15) && hero.y < hh) startDuel(m);
     }
     // người chưa gặp: tới gần thì tự dừng lại chào
-    if (!duel && !talking && !ovOn) for (const n of STORY) {
+    if (!duel && !talking && !ovOn && !errand) for (const n of STORY) {
       if (prog.met[n.id]) continue;
       if (Math.abs(hero.x - NPC_X[n.id]) < 30 && NPC_X[n.id] <= blockX()) { stopHero(); hero.face = hero.x < NPC_X[n.id] ? 1 : -1; talk(n, null); break; }
+    }
+    // v17 · đi chợ: tới sạp thì mở hội thoại mua hàng, bê hàng về tới cửa khách sạn là xong việc
+    if (errand && !duel && !talking && !ovOn && !hero.act) {
+      if (errand.st === 'go' && Math.abs(hero.x - errand.shop) < 14 && hero.grounded) openShop();
+      else if (errand.st === 'back' && hero.x <= errand.door + 10 && hero.grounded) errFinish();
     }
     // camera
     lookAhead += ((hero.face > 0 ? .36 : .62) - lookAhead) * Math.min(1, dt * 2.2);
@@ -4863,17 +5056,19 @@ const WorldMap = (() => {
   function nearNpc() { return STORY.find(n => prog.met[n.id] && Math.abs(hero.x - NPC_X[n.id]) < 34) || null; }
   function updateAction() {
     const b = $('padA'); if (!b) return;
-    const gi = nearGate(), n = gi < 0 ? nearNpc() : null;
-    const what = gi >= 0 ? (gi <= unlockedIdx() ? 'g' + gi : 'L' + gi) : n ? 'n' + n.id : null;
+    const gi = errand ? -1 : nearGate(), n = gi < 0 ? nearNpc() : null;
+    const what = errNearShop() ? 's' : gi >= 0 ? (gi <= unlockedIdx() ? 'g' + gi : 'L' + gi) : n ? 'n' + n.id : null;
     if (what === actWhat) return; actWhat = what;
     b.hidden = !what || what[0] === 'L';
     if (what && what[0] === 'g') { b.textContent = '⚔️'; b.setAttribute('aria-label', 'Vào trận ' + STAGES[gi].lv); b.classList.add('hot'); }
+    else if (what === 's') { b.textContent = '🛒'; b.setAttribute('aria-label', 'Mua hàng'); b.classList.add('hot'); }
     else if (what && what[0] === 'n') { b.textContent = '💬'; b.setAttribute('aria-label', 'Nói chuyện với ' + n.who); b.classList.remove('hot'); }
     renderCard();
   }
   function doAction() {
     if (talking || duel) return;
-    const gi = nearGate();
+    if (errNearShop()) { openShop(); return; }
+    const gi = errand ? -1 : nearGate();
     if (gi >= 0 && gi <= unlockedIdx()) { saveX(); playSfx('ui'); startStage(gi); return; }
     const n = nearNpc(); if (n) { stopHero(); talk(n, null); return; }
     jump();
@@ -4999,13 +5194,13 @@ const WorldMap = (() => {
     g = gBaseM; g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const GL = mrg();
     if (GL) { GL.clearAll(); gTopM.setTransform(1, 0, 0, 1, 0, 0); gTopM.clearRect(0, 0, cvTopM.width, cvTopM.height); }
-    drawSky(); drawLayers(); drawGround(); drawPrints(); drawWalkers(); drawProps(); drawGates(); drawNpcs(); drawGold();
+    drawSky(); drawLayers(); drawGround(); drawPrints(); drawWalkers(); drawProps(); drawGates(); drawNpcs(); drawErrand(); drawGold();
     mons.forEach(drawMon); drawRibbon(); drawHero();
     if (GL) { g = gTopM; g.setTransform(dpr, 0, 0, dpr, 0, 0); while (topQM.length) topQM.shift()(); }
     drawFx(dt); drawFront(); drawAmbient(); drawPost();
     g = gBaseM;
   }
-  function saveX() { prog.cx = Math.round(hero.x); save(); }
+  function saveX() { if (errand) return; prog.cx = Math.round(hero.x); save(); }
   function toast(msg) {
     const t = $('mapToast'); t.textContent = msg; t.classList.add('on');
     clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2000);
@@ -5035,7 +5230,9 @@ const WorldMap = (() => {
       let tx = wx, cb = null;
       const gi = STAGES.findIndex((s, i) => Math.abs(wx - gateX(i)) < 40);
       const n = STORY.find(n2 => Math.abs(wx - NPC_X[n2.id]) < 24);
-      if (gi >= 0) { tx = gateX(gi) - 6; cb = () => { if (gi <= unlockedIdx()) { $('padA').classList.add('nudge'); setTimeout(() => $('padA').classList.remove('nudge'), 1600); } }; }
+      if (errand && errand.st === 'go' && Math.abs(wx - errand.shop) < 60) tx = errand.shop;
+      else if (errand && errand.st === 'back' && wx < errand.door + 60) tx = errand.door;
+      else if (gi >= 0 && !errand) { tx = gateX(gi) - 6; cb = () => { if (gi <= unlockedIdx()) { $('padA').classList.add('nudge'); setTimeout(() => $('padA').classList.remove('nudge'), 1600); } }; }
       else if (n) { tx = NPC_X[n.id] + (hero.x < NPC_X[n.id] ? -22 : 22); cb = () => { if (prog.met[n.id]) { hero.face = hero.x < NPC_X[n.id] ? 1 : -1; talk(n, null); } }; }
       hero.auto = { x: clamp(tx, 16, blockX()), cb };
     });
@@ -5159,10 +5356,12 @@ const WorldMap = (() => {
       buildGold();
       cur = distAt(hero.x); $('cityPlace').textContent = DIST[cur].name; hudXp();
       actWhat = 'x'; updateAction(); renderCard(); paintWords();
-      const first = prog.cx == null;
+      errand = null; errUI();
+      if (opts.errand) { errSetup(opts.errand); cur = distAt(hero.x); $('cityPlace').textContent = DIST[cur].name; }
+      const first = prog.cx == null && !errand;
       $('mapHint').hidden = !first;
       if (!raf) { last = performance.now(); raf = requestAnimationFrame(loop); }
-      if (!prog.met._intro) { prog.met._intro = true; save(); setTimeout(() => talk(STORY_INTRO, null), REDUCED ? 0 : 450); }
+      if (!prog.met._intro && !errand) { prog.met._intro = true; save(); setTimeout(() => talk(STORY_INTRO, null), REDUCED ? 0 : 450); }
       if (opts.walkTo != null) setTimeout(() => {
         if (opts.fresh) { toast(`🔓 Mở đường tới ${DIST[opts.walkTo].name}!`); puff(wallX(opts.walkTo), GY - 30, 26, ['#FFD91F', '#ffffff', '#2ec4b6'], 140, 30); Snd.star(2); }
         hero.auto = { x: wallX(opts.walkTo) + 60, cb: null };
@@ -5199,6 +5398,7 @@ const WorldMap = (() => {
     _key(d) { keyDir = d; },
     _scr() { return { x: (hero.x - camX) * u, y: (GY - hero.y) * u, u, h: HH * u, vx: hero.vx, ph: hero.ph }; },
     _clearMons() { mons.forEach(m => { m.dead = true; }); },
+    get errand() { return errand ? { st: errand.st, shop: errand.shop, door: errand.door, zh: errand.w.zh, tries: errand.tries } : null; },
     hud() { hudXp(); },
     gateX, NPC_X
   };
@@ -6260,6 +6460,11 @@ function renderEnd(win, stage, info = {}) {
     $('endTitle').textContent = `Chưa qua ${stage.lv} — ôn sổ bên dưới rồi đánh lại nhé!`;
   }
   const nb = $('btnNextMap'), rb = $('btnRetry');
+  if (EV && EV.ev === 'boss') {
+    // v17: Thử thách trong game Khách sạn → nút lớn "Về khách sạn" (gửi kết quả), thua thì vẫn cho đánh lại
+    if (rb) { rb.hidden = win; rb.onclick = () => { playSfx('ui'); startStage(stageIdx); }; }
+    if (nb) { nb.classList.toggle('alt', !win); nb.textContent = win ? '🏨 Về khách sạn nhận thưởng' : '🏨 Về khách sạn'; nb.onclick = () => { playSfx('ui'); evDone({ ev: 'boss', stage: stageIdx, win: !!win, stars: win ? (prog.stars[stage.key] || 1) : 0, correct: runCorrect, answered: runAnswered }); }; }
+  } else {
   // v16: thua thì nút lớn "Đánh lại" đứng đầu, "Về bản đồ" lùi xuống nút phụ
   if (rb) { rb.hidden = win; rb.onclick = () => { playSfx('ui'); startStage(stageIdx); }; }
   if (nb) nb.classList.toggle('alt', !win);
@@ -6270,6 +6475,7 @@ function renderEnd(win, stage, info = {}) {
       if (win && info.next) openMap({ from: si, walkTo: si + 1, fresh: !!info.opened });
       else openMap({ from: si });
     };
+  }
   }
   prog.best = Math.max(prog.best, runScore); save();
   // Đúng/đã trả lời = cộng dồn 1 lần mỗi chặng (không hiện lộ trình/ngân hàng)
@@ -6334,7 +6540,16 @@ if ($('questBtn')) $('questBtn').onclick = () => { initAudio(); playSfx('ui'); q
 if ($('questClose')) $('questClose').onclick = () => $('questOverlay').classList.remove('on');
 if ($('shopBtn')) $('shopBtn').onclick = () => { initAudio(); playSfx('ui'); shopUI(); $('shopOverlay').classList.add('on'); };
 if ($('shopClose')) $('shopClose').onclick = () => { $('shopOverlay').classList.remove('on'); try { WorldMap.hud(); } catch (e) {} };
-if ($('btnMapBack')) $('btnMapBack').onclick = () => { renderProgress(); show('sStart'); playSfx('ui'); };
+if ($('btnMapBack')) $('btnMapBack').onclick = () => { if (EV) { playSfx('ui'); evDone({ ev: EV.ev, ok: false, aborted: true }); return; } renderProgress(); show('sStart'); playSfx('ui'); };
+/* v17 · vào thẳng sự kiện khi được game Khách sạn gọi */
+if (EV) {
+  document.body.classList.add('ev');
+  if ($('btnMapBack')) $('btnMapBack').textContent = '🏨 Về khách sạn';
+  setTimeout(() => {
+    if (EV.ev === 'boss') startStage(EV.stage);
+    else { resetRun(); openMap({ errand: { id: EV.id, zh: EV.zh, py: EV.py, vi: EV.vi, d: EV.d } }); }
+  }, 60);
+}
 function toggleMute() {
   muted = !muted;
   lsSet('baokhua_mute', muted ? '1' : '0');

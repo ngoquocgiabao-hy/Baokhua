@@ -6,7 +6,7 @@
    Cần: máy chủ tĩnh ở thư mục repo (python3 -m http.server 8765 --bind 127.0.0.1) hoặc đặt BASE=... ; Playwright + Chromium. */
 const BASE = process.env.BASE || 'http://127.0.0.1:8765';
 const { chromium } = require('playwright');
-const CH = ['hero1', 'hero2', 'hero3', 'trainee-idle', 'hotel-idle', 'factory-idle', 'night-idle', 'shadow-idle'];
+const CH = ['hero1', 'hero2', 'hero3', 'factory-idle', 'night-idle', 'shadow-idle'];   // 06/11: cua + vali (trainee, hotel) là quái vẽ bằng code, không có khung xương
 (async () => {
   const b = await chromium.launch(); const p = await b.newPage();
   await p.goto(BASE + '/game.html'); await p.waitForTimeout(400);

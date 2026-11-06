@@ -2,7 +2,7 @@
    Chuẩn bị 1 lần (trong thư mục tools/art):
      npm i @mediapipe/tasks-vision playwright
      curl -o pose_heavy.task https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/latest/pose_landmarker_heavy.task
-   Chạy:  node tools/art/joints.js hero1 trainee-idle ...    rồi   python3 tools/art/rig.py <tên…>
+   Chạy:  node tools/art/joints.js hero1 factory-idle ...    rồi   python3 tools/art/rig.py <tên…>
    (node_modules và pose_heavy.task không commit — đã có trong .gitignore) */
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');

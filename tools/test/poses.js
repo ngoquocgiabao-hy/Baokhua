@@ -1,11 +1,11 @@
-/* Bảng tư thế (v14): vẽ khung xương 8 nhân vật, mỗi nhân vật 1 hàng 14 tư thế (sân đấu) hoặc 14 pha bước nảy, để soi bằng mắt
+/* Bảng tư thế (v14): vẽ khung xương 6 nhân vật, mỗi nhân vật 1 hàng 14 tư thế (sân đấu) hoặc 14 pha bước nảy, để soi bằng mắt
    có chỗ nào bị xé hình (rách áo, tay rời thân, vệt sáng) trước khi nới LIM / GAIN trong game.html.
    Dùng: node tools/test/poses.js [poses|walk|run] [ảnh ra.png]   (cần máy chủ 127.0.0.1:8765 hoặc BASE=...)
    GAIN dưới đây phải giống GAIN trong createArena. */
 const BASE = process.env.BASE || 'http://127.0.0.1:8765';
 const { chromium } = require('playwright');
 const MODE = process.argv[2] || 'poses', OUT = process.argv[3] || require('path').join(__dirname, 'out', 'poses-' + (process.argv[2] || 'poses') + '.png');
-const CH = ['hero1', 'hero2', 'hero3', 'trainee-idle', 'hotel-idle', 'factory-idle', 'night-idle', 'shadow-idle'];
+const CH = ['hero1', 'hero2', 'hero3', 'factory-idle', 'night-idle', 'shadow-idle'];   // 06/11: cua + vali (trainee, hotel) là quái vẽ bằng code, không có khung xương
 (async () => {
   const b = await chromium.launch();
   const W = 1820, RH = 230, H = RH * CH.length;

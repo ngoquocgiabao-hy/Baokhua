@@ -21,7 +21,7 @@ STEP = 13          # cạnh ô lưới (px trên tranh gốc cao ~520px)
 DS = 2             # thu nhỏ khi tính khoảng cách
 BONES = ['root', 'chest', 'head', 'uaF', 'faF', 'uaB', 'faB', 'thF', 'shF', 'thB', 'shB']
 PARENT = [-1, 0, 1, 1, 3, 1, 5, 0, 7, 0, 9]
-DEFAULT = ['hero1', 'hero2', 'hero3', 'trainee-idle', 'hotel-idle', 'factory-idle', 'night-idle', 'shadow-idle']
+DEFAULT = ['hero1', 'hero2', 'hero3', 'factory-idle', 'night-idle', 'shadow-idle']  # 06/11: trainee, hotel là quái vẽ bằng code (không rig)
 LM = {'nose': 0, 'earL': 7, 'earR': 8, 'shL': 11, 'shR': 12, 'elL': 13, 'elR': 14, 'wrL': 15, 'wrR': 16,
       'hipL': 23, 'hipR': 24, 'knL': 25, 'knR': 26, 'anL': 27, 'anR': 28, 'ftL': 31, 'ftR': 32}
 
