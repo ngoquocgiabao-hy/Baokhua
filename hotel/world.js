@@ -748,7 +748,7 @@ function bindInput() {
   addEventListener('keydown', e => {
     if (!active || !ready || e.altKey || e.ctrlKey || e.metaKey || sheetOn) return;
     const t = e.target; if (t && t.closest && t.closest('input,textarea,select,button,[contenteditable]')) return;
-    if (document.querySelector('#ov.on,.sheet-bg.on,#gate.on,#ob.on,.drawer:not([hidden])')) return;
+    if (document.querySelector('#ov.on,.sheet-bg.on,#onb:not([hidden]),.drawer:not([hidden]),#story:not([hidden])')) return;
     const k = e.key.toLowerCase(), st = view.S * .14 * .7071; let dx = 0, dz = 0;
     if (k === 'arrowup' || k === 'w') { dx = -st; dz = -st; } else if (k === 'arrowdown' || k === 's') { dx = st; dz = st; }
     else if (k === 'arrowleft' || k === 'a') { dx = -st; dz = st; } else if (k === 'arrowright' || k === 'd') { dx = st; dz = -st; }

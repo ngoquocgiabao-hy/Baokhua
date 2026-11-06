@@ -48,3 +48,10 @@ Bản này làm thành phố sống động hơn, sửa cầu, nâng mặt tiề
 
 ## 7. Hiệu năng
 - Khối tĩnh tô màu trơn gộp thành 1 lưới tô màu theo đỉnh; xe, thuyền, người dân dùng khối gộp dùng chung; khu sinh hoạt chỉ cập nhật và vẽ khi nằm trong khung hình. Phố mặc định khoảng 330 lệnh vẽ (bản v7 khoảng 310 dù thành phố nhỏ hơn nhiều).
+
+## 8. Bản 8.1 (06/11/2026, lúc đăng lên baokhua.com)
+- **Đi chợ đêm và Thử thách Boss chạy ngay trong game.** Bản cũ mở `game.html` trong khung và chờ kết quả, nhưng `game.html` v16 không gửi kết quả về nên các món phải đi chợ (hoa, chìa khoá, trà, cây cảnh, đèn lồng, mèo thần tài) không mua được. Nay: máy quay bay tới chợ đêm, chủ sạp hỏi 你要买什么？ (nǐ yào mǎi shénme? · Bạn muốn mua gì?), chọn đúng tên món (2 lần thử). Boss: 6 câu, đúng 4 câu trước khi hết 3 tim là thắng.
+- Tên sản phẩm thống nhất với trang thẻ: **thẻ tự học** (game + tài liệu + nhóm Zalo bài giảng, không gồm Zoom).
+- Đường dẫn sâu: `hotel/#the` mở ô nhập mã; `hotel/#market`, `#park`, `#wheel`, `#bridge`… bay tới khu đó.
+- `sw.js`: lấy mạng trước (cập nhật là người chơi nhận ngay), lưu sẵn tệp chính để chơi khi mạng yếu, nhắc ôn thẻ.
+- Chuyển trang mượt giữa trang chủ, game và trang thẻ (View Transitions).

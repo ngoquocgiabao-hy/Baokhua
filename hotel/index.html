@@ -17,7 +17,7 @@
 <meta property="og:description" content="Phục vụ khách Trung Quốc, kiếm xu, xây tầng, gym, bể bơi, vòng quay. Phố Bãi Cháy sống động ngày đêm, chạm vào mọi thứ để học từ.">
 <meta property="og:url" content="https://baokhua.com/hotel/">
 <link rel="canonical" href="https://baokhua.com/hotel/">
-<meta property="og:image" content="https://baokhua.com/v4/og-hotel.jpg">
+<meta property="og:image" content="https://baokhua.com/v4/og-hotel.jpg?v=8">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -44,8 +44,23 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .item.vip .buy{background:#16171B;color:#FFD91F;box-shadow:0 3px 0 #000}
 .member-card{background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B}
 .member-card .perks li{background:rgba(22,23,27,.07)}
-/* v8 · thẻ học viên */
+/* v8 · thẻ tự học */
 .ov-card{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .28s cubic-bezier(.65,0,.35,1) both}::view-transition-new(root){animation:vtIn .42s cubic-bezier(.16,1,.3,1) both}
+@keyframes vtOut{to{opacity:0;transform:scale(.985)}}@keyframes vtIn{from{opacity:0;transform:scale(1.015)}}
+@media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
+/* v8.1 · chợ đêm, thử thách boss */
+.mk-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mk-o{border:2.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:#fff;border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit;min-height:58px;justify-content:center}
+.mk-o b{font-size:20px}.mk-o i{font-style:normal;font-size:12px;color:#FFE97A;font-weight:700}.mk-o span{font-size:13.5px;font-weight:700;line-height:1.3}
+.mk-o.ok{background:#2fbf71;border-color:#fff}.mk-o.no{background:#c0392b;border-color:#fff;opacity:.85}.mk-o:disabled{cursor:default}
+.mk-fb{margin-top:10px;font-size:13.5px;line-height:1.45;min-height:1.4em}.mk-zh{margin-bottom:4px}
+.bq-top{display:flex;gap:10px;align-items:center;margin:4px 0 8px}.bq-img{width:84px;height:84px;object-fit:cover;border-radius:16px;border:3px solid #FFD91F;flex:none}
+.bq-img.hit{animation:bqHit .45s}@keyframes bqHit{20%{transform:translateX(-6px) rotate(-4deg);filter:brightness(2)}60%{transform:translateX(5px) rotate(3deg)}}
+.bq-bars{flex:1;display:flex;flex-direction:column;gap:6px;text-align:left;font-size:13px;font-weight:800}.bq-bars small{display:inline-block;width:44px;opacity:.85}
+.bq-hp{display:inline-block;vertical-align:middle;width:calc(100% - 52px);height:12px;border-radius:8px;background:rgba(0,0,0,.35);overflow:hidden;border:2px solid #fff}.bq-hp u{display:block;height:100%;background:linear-gradient(90deg,#ff5a5a,#ffb34d);transition:width .4s}
+.bq-n{font-size:12.5px;opacity:.85;margin-top:2px}.bq-py{font-size:15px;color:#FFE97A;font-weight:700}
 .gate-prev{margin:4px auto 8px;position:relative;border-radius:16px;overflow:hidden;border:3px solid #FFD91F;box-shadow:0 4px 0 rgba(0,0,0,.35);max-width:320px}
 .gate-prev img{display:block;width:100%;aspect-ratio:1.3;object-fit:cover;background:#9fd8f0}
 .gate-prev figcaption{position:absolute;left:8px;bottom:8px;background:rgba(22,23,27,.8);color:#FFD91F;font:800 12px/1.2 system-ui,sans-serif;padding:4px 9px;border-radius:999px}
@@ -56,7 +71,8 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .member-card .price-row>div{border-color:rgba(22,23,27,.25)}.member-card .price-row>div b{color:#16171B}.member-card .price-row>.best{border-color:#16171B;background:rgba(255,255,255,.45)}
 .code-box{margin-top:12px;text-align:left}.code-box label{font-size:12.5px;font-weight:800;opacity:.9}
 .code-row{display:flex;gap:6px;margin-top:5px}.code-row input{flex:1;min-width:0;font:800 16px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;padding:11px 10px;border-radius:12px;border:2.5px solid #16171B;background:#fff;color:#16171B;text-transform:uppercase}
-.code-row .btn{margin:0!important;width:auto;padding:0 14px;white-space:nowrap}
+.code-row .btn,.ov-card .code-row .btn{margin:0!important;width:auto;flex:none;padding:0 14px;white-space:nowrap}
+.code-row input{min-width:150px}
 .code-msg{font-size:12.5px;font-weight:700;margin-top:5px;min-height:1em}.code-msg.no{color:#ff8a8a}.code-msg.ok{color:#7fe3a8}
 .member-card .code-msg.no{color:#b8413a}.member-card .code-msg.ok{color:#1d7a46}
 .card-note{margin-top:10px;background:rgba(255,255,255,.1);border:2px dashed rgba(255,217,31,.6);border-radius:14px;padding:8px 10px;font-size:13px;line-height:1.4}
@@ -984,7 +1000,7 @@ function save() { S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, 
 
 const owned = id => id === 'desk' ? (S.furn && S.furn.desk ? 1 : 0) : (S.own[id] || 0);
 function starOf(pts) { let s = 0; STAR_PTS.forEach(t => { if (pts >= t) s++; }); return Math.max(1, Math.min(S.vip ? 10 : FREE_MAX_STAR, s, S.vip ? 10 : lvCap(), cardCap())); }
-/* ---------- thẻ học viên ---------- */
+/* ---------- thẻ tự học ---------- */
 function hasCard() { return !!(S.card && S.card.until > Date.now()); }
 function cardCap() { return hasCard() || S.vip ? 99 : Math.max(FREE_STAR, S.legacyStar || 0); }
 function cardDays() { return S.card ? Math.max(0, Math.ceil((S.card.until - Date.now()) / 864e5)) : 0; }
@@ -2027,11 +2043,12 @@ const Gate = (() => {
   const perks = () => `<ul class="perks"><li>🏨 <b>Khách sạn 3★ → 5★</b>: mặt tiền, sảnh, bể bơi, đèn vòng quay 7 màu, pháo hoa… mỗi món một từ mới</li>
       <li>🗺️ <b>Hành trình chặng 3–4</b>: 6 chương HSK2–HSK3 (Cẩm Phả, chợ Hạ Long, cầu Bãi Cháy, Bạch Đằng…)</li>
       <li>⚔️ <b>Thử thách Boss HSK3–HSK4</b> · khách nói câu dài như ở quầy lễ tân thật</li>
+      <li>📄 Tài liệu học + 💬 nhóm Zalo bài giảng theo lộ trình HSK0 → HSK4 · không gồm lớp Zoom</li>
       <li>👑 Thẻ 1 năm: mở 6★ → 10★ ngay khi ra mắt</li></ul>`;
   const prices = () => `<div class="price-row"><div><b>${MEMBER_3M}</b><small>Thẻ 3 tháng</small></div><div class="best"><b>${MEMBER_PRICE}</b><small>Thẻ 1 năm · chưa tới 1.000đ/ngày</small></div></div>`;
   const buy = () => `<a class="btn dark" href="${withUtm(CARD_URL, FORM_UTM_CARD)}" target="_blank" rel="noopener">🎫 Mua thẻ · chuyển khoản QR</a>
       <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Nhắn Zalo cho Bảo nhận mã</a>`;
-  const form = id => `<div class="code-box"><label for="cardIn_${id}">${hasCard() ? 'Có mã mới? Nhập để cộng thêm hạn' : 'Đã có mã? Nhập vào đây'}</label><div class="code-row"><input id="cardIn_${id}" placeholder="BK3M-XXXX-XXXX" maxlength="14" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Mã thẻ học viên"><button type="button" class="btn" id="cardGo_${id}">Kích hoạt</button></div><div class="code-msg" id="cardMsg_${id}" role="status"></div></div>`;
+  const form = id => `<div class="code-box"><label for="cardIn_${id}">${hasCard() ? 'Có mã mới? Nhập để cộng thêm hạn' : 'Đã có mã? Nhập vào đây'}</label><div class="code-row"><input id="cardIn_${id}" placeholder="BK3M-XXXX-XXXX" maxlength="14" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Mã thẻ tự học"><button type="button" class="btn" id="cardGo_${id}">Kích hoạt</button></div><div class="code-msg" id="cardMsg_${id}" role="status"></div></div>`;
   function bind(id) {
     const inp = $('cardIn_' + id), go = $('cardGo_' + id), msg = $('cardMsg_' + id); if (!inp) return;
     inp.oninput = () => { const c = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12); inp.value = c.replace(/(.{4})(?=.)/g, '$1-'); };
@@ -2055,9 +2072,9 @@ const Gate = (() => {
   function show(why = 'star', arg) {
     const s = star(), n = why === 'star' ? Math.min(FREE_MAX_STAR, arg || s + 1) : 3;
     S.gateN = (S.gateN || 0) + 1; S.gateSrc = why; save();
-    const lead = why === 'part' ? `<p>Bạn đã đi hết phần mở sẵn của Hành trình (chặng 1–2 · HSK0–HSK1) 👏 <b>Chặng ${arg + 1} · ${PARTS[arg].lv} · ${esc(PARTS[arg].name)}</b> dùng thẻ học viên.</p>`
-      : why === 'boss' ? '<p><b>Thử thách Boss HSK3–HSK4</b> dùng thẻ học viên.</p>'
-      : `<p>Khách sạn ${S.pts >= STAR_PTS[s] ? 'đã đủ điểm' : 'đang tích điểm'} lên <b>${n}★ · ${HSK_OF_STAR[n]}</b>. Từ hạng này dùng thẻ học viên${lvCap() < n ? `, rồi đi tiếp Hành trình chặng ${Math.min(4, n)} (${PARTS[Math.min(3, n - 1)].lv}) để khách sạn lên hạng` : ''}.</p>`;
+    const lead = why === 'part' ? `<p>Bạn đã đi hết phần mở sẵn của Hành trình (chặng 1–2 · HSK0–HSK1) 👏 <b>Chặng ${arg + 1} · ${PARTS[arg].lv} · ${esc(PARTS[arg].name)}</b> dùng thẻ tự học.</p>`
+      : why === 'boss' ? '<p><b>Thử thách Boss HSK3–HSK4</b> dùng thẻ tự học.</p>'
+      : `<p>Khách sạn ${S.pts >= STAR_PTS[s] ? 'đã đủ điểm' : 'đang tích điểm'} lên <b>${n}★ · ${HSK_OF_STAR[n]}</b>. Từ hạng này dùng thẻ tự học${lvCap() < n ? `, rồi đi tiếp Hành trình chặng ${Math.min(4, n)} (${PARTS[Math.min(3, n - 1)].lv}) để khách sạn lên hạng` : ''}.</p>`;
     showOv('🎫', why === 'part' ? 'Đi tiếp Hành trình' : `Mở khoá khách sạn ${n}★`, `${prevImg(why === 'star' ? n : 3)}${lead}${perks()}${prices()}${buy()}${form('ov')}`, 'Để sau', null);
     bind('ov');
   }
@@ -2065,20 +2082,25 @@ const Gate = (() => {
   function note(s) {
     if (s >= FREE_MAX_STAR) return '';
     if (hasCard()) { const d = cardDays(); return `<div class="card-note ok">🎫 ${CARD_NAME[S.card.kind]} đang mở · còn ${d} ngày${d <= 14 ? ' · <button type="button" class="lnk" id="ovCard">gia hạn</button>' : ''}</div>`; }
-    if (s + 1 > cardCap()) return `<div class="card-note hot">${prevImg(s + 1)}<p><b>Hạng ${s + 1}★ · ${HSK_OF_STAR[s + 1]} dùng thẻ học viên.</b> Bản thường dừng ở ${cardCap()}★ và Hành trình chặng 1–2. Có thẻ: khách sạn 3★ → 5★, chặng 3–4 (HSK2–HSK3), Thử thách Boss.</p><button type="button" class="btn dark" id="ovCard">🎫 Mở khoá ${s + 1}★ · từ ${MEMBER_3M}</button></div>`;
-    return `<div class="card-note">🎫 Bản thường mở tới ${cardCap()}★. Từ 3★ (HSK2), chặng 3–4 và Boss dùng thẻ học viên · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE} · <button type="button" class="lnk" id="ovCard">xem thẻ</button></div>`;
+    if (s + 1 > cardCap()) return `<div class="card-note hot">${prevImg(s + 1)}<p><b>Hạng ${s + 1}★ · ${HSK_OF_STAR[s + 1]} dùng thẻ tự học.</b> Bản thường dừng ở ${cardCap()}★ và Hành trình chặng 1–2. Có thẻ: khách sạn 3★ → 5★, chặng 3–4 (HSK2–HSK3), Thử thách Boss.</p><button type="button" class="btn dark" id="ovCard">🎫 Mở khoá ${s + 1}★ · từ ${MEMBER_3M}</button></div>`;
+    return `<div class="card-note">🎫 Bản thường mở tới ${cardCap()}★. Từ 3★ (HSK2), chặng 3–4 và Boss dùng thẻ tự học · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE} · <button type="button" class="lnk" id="ovCard">xem thẻ</button></div>`;
   }
   function bindNote(s) { const b = $('ovCard'); if (b) b.onclick = () => { Snd.play('ui'); show('star', Math.max(3, s + 1)); }; const p = $('ovCardP'); if (p) p.onclick = () => { Snd.play('ui'); show('part', FREE_PARTS); }; }
-  function partNote(p) { return p === FREE_PARTS - 1 && !hasCard() ? `<div class="card-note hot"><p><b>Chặng 3 · HSK2</b> và khách sạn 3★ dùng thẻ học viên · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE}.</p><button type="button" class="btn dark" id="ovCardP">🎫 Xem thẻ học viên</button></div>` : ''; }
+  function partNote(p) { return p === FREE_PARTS - 1 && !hasCard() ? `<div class="card-note hot"><p><b>Chặng 3 · HSK2</b> và khách sạn 3★ dùng thẻ tự học · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE}.</p><button type="button" class="btn dark" id="ovCardP">🎫 Xem thẻ tự học</button></div>` : ''; }
   /** khối thẻ trong "Của tôi" */
   function me() {
     if (hasCard()) { const d = cardDays(); return `<div class="card member-card"><b style="font-size:17px">🎫 ${CARD_NAME[S.card.kind]} đang mở</b>
       <p style="margin:6px 0">Còn <b>${d} ngày</b> (tới ${new Date(S.card.until).toLocaleDateString('vi-VN')}) · mã …${esc(S.card.tail)}. Đã mở: khách sạn 3★ → 5★, Hành trình chặng 3–4, Thử thách Boss.</p>
       ${d <= 14 ? `<p style="margin:6px 0">Sắp hết hạn: gia hạn để giữ hạng sao.</p>${buy()}` : ''}${form('me')}</div>`; }
-    return `<div class="card member-card"><b style="font-size:17px">🎫 Thẻ học viên Bảo Khựa 阿宝</b>
+    return `<div class="card member-card"><b style="font-size:17px">🎫 Thẻ tự học Bảo Khựa 阿宝</b>
       <p style="margin:6px 0">Bản thường đang mở: khách sạn tới <b>${cardCap()}★</b> · Hành trình chặng 1–2 (HSK0–HSK1).</p>${perks()}${prices()}${buy()}${form('me')}</div>`;
   }
-  return { show, note, bindNote, partNote, me, bind, prevImg };
+  function code() {
+    showOv('🎫', 'Nhập mã thẻ tự học', `<p>Sau khi bạn chuyển khoản, Bảo gửi mã qua Zalo. Mã dạng <b>BK3M-XXXX-XXXX</b> (3 tháng) hoặc <b>BK1Y-XXXX-XXXX</b> (1 năm).</p>${form('ov')}
+      <p class="note" style="margin-top:10px">Chưa có mã? <a href="${withUtm(CARD_URL, FORM_UTM_CARD)}" style="color:#FFD91F;font-weight:800">Xem thẻ tự học</a> · thẻ gồm game, tài liệu và nhóm Zalo bài giảng, không gồm Zoom.</p>`, 'Để sau', null);
+    bind('ov'); setTimeout(() => { const i = $('cardIn_ov'); if (i) try { i.focus(); } catch (e) {} }, 250);
+  }
+  return { show, note, bindNote, partNote, me, bind, prevImg, code };
 })();
 function showOv(big, title, body, btn, onClose, extra) {
   $('ovExtra').innerHTML = extra || '';
@@ -2201,7 +2223,69 @@ const Inside = (() => {
   return { show, close, sync, card, send, tapWord, get open() { return open; } };
 })();
 
-/* ===== SỰ KIỆN: đi chợ (bản đồ phố) · thử thách đánh boss (sân đấu) – mở game.html trong khung ===== */
+/* ===== v8.1 · SỰ KIỆN NGAY TRONG GAME ===== */
+/** đi chợ đêm Bãi Cháy: máy quay bay tới chợ, chủ sạp hỏi, chọn đúng tên món bằng tiếng Trung (2 lần thử) */
+const Mkt = (() => {
+  const ASK = ['你要买什么？', 'Nǐ yào mǎi shénme?', 'Bạn muốn mua gì?'];
+  function run(it, done) {
+    let tries = 0, fin = false;
+    const W = Scene.W; if (W && W.goPlace) W.goPlace('market');
+    const end = (ok, ab) => { if (fin) return; fin = true; done(ok, tries, ab); };
+    const ask = () => {
+      const opts = shuffle([it, ...shuffle(FURN.concat(NEEDS).filter(x => x.zh && x.zh !== it.zh && x.py)).slice(0, 3)]);
+      showOv('🏮', 'Chợ đêm Bãi Cháy', `<p class="mk-zh">${zs('夜市', 'yèshì', 'chợ đêm')}</p>
+        <p>Chủ sạp hỏi: ${zw(ASK[0], ASK[1], ASK[2])}</p><p>Ā Bǎo cần mua <b>${esc(it.vi)}</b>. Chọn đúng tên món bằng tiếng Trung:</p>
+        <div class="mk-opts">${opts.map((o, k) => `<button type="button" class="mk-o" data-k="${k}"><b lang="zh-CN">${esc(o.zh)}</b><i>${esc(o.py)}</i></button>`).join('')}</div><div id="mkFb" class="mk-fb" role="status"></div>`,
+        'Quay về khách sạn', () => end(false, true));
+      speak(ASK[0], false, { delay: 250 });
+      document.querySelectorAll('.mk-o').forEach(b => b.onclick = () => {
+        if (fin || b.disabled) return; const o = opts[+b.dataset.k]; tries++;
+        if (o === it) {
+          b.classList.add('ok'); document.querySelectorAll('.mk-o').forEach(x => { x.disabled = true; }); Snd.coin(2); vib(20); speak(it.zh, true);
+          $('mkFb').innerHTML = `✓ ${zw(esc(it.zh), esc(it.py), esc(it.vi))}${tries === 1 ? ' · nói đúng ngay, chủ sạp bớt giá!' : ''}`;
+          setTimeout(() => { $('ov').classList.remove('on'); ovOpen = false; end(true, false); }, 1300);
+        } else {
+          b.classList.add('no'); b.disabled = true; Snd.play('hurt', .6); vib([40, 30, 40]);
+          if (tries >= 2) { document.querySelectorAll('.mk-o').forEach(x => { x.disabled = true; if (opts[+x.dataset.k] === it) x.classList.add('ok'); }); $('mkFb').innerHTML = `Món cần mua là ${zw(esc(it.zh), esc(it.py), esc(it.vi))}`; speak(it.zh, true); setTimeout(() => { $('ov').classList.remove('on'); ovOpen = false; end(false, false); }, 2200); }
+          else $('mkFb').innerHTML = `Chủ sạp lắc đầu: ${zw('不是这个。', 'Bú shì zhège.', 'Không phải cái này.')} Thử lại nhé!`;
+        }
+      });
+    };
+    setTimeout(ask, W ? 1250 : 0);
+  }
+  return { run };
+})();
+/** thử thách boss: 6 câu, trả lời đúng 4 câu trước khi hết 3 tim là thắng */
+const BossQ = (() => {
+  function pick(st) {
+    const ok = q => q.type !== 'order' && typeof q.answer === 'number' && q.options && q.options.length >= 3;
+    let p = QUESTIONS.filter(q => ok(q) && q.lv >= Math.max(1, st - 1)); if (p.length < 6) p = QUESTIONS.filter(ok);
+    return shuffle(p).slice(0, 6);
+  }
+  function run(b, done) {
+    const list = pick(b.st); let i = 0, hp = 4, lives = 3, fin = false;
+    const end = win => { if (fin) return; fin = true; done(win); };
+    const step = () => {
+      const q = list[i % list.length], optZh = q.options.some(hasHan), prompt = !optZh && q.zh ? zs(esc(q.zh), esc(q.py), '') : q.type === 'fill' && q.py ? `<p class="bq-py">${esc(q.py)}</p>` : '';
+      showOv(b.ico, `${b.lv} · ${b.name}`, `<div class="bq-top"><img src="${b.img}" alt="" class="bq-img" id="bqImg"><div class="bq-bars"><div><small>Boss</small><i class="bq-hp"><u style="width:${hp * 25}%"></u></i></div><div><small>Ā Bǎo</small> ${'❤️'.repeat(lives)}${'🤍'.repeat(3 - lives)}</div></div></div>
+        <p class="bq-n">Câu ${i + 1} · cần đúng thêm ${hp} câu</p><p>${esc(q.q)}</p>${prompt}
+        <div class="mk-opts">${q.options.map((o, k) => `<button type="button" class="mk-o" data-k="${k}">${hasHan(o) ? `<b lang="zh-CN">${esc(o)}</b>${q.optionPy && q.optionPy[k] ? `<i>${esc(q.optionPy[k])}</i>` : ''}` : `<span>${esc(o)}</span>`}</button>`).join('')}</div><div id="bqFb" class="mk-fb" role="status"></div>`,
+        'Bỏ cuộc', () => end(false));
+      if (q.type === 'listen' && q.zh) speak(q.zh, true, { delay: 300 });
+      document.querySelectorAll('.mk-o').forEach(btn => btn.onclick = () => {
+        if (fin || btn.disabled) return; const k = +btn.dataset.k, good = k === q.answer;
+        document.querySelectorAll('.mk-o').forEach(x => { x.disabled = true; if (+x.dataset.k === q.answer) x.classList.add('ok'); });
+        if (good) { hp--; Snd.play('hit'); vib(25); const im = $('bqImg'); if (im) im.classList.add('hit'); } else { lives--; btn.classList.add('no'); Snd.play('hurt', .6); vib([40, 30, 40]); }
+        $('bqFb').innerHTML = `${good ? '✓ Trúng đòn!' : '✗ Bị phản đòn.'} ${zw(esc(q.zh), esc(q.py), esc(q.vi))}`; if (q.zh) speak(q.zh, true);
+        i++;
+        setTimeout(() => { if (fin) return; if (hp <= 0 || lives <= 0 || i >= list.length * 2) { $('ov').classList.remove('on'); ovOpen = false; end(hp <= 0); } else step(); }, 1500);
+      });
+    };
+    step();
+  }
+  return { run };
+})();
+/* ===== SỰ KIỆN: đi chợ · thử thách boss (bản cũ mở game.html trong khung; từ v8.1 chạy ngay trong game) ===== */
 const Ev = (() => {
   let cur = null;
   function open(o, url, title) {
@@ -2219,11 +2303,11 @@ const Ev = (() => {
   const url = w => `../game.html?ev=errand&id=${encodeURIComponent(w.id)}&zh=${encodeURIComponent(w.zh)}&py=${encodeURIComponent(w.py)}&vi=${encodeURIComponent(w.vi)}&d=${Math.max(0, Math.min(4, star() - 1))}`;
   function errandFor(f) {
     showOv('🚚', 'Nhà cung cấp hết hàng!', `<p>Kho chưa có <b lang="zh-CN">${esc(f.zh)}</b> (${esc(f.py)} · ${esc(f.vi)}). Ā Bǎo tự chạy ra chợ Bãi Cháy mua nhé!</p>
-      <p class="note">Đi tới sạp tạp hoá, nói đúng tên món bằng tiếng Trung, rồi bê hàng về cửa khách sạn. Mặc cả được: hoàn lại 30% xu.</p>`,
-      '🏃 Ra chợ ngay', () => open({ ev: 'errand', f }, url(f), `🛒 Đi chợ: ${f.zh} ${f.py}`));
+      <p class="note">Ra chợ đêm Bãi Cháy, chọn đúng tên món bằng tiếng Trung để mua. Mua được hàng thì chủ sạp bớt giá: hoàn lại 30% xu.</p>`,
+      '🏃 Ra chợ đêm', () => { S.ev.pend = { ev: 'errand', fid: f.id, nid: '' }; save(); Mkt.run(f, (ok, tries, ab) => { if (ab) { S.ev.pend = null; S.coins += f.price; save(); toast(`Đã quay về · hoàn ${f.price} 🪙`); renderHud(); renderBuild(); return; } result({ ev: 'errand', ok, tries }); }); });
   }
-  function need(n) { S.ev.need = null; save(); banner(); open({ ev: 'errand', need: n }, url(n), `📦 ${n.who} cần ${n.zh} ${n.py}`); }
-  function boss(b) { open({ ev: 'boss', b }, `../game.html?ev=boss&stage=${b.st}`, `⚔️ Thử thách ${b.lv}: ${b.name}`); }
+  function need(n) { S.ev.need = null; save(); banner(); S.ev.pend = { ev: 'errand', fid: '', nid: n.id }; save(); toast(`📦 ${n.who} cần ${n.zh} ${n.py} (${n.vi}) · Ā Bǎo ra chợ đêm`); Mkt.run(n, (ok, tries, ab) => { if (ab) { S.ev.pend = null; save(); return; } result({ ev: 'errand', ok, tries }); }); }
+  function boss(b) { S.ev.pend = { ev: 'boss', st: b.st }; save(); BossQ.run(b, win => result({ ev: 'boss', win, stage: b.st })); }
   function result(r) {
     const p = S.ev.pend || {}; S.ev.pend = null;
     const f = p.fid ? FURNI[p.fid] : null, n = p.nid ? NEEDS.find(x => x.id === p.nid) : null;
@@ -2482,7 +2566,7 @@ const Journey = (() => {
     el.innerHTML = `<div class="jc-top"><b>${p.ico} Chặng ${c.part + 1} · ${p.lv} · ${esc(p.name)}</b><span>${doneN}/${STORY.length}</span></div>
       <div class="jc-dots">${STORY.map((x, k) => `<i class="${isDone(x) ? 'd' : k === i ? 'c' : ''}${k && STORY[k - 1].part !== x.part ? ' gap' : ''}"></i>`).join('')}</div>
       <p class="jc-t"><span class="jc-ico">${c.ico}</span><span><small>Chương ${i + 1}</small><b>${esc(c.title)}</b> · ${esc(c.place)} <span lang="zh-CN">${c.zh}</span> <i>${c.zpy}</i></span></p>
-      <button type="button" class="btn${partFree(c.part) ? '' : ' dark'}" id="jcGo">${partFree(c.part) ? `▶ Vào chương ${i + 1}` : `🎫 Chặng ${c.part + 1} dùng thẻ học viên`}</button>
+      <button type="button" class="btn${partFree(c.part) ? '' : ' dark'}" id="jcGo">${partFree(c.part) ? `▶ Vào chương ${i + 1}` : `🎫 Chặng ${c.part + 1} dùng thẻ tự học`}</button>
       <p class="jc-r">Xong chặng ${c.part + 1}: ${esc(p.reward)}</p>`;
     $('jcGo').onclick = () => openCh(c.id);
   }
@@ -2601,8 +2685,8 @@ const Onboard = (() => {
   const LEVELS = [
     { lv: 0, ico: '🌱', t: 'Chưa biết gì', s: 'Bắt đầu từ pinyin, chào hỏi, số đếm (HSK0)', go: 'Đi Hành trình từ chương 1 · nhà nghỉ mở cửa sau chặng 1' },
     { lv: 1, ico: '🌿', t: 'Biết chào hỏi, đếm số', s: 'Đã học một chút (khoảng HSK1)', go: 'Mở khách sạn ngay · Hành trình bắt đầu từ chặng 2' },
-    { lv: 3, ico: '🌳', t: 'Giao tiếp cơ bản', s: 'Nói được câu đơn giản (HSK2–3)', go: 'Khách sạn mở sẵn 2★ · 3★, chặng 4 và Boss dùng thẻ học viên' },
-    { lv: 4, ico: '🏆', t: 'Khá trở lên', s: 'HSK4 hoặc đi làm bằng tiếng Trung', go: 'Mở sẵn 2★ · 3★ → 5★ và Boss HSK3–HSK4 dùng thẻ học viên' }
+    { lv: 3, ico: '🌳', t: 'Giao tiếp cơ bản', s: 'Nói được câu đơn giản (HSK2–3)', go: 'Khách sạn mở sẵn 2★ · 3★, chặng 4 và Boss dùng thẻ tự học' },
+    { lv: 4, ico: '🏆', t: 'Khá trở lên', s: 'HSK4 hoặc đi làm bằng tiếng Trung', go: 'Mở sẵn 2★ · 3★ → 5★ và Boss HSK3–HSK4 dùng thẻ tự học' }
   ];
   const TEST = [
     { lv: 0, zh: '你好！', py: 'Nǐ hǎo!', o: ['Xin chào!', 'Cảm ơn!', 'Tạm biệt!', 'Xin lỗi!'] },
@@ -3019,11 +3103,21 @@ function init() {
   save();
 }
 init();
+/* v8.1 · đường dẫn sâu: hotel/#the mở ô nhập mã thẻ (sau khi người mới chọn xong trình độ) · hotel/#market… bay tới khu đó */
+(() => {
+  const H = decodeURIComponent((location.hash || '').slice(1)); if (!H) return;
+  let n = 0; const t = setInterval(() => {
+    n++; const busy = ovOpen || document.querySelector('.onb:not([hidden])') || Journey.open || Tut.active;
+    if (H === 'the') { if (S.lv != null && !busy) { clearInterval(t); Gate.code(); } }
+    else { const W = Scene.W; if (W && W.places && !busy) { clearInterval(t); if (W.places.some(p => p.id === H)) W.goPlace(H); } }
+    if (n > 240) clearInterval(t);
+  }, 700);
+})();
 
 /* hook kiểm thử (không ảnh hưởng chơi) */
 window.__hotel = {
   get S() { return S; }, get Q() { return Q; }, get queue() { return Scene.queue; }, ITEMS, QUESTIONS, star, fare, Scene, setHour, Journey, Onboard, STORY, guestLv, hotelOpen, gameHour, Voice, Tut, Snd,
-  openServe, openBuy: id => openBuy(ITEM[id]), openFurnBuy: id => openFurnBuy(FURNI[id]), furnGot: id => furnGot(FURNI[id]), FURN, ZONES, Inside, Ev, Learn, nextFurn, furnLock, zonesDone,
+  openServe, Gate, Mkt, BossQ, BOSSES, openBuy: id => openBuy(ITEM[id]), openFurnBuy: id => openFurnBuy(FURNI[id]), furnGot: id => furnGot(FURNI[id]), FURN, ZONES, Inside, Ev, Learn, nextFurn, furnLock, zonesDone,
   answer(correct) {
     if (!Q || Q.locked) return false;
     const q = Q.q;
