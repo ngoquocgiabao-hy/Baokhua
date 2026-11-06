@@ -105,7 +105,8 @@ const BANK_HOLDER = "NGO QUOC BAO";
     <div class="mem__han han" aria-hidden="true">会</div>
     <span class="eyebrow">Thẻ tự học</span>
     <h2 id="memTitle">Tự học theo việc của bạn, <em>không gồm lớp Zoom.</em></h2>
-    <p class="lead">Thẻ đã gồm game tự học, tài liệu học và nhóm Zalo bài giảng. Room theo ngành có giá riêng, không bán kèm thẻ 3 tháng hay thẻ năm.</p>
+    <p class="lead">Thẻ đã gồm game tự học, tài liệu học và nhóm Zalo bài giảng, theo lộ trình gợi ý HSK0 → HSK4. Room theo ngành có giá riêng, không bán kèm thẻ 3 tháng hay thẻ năm.</p>
+    <p class="lead sale-line" data-offer-hold style="margin-top:8px">🔥 <strong>11.11 đại giảm giá: thẻ 1 năm 299.000đ</strong>, đến 23:59 thứ Tư 11/11/2026.</p>
     <p class="lead sample-job" style="margin-top:8px"><span class="zh" style="font-weight:800;font-size:1.15em">请出示您的护照。</span><br><em style="opacity:.85">Qǐng chūshì nín de hùzhào.</em><br><span style="opacity:.9">Xin xuất trình hộ chiếu của anh/chị. — mẫu câu lễ tân khách sạn.</span></p>
 
     <div class="mem__grid">
@@ -125,7 +126,7 @@ const BANK_HOLDER = "NGO QUOC BAO";
             <span class="plan__tag">Đáng mua nhất</span>
             <div class="plan__name">Thẻ 1 năm</div>
             <div class="plan__price">299.000<small>đ</small></div>
-            <p class="plan__note">Cả năm tự học · tiết kiệm hơn gói ngắn. Không gồm Zoom.</p>
+            <p class="plan__note">Cả năm tự học · tài liệu theo lộ trình gợi ý HSK0 → HSK4. Không gồm Zoom.</p>
             <ul>
               <li>Game tự học</li>
               <li>Tài liệu học</li>
@@ -148,7 +149,7 @@ const BANK_HOLDER = "NGO QUOC BAO";
               <span class="ico" aria-hidden="true">📄</span>
               <div>
                 <b>Tài liệu học</b>
-                <span>Đã gồm trong thẻ, để ôn từ và mẫu câu.</span>
+                <span>Đã gồm trong thẻ, theo lộ trình gợi ý HSK0 → HSK4.</span>
               </div>
             </li>
             <li>
@@ -173,13 +174,13 @@ const BANK_HOLDER = "NGO QUOC BAO";
         <div class="mem__card">
           <h3>Cách đăng ký (3 bước)</h3>
           <div class="steps">
-            <div class="step-m"><b>Chọn gói thẻ</b><p>3 tháng 99.000đ hoặc 1 năm 299.000đ (gói năm đáng mua hơn).</p></div>
+            <div class="step-m"><b>Chọn gói thẻ</b><p>3 tháng 99.000đ hoặc 1 năm 299.000đ (gói năm đáng mua hơn, giá 11.11 đến hết ngày 11/11).</p></div>
             <div class="step-m"><b>Điền form + chuyển khoản</b><p>Điền Google Form, chuyển khoản theo QR. Nội dung: <strong>Họ tên + SĐT</strong>.</p></div>
             <div class="step-m"><b>Vào nhóm Zalo</b><p>Bảo xác nhận, gửi tài liệu và cho vào nhóm bài giảng.</p></div>
           </div>
           <div class="mem__offers" id="memOffers">
-            <p data-offer-hold>⏰ Giữ chỗ đến 20:00 thứ Ba 03/11.</p>
-            <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 20:00 thứ Ba 03/11 → bạn được cộng thêm 7 ngày.</p>
+            <p data-offer-hold>🔥 11.11: thẻ 1 năm 299.000đ, đến 23:59 thứ Tư 11/11.</p>
+            <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 23:59 ngày 11/11 → bạn được cộng thêm 7 ngày.</p>
             <p>🎯 Mini game đoán nghĩa trong nhóm Zalo: đoán đúng → giảm đến 20k khi mua thẻ.</p>
           </div>
           <p class="mem__foot" style="margin-top:14px;text-align:left">Form chỉ lấy họ tên và số điện thoại để liên lạc về thẻ.</p>
@@ -209,7 +210,8 @@ const BANK_HOLDER = "NGO QUOC BAO";
 </section>
 <script>
 (function(){
-  function holdSeatExpired(){ return Date.now() >= Date.parse('2026-11-03T13:00:00Z'); }
+  // hết ưu đãi 11.11: 23:59:59 thứ Tư 11/11/2026 giờ Việt Nam = 16:59:59 UTC
+  function holdSeatExpired(){ return Date.now() >= Date.parse('2026-11-11T16:59:59Z'); }
   document.querySelectorAll('[data-offer-hold],[data-offer-referral]').forEach(function(el){ el.hidden = holdSeatExpired(); });
   var form=document.getElementById("memFormBtn");
   var zalo=document.getElementById("memZaloBtn");
