@@ -2,8 +2,8 @@
    - Lưu sẵn tệp chính để mở nhanh, chơi được khi mạng yếu (HTML: lấy mạng trước, tệp tĩnh: lấy bộ nhớ trước).
    - Nhắc ôn khi app đóng: đọc lịch ôn trang gửi vào Cache 'bk-srs' (./__srs), đến giờ nhắc mà còn thẻ đến hạn thì hiện thông báo
      "Hôm nay có N thẻ cần ôn" (mỗi ngày 1 lần). Chạy qua periodicsync (Chrome Android đã cài app) hoặc khi trang vừa ẩn. */
-const V = 'bk-hotel-v2';
-const SHELL = ['./', './index.html', './three.module.min.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const V = 'bk-hotel-v3';
+const SHELL = ['./', './index.html', '../lib/three.module.min.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('bk-hotel-') && k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {

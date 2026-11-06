@@ -6394,7 +6394,7 @@ function showClear(stage, stars, onNext, isFinal, opened) {
   };
   if (st.act) { tips[2] = 'Trả lời + đỡ chữ đúng ≥90% và còn ≥50% máu để được 3 sao.'; tips[1] = 'Trả lời + đỡ chữ đúng ≥70% để được 2 sao – xem Sổ ôn ở cuối lượt.'; }
   $('clearTip').textContent = tips[stars];
-  $('clearBtn').textContent = isFinal ? '🏆 Xem kết quả' : '▶ Xem kết quả & sổ ôn';
+  $('clearBtn').textContent = EV ? '▶ Xem sổ ôn · về khách sạn' : isFinal ? '🏆 Xem kết quả' : '▶ Xem kết quả & sổ ôn';
   const spans = [...$('clearStars').children];
   spans.forEach(s => { s.className = ''; });
   $('clearOverlay').classList.add('on');
