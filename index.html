@@ -296,6 +296,83 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
 .toast{position:fixed;left:50%;bottom:92px;z-index:70;padding:12px 20px;border-radius:999px;background:var(--ink);color:var(--sun);font-weight:600;font-size:14.5px;transform:translate(-50%,30px);opacity:0;transition:transform .4s var(--ease-spring),opacity .3s;pointer-events:none;box-shadow:0 10px 30px -10px #000}
 .toast.is-on{transform:translate(-50%,0);opacity:1}
 
+
+/* ---------- 2 nút 3D: Chơi game · Học online (07/11) ----------
+   Khối có độ dày thật (các lớp xếp theo trục Z), nổi nhẹ, nghiêng theo chuột, vệt sáng lướt, vòng sáng gọi bấm.
+   Chỉ đổi transform/opacity (card đồ hoạ lo), dừng khi khuất màn hình, tắt hẳn khi máy bật giảm chuyển động. */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px;max-width:560px}
+.duo + .hero__cta{margin-top:18px}
+.b3d{--c1:#ff9a5a;--c2:#ff4d6d;--c3:#9e1f3a;--tx:#fff;position:relative;display:block;perspective:700px;border:0;background:none;padding:0;text-align:left;color:var(--tx);text-decoration:none;cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent}
+.b3d--learn{--c1:#3d7fd6;--c2:#1E5AA8;--c3:#0b2a55;--tx:#fff}
+.b3d__float{display:block;transform-style:preserve-3d;animation:b3dFloat 5.2s var(--ease-io) infinite;will-change:transform}
+.b3d--learn .b3d__float{animation-delay:-2.6s}
+@keyframes b3dFloat{0%,100%{transform:translateY(0) rotateX(10deg) rotateY(-9deg)}50%{transform:translateY(-7px) rotateX(5deg) rotateY(7deg)}}
+.b3d__body{position:relative;display:block;transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .3s var(--ease-out)}
+.b3d__layer{position:absolute;inset:0;border-radius:22px;background:var(--c3);border:2.5px solid var(--ink);transform:translateZ(calc(var(--z) * -1px))}
+.b3d__face{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;min-height:118px;padding:12px 8px 11px;border-radius:22px;background:linear-gradient(155deg,var(--c1),var(--c2));border:2.5px solid var(--ink);transform:translateZ(14px);overflow:hidden;box-shadow:inset 0 3px 0 rgba(255,255,255,.5);transition:transform .15s var(--ease-out)}
+.b3d:active .b3d__face{transform:translateZ(5px)}
+.b3d__face::after{content:"";position:absolute;inset:-30% -70%;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.6) 50%,transparent 58%);transform:translateX(-70%);animation:b3dShine 3.8s var(--ease-io) infinite;pointer-events:none}
+.b3d--learn .b3d__face::after{animation-delay:-1.9s;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.35) 50%,transparent 58%)}
+@keyframes b3dShine{0%,55%{transform:translateX(-70%)}100%{transform:translateX(70%)}}
+.b3d::after{content:"";position:absolute;left:10%;right:10%;bottom:-16px;height:16px;border-radius:50%;background:rgba(22,23,27,.28);filter:blur(6px);animation:b3dShadow 5.2s var(--ease-io) infinite;z-index:-1}
+.b3d--learn::after{animation-delay:-2.6s}
+@keyframes b3dShadow{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(.86);opacity:.6}}
+.b3d--game::before{content:"";position:absolute;inset:-7px;border-radius:29px;border:3px solid #fff;opacity:0;animation:b3dPing 2.4s ease-out infinite;pointer-events:none}
+@keyframes b3dPing{0%{transform:scale(.94);opacity:.95}100%{transform:scale(1.13);opacity:0}}
+.b3d__ico{width:46px;height:46px;flex:none;perspective:320px;display:flex;align-items:center;justify-content:center}
+.mcube{position:relative;width:34px;height:34px;transform-style:preserve-3d;animation:mcube 8s linear infinite}
+.mcube i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);border-radius:9px;background:#fff;font-style:normal;font-size:17px;line-height:1}
+.mcube i:nth-child(1){transform:translateZ(17px)} .mcube i:nth-child(2){transform:rotateY(90deg) translateZ(17px);background:var(--sun-2)}
+.mcube i:nth-child(3){transform:rotateY(180deg) translateZ(17px)} .mcube i:nth-child(4){transform:rotateY(270deg) translateZ(17px);background:var(--sun-2)}
+.mcube i:nth-child(5){transform:rotateX(90deg) translateZ(17px);background:var(--sun)} .mcube i:nth-child(6){transform:rotateX(-90deg) translateZ(17px);background:var(--sun)}
+.b3d--learn .mcube i:nth-child(2n){background:#cfe0f7}
+@keyframes mcube{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+.b3d__tx{min-width:0}
+.b3d__tx b{display:block;font-weight:800;font-size:17px;letter-spacing:.04em;line-height:1.15;white-space:nowrap;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.b3d__tx small{display:block;font-size:11.5px;line-height:1.3;margin-top:2px;opacity:.92}
+.b3d__tag{position:absolute;top:-9px;right:12px;z-index:3;transform:translateZ(22px) rotate(6deg);background:#ff5d73;color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:999px;border:2px solid var(--ink)}
+.b3d__spark{position:absolute;width:12px;height:12px;background:#fff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);transform:translateZ(26px) scale(0);animation:b3dSpark 2.6s var(--ease-io) infinite;pointer-events:none}
+@keyframes b3dSpark{0%,100%{transform:translateZ(26px) scale(0) rotate(0)}40%{transform:translateZ(26px) scale(1) rotate(90deg)}70%{transform:translateZ(26px) scale(0) rotate(180deg)}}
+.duo.is-off *,.duo.is-off *::before,.duo.is-off *::after,.duo.is-off .b3d::after{animation-play-state:paused!important}
+@media (max-width:380px){.b3d__face{min-height:110px;gap:5px;padding:10px 6px}.b3d__ico{height:40px}.mcube{width:30px;height:30px}.mcube i{font-size:15px}
+  .mcube i:nth-child(1){transform:translateZ(15px)} .mcube i:nth-child(2){transform:rotateY(90deg) translateZ(15px)} .mcube i:nth-child(3){transform:rotateY(180deg) translateZ(15px)} .mcube i:nth-child(4){transform:rotateY(270deg) translateZ(15px)} .mcube i:nth-child(5){transform:rotateX(90deg) translateZ(15px)} .mcube i:nth-child(6){transform:rotateX(-90deg) translateZ(15px)}
+  .b3d__tx b{font-size:15.5px}.b3d__tx small{font-size:10.5px}}
+.dock .dock__game{background:linear-gradient(155deg,#ff9a5a,#ff4d6d);color:#fff;box-shadow:0 4px 0 #9e1f3a;border:2px solid var(--ink);overflow:visible}
+.dock .dock__game::before{content:"";position:absolute;inset:-5px;border-radius:999px;border:2.5px solid #ff9a5a;opacity:0;animation:b3dPing 2.4s ease-out infinite;pointer-events:none}
+/* bảng chọn game */
+.gpick{position:fixed;inset:0;z-index:90;background:rgba(12,18,30,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;display:flex;align-items:flex-end;justify-content:center}
+.gpick.on{opacity:1;visibility:visible}
+.gpick__panel{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--paper);border:3px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .45s var(--ease-out);perspective:900px}
+.gpick.on .gpick__panel{transform:none}
+@media (min-width:700px){.gpick{align-items:center}.gpick__panel{border-radius:28px;border-bottom:3px solid var(--ink)}}
+.gpick__head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.gpick__head h3{flex:1;font-size:20px;font-weight:800}
+.gpick__x{border:2.5px solid var(--ink);background:#fff;border-radius:12px;width:40px;height:40px;font-size:16px;font-weight:800;cursor:pointer}
+.gcard{display:flex;gap:12px;align-items:stretch;background:#fff;border:2.5px solid var(--ink);border-radius:20px;padding:9px;margin-bottom:12px;color:var(--ink);text-decoration:none;box-shadow:0 5px 0 var(--ink);transform-origin:50% 0;opacity:0;transform:rotateX(-35deg) translateY(16px);transition:transform .5s var(--ease-spring),opacity .35s,box-shadow .15s}
+.gpick.on .gcard{opacity:1;transform:none}
+.gpick.on .gcard:nth-of-type(2){transition-delay:.06s}.gpick.on .gcard:nth-of-type(3){transition-delay:.12s}
+.gcard:active{transform:translateY(4px)!important;box-shadow:0 1px 0 var(--ink)}
+.gcard--hot{background:linear-gradient(150deg,#fff7c2,#ffe07a)}
+.gcard__img{width:92px;flex:none;border-radius:14px;overflow:hidden;border:2px solid var(--ink);background:#cfeaf7}
+.gcard__img img{width:100%;height:100%;object-fit:cover;display:block}
+.gcard__tx{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0}
+.gcard__tag{align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.06em;background:#ff5d73;color:#fff;border-radius:999px;padding:2px 8px;border:2px solid var(--ink)}
+.gcard__tx b{font-size:16.5px;line-height:1.2}
+.gcard__tx small{font-size:12.5px;line-height:1.4;opacity:.8}
+.gcard__go{align-self:flex-start;margin-top:4px;font-size:12.5px;font-weight:800;color:var(--denim)}
+.gpick__learn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:999px;background:var(--denim);color:#fff;font-weight:800;text-decoration:none;border:2.5px solid var(--ink);box-shadow:0 4px 0 var(--ink);margin-top:4px}
+.gpick__note{font-size:11.5px;text-align:center;opacity:.7;margin-top:10px}
+/* chuyển cảnh vào game: vòng tròn vàng nở ra từ chỗ bấm */
+.portal{position:fixed;inset:0;z-index:100;pointer-events:none;visibility:hidden}
+.portal.on{visibility:visible;pointer-events:auto}
+.portal i{position:absolute;left:var(--x,50%);top:var(--y,50%);width:40px;height:40px;margin:-20px;border-radius:50%;background:var(--sun);transform:scale(0);transition:transform .6s var(--ease-io)}
+.portal.on i{transform:scale(var(--s,40))}
+.portal span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:800;font-size:18px;color:var(--ink);opacity:0;transition:opacity .3s .25s;display:flex;align-items:center;gap:10px}
+.portal.on span{opacity:1}
+.portal span::before{content:"";width:22px;height:22px;border-radius:50%;border:3px solid var(--ink);border-right-color:transparent;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.b3d__float,.b3d__face::after,.b3d::before,.b3d::after,.mcube,.b3d__spark{animation:none!important}.b3d__float{transform:rotateX(8deg) rotateY(-6deg)}}
+
 /* ---------- dock điện thoại ---------- */
 .dock{position:fixed;left:12px;right:12px;bottom:12px;z-index:55;display:flex;gap:10px;padding:9px;border-radius:999px;background:rgba(22,23,27,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transform:translateY(150%);transition:transform .6s var(--ease-out);--btn:var(--sun);--btn-fg:var(--ink);--fg:#FFF7D6;--bg:var(--ink)}
 .dock.is-on{transform:none}
@@ -511,12 +588,29 @@ body.gaming .progress{opacity:0}
         <span class="line"><span style="--i:3"><em>cho bạn.</em></span><svg class="squig" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 16 C 60 4, 110 24, 170 12 S 260 6, 296 14"/></svg></span>
       </h1>
       <p class="sub fade" style="--dl:.85s">Mình là Bảo. Mình sống và làm việc 5 năm ở Trung Quốc, từng làm quản lý tiếp đón ở resort 5 sao và kỹ sư chất lượng ở tập đoàn TCL. Mình dạy thứ tiếng Trung bạn mang đi làm được ngay.</p>
-      <div class="hero__cta fade" style="--dl:1.05s">
+      <div class="duo fade" id="duo" style="--dl:1.05s">
+        <button type="button" class="b3d b3d--game" data-open="games" aria-haspopup="dialog">
+          <span class="b3d__float"><span class="b3d__body">
+            <span class="b3d__layer" style="--z:0" aria-hidden="true"></span><span class="b3d__layer" style="--z:5" aria-hidden="true"></span><span class="b3d__layer" style="--z:10" aria-hidden="true"></span>
+            <span class="b3d__face"><span class="b3d__ico" aria-hidden="true"><span class="mcube"><i>🎮</i><i>🏨</i><i>🛎️</i><i>⭐</i><i></i><i></i></span></span>
+              <span class="b3d__tx"><b>CHƠI GAME</b><small>Khách sạn 3D, học tiếng Trung</small></span></span>
+            <span class="b3d__tag">MỚI 3D</span>
+            <span class="b3d__spark" style="left:8%;top:-6px" aria-hidden="true"></span><span class="b3d__spark" style="right:-4px;bottom:14px;animation-delay:-1.3s" aria-hidden="true"></span>
+          </span></span>
+        </button>
+        <a class="b3d b3d--learn" href="membership.html" data-go>
+          <span class="b3d__float"><span class="b3d__body">
+            <span class="b3d__layer" style="--z:0" aria-hidden="true"></span><span class="b3d__layer" style="--z:5" aria-hidden="true"></span><span class="b3d__layer" style="--z:10" aria-hidden="true"></span>
+            <span class="b3d__face"><span class="b3d__ico" aria-hidden="true"><span class="mcube"><i>📚</i><i>🎧</i><i>💬</i><i>✍️</i><i></i><i></i></span></span>
+              <span class="b3d__tx"><b>HỌC ONLINE</b><small>Lớp Zoom HSK0 → HSK4</small></span></span>
+          </span></span>
+        </a>
+      </div>
+      <div class="hero__cta fade" style="--dl:1.15s">
         <a class="btn btn--main magnet" data-link="zaloGroup" href="#lien-he">
           Vào nhóm Zalo, học cùng Bảo
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a class="btn btn--ghost" href="#game">🎮 Chơi game học tiếng Trung</a>
       </div>
       <p class="hero__note fade" style="--dl:1.2s">Không cần biết trước chữ nào. Vào xem, thấy hợp thì ở lại.</p>
       <a class="sale-pill fade" style="--dl:1.35s" href="#khai-giang" data-offer><span class="sale-pill__tag">11.11</span><span>Thẻ 1 năm <b>299k</b> · còn <b class="sale-left" data-sale-left>…</b></span></a>
@@ -851,9 +945,29 @@ body.gaming .progress{opacity:0}
 <footer><div class="wrap"><span>© 2026 Bảo Khựa <span class="han">阿宝</span> · China-ready · baokhua.com</span><span><a href="khachsan.html">Game Khách sạn</a> · <a href="membership.html">Thẻ hội viên</a> · Hạ Long, Quảng Ninh</span></div></footer>
 
 <div class="dock" id="dock">
-  <a class="btn btn--main" data-link="zaloGroup" href="#lien-he">Vào nhóm Zalo</a>
-  <a class="btn btn--ghost" href="#game">🎮 Chơi game</a>
+  <button type="button" class="btn btn--main dock__game" data-open="games" aria-haspopup="dialog">🎮 Chơi game</button>
+  <a class="btn btn--ghost" href="membership.html" data-go>📚 Học online</a>
 </div>
+<div class="gpick" id="gpick" role="dialog" aria-modal="true" aria-labelledby="gpickTitle">
+  <div class="gpick__panel">
+    <div class="gpick__head"><h3 id="gpickTitle">🎮 Chọn game để chơi</h3><button type="button" class="gpick__x" aria-label="Đóng">✕</button></div>
+    <a class="gcard gcard--hot" href="hotel/proto/" data-go>
+      <span class="gcard__img"><img src="hotel/proto/poster.jpg" alt="Sảnh khách sạn 3D trong game Khách sạn Vịnh Ā Bǎo" width="432" height="528" loading="lazy" decoding="async"></span>
+      <span class="gcard__tx"><span class="gcard__tag">MỚI · 3D · BẢN THỬ</span><b>Khách sạn Vịnh Ā Bǎo</b><small>Đón khách, lên sao, mở bài học HSK0 → HSK4. Thẻ từ và ôn tập mỗi ngày.</small><span class="gcard__go">Chơi ngay →</span></span>
+    </a>
+    <a class="gcard" href="khachsan.html" data-go>
+      <span class="gcard__img"><img src="v4/game-poster.jpg" alt="Khách sạn Bảo Khựa 5 sao về đêm" width="540" height="1074" loading="lazy" decoding="async"></span>
+      <span class="gcard__tx"><b>Khách sạn Bảo Khựa</b><small>Trả lời đúng tiếng Trung để có xu, xây khách sạn từ 1★ lên 5★.</small><span class="gcard__go">Chơi ngay →</span></span>
+    </a>
+    <a class="gcard" href="game.html" data-go>
+      <span class="gcard__img"><img src="v4/art/hero1.jpg" alt="Ā Bǎo, nhân vật chính game Đánh Boss" loading="lazy" decoding="async"></span>
+      <span class="gcard__tx"><b>Đánh Boss HSK0 → HSK4</b><small>Đi qua 5 trạm, đánh boss, đỡ chiêu chữ bằng nghĩa từ.</small><span class="gcard__go">Chơi ngay →</span></span>
+    </a>
+    <a class="gpick__learn" href="membership.html" data-go>📚 Muốn học bài bản? Học online với Bảo</a>
+    <p class="gpick__note">Chơi ngay trên trình duyệt, không cần tải ứng dụng. Tiến độ lưu trên máy bạn.</p>
+  </div>
+</div>
+<div class="portal" id="portal" aria-hidden="true"><i></i><span>Đang vào…</span></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -902,7 +1016,7 @@ const CONFIG = {
   const onScroll = () => {
     const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
     nav.classList.toggle('is-stuck', y > 20);
-    dock.classList.toggle('is-on', y > vh * .7 && y < max - 500);
+    dock.classList.toggle('is-on', !window.__duoSeen && y < max - 500);   // 07/11: thanh dưới có nút Chơi game / Học online hiện ngay từ đầu, ẩn khi 2 nút 3D lớn đang trong tầm nhìn
     bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
     const r = tl.getBoundingClientRect();
     tl.style.setProperty('--p', Math.min(1, Math.max(0, (vh * .75 - r.top) / r.height)).toFixed(3));
@@ -1161,6 +1275,40 @@ const CONFIG = {
       wrap.addEventListener('pointermove', e => { if (frame) return; const r = phone.getBoundingClientRect(); phone.style.setProperty('--ry', (((e.clientX - r.left) / r.width - .5) * 18).toFixed(2) + 'deg'); phone.style.setProperty('--rx', ((.5 - (e.clientY - r.top) / r.height) * 10).toFixed(2) + 'deg'); });
       wrap.addEventListener('pointerleave', () => { phone.style.removeProperty('--ry'); phone.style.removeProperty('--rx'); });
     }
+  }
+})();
+
+/* ---- 2 nút 3D + bảng chọn game + chuyển cảnh (07/11) ---- */
+(function () {
+  const q = s => document.querySelector(s), qa = s => [...document.querySelectorAll(s)];
+  const pick = q('#gpick'), portal = q('#portal'); if (!pick || !portal) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  let pre = false;
+  const prefetch = () => { if (pre) return; pre = true; ['hotel/proto/', 'hotel/proto/three.module.min.js', 'khachsan.html', 'game.html'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
+  const open = () => { prefetch(); pick.classList.add('on'); document.documentElement.style.overflow = 'hidden'; };
+  const close = () => { pick.classList.remove('on'); document.documentElement.style.overflow = ''; };
+  qa('[data-open="games"]').forEach(b => { b.addEventListener('click', e => { e.preventDefault(); open(); }); b.addEventListener('pointerenter', prefetch, { once: true }); });
+  pick.addEventListener('click', e => { if (e.target === pick || e.target.closest('.gpick__x')) close(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && pick.classList.contains('on')) close(); });
+  qa('[data-go]').forEach(a => a.addEventListener('click', e => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    e.preventDefault(); const r = a.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2, url = a.href;
+    if (reduce) { location.href = url; return; }
+    const d = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    portal.style.setProperty('--x', x + 'px'); portal.style.setProperty('--y', y + 'px'); portal.style.setProperty('--s', (d / 20 + 2).toFixed(1));
+    portal.classList.add('on'); setTimeout(() => { location.href = url; }, 560);
+  }));
+  addEventListener('pageshow', () => { portal.classList.remove('on'); close(); });
+  // nghiêng khối 3D theo chuột (máy tính); điện thoại dùng chuyển động nổi sẵn có
+  if (fine && !reduce) qa('.b3d').forEach(b => { const body = b.querySelector('.b3d__body'); let raf = 0, rx = 0, ry = 0;
+    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); ry = ((e.clientX - r.left) / r.width - .5) * 26; rx = -((e.clientY - r.top) / r.height - .5) * 24;
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; body.style.setProperty('--rx', rx.toFixed(1) + 'deg'); body.style.setProperty('--ry', ry.toFixed(1) + 'deg'); }); });
+    b.addEventListener('pointerleave', () => { body.style.removeProperty('--rx'); body.style.removeProperty('--ry'); }); });
+  // khuất màn hình thì dừng hiệu ứng cho nhẹ máy
+  const duo = q('#duo'), dock = q('#dock');
+  if (duo && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => duo.classList.toggle('is-off', !e.isIntersecting)).observe(duo);
+    new IntersectionObserver(([e]) => { window.__duoSeen = e.intersectionRatio >= .6; if (dock && window.__duoSeen) dock.classList.remove('is-on'); else if (dock && scrollY < document.documentElement.scrollHeight - innerHeight - 500) dock.classList.add('is-on'); }, { threshold: [0, .6, 1] }).observe(duo);
   }
 })();
 </script>
