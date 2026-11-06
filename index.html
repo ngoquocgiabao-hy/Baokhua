@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bảo Khựa 阿宝">
 <meta property="og:url" content="https://baokhua.com/">
-<meta property="og:image" content="https://baokhua.com/v4/og-home.jpg">
+<meta property="og:image" content="https://baokhua.com/v4/og-home.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,8 +20,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+SC:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="v4/home/bao-portrait.webp" type="image/webp">
+<script type="speculationrules">{"prefetch":[{"source":"list","urls":["membership.html","hotel/"]}]}</script>
 <script>document.documentElement.classList.add('js')</script>
 <style>
+/* ---------- chuyển trang mượt giữa trang chủ · game · trang thẻ (trình duyệt hỗ trợ View Transitions) ---------- */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .3s cubic-bezier(.65,0,.35,1) both}
+::view-transition-new(root){animation:vtIn .45s cubic-bezier(.16,1,.3,1) both}
+@keyframes vtOut{to{opacity:0;transform:translateY(-14px) scale(.985)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(18px) scale(1.01)}}
+.brand__seal{view-transition-name:bk-seal}
+@media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root),::view-transition-group(*){animation:none!important}}
 /* ---------- token ---------- */
 :root{
   --sun:#FFD91F; --sun-2:#FFE97A; --amber:#F2B200; --cream:#FFF7D6; --paper:#FFFDF3;
@@ -254,6 +264,50 @@ h1 .line>span{display:block}
 
 /* ---------- về mình ---------- */
 .about__grid{display:grid;gap:44px;margin-top:10px}
+/* ảnh thật ở hero: polaroid chân dung + thẻ video vịnh, trôi theo chuột như các thẻ chữ */
+.hero-pol,.hero-reel{position:absolute;margin:0;z-index:3;transform:translate3d(calc(var(--px,0px)*var(--d)),calc(var(--py,0px)*var(--d)),0) rotate(var(--r));transition:transform .5s var(--ease-out)}
+.hero-pol{left:0;bottom:7%;width:34%;--r:-6deg;background:#fff;padding:7px 7px 30px;border-radius:6px;box-shadow:10px 14px 0 rgba(22,23,27,.2),0 22px 40px -18px rgba(0,0,0,.5);border:2.5px solid var(--ink)}
+.hero-pol img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;object-position:50% 18%;border-radius:3px}
+.hero-pol figcaption{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-weight:700;font-size:13px;color:var(--ink)}
+.hero-pol__tag{position:absolute;right:-14%;top:-7%;background:var(--ink);color:var(--sun);font-weight:700;font-size:12.5px;padding:6px 10px;border-radius:10px;transform:rotate(9deg);white-space:nowrap;box-shadow:4px 5px 0 rgba(22,23,27,.18)}
+.hero-reel{right:1%;top:25%;width:24%;--r:5deg;border-radius:18px;overflow:hidden;border:3px solid var(--ink);box-shadow:-10px 14px 0 rgba(22,23,27,.18);background:#0b3d5c}
+.hero-reel video,.hero-reel img{display:block;width:100%;height:auto;aspect-ratio:9/16;object-fit:cover}
+.hero-reel span{position:absolute;left:6px;right:6px;bottom:6px;background:rgba(22,23,27,.78);color:#fff;font-size:10.5px;font-weight:600;line-height:1.3;padding:5px 7px;border-radius:9px}
+.hero-reel span b{font-family:var(--han);color:var(--sun);font-size:12.5px}
+@media (min-width:900px){.hero-pol{left:7%;bottom:5%;width:31%}.hero-reel{right:13%;top:21%;width:22%}}
+@media (max-width:899px){.hero-pol{width:38%;bottom:2%;padding:5px 5px 22px}.hero-pol figcaption{font-size:10.5px;bottom:4px}.hero-pol__tag{font-size:10px;padding:4px 7px;right:-22%}.hero-reel{width:27%;top:18%;border-radius:12px;border-width:2px}.hero-reel span{display:none}}
+/* dải "Từ Hạ Long": 2 thước phim dọc + chữ */
+.sea{background:radial-gradient(120% 90% at 85% 0%,#164a78 0%,#0d2f52 45%,#0a2240 100%);--fg:#fff;--mut:#c3d3ea;--acc:var(--sun);--btn:var(--sun);--btn-fg:var(--ink);--line:rgba(255,255,255,.18)}
+.sea__grid{display:grid;gap:40px;align-items:center}
+.sea__media{position:relative;display:flex;justify-content:center;gap:16px;min-height:300px;perspective:1000px}
+.reel{position:relative;width:min(44%,250px);border-radius:24px;overflow:hidden;border:3px solid rgba(255,255,255,.85);box-shadow:0 30px 60px -24px rgba(0,0,0,.7);background:#0b3d5c;margin:0}
+.reel video,.reel img{display:block;width:100%;height:auto;aspect-ratio:9/16;object-fit:cover}
+.reel--a{transform:rotate(-4deg) translateY(10px)}.reel--b{transform:rotate(4deg) translateY(-26px)}
+.reel figcaption{position:absolute;left:8px;right:8px;bottom:8px;background:rgba(10,24,44,.82);backdrop-filter:blur(6px);color:#fff;font-size:12.5px;font-weight:600;padding:7px 10px;border-radius:12px;line-height:1.35}
+.reel figcaption b{font-family:var(--han);color:var(--sun);font-size:15px}
+.sea__words{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 28px;padding:0;list-style:none}
+.sea__words li{border:1.5px solid var(--line);border-radius:14px;padding:8px 14px;font-size:14px;color:var(--mut)}
+.sea__words b{font-family:var(--han);color:var(--sun);font-size:18px;margin-right:6px}.sea__words i{font-style:normal;color:#fff;font-weight:600;margin-right:6px}
+@media (min-width:900px){.sea__grid{grid-template-columns:1fr 1.05fr}.sea__media{min-height:520px}}
+/* ảnh thật ở "Về mình" */
+.aboutpix{position:relative;max-width:440px;margin-inline:auto;padding:10px 0 40px;perspective:1100px}
+.pol{margin:0;background:#fff;border:2.5px solid var(--ink);border-radius:8px;padding:10px 10px 46px;position:relative;transition:transform .6s var(--ease-out)}
+.pol img{display:block;width:100%;height:auto;object-fit:cover;border-radius:4px}
+.pol figcaption{position:absolute;left:12px;right:12px;bottom:10px;font-size:13px;font-weight:600;line-height:1.35;color:var(--ink);text-align:center}
+.pol--main{width:78%;transform:rotate(-3deg);box-shadow:14px 16px 0 var(--ink)}
+.pol--main img{aspect-ratio:3/4;object-position:50% 20%}
+.pol--side{position:absolute;right:0;bottom:0;width:46%;transform:rotate(5deg);box-shadow:-10px 12px 0 var(--denim);padding-bottom:40px}
+.pol--side img{aspect-ratio:3/4.4;object-position:50% 20%}
+.pol--side figcaption{font-size:11.5px}
+.pol--main figcaption{right:47%;text-align:left;font-size:13.5px;font-weight:700}
+.aboutpix:hover .pol--main{transform:rotate(-1deg) translateY(-6px)}.aboutpix:hover .pol--side{transform:rotate(2deg) translate(8px,-4px)}
+.aboutpix__seal{position:absolute;left:-10px;top:-8px;width:74px;height:74px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,var(--sun-2),var(--amber));border:3px solid var(--ink);font-family:var(--han);font-weight:900;font-size:44px;color:var(--ink);box-shadow:6px 7px 0 var(--ink);transform:rotate(-8deg)}
+/* các bước nhận mã thẻ */
+.codesteps{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0;max-width:760px;padding:0;list-style:none;counter-reset:cs}
+.codesteps li{counter-increment:cs;border:1.5px solid var(--line);border-radius:14px;padding:8px 14px;font-size:14px;color:var(--mut)}
+.codesteps li::before{content:counter(cs);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--sun);color:var(--ink);font-weight:800;font-size:12px;margin-right:8px}
+/* vào trang: hiện dần (trình duyệt không có View Transitions vẫn mượt) */
+@media (prefers-reduced-motion:no-preference){body{animation:pageIn .5s var(--ease-out) both}@keyframes pageIn{from{opacity:0}}}
 .sealbox{perspective:1100px;display:grid;place-items:center;padding:20px 0}
 .seal3d{width:min(62vw,280px);aspect-ratio:1;position:relative;transform-style:preserve-3d;animation:coin 9s var(--ease-io) infinite}
 .seal3d>div{position:absolute;inset:0;border-radius:40px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:4px solid var(--ink)}
@@ -478,7 +532,7 @@ body.gaming .progress{opacity:0}
       <span>Bảo Khựa <span class="han">阿宝</span><small>China-ready</small></span>
     </a>
     <nav class="nav__links" aria-label="Điều hướng chính">
-      <a href="#hai-cua">Hai cửa</a><a href="#ban-la-ai">Dành cho ai</a><a href="#cau">Học thử</a><a href="#game">Game</a><a href="#hsk">Lộ trình HSK</a><a href="#khai-giang">11.11</a><a href="#doanh-nghiep">Doanh nghiệp</a><a href="#ve-minh">Về mình</a>
+      <a href="#hai-cua">Hai cửa</a><a href="#ban-la-ai">Dành cho ai</a><a href="#cau">Học thử</a><a href="#ha-long">Hạ Long</a><a href="#game">Game</a><a href="#hsk">Lộ trình HSK</a><a href="#khai-giang">11.11</a><a href="#doanh-nghiep">Doanh nghiệp</a><a href="#ve-minh">Về mình</a>
     </nav>
     <a class="btn btn--main btn--sm" data-link="zaloGroup" href="#lien-he">Vào nhóm Zalo</a>
   </div>
@@ -498,7 +552,9 @@ body.gaming .progress{opacity:0}
     <canvas id="globe"></canvas>
     <div class="float" style="left:2%;top:16%;--d:1.6"><span style="--r:-7deg"><b>你好</b>nǐ hǎo · Xin chào</span></div>
     <div class="float float--b" style="right:17%;top:7%;--d:-1.1"><span style="--r:6deg;--t:-2s"><b>谢谢</b>xièxie · Cảm ơn</span></div>
-    <div class="float float--c" style="left:10%;bottom:9%;--d:-1.8"><span style="--r:4deg;--t:-4s"><b>欢迎光临</b>huānyíng guānglín · Hoan nghênh quang lâm</span></div>
+    <div class="float float--c" style="left:37%;bottom:2%;--d:-1.8"><span style="--r:4deg;--t:-4s"><b>欢迎光临</b>huānyíng guānglín · Hoan nghênh quang lâm</span></div>
+    <figure class="hero-pol" style="--d:.8"><picture><source srcset="v4/home/bao-portrait.webp" type="image/webp"><img src="v4/home/bao-portrait.jpg" alt="" width="540" height="720" fetchpriority="high" decoding="async"></picture><figcaption>Bảo · <span class="han">阿宝</span> Ā Bǎo</figcaption><span class="hero-pol__tag">🏆 Á quân 2025</span></figure>
+    <div class="hero-reel" style="--d:-1.3"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-boats.jpg" data-src-webm="v4/home/halong-boats.webm" data-src-mp4="v4/home/halong-boats.mp4"></video><span>Hạ Long · <b>下龙湾</b> Xiàlóng Wān</span></div>
     <div class="float float--d" style="right:14%;bottom:21%;--d:1.2"><span style="--r:-5deg;--t:-1s"><b>加油</b>jiāyóu · Cố lên</span></div>
   </div>
   <div class="wrap">
@@ -561,9 +617,33 @@ body.gaming .progress{opacity:0}
   <p class="creds__hint" aria-hidden="true">Kéo ngang để xoay</p>
   <div class="wrap nums">
     <div class="num reveal"><b data-count="5">5</b><span>năm sống và làm việc ở Trung Quốc</span></div>
-    <div class="num reveal" style="--i:1"><b data-count="46">46</b><span>câu tình huống trong game Khách sạn</span></div>
-    <div class="num reveal" style="--i:2"><b data-count="43">43</b><span>từ mới chạm là nghe trên phố game</span></div>
+    <div class="num reveal" style="--i:1"><b data-count="12">12</b><span>chương Hành trình Hạ Long trong game 3D</span></div>
+    <div class="num reveal" style="--i:2"><b data-count="72">72</b><span>từ mới chạm là nghe trên phố Bãi Cháy</span></div>
     <div class="num reveal" style="--i:3"><b data-count="5">5</b><span>chặng lộ trình, từ HSK0 lên HSK4</span></div>
+  </div>
+</section>
+
+<!-- TỪ HẠ LONG: hai thước phim vịnh + đường vào game 3D -->
+<section class="sea" id="ha-long">
+  <div class="wrap sea__grid">
+    <div class="sea__media">
+      <figure class="reel reel--a reveal"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-boats.jpg" data-src-webm="v4/home/halong-boats.webm" data-src-mp4="v4/home/halong-boats.mp4" aria-label="Thuyền đánh cá giữa các đảo đá vôi trên vịnh Hạ Long"></video><figcaption><b lang="zh-CN">下龙湾</b> Xiàlóng Wān · vịnh Hạ Long</figcaption></figure>
+      <figure class="reel reel--b reveal" style="--i:1"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-dawn.jpg" data-src-webm="v4/home/halong-dawn.webm" data-src-mp4="v4/home/halong-dawn.mp4" aria-label="Bình minh trên mặt nước vịnh Hạ Long"></video><figcaption><b lang="zh-CN">早上好</b> zǎoshang hǎo · chào buổi sáng</figcaption></figure>
+    </div>
+    <div>
+      <span class="eyebrow reveal">Dạy từ Hạ Long</span>
+      <h2 class="reveal" style="--i:1">Khách Trung đến vịnh <em>mỗi ngày.</em></h2>
+      <p class="lead reveal" style="--i:2">Sau 5 năm ở Trung Quốc, mình về Hạ Long. Ở đây câu tiếng Trung đầu tiên bạn nói có thể là với vị khách đứng trước quầy lễ tân, trên tàu ra vịnh hay ở chợ đêm Bãi Cháy. Mình dạy đúng những câu đó.</p>
+      <ul class="sea__words reveal" style="--i:3">
+        <li><b lang="zh-CN">下龙湾</b><i>Xiàlóng Wān</i>Vịnh Hạ Long</li>
+        <li><b lang="zh-CN">大桥</b><i>dàqiáo</i>Cầu lớn (cầu Bãi Cháy)</li>
+        <li><b lang="zh-CN">夜市</b><i>yèshì</i>Chợ đêm</li>
+      </ul>
+      <div class="reveal" style="--i:4;display:flex;flex-wrap:wrap;gap:12px">
+        <a class="btn btn--main magnet" href="hotel/#bridge" data-warm>🌉 Dạo phố Bãi Cháy trong game 3D</a>
+        <a class="btn btn--ghost" href="#ve-minh">Về Bảo</a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -642,27 +722,28 @@ body.gaming .progress{opacity:0}
   <span class="bg-han" data-speed=".12" data-rot="-8" aria-hidden="true">玩</span>
   <div class="wrap game__grid">
     <div>
-      <span class="eyebrow reveal">Học bằng game · chơi ngay trên trang</span>
-      <h2 class="reveal" style="--i:1">Làm lễ tân <em>Khách sạn Bảo Khựa.</em></h2>
-      <p class="lead reveal" style="--i:2">Khách Trung xếp hàng ở cửa. Trả lời đúng tiếng Trung để có xu, giữ khách hài lòng, rồi xây khách sạn từ 1★ lên 5★. Phố Bãi Cháy chuyển ngày đêm, chạm vào xe, quán, người qua đường để học từ mới.</p>
+      <span class="eyebrow reveal">Học bằng game 3D · chơi ngay trên trang</span>
+      <h2 class="reveal" style="--i:1">Mở <em>Khách sạn Vịnh Ā Bǎo.</em></h2>
+      <p class="lead reveal" style="--i:2">Cả phố Bãi Cháy dựng 3D bên vịnh Hạ Long. Đi Hành trình học từ HSK0, mở lại nhà nghỉ của bà, rồi đón khách Trung: trả lời đúng để có xu và xây khách sạn từ 1★ lên 5★. Chạm vào người dân, xe, quán xá để học từ mới.</p>
       <ul class="feats">
-        <li class="reveal"><i aria-hidden="true">🛎️</i><b>46 câu tình huống thật</b><span>Quầy lễ tân, nhà hàng, nhà máy. Câu nào cũng có pinyin và nghĩa Việt.</span></li>
-        <li class="reveal" style="--i:1"><i aria-hidden="true">😊</i><b>Khách biết chờ, biết bực</b><span>Đón nhanh, trả lời đủ câu thì khách mới hài lòng và boa thêm.</span></li>
-        <li class="reveal" style="--i:2"><i aria-hidden="true">🔊</i><b>Nghe giọng phổ thông</b><span>Mỗi câu đúng được đọc trọn để bạn nghe và nói theo.</span></li>
-        <li class="reveal" style="--i:3"><i aria-hidden="true">🏗️</i><b>Xây từ 1★ lên 5★</b><span>Mua món nào phải chọn đúng tên tiếng Trung món đó.</span></li>
+        <li class="reveal"><i aria-hidden="true">🗺️</i><b>Hành trình Hạ Long 12 chương</b><span>Chuyện lịch sử, văn hoá, địa phương: rồng hạ, Hòn Gà Chọi, Bạch Đằng… Mỗi chương 6 từ có câu mẫu.</span></li>
+        <li class="reveal" style="--i:1"><i aria-hidden="true">🛎️</i><b>Câu đúng trình độ của bạn</b><span>Chọn trình độ khi vào game, khách nói câu vừa sức. Câu nào cũng có pinyin và nghĩa Việt.</span></li>
+        <li class="reveal" style="--i:2"><i aria-hidden="true">🎡</i><b>Phố sống ngày đêm</b><span>Chợ đêm, khu vui chơi, vòng quay trên đồi, cầu sang Hòn Gai, nhạc lofi đàn tranh.</span></li>
+        <li class="reveal" style="--i:3"><i aria-hidden="true">🎫</i><b>Chơi tới 2★ không cần thẻ</b><span>Từ 3★ đến 5★, chặng 3–4 và Thử thách Boss dùng thẻ tự học.</span></li>
       </ul>
       <div class="game__cta reveal" style="--i:4">
-        <a class="btn btn--main" href="khachsan.html">Chơi toàn màn hình
+        <a class="btn btn--main" href="hotel/" data-warm>Chơi toàn màn hình
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></a>
         <a class="btn btn--ghost" href="game.html">⚔️ Chế độ Đánh Boss</a>
+        <a class="btn btn--ghost" href="hotel/#the" data-warm>🎫 Có mã thẻ? Nhập tại đây</a>
       </div>
     </div>
     <div class="phone-wrap reveal" style="--i:2">
       <div class="phone" id="phone">
         <div class="phone__screen" id="phoneScreen">
           <span class="phone__notch" aria-hidden="true"></span>
-          <button class="poster" id="playHere" type="button" aria-label="Chơi game Khách sạn Bảo Khựa ngay trong trang">
-            <img src="v4/game-poster.jpg" alt="Khách sạn Bảo Khựa 5 sao về đêm trong game" width="540" height="1074" loading="lazy" decoding="async">
+          <button class="poster" id="playHere" type="button" aria-label="Chơi game Khách sạn Vịnh Ā Bǎo ngay trong trang">
+            <img src="v4/game-poster-v8.jpg" alt="Khách sạn Vịnh Ā Bǎo 5 sao lúc chiều tối trên phố Bãi Cháy trong game 3D" width="540" height="1074" loading="lazy" decoding="async">
             <span class="poster__cta"><span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 001.5.86l12.4-7.5a1 1 0 000-1.72L8.5 3.64A1 1 0 007 4.5z"/></svg></span>
               <b>Chơi ngay tại đây</b><small>Không cần tải ứng dụng · tiến độ lưu trên máy bạn</small></span>
           </button>
@@ -762,8 +843,10 @@ body.gaming .progress{opacity:0}
     <div class="chips reveal" style="--i:3">
       <span class="chip chip--hot" data-offer>🔥 Đến 23:59 thứ Tư 11/11</span><span class="chip">Lộ trình HSK0 → HSK4</span><span class="chip">Game + tài liệu + Zalo bài giảng</span><span class="chip">Không gồm Zoom</span>
     </div>
-    <a class="btn btn--main magnet reveal" style="--i:4" href="membership.html" id="saleBtn">Xem thẻ 299k</a>
+    <ol class="codesteps reveal" style="--i:3"><li>Chọn thẻ 3 tháng hoặc 1 năm</li><li>Chuyển khoản theo QR</li><li>Bảo gửi mã qua Zalo</li><li>Nhập mã trong game là mở 3★ → 5★</li></ol>
+    <a class="btn btn--main magnet reveal" style="--i:4;margin-top:22px" href="membership.html" id="saleBtn">Xem thẻ 299k</a>
     <a class="btn btn--ghost reveal" style="--i:5;margin:12px 6px 0;--fg:var(--sun)" data-link="zaloGroup" href="#lien-he">Hỏi Bảo qua Zalo</a>
+    <a class="btn btn--ghost reveal" style="--i:5;margin:12px 6px 0;--fg:var(--sun)" href="hotel/#the" data-warm>🎫 Đã có mã? Nhập trong game</a>
   </div>
 </section>
 
@@ -789,11 +872,10 @@ body.gaming .progress{opacity:0}
 <!-- VỀ MÌNH -->
 <section class="s-cream" id="ve-minh">
   <div class="wrap about__grid">
-    <div class="sealbox reveal">
-      <div class="seal3d" aria-hidden="true">
-        <div class="seal3d__a"><span>宝</span></div>
-        <div class="seal3d__b"><div><b>Bảo Khựa 阿宝</b><span>China-ready</span></div></div>
-      </div>
+    <div class="aboutpix reveal">
+      <figure class="pol pol--main"><picture><source srcset="v4/home/bao-portrait.webp" type="image/webp"><img src="v4/home/bao-portrait.jpg" alt="Bảo (阿宝 Ā Bǎo) cầm cúp và giấy chứng nhận 荣誉证书 Á quân Đại sứ Hình ảnh Du lịch Biên giới Trung – Việt 2025" width="540" height="720" loading="lazy" decoding="async"></picture><figcaption>🏆 Á quân 2025</figcaption></figure>
+      <figure class="pol pol--side"><picture><source srcset="v4/home/bao-stage.webp" type="image/webp"><img src="v4/home/bao-stage.jpg" alt="Bảo đeo băng đại sứ trên sân khấu lễ trao giải ở Bằng Tường, Trung Quốc, năm 2025" width="480" height="762" loading="lazy" decoding="async"></picture><figcaption>Lễ trao giải ở Bằng Tường, Trung Quốc</figcaption></figure>
+      <span class="aboutpix__seal" aria-hidden="true">宝</span>
     </div>
     <div>
       <span class="eyebrow reveal">Về mình</span>
@@ -805,7 +887,7 @@ body.gaming .progress{opacity:0}
         <div class="tl__item reveal"><b>Quản lý tiếp đón · Senbo Resort 5 sao</b><span>Đón và chăm sóc khách tại resort 5 sao ở Trung Quốc.</span></div>
         <div class="tl__item reveal"><b>Quality Engineer · Tập đoàn TCL</b><span>Kỹ sư chất lượng, làm việc trực tiếp với đối tác Trung Quốc.</span></div>
         <div class="tl__item reveal"><b>Hướng dẫn viên du lịch quốc tế</b><span>Có thẻ hành nghề, dẫn và điều hành đoàn khách Trung.</span></div>
-        <div class="tl__item reveal"><b>Á quân Đại sứ Du lịch Trung – Việt 2025</b><span>Danh hiệu mình đang giữ.</span></div>
+        <div class="tl__item reveal"><b>Á quân Đại sứ Hình ảnh Du lịch Biên giới Trung – Việt 2025</b><span>Danh hiệu mình đang giữ, nhận ở lễ trao giải tại Bằng Tường (Quảng Tây).</span></div>
       </div>
       <div class="badges reveal">
         <span class="chip">Chứng chỉ sư phạm</span><span class="chip">Thẻ hướng dẫn viên quốc tế</span><span class="chip">Tiếng Trung thông thạo</span><span class="chip">Tiếng Anh thông thạo</span>
@@ -848,7 +930,7 @@ body.gaming .progress{opacity:0}
 </section>
 </main>
 
-<footer><div class="wrap"><span>© 2026 Bảo Khựa <span class="han">阿宝</span> · China-ready · baokhua.com</span><span><a href="khachsan.html">Game Khách sạn</a> · <a href="membership.html">Thẻ hội viên</a> · Hạ Long, Quảng Ninh</span></div></footer>
+<footer><div class="wrap"><span>© 2026 Bảo Khựa <span class="han">阿宝</span> · China-ready · baokhua.com</span><span><a href="hotel/">Game Khách sạn Vịnh Ā Bǎo</a> · <a href="game.html">Game Đánh Boss</a> · <a href="membership.html">Thẻ tự học</a> · Hạ Long, Quảng Ninh</span></div></footer>
 
 <div class="dock" id="dock">
   <a class="btn btn--main" data-link="zaloGroup" href="#lien-he">Vào nhóm Zalo</a>
@@ -1130,6 +1212,22 @@ const CONFIG = {
   }
 
 
+  /* ---- video vịnh: chỉ tải và chạy khi ở gần màn hình (nhẹ cho điện thoại) ---- */
+  const vids = $$('video.lazyvid');
+  const vidOn = v => {
+    if (!v.dataset.ready) { v.dataset.ready = 1; const w = document.createElement('source'); w.src = v.dataset.srcWebm; w.type = 'video/webm'; const m = document.createElement('source'); m.src = v.dataset.srcMp4; m.type = 'video/mp4'; v.append(w, m); v.load(); }
+    if (!reduce) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+  };
+  const vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) vidOn(e.target); else if (e.target.dataset.ready) e.target.pause(); }), { rootMargin: '200px 0px' });
+  vids.forEach(v => vio.observe(v));
+  document.addEventListener('visibilitychange', () => { if (document.hidden) vids.forEach(v => v.pause()); });
+
+  /* ---- bấm sang game: tải trước thư viện 3D khi người dùng rê chuột / chạm vào nút game (mở game nhanh hơn) ---- */
+  let warmed = false;
+  const warm = () => { if (warmed) return; warmed = true; ['hotel/', 'hotel/lib/three.module.min.js', 'hotel/world.js', 'hotel/w-kit.js', 'hotel/w-life.js', 'hotel/w-lobby.js'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
+  $$('[data-warm], #playHere').forEach(a => { a.addEventListener('pointerenter', warm, { once: true }); a.addEventListener('touchstart', warm, { once: true, passive: true }); a.addEventListener('focus', warm, { once: true }); });
+  const gameSec = $('#game'); if (gameSec) new IntersectionObserver(([e], o) => { if (e.isIntersecting) { warm(); o.disconnect(); } }, { rootMargin: '400px 0px' }).observe(gameSec);
+
   /* ---- game Khách sạn trong khung điện thoại ---- */
   const phone = $('#phone'), scr = $('#phoneScreen'), poster = $('#playHere');
   if (phone && scr && poster) {
@@ -1139,7 +1237,7 @@ const CONFIG = {
     poster.addEventListener('click', () => {
       if (frame) return;
       frame = document.createElement('iframe');
-      frame.src = 'khachsan.html'; frame.title = 'Game Khách sạn Bảo Khựa'; frame.allow = 'autoplay';
+      frame.src = 'hotel/'; frame.title = 'Game Khách sạn Vịnh Ā Bǎo'; frame.allow = 'autoplay; fullscreen';
       scr.appendChild(frame); phone.classList.add('is-live');
       if (innerWidth < 900) document.body.classList.add('gaming');
       const r = phone.getBoundingClientRect();

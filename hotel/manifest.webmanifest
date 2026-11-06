@@ -1,0 +1,32 @@
+{
+  "name": "Khách sạn Vịnh Ā Bǎo – học tiếng Trung",
+  "short_name": "Ā Bǎo Hotel",
+  "description": "Đi Hành trình vịnh Hạ Long theo cốt truyện (HSK0 → HSK3), rồi xây và quản lý khách sạn ở Bãi Cháy bằng tiếng Trung. Thử thách boss HSK3–HSK4, ôn thẻ từ mỗi ngày. Lộ trình của Bảo Khựa.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b3d5c",
+  "theme_color": "#0b3d5c",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
