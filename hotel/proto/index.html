@@ -801,7 +801,7 @@ function renderSheet() {
     B.innerHTML = `<p class="note" style="margin-top:0">Lộ trình HSK0 → HSK4 của Bảo Khựa, gắn với từng khu khách sạn. Lên sao là mở bài mới, khách mới nói câu của bài đó. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.</p>` +
       COURSE.map((u, i) => { const open = u.star <= starLv(), n = u.cards.filter(c => S.cards[c.id]).length;
         return `<div class="unit${open ? '' : ' lock'}"><div class="no">${open ? i + 1 : '🔒'}</div><div class="t"><b>Bài ${i + 1} · ${esc(u.title)}</b><small>${u.lv} · ${esc(u.zone)} · ${open ? `${n}/${u.cards.length} thẻ` : `mở ở ${u.star}★`}</small><div class="pb"><i style="width:${n / u.cards.length * 100}%"></i></div></div></div>`; }).join('') +
-      `<div class="sec">Học sâu hơn với Bảo</div><p class="note" style="margin-top:0">Game giúp nhớ từ. Muốn nói trôi chảy thì vào lớp Zoom theo đúng lộ trình này.</p><div class="row"><a class="btn" href="../../membership.html" target="_blank" rel="noopener">📚 Học online với Bảo</a></div>`;
+      `<div class="sec">Học sâu hơn với Bảo</div><p class="note" style="margin-top:0">Game giúp nhớ từ. Thẻ tự học HSK0 → HSK4 có bài theo đúng lộ trình này (tự học, không gồm lớp Zoom).</p><div class="row"><a class="btn" href="../../membership.html" target="_blank" rel="noopener">📚 Học online với Bảo</a></div>`;
   }
 }
 

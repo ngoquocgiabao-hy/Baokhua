@@ -259,7 +259,7 @@ Học và chơi là một vòng: lên sao thì mở bài, khách nói câu của
 | Trong game | Mỗi khách nói câu mẫu của bài đang mở; người chơi chọn nghĩa đúng. Đúng: khách vui, boa xu (chỉ dùng trong game), thẻ vào Bộ thẻ. Sai: hiện đáp án, thẻ hẹn ôn lại sau 10 phút. Khách cũng hỏi lại đúng từ đang đến hạn ôn |
 | Ôn hôm nay | Lịch ôn SM-2 rút gọn như Anki, ngày mới tính từ 4 giờ sáng. 4 nút: Lại (10 phút), Khó, Được, Dễ, hiện trước khoảng ngày hẹn. Thẻ vừa quên chỉ hiện lại khi tới giờ |
 | Nhắc ôn | Mở game: banner "Hôm nay có N thẻ cần ôn" + số đỏ trên nút Thẻ từ và trên biểu tượng app (đã cài). App đóng: Android (Chrome, đã cài app) thông báo lúc giờ người chơi chọn, mỗi ngày 1 lần (sw.js đọc lịch ôn). iPhone và máy khác: tệp lịch .ics nhắc hằng ngày, mở thẳng vào màn ôn |
-| Nối với lớp học | Màn Giáo trình có nút "Học online với Bảo" tới trang thẻ hội viên; bài trong game trùng tên bài trên lớp Zoom |
+| Nối với lớp học | Màn Giáo trình có nút "Học online với Bảo" tới trang thẻ hội viên; bài trong game trùng tên bài trong thẻ tự học (thẻ không gồm lớp Zoom, lớp Zoom đang hoãn) |
 
 Giới hạn hiện tại: thông báo đẩy thật (máy chủ gửi tới iPhone khi app đóng) cần một máy chủ gửi thông báo, đó là dịch vụ ngoài nên phải trình Bảo duyệt trước. Tiến độ và lịch ôn lưu trên máy người chơi; đồng bộ nhiều máy cần tài khoản, để giai đoạn 4.
 

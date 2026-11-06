@@ -169,7 +169,7 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 **Chờ Bảo:**
 1. Sau 23:59 ngày 11/11 các dòng ưu đãi tự ẩn; cần Bảo chốt chữ ưu đãi mới (nếu có) cho `index.html`, `membership.html`, `game.html` (`SALE_END`, `OFFER_*`).
 1a. Duyệt phong cách hình 3D sau giai đoạn 0 (xem bản thử `hotel/proto/`).
-2. 4 câu hỏi về giá: 299k là giá gì; giá sau 11/11; thẻ có gồm Zoom không; có gia hạn hoa hồng giới thiệu không.
+2. Câu hỏi về giá còn treo: giá sau 11/11 ghi "giá 11.11" hay giữ "đại giảm giá"; có gia hạn "Rủ bạn +7 ngày" không. Đã chốt (V45/V51): thẻ 99k/299k là gói tự học, không gồm lớp Zoom; lớp Zoom đang hoãn.
 3. Chỉnh Google Form theo góp ý cũ.
 4. Khoá `GEMINI_API_KEY` để có giọng người thật.
 5. Video Veo nếu muốn hoạt hình vẽ tay từng khung.
