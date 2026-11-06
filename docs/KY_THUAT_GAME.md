@@ -83,6 +83,7 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
   3. Đổi góc mượt bằng lò xo theo độ cứng `STIFF`. Khớp xa mềm hơn nên theo sau một nhịp.
   4. Bám đất: chân thấp nhất luôn ở mặt đất.
 - **v14 · Khoá biên độ (`LIM`):** mọi độ lệch tư thế so với tư thế gốc bị kẹp trong khoảng đã đo bằng bảng tư thế (aF ±0,5 · eF ±0,35 · aB −0,5…0,3 · eB ±0,5 · lF/lB ±0,3 · kF/kB −0,45…0,1 · lean ±0,25 · head ±0,3). Ngoài khoảng đó tranh bị xé (rách áo, tay rời thân, đũng quần kéo dài). Boss có tay che thân dùng hệ số tay thấp trong `GAIN`/`MGAIN` (lễ tân .2, ninja .25, tập sự .35, tổ trưởng/ca đêm .45).
+- **v15 · Dấu góc thân/đầu:** trong `angles()` tay chân dùng `s = -fs`, còn thân/đầu dùng `t = -s`. Lý do: thân và đầu hướng lên, tay chân thõng xuống, nên cùng một góc "tới" thì quay ngược chiều nhau. Trước v15 thân dùng chung `s` → lean > 0 (ngả tới) lại ngả ra sau. Tay gắn vào thân nên `aF/aB` trừ đi `lean × 0,45`.
 - **Dáng đi / chạy (v14 · bước nảy):** `Rig.gait(ref, phase, run, amt)` **không uốn chân**. Cả người nảy lên giữa mỗi bước (`hop`, 2 bước mỗi chu kỳ, `Rig.pose` nâng `hop × 24` điểm ảnh tranh), lắc trái–phải (`tilt`: cộng cùng một góc cho mọi xương nên lắc như một khối cứng), tay đánh nhẹ ngược nhau, người nghiêng về hướng đi.
   - Lịch sử: v11 bẻ chân trong mặt tranh → xé hình; v12 nhấc gối co theo chiều sâu → chân gần như đứng yên, như trượt; v13 cắt giấy → lại xé hình. Đừng quay lại các kiểu đó. Muốn chân bước thật cần khung hình vẽ tay (dây chuyền `v4/anim/`).
   - Pha phải **tăng** khi đi về phía mặt nhìn. Bản đồ: `hero.ph += dt·|v|/105` (≈ 3 bước nảy/giây khi đi).
@@ -172,6 +173,7 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
   - Ā Bǎo vẫy tay khi gần người quen, đứng lâu thì ngó quanh / vươn vai.
 - **Đấu quái:** `pickQ`, `startDuel`, `openDuel`, `answer`, `finishDuel` (đúng: chém hạ quái +⭐; sai: bị đẩy lùi).
 - **v13 · Chữ vàng:** `buildGold()` đặt 4 đồng mỗi khu (`GOLD_AT`, từ `wordPool(khu)`; đồng 2 và 4 ở trên cao, phải nhảy). `grabGold` nhặt khi chạm → toast chữ Hán + pinyin + nghĩa, đọc to, +5 ⭐, lưu `prog.gold[id]`; HUD `hudXp()`; Sổ từ có mục Chữ vàng.
+- **v15 · đi mượt + hiệu ứng:** bước nảy `hop = sin²` (không gãy lúc chạm đất), nén giãn theo nhịp và khi đáp đất (`hero.land`); giữ hướng > 0,6 giây → chạy nhanh 215 (`hero.sprint`); `stepFx` (bụi theo khu, tia lửa ở nhà máy, vòng sáng ở ca đêm), `prints` (dấu chân, mờ sau 3,2 giây), `ribbon` (vệt khí sau đầu khi chạy nhanh/nhảy, màu `curSkin().trail`), `amb` (tối đa 24 hạt bay theo khu, tắt khi giảm chuyển động); nhịp khung hình được làm đều (`sdt`). Quái: `m.pt` chỉ tăng khi Ā Bǎo ở xa → tới gần thì dừng và quay mặt về tướng.
 - **v13 · chạm rào:** `hero.blocked` → tốc độ về 0 và đứng yên (trước đây chạy tại chỗ). Vệt bóng mờ chỉ hiện khi lướt chém / chạy rất nhanh (> 230), không hiện khi đi thường.
 - **Móc kiểm thử (v13):** `_hold(1)` dừng vòng lặp, `_step(dt, n)` bước tay từng khung, `_key(-1|0|1)` giữ hướng đi, `_scr()` toạ độ màn hình của Ā Bǎo. Dùng để quay đúng 30 khung/giây bất kể tốc độ chụp.
 

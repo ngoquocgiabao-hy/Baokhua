@@ -20,7 +20,7 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
 | Nơi | Nội dung |
 |---|---|
 | `main` (trang thật) | Bản đăng 01/11: tên miền, trang chủ có game Khách sạn, Khách sạn v5. **Game Đánh Boss trên trang thật vẫn là bản cũ "Đánh Boss v4 (3D · 2 chặng)".** |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v14 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v15 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
 | Bản xem thử (riêng tư) | https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
@@ -39,6 +39,9 @@ Lịch sử chính của game Đánh Boss trên nhánh:
   - tuyệt chiêu phải trả lời đúng câu hỏi; độ khó tăng theo trạm;
   - dáng đi nhấc gối hợp tranh nhìn chính diện (sửa lỗi chân đi ngược);
   - nền sân đấu là video lặp dựng bằng Remotion.
+- **v15:**
+  - sửa lỗi "ngược hướng người khi di chuyển": dấu góc thân/đầu trong khung xương bị đảo từ v11 → ngả tới thành ngả ra sau (chạy, lao, đá); quái tuần tra quay mặt một hướng mà trượt hướng kia;
+  - đi map mượt hơn (nảy hình sin, nén giãn, làm đều nhịp khung hình) và nhiều hiệu ứng: chạy nhanh khi giữ nút, bóng mờ, vệt gió, vệt khí theo màu phi tiêu, bụi + dấu chân theo khu, hạt bay theo khu (bụi nước, đốm sáng, tàn lửa, đom đóm, cánh hoa), nén giãn khi đáp đất.
 - **v14:**
   - sửa dứt điểm méo hình nhân vật: khoá biên độ từng khớp (`LIM`), hạ hệ số tay boss có tay che thân; dáng đi/chạy thành **bước nảy** (chân giữ nguyên hình, cả người nảy + lắc như khối cứng);
   - bài kiểm `tools/test/gait.js` viết lại: đi/chạy không uốn chân, có nảy, mọi tư thế của 8 nhân vật trong giới hạn an toàn (bản v13 không đạt: chân bị bẻ 1,35 rad);
@@ -156,7 +159,7 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 
 ## 8. Việc đang chờ / đề xuất làm tiếp (theo thứ tự ưu tiên)
 **Chờ Bảo:**
-1. "duyệt đăng" game v14 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
+1. "duyệt đăng" game v15 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
 2. 4 câu hỏi về giá: 299k là giá gì; giá sau 11/11; thẻ có gồm Zoom không; có gia hạn hoa hồng giới thiệu không.
 3. Chỉnh Google Form theo góp ý cũ.
 4. Khoá `GEMINI_API_KEY` để có giọng người thật.

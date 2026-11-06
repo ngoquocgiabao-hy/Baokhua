@@ -1501,11 +1501,16 @@ const Rig = (() => {
   function angles(p, ref, fs, gain) {
     const d = k => (p[k] || 0) - (ref[k] || 0), s = -fs, ga = gain ? gain.arm : 1, gl = gain ? gain.leg : 1, lean = lim('lean', d('lean'));
     const R = (k, j) => PR[k][j];
-    const aF = lim('aF', (d('aF') + lean * .45) * ga), eF = lim('eF', d('eF') * ga), aB = lim('aB', (d('aB') + lean * .45) * ga), eB = lim('eB', d('eB') * ga);
+    // tay gắn vào thân: thân ngả tới thì tay (đo theo phương thẳng đứng) lùi theo một phần
+    const aF = lim('aF', (d('aF') - lean * .45) * ga), eF = lim('eF', d('eF') * ga), aB = lim('aB', (d('aB') - lean * .45) * ga), eB = lim('eB', d('eB') * ga);
     const lF = lim('lF', d('lF') * gl), kF = lim('kF', d('kF') * gl), lB = lim('lB', d('lB') * gl), kB = lim('kB', d('kB') * gl);
-    ang[0] = s * lean * .12;
-    ang[1] = s * lean * .7;
-    ang[2] = ang[1] + s * (lim('head', d('head')) * .85 + lean * .12);
+    /* v15 · SỬA LỖI NGƯỢC HƯỚNG: thân và đầu hướng LÊN trên, tay chân thõng XUỐNG dưới → cùng một góc "tới" thì
+       hai loại xoay ngược chiều nhau. Trước đây thân dùng chung dấu với tay chân nên lean > 0 (ngả tới: chạy, đá,
+       cúi chào) lại làm nhân vật ngả RA SAU, như đang đi lùi; trúng đòn (lean < 0) lại chúi tới. */
+    const t = -s;
+    ang[0] = t * lean * .12;
+    ang[1] = t * lean * .7;
+    ang[2] = ang[1] + t * (lim('head', d('head')) * .85 + lean * .12);
     ang[3] = s * aF * R('ua', 0); ang[4] = ang[3] + s * eF * R('fa', 0);
     ang[5] = s * aB * R('ua', 0); ang[6] = ang[5] + s * eB * R('fa', 0);
     ang[7] = s * lF * R('th', 0); ang[8] = ang[7] + s * kF * R('sh', 0);
@@ -1567,8 +1572,9 @@ const Rig = (() => {
     o.aB = (ref.aB || 0) + (run ? .32 : .2) * amt * sn;
     o.lean = (ref.lean || 0) + (run ? .12 : .05) * amt;
     o.head = (ref.head || 0) + .035 * amt * Math.cos(TAU * ph * 2);
-    o.hop = Math.pow(Math.abs(sn), .8) * (run ? .8 : .6) * amt;
-    o.tilt = .045 * amt * sn;
+    // v15: nảy theo hình sin bình phương (không có góc gãy lúc chạm đất như |sin|) → mượt, 2 nhịp mỗi chu kỳ
+    o.hop = sn * sn * (run ? .62 : .42) * amt;
+    o.tilt = .035 * amt * sn;
     return o;
   }
 
@@ -4404,7 +4410,7 @@ const WorldMap = (() => {
         const hh = (m.big ? 96 : 62) * u, k = hh / 520, br = 1 + Math.sin(t * 3) * .015;
         const R = Rig.get('shadow-idle') || Rig.load('shadow-idle');
         if (R && R.ok && mrg()) {
-          const P = Chibi.POSES, mv = m.range && !duel ? Math.abs(Math.cos(clock * .7 + m.ph)) : 0;
+          const P = Chibi.POSES, mv = m.range && !duel ? (m.mv || 0) : 0;
           let pz = mv > .15 && nr < .3 ? Rig.gait(P.stance, clock * 1.6 + m.ph, false, mv) : Object.assign({}, P.stance, { aF: P.stance.aF + Math.sin(t * 2) * .15, lean: P.stance.lean + Math.sin(t * 1.4) * .05 });
           if (nr > 0) pz = Chibi.mix(pz, Object.assign({}, P.windup, { kF: P.windup.kF - .3, kB: P.windup.kB - .3 }), nr * .7);
           if (!m.rs) m.rs = {};
@@ -4461,7 +4467,7 @@ const WorldMap = (() => {
   let lookAhead = .42, mshakeT = 0, mshakeA = 0, mfreeze = 0;
   /** rung máy quay (đơn vị bản đồ) + khựng hình (giây) khi đánh trúng */
   function mapHit(shake, freeze) { if (REDUCED) return; mshakeT = Math.max(mshakeT, .28); mshakeA = Math.max(mshakeA, shake); mfreeze = Math.max(mfreeze, freeze || 0); }
-  let hold = false, MRG = null, mapDt = 0, portrait = false, gBaseM = null, cvTopM = null, gTopM = null;
+  let hold = false, sdt = 0, MRG = null, mapDt = 0, portrait = false, gBaseM = null, cvTopM = null, gTopM = null;
   const topQM = [];
   const mrg = () => {
     if (REDUCED || portrait) return null;
@@ -4540,16 +4546,19 @@ const WorldMap = (() => {
       for (const gh of trail) { const nx = SX(gh.wx); gh.sx = nx; gh.X2 = [gh.X[0], gh.X[1], gh.X[2] + (nx - gh.sx0) * dpr, gh.X[3], gh.X[4], gh.X[5]]; }
       let sx = 1 - (hero.turn || 0) * .35, sy = 1 + (hero.turn || 0) * .03;
       if (!hero.grounded) { const v = clamp(hero.vy / 330, -1, 1); sy *= 1 + v * .05; sx *= 1 - v * .03; }
+      // v15: nén nhẹ lúc chân chạm đất, giãn lúc nảy lên; đáp đất sau cú nhảy thì nén mạnh rồi bật lại
+      if (moving && !hero.blocked) { const bb = Math.pow(Math.sin(6.2832 * hero.ph), 2); sy *= 1 + .04 * (bb - .45); sx *= 1 - .025 * (bb - .45); }
+      if (hero.land > 0) { const l = Math.sin(hero.land * Math.PI) * .9 + hero.land * .1; sy *= 1 - .13 * l; sx *= 1 + .09 * l; }
       const X = rigBlit(R, img, p, Chibi.POSES.stand, MGAIN.hero, hero.grounded ? 1 : .35, hero.rs, x + ax, y, rot, sx, sy, HH * u, hero.face, m,
         hero.flash > 0 ? [REDT[0], REDT[1], REDT[2], Math.min(1, hero.flash) * .75] : null, 1, HEX, trail, CYAN);
       // bóng mờ (tư thế thật của từng khoảnh khắc) khi chạy nhanh / lao chém
-      if (X && ((sp > 230 && hero.grounded) || atkK > 0)) { trailT += mapDt; if (trailT > .05) { trailT = 0; trail.push({ M: Float32Array.from(R.M), X, wx: hero.x + ax / u, sx0: x + ax, sx: x + ax, a: .3 }); if (trail.length > 5) trail.shift(); } }
+      if (X && ((sp > 190 && hero.grounded) || atkK > 0)) { trailT += mapDt; if (trailT > .05) { trailT = 0; trail.push({ M: Float32Array.from(R.M), X, wx: hero.x + ax / u, sx0: x + ax, sx: x + ax, a: .3 }); if (trail.length > 5) trail.shift(); } }
       for (let i = trail.length - 1; i >= 0; i--) { trail[i].a -= mapDt * 1.4; if (trail[i].a <= 0) trail.splice(i, 1); }
       if (X) hero.handPt = rigPtX(R, X, 4, R.d.pts.hand);
       if (sp > 165 && hero.grounded && !REDUCED) onTop(() => windLines(x, y, sp));
     } else {
       const k2 = HH * u / 520; let by = 0, sx = 1, sy = 1;
-      if (moving) { by = -Math.abs(Math.sin(hero.ph * Math.PI)) * 3.5 * u; rot += hero.face * .08; }
+      if (moving) { const sn = Math.sin(6.2832 * hero.ph); by = -sn * sn * 3.2 * u; rot += hero.face * .05 + sn * .035; sy *= 1 + .04 * (sn * sn - .45); }
       g.save(); g.translate(x + ax, y + by); g.rotate(rot); g.scale(hero.face * sx, sy);
       g.drawImage(img, -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2);
       if (hero.flash > 0) { g.globalAlpha = Math.min(1, hero.flash) * .75; g.drawImage(tintImg(img, '#ff5a46'), -m[2] * k2, -m[3] * k2, m[0] * k2, m[1] * k2); }
@@ -4621,6 +4630,80 @@ const WorldMap = (() => {
   function puff(x, y, n, cols, sp = 60, up = 0) { for (let k = 0; k < n; k++) { const a = rnd(0, 6.283), v = rnd(.3, 1) * sp; fx.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - up, life: rnd(.4, .8), max: .8, r: rnd(1.5, 3.5), c: cols[k % cols.length] }); } }
   function ring2(x, y, r, c) { fx.push({ x, y, vx: 0, vy: 0, life: .4, max: .4, ring: r, c }); }
   function floatTxt(x, y, txt, c) { fx.push({ x, y, vx: 0, vy: -30, life: 1.1, max: 1.1, txt, c }); }
+  /* ---------- v15 · hiệu ứng bước chân + dấu chân + hạt bay theo khu ---------- */
+  const prints = [], amb = [], ribbon = [];
+  function stepCols() {
+    const k = DIST[distAt(hero.x)].key;
+    return k === 'beach' ? ['rgba(236,211,148,.95)', 'rgba(255,243,210,.85)'] : k === 'hotel' ? ['rgba(235,235,235,.75)', 'rgba(205,200,190,.75)']
+      : k === 'factory' ? ['rgba(160,160,170,.85)', 'rgba(115,115,125,.8)'] : k === 'night' ? ['rgba(120,225,255,.85)', 'rgba(185,145,255,.8)'] : ['rgba(240,170,210,.9)', 'rgba(205,175,255,.8)'];
+  }
+  function stepFx(stp) {
+    const k = DIST[distAt(hero.x)].key, fast = Math.abs(hero.vx) > 180, side = stp % 2 ? 1 : -1, cols = stepCols();
+    for (let i = 0; i < (fast ? 7 : 4); i++) fx.push({ x: hero.x - hero.face * rnd(2, 8) + side * 2, y: GY - 1, vx: -hero.face * rnd(12, fast ? 80 : 38), vy: -rnd(12, fast ? 52 : 28), life: rnd(.3, .6), max: .6, r: rnd(.9, fast ? 2.4 : 1.6), c: cols[i % 2] });
+    if (k === 'factory' && fast) for (let i = 0; i < 3; i++) fx.push({ x: hero.x - hero.face * 4, y: GY - 2, vx: -hero.face * rnd(40, 110), vy: -rnd(30, 80), life: .35, max: .35, r: .9, c: 'rgba(255,180,60,1)' });
+    if (k === 'night') fx.push({ x: hero.x + side * 3, y: GY, vx: 0, vy: 0, life: .45, max: .45, ring: 9, c: 'rgba(120,225,255,.8)' });
+    footprint(side);
+  }
+  function footprint(side) {
+    const k = DIST[distAt(hero.x)].key;
+    if (k !== 'beach' && k !== 'night' && k !== 'peak') return;
+    prints.push({ x: hero.x + side * 3.2, k, t: 0, f: hero.face }); if (prints.length > 36) prints.shift();
+  }
+  function drawPrints() {
+    for (const p of prints) {
+      const x = SX(p.x); if (x < -10 || x > W + 10) continue;
+      const a = Math.max(0, 1 - p.t / 3.2), y = (GY + 1.2) * u;
+      g.save(); g.translate(x, y); g.scale(p.f, 1);
+      if (p.k === 'night') { g.globalCompositeOperation = 'lighter'; g.globalAlpha = .55 * a; g.fillStyle = 'rgba(120,225,255,1)'; }
+      else { g.globalAlpha = (p.k === 'beach' ? .3 : .22) * a; g.fillStyle = p.k === 'beach' ? '#9c7a3e' : '#2a1d3a'; }
+      g.beginPath(); g.ellipse(0, 0, 2.7 * u, 1 * u, 0, 0, 6.283); g.fill();
+      g.beginPath(); g.ellipse(2.6 * u, -.1 * u, 1.1 * u, .7 * u, 0, 0, 6.283); g.fill();
+      g.restore();
+    }
+  }
+  function newMote(k) {
+    const x = camX + rnd(-20, VIEW + 20), m = { x, k, t: 0, ph: rnd(0, 6.283), rot: rnd(0, 6.283) };
+    if (k === 'beach') Object.assign(m, { y: GY - rnd(30, 150), vx: rnd(-7, 7), vy: -rnd(2, 8), life: rnd(3, 5), r: rnd(.8, 1.8), c: 'rgba(255,255,255,1)', glow: 1 });
+    else if (k === 'hotel') Object.assign(m, { y: GY - rnd(40, 200), vx: rnd(-4, 4), vy: -rnd(3, 9), life: rnd(3, 6), r: rnd(2.5, 5.5), c: 'rgba(255,225,140,1)', glow: 1, soft: 1 });
+    else if (k === 'factory') Object.assign(m, { y: GY - rnd(0, 30), vx: rnd(-10, 10), vy: -rnd(14, 34), life: rnd(1.8, 3), r: rnd(.7, 1.5), c: 'rgba(255,150,50,1)', glow: 1 });
+    else if (k === 'night') Object.assign(m, { y: GY - rnd(15, 120), vx: rnd(-10, 10), vy: rnd(-6, 6), life: rnd(3, 6), r: rnd(1, 1.8), c: Math.random() < .5 ? 'rgba(190,255,110,1)' : 'rgba(120,240,255,1)', glow: 1, blink: 1 });
+    else Object.assign(m, { y: GY - rnd(150, 230), vx: -rnd(8, 20), vy: rnd(12, 24), life: rnd(5, 8), r: rnd(2.6, 3.8), c: Math.random() < .6 ? '#ffb7d5' : '#e9c9ff', petal: 1 });
+    return m;
+  }
+  function ambientTick(dt) {
+    if (REDUCED) { amb.length = 0; return; }
+    const k = DIST[distAt(camX + VIEW / 2)].key;
+    if (amb.length < 24 && Math.random() < dt * 10) amb.push(newMote(k));
+    for (let i = amb.length - 1; i >= 0; i--) {
+      const a = amb[i]; a.t += dt; a.ph += dt;
+      a.x += (a.vx + (a.petal ? Math.sin(a.ph * 2) * 10 : a.blink ? Math.sin(a.ph * 1.3) * 6 : 0)) * dt; a.y += a.vy * dt; a.rot += dt * 2;
+      if (a.t > a.life || a.y > GY + 4) amb.splice(i, 1);
+    }
+  }
+  function drawRibbon() {
+    if (ribbon.length < 3) return;
+    const col = (typeof curSkin === 'function' ? curSkin().trail : 'rgba(255,217,31,1)');
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round';
+    for (let pass = 0; pass < 2; pass++) for (let i = 1; i < ribbon.length; i++) {
+      const a = ribbon[i - 1], b = ribbon[i], k = i / ribbon.length, fade = 1 - b.t / .32;
+      g.globalAlpha = (pass ? .9 : .35) * k * fade; g.strokeStyle = pass ? '#ffffff' : col;
+      g.lineWidth = (pass ? 1.6 : 7) * u * k;
+      g.beginPath(); g.moveTo(SX(a.x), a.y * u); g.lineTo(SX(b.x), b.y * u); g.stroke();
+    }
+    g.restore();
+  }
+  function drawAmbient() {
+    for (const a of amb) {
+      const x = SX(a.x), y = a.y * u; if (x < -20 || x > W + 20) continue;
+      const life = Math.min(1, a.t / .5, (a.life - a.t) / .8);
+      if (a.petal) { g.save(); g.globalAlpha = .85 * life; g.translate(x, y); g.rotate(a.rot); g.scale(1, .55 + .45 * Math.sin(a.ph * 3)); g.fillStyle = a.c; g.beginPath(); g.ellipse(0, 0, a.r * u, a.r * .6 * u, 0, 0, 6.283); g.fill(); g.restore(); continue; }
+      const bl = a.blink ? .35 + .65 * Math.max(0, Math.sin(a.ph * 3)) : 1;
+      g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = (a.soft ? .3 : .9) * life * bl;
+      glowDot(g, x, y, a.r * u * (a.soft ? 2.4 : 3.6), a.c.replace(/,1\)$/, ',.95)'));
+      if (!a.soft) { g.globalAlpha = .9 * life * bl; g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, a.r * .45 * u, 0, 6.283); g.fill(); }
+      g.restore();
+    }
+  }
   function drawFx(dt) {
     for (let k = fx.length - 1; k >= 0; k--) {
       const p = fx[k]; p.life -= dt; if (p.life <= 0) { fx.splice(k, 1); continue; }
@@ -4646,7 +4729,13 @@ const WorldMap = (() => {
     if (dir && hero.grounded && Math.abs(hero.vx) > 70 && Math.sign(hero.vx) === -dir) { hero.skid = .22; if (Math.random() < .7) puff(hero.x + Math.sign(hero.vx) * 6, GY - 1, 1, ['rgba(225,215,195,.75)'], 34, 10); }
     if (dir) { if (dir !== hero.face) hero.turn = 1; hero.face = dir; }
     hero.turn = Math.max(0, (hero.turn || 0) - dt * 7);
-    const tv = dir * (hero.auto ? 170 : 150);
+    // v15: giữ hướng đi > 0,6 giây thì chạy nhanh (bóng mờ + vệt gió + bụi mạnh)
+    if (dir && dir === hero.holdDir && hero.grounded) hero.holdT = (hero.holdT || 0) + dt; else if (!dir || dir !== hero.holdDir) hero.holdT = 0;
+    hero.holdDir = dir;
+    const sprint = !hero.auto && hero.holdT > .6;
+    if (sprint && !hero.sprint) { puff(hero.x - hero.face * 8, GY - 2, 8, stepCols(), 70, 16); Snd.sfx('swish'); }
+    hero.sprint = sprint;
+    const tv = dir * (hero.auto ? 170 : sprint ? 215 : 150);
     hero.vx += (tv - hero.vx) * Math.min(1, dt * (hero.act && hero.act.type === 'hurt' ? 3 : 12));
     const bx = blockX();
     hero.x = clamp(hero.x + hero.vx * dt, 16, bx);
@@ -4656,9 +4745,15 @@ const WorldMap = (() => {
     if (hero.blocked) hero.vx = 0;
     hero.ph += dt * Math.abs(hero.vx) / 105;
     grabGold(dt);
-    { const stp = Math.floor(hero.ph * 2); if (stp !== hero.step) { hero.step = stp; if (hero.grounded && Math.abs(hero.vx) > 40) puff(hero.x - hero.face * 5, GY - 1, 3, ['rgba(255,255,255,.55)', 'rgba(220,210,190,.6)'], 22, 14); } }
+    { const stp = Math.floor(hero.ph * 2); if (stp !== hero.step) { hero.step = stp; if (hero.grounded && Math.abs(hero.vx) > 40) stepFx(stp); } }
     // nhảy
-    if (!hero.grounded) { hero.vy -= 950 * dt; hero.y += hero.vy * dt; if (hero.y <= 0) { hero.y = 0; hero.vy = 0; hero.grounded = true; hero.land = 1; puff(hero.x, GY, 6, ['rgba(255,255,255,.8)'], 40, 10); } }
+    if (!hero.grounded) { hero.vy -= 950 * dt; hero.y += hero.vy * dt; if (hero.y <= 0) { hero.y = 0; hero.vy = 0; hero.grounded = true; hero.land = 1; puff(hero.x, GY, 10, stepCols(), 55, 12); ring2(hero.x, GY - 2, 26, 'rgba(255,255,255,.85)'); footprint(-1); footprint(1); } }
+    for (let i = prints.length - 1; i >= 0; i--) { prints[i].t += dt; if (prints[i].t > 3.2) prints.splice(i, 1); }
+    // v15: vệt khí theo sau người khi chạy nhanh / nhảy (màu theo phi tiêu đang dùng)
+    if ((Math.abs(hero.vx) > 185 || !hero.grounded) && !REDUCED) ribbon.push({ x: hero.x - hero.face * 7, y: GY - hero.y - HH * .74, t: 0 });
+    for (let i = ribbon.length - 1; i >= 0; i--) { ribbon[i].t += dt; if (ribbon[i].t > .32) ribbon.splice(i, 1); }
+    if (ribbon.length > 22) ribbon.splice(0, ribbon.length - 22);
+    ambientTick(dt);
 
     // khu đang đứng → thẻ trạm
     const di = distAt(hero.x);
@@ -4668,7 +4763,13 @@ const WorldMap = (() => {
       if (m.dead) continue;
       m.flash = Math.max(0, (m.flash || 0) - dt * 2); m.alert = Math.max(0, (m.alert || 0) - dt); m.cool = Math.max(0, m.cool - dt);
       if (m.act) { m.act.t += dt; if (m.act.ev && !m.act.ev.done && m.act.t >= m.act.ev.at) { m.act.ev.done = true; m.act.ev.f(); } if (m.act.t >= m.act.dur) m.act = null; }
-      if (!duel && m.range) { m.x = m.x0 + Math.sin(clock * .7 + m.ph) * m.range; m.face = Math.cos(clock * .7 + m.ph) > 0 ? 1 : -1; }
+      // v15: tới gần Ā Bǎo thì quái DỪNG tuần tra và quay mặt về phía tướng (trước đây vẫn trôi qua lại → quay mặt một hướng, trượt hướng kia)
+      if (!duel && m.range) {
+        const nearNow = !m.dying && Math.abs(hero.x - m.x) < 88;
+        if (!nearNow) m.pt = (m.pt == null ? 0 : m.pt) + dt;
+        const tt = (m.pt || 0) * .7 + m.ph; m.x = m.x0 + Math.sin(tt) * m.range; m.mv = nearNow ? 0 : Math.abs(Math.cos(tt));
+        if (!nearNow) m.face = Math.cos(tt) > 0 ? 1 : -1;
+      }
       { const dd = hero.x - m.x; m.near = clamp(1 - (Math.abs(dd) - 18) / 70, 0, 1); if (m.near > 0 && !m.dying) m.face = dd > 0 ? 1 : -1; if (m.near > .7 && !m.dying) m.alert = Math.max(m.alert || 0, .25); }
       if (duel || talking || m.dying || m.cool > 0 || m.d > unlockedIdx() || (hero.act && hero.act.type !== 'cheer')) continue;
       const T = MON[m.type], hh = T.h * (m.big ? 2.4 : 1);
@@ -4804,7 +4905,9 @@ const WorldMap = (() => {
   function loop(now) {
     raf = 0;
     if (!$('sMap').classList.contains('on')) { saveX(); return; }
-    const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now;
+    const raw = Math.max(0, Math.min(.05, (now - last) / 1000)); last = now;
+    // v15: làm đều nhịp khung hình (điện thoại hay giật 16↔33 ms) → di chuyển và máy quay mượt hơn
+    sdt = sdt ? sdt + (raw - sdt) * .3 : raw; const dt = Math.abs(raw - sdt) > .03 ? raw : sdt;
     if (hold) { raf = requestAnimationFrame(loop); return; }   // kiểm thử: dừng vòng lặp, bước tay bằng _step
     try {
       if (mfreeze > 0) mfreeze -= dt; else update(dt);
@@ -4821,10 +4924,10 @@ const WorldMap = (() => {
     g = gBaseM; g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const GL = mrg();
     if (GL) { GL.clearAll(); gTopM.setTransform(1, 0, 0, 1, 0, 0); gTopM.clearRect(0, 0, cvTopM.width, cvTopM.height); }
-    drawSky(); drawLayers(); drawGround(); drawWalkers(); drawProps(); drawGates(); drawNpcs(); drawGold();
-    mons.forEach(drawMon); drawHero();
+    drawSky(); drawLayers(); drawGround(); drawPrints(); drawWalkers(); drawProps(); drawGates(); drawNpcs(); drawGold();
+    mons.forEach(drawMon); drawRibbon(); drawHero();
     if (GL) { g = gTopM; g.setTransform(dpr, 0, 0, dpr, 0, 0); while (topQM.length) topQM.shift()(); }
-    drawFx(dt); drawFront(); drawPost();
+    drawFx(dt); drawFront(); drawAmbient(); drawPost();
     g = gBaseM;
   }
   function saveX() { prog.cx = Math.round(hero.x); save(); }

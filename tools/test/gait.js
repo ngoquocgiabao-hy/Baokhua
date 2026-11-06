@@ -1,5 +1,6 @@
 /* Kiểm dáng nhân vật (v14). Dùng: node tools/test/gait.js
    1) Đi/chạy (Rig.gait): chân KHÔNG bị uốn (giữ nguyên hình vẽ) và người có NẢY theo bước (không trượt).
+   3) Ngả tới (lean > 0) phải đưa đầu về phía mặt nhìn (v15: trước đây bị ngược, nhân vật ngả ra sau khi chạy).
    2) Mọi tư thế game dùng, với hệ số tay chân thật của từng nhân vật: góc uốn từng khớp so với tư thế gốc
       nằm trong giới hạn an toàn (vượt quá là tranh bị xé: rách áo, tay rời thân, đũng quần kéo dài).
    Cần: máy chủ tĩnh ở thư mục repo (python3 -m http.server 8765 --bind 127.0.0.1) hoặc đặt BASE=... ; Playwright + Chromium. */
@@ -36,14 +37,17 @@ const CH = ['hero1', 'hero2', 'hero3', 'trainee-idle', 'hotel-idle', 'factory-id
         Rig.pose(R, P[nm], ref, GAIN[key], 1);
         for (let j = 1; j < 11; j++) { const d = Math.abs(local(R.M, j) - local(base, j)); if (d > worst) { worst = d; worstAt = nm + '#' + j; } }
       }
-      out[n] = { legBend: +legBend.toFixed(3), legScale: +legScale.toFixed(3), bouncePx: Math.round(yMax - yMin), worstJoint: +worst.toFixed(2), worstAt };
+      // 3) v15: ngả tới (lean > 0) thì đầu phải chạy về phía mặt nhìn (fs), không được ngả ra sau
+      Rig.pose(R, ref, ref, GAIN[key], 1); const h0 = Rig.xf(R, 2, R.d.pts.head)[0];
+      Rig.pose(R, Object.assign({}, ref, { lean: (ref.lean || 0) + .2 }), ref, GAIN[key], 1); const leanFwd = Math.sign(Rig.xf(R, 2, R.d.pts.head)[0] - h0) === R.d.fs;
+      out[n] = { legBend: +legBend.toFixed(3), legScale: +legScale.toFixed(3), bouncePx: Math.round(yMax - yMin), worstJoint: +worst.toFixed(2), worstAt, leanFwd };
     }
     return out;
   }, CH);
   console.log(JSON.stringify(r));
-  const bad = Object.entries(r).filter(([n, v]) => v.err || v.legBend > .02 || v.legScale > .02 || v.bouncePx < 10 || v.worstJoint > .65);
+  const bad = Object.entries(r).filter(([n, v]) => v.err || v.legBend > .02 || v.legScale > .02 || v.bouncePx < 10 || v.worstJoint > .65 || !v.leanFwd);
   bad.forEach(([n, v]) => console.log('  KHÔNG ĐẠT', n, JSON.stringify(v)));
-  console.log(bad.length ? 'Dáng nhân vật: KHÔNG ĐẠT' : 'Dáng nhân vật: ĐẠT (đi/chạy không uốn chân, có nảy; mọi tư thế trong giới hạn an toàn)');
+  console.log(bad.length ? 'Dáng nhân vật: KHÔNG ĐẠT' : 'Dáng nhân vật: ĐẠT (đi/chạy không uốn chân, có nảy; mọi tư thế trong giới hạn an toàn; ngả tới đúng hướng mặt)');
   await b.close();
   process.exitCode = bad.length ? 1 : 0;
 })();
