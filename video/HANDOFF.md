@@ -21,6 +21,7 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 | F5 | Trailer thương hiệu | `debut/build_debut.mjs` | Dữ kiện công khai trên trang chủ | Bản EVERGREEN dùng lâu dài |
 | F6 | Chữ thật ở Hạ Long (biển hiệu tiếng Trung quanh Bãi Cháy) | `series/chuthat.mjs` | Bảo chụp biển hiệu, ghi khung chữ | Chưa có ảnh |
 | F7 | Bảo quay mặt: tiểu phẩm hai vai, POV quầy lễ tân | Quay tay, dựng bằng skill "cắt cắt" (CapCut) | Bảo quay | Chưa làm |
+| F8 | Chuyện thật · Câu thật (raw câu chuyện → câu tiếng Trung trong chuyện → điểm ăn tiền + câu đi làm → kêu gọi game và học online) | `series/cauthat.mjs` + nhạc `series/music_bed.py` | Raw video của Bảo trong `story/raw/` (ngoài git), tập trong `story/episodes/` | Tập 1 đã dựng |
 
 ### Thêm một tập F2 hoặc F6 (khoảng 10 phút làm, 7 phút máy dựng)
 1. Đặt ảnh vào `story/photos/` (đã che thông tin cá nhân, xem mục 5).
@@ -28,6 +29,15 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 3. Chạy `node series/chuthat.mjs story/episodes/<mã>.json`, xem trước, rồi `cd out/<mã> && npx hyperframes render -o ../<TÊN>_master.mp4`.
 4. Nén bản đăng: `ffmpeg -i ..._master.mp4 -c:v libx264 -crf 20 -preset slow -maxrate 18M -bufsize 36M -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart <TÊN>_9x16.mp4`.
 5. Nghĩa và pinyin phải qua Gemini kiểm trước khi đăng. Chữ chỉ lấy từ ảnh thật, không tự bịa.
+
+### Kết cấu chuẩn cho video 1–3 phút (F8 và các thể loại dài)
+1. **Gây hit (3–5 giây):** một câu hỏi hoặc mâu thuẫn, ví dụ "借 là mượn hay cho mượn?".
+2. **Giá trị chuyên sâu:** các khối gồm chuyện thật 5,5 giây → câu thật (chữ Hán, pinyin, nghĩa) → điểm ăn tiền 7,5 giây (quy tắc, ví dụ, câu nói ngay khi đi làm).
+3. **Kêu gọi (7 giây):** 🎮 game Khách sạn + 💬 học online nhóm nhỏ.
+
+Một raw cho ra 4 sản phẩm: bản chính 60–90 giây, teaser 15 giây, short "câu đi làm" 20 giây, bài Zalo.
+Raw từ TikTok thường là HEVC: đổi sang H.264 trước khi dựng (`ffmpeg -i in.mp4 -an -c:v libx264 -crf 16 -pix_fmt yuv420p -g 15 out.mp4`).
+Bảng bài học phủ vùng y 1080–1920, che luôn phụ đề cũ in cứng trong raw.
 
 ## 3. Thử thị trường 14 ngày: tìm long mạch
 Mục tiêu: sau 14 ngày biết 2 thể loại nào kéo người vào nhóm Zalo tốt nhất, rồi dồn sức vào đó.

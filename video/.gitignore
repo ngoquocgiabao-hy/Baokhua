@@ -7,3 +7,4 @@ story/CAPTIONS_*.md
 story/thumbs_story.cjs
 __pycache__/
 story/episodes/
+story/raw/
