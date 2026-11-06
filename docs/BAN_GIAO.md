@@ -18,16 +18,16 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
 
 ## 0. Ưu tiên dự án (06/11/2026)
 
-- **Dự án chính: game Khách sạn mới** (mô phỏng xây và quản lý khách sạn 3D, quốc tế). Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md`. Cách cải tiến liên tục: `docs/khachsan/KAIZEN.md`. Bước tiếp theo: giai đoạn 0 (2 tuần, mục 10.1 của kế hoạch), sau khi Bảo duyệt hướng đi.
+- **Dự án chính: game Khách sạn mới** (mô phỏng xây và quản lý khách sạn 3D, quốc tế). Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md`. Cách cải tiến liên tục: `docs/khachsan/KAIZEN.md`. Bảo đã duyệt hướng đi ngày 06/11 (mục 15 của kế hoạch). Đang ở giai đoạn 0 (2 tuần, mục 10.1): bản thử đầu ở `hotel/proto/` (sảnh 3D dựng 100% bằng code, video `teaser.mp4` quay từ cảnh bằng `tools/hotel/capture.js`). Hình 3D và video làm không tốn thêm chi phí (mục 8.2–8.3 của kế hoạch).
 - **Game Đánh Boss là game nhánh:** đóng băng tính năng ở v16, chỉ sửa lỗi. Tổng kết: `docs/TONG_KET_GAME_DANH_BOSS.md`.
 - `khachsan.html` v5 tiếp tục chạy trên baokhua.com cho đến khi bản mới đạt chuẩn và Bảo duyệt đăng.
 
 ## 2. Hiện trạng (06/11/2026)
 | Nơi | Nội dung |
 |---|---|
-| `main` (trang thật) | Bản đăng 01/11: tên miền, trang chủ có game Khách sạn, Khách sạn v5. **Game Đánh Boss trên trang thật vẫn là bản cũ "Đánh Boss v4 (3D · 2 chặng)".** |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v16 (game nhánh, đóng băng tính năng), tài liệu dự án game Khách sạn mới, và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
-| Bản xem thử (riêng tư) | https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Chỉ người được chia sẻ mới mở được. |
+| `main` (trang thật) | Bản đăng 06/11 (Bảo duyệt đăng): game Đánh Boss v16, trang chủ 11.11 (ưu đãi thẻ năm 299k đến 23:59 11/11, không ghi ngày khai giảng), trang thẻ hội viên 11.11, Khách sạn v5. Commit `0036e89`. |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Như `main` cộng bản thử game Khách sạn mới `hotel/proto/` và công cụ quay video `tools/hotel/capture.js`. Phần này **chưa đăng**. |
+| Bản xem thử (riêng tư) | Game Đánh Boss: https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Bản thử 3D Khách sạn: https://claude.ai/artifact/75dWtZMQe9gUqRtUXTGyfQ. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
 - **v6:** 5 trạm HSK0–HSK4, ngân hàng câu theo cấp.
@@ -167,7 +167,8 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 
 ## 8. Việc đang chờ / đề xuất làm tiếp (theo thứ tự ưu tiên)
 **Chờ Bảo:**
-1. "duyệt đăng" game Đánh Boss v16 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
+1. Sau 23:59 ngày 11/11 các dòng ưu đãi tự ẩn; cần Bảo chốt chữ ưu đãi mới (nếu có) cho `index.html`, `membership.html`, `game.html` (`SALE_END`, `OFFER_*`).
+1a. Duyệt phong cách hình 3D sau giai đoạn 0 (xem bản thử `hotel/proto/`).
 2. 4 câu hỏi về giá: 299k là giá gì; giá sau 11/11; thẻ có gồm Zoom không; có gia hạn hoa hồng giới thiệu không.
 3. Chỉnh Google Form theo góp ý cũ.
 4. Khoá `GEMINI_API_KEY` để có giọng người thật.

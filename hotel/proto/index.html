@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Khách sạn Vịnh Ā Bǎo – bản thử 3D</title>
+<meta name="robots" content="noindex">
+<!--
+  Bản thử kỹ thuật giai đoạn 0 (06/11/2026): sảnh khách sạn 3D làm HOÀN TOÀN bằng code.
+  - Không mua hình, không thuê ngoài, không gọi máy chủ ngoài: mọi đồ vật và nhân vật dựng từ khối hình học Three.js (tự lưu: three.module.min.js, MIT).
+  - Nhân vật có khớp thật (hông, vai, cổ) nên đi, vẫy tay không bao giờ xé hình như tranh 2D.
+  - ?capture=1 : chế độ quay video (bước tay từng khung bằng window.__step) – tools/hotel/capture.js quay thành MP4.
+-->
+<style>
+:root{--ink:#16171B;--sun:#FFD91F;--sea:#0b3d5c}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#cfe7f2;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;color:var(--ink)}
+[lang^="zh"]{font-family:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Source Han Sans SC","Microsoft YaHei",sans-serif}
+#stage{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:fixed;left:10px;right:10px;top:10px;display:flex;gap:8px;align-items:flex-start;justify-content:space-between;pointer-events:none;z-index:3}
+.brand{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:7px 10px;box-shadow:3px 3px 0 var(--ink);max-width:72%}
+.brand b{display:block;font-size:14px;line-height:1.2}
+.brand small{display:block;font-size:11px;opacity:.75;margin-top:2px}
+.coins{background:var(--sun);border:2px solid var(--ink);border-radius:14px;padding:7px 10px;font-weight:900;font-size:15px;box-shadow:3px 3px 0 var(--ink);white-space:nowrap}
+.coins.pop{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.18)}}
+.hint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(22,23,27,.82);color:#fff;font-size:12.5px;padding:7px 12px;border-radius:999px;z-index:3;white-space:nowrap;pointer-events:none;transition:opacity .4s}
+.bubble{position:fixed;z-index:4;transform:translate(-50%,-100%);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 9px;font-size:12px;line-height:1.3;box-shadow:2px 2px 0 var(--ink);pointer-events:none;max-width:250px;text-align:center;opacity:0;transition:opacity .25s}
+.bubble.on{opacity:1}
+.bubble:after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-6px;border:6px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.bubble .zh{font-size:15px;font-weight:800;display:block;white-space:nowrap}
+.bubble .py{font-style:italic;color:#1E5AA8;display:block}
+.bubble .vi{display:block;opacity:.85}
+.ring{position:fixed;z-index:4;width:34px;height:34px;transform:translate(-50%,-50%);pointer-events:none;opacity:0}
+.ring.on{opacity:1}
+body.capture .hint{display:none}
+#vidBtn{position:fixed;left:10px;bottom:54px;z-index:5;border:2px solid var(--ink);background:#fff;border-radius:10px;padding:6px 9px;font-weight:800;font-size:12px;box-shadow:2px 2px 0 var(--ink)}
+#vid{position:fixed;inset:0;z-index:9;background:rgba(0,10,20,.9);display:none;align-items:center;justify-content:center;padding:16px}
+#vid.on{display:flex}#vid video{max-width:100%;max-height:86vh;border-radius:12px;border:2px solid #fff}
+#vid button{position:absolute;top:12px;right:12px;border:0;border-radius:10px;padding:8px 12px;font-weight:800;background:var(--sun)}
+body.capture #vidBtn{display:none}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div class="hud">
+  <div class="brand"><b>Khách sạn Vịnh Ā Bǎo</b><small><span lang="zh-CN">阿宝海湾酒店</span> · Ā Bǎo hǎiwān jiǔdiàn</small><small>Bản thử 3D giai đoạn 0 · hình dựng 100% bằng code</small></div>
+  <div class="coins" id="coins">💰 0</div>
+</div>
+<div class="bubble" id="bGuest"></div>
+<div class="bubble" id="bHero"></div>
+<svg class="ring" id="ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="14" fill="rgba(255,255,255,.85)" stroke="#16171B" stroke-width="2"/><circle id="ringArc" cx="18" cy="18" r="10" fill="none" stroke="#2ec4b6" stroke-width="5" stroke-dasharray="62.8" stroke-dashoffset="62.8" transform="rotate(-90 18 18)"/></svg>
+<div class="hint" id="hint">Chạm sàn để Ā Bǎo đi tới quầy đón khách</div>
+<button type="button" id="vidBtn">▶ Video quay từ cảnh này</button>
+<div id="vid"><video id="vidEl" controls playsinline loop></video><button type="button" id="vidClose">Đóng</button></div>
+
+<script type="importmap">{ "imports": { "three": "./three.module.min.js" } }</script>
+<script type="module">
+import * as THREE from 'three';
+
+const CAPTURE = /[?&]capture=1/.test(location.search);
+if (CAPTURE) document.body.classList.add('capture');
+const $ = id => document.getElementById(id);
+
+/* ---------- renderer, camera ---------- */
+const stage = $('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#cfe7f2');
+const ROOM = { w: 10, d: 8 };                       // sàn: x 0..10, z 0..8; tường ở x=0 và z=0
+const center = new THREE.Vector3(5, 0.8, 4);
+const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
+const camDir = new THREE.Vector3(1, 0.95, 1).normalize();
+let zoom = 1;
+const camAt = center.clone();
+function placeCam() { cam.position.copy(camAt).addScaledVector(camDir, 30); cam.lookAt(camAt); }
+function fit() {
+  const w = stage.clientWidth, h = stage.clientHeight, a = w / h;
+  renderer.setSize(w, h, false);
+  // dọc (điện thoại): khung theo chiều ngang phòng; ngang: theo chiều cao
+  // điện thoại dọc: phóng gần, máy quay đi theo Ā Bǎo (kiểu game quản lý khách sạn); màn ngang: thấy cả phòng
+  let halfW = a < 1 ? 4.9 : 6.4 * a, halfH = halfW / a;
+  if (a >= 1) halfH = 6.4;
+  halfW /= zoom; halfH /= zoom;
+  cam.left = -halfW; cam.right = halfW; cam.top = halfH; cam.bottom = -halfH;
+  placeCam();
+  cam.updateProjectionMatrix();
+}
+window.addEventListener('resize', fit);
+
+/* ---------- light ---------- */
+scene.add(new THREE.HemisphereLight('#fff7e8', '#9fb7c9', 1.25));
+const sun = new THREE.DirectionalLight('#ffe7c4', 2.3);
+sun.position.set(9, 14, 11); sun.target.position.set(5, 0, 4);
+sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
+Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
+sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.02;
+scene.add(sun, sun.target);
+
+/* ---------- helpers ---------- */
+const mats = {};
+const mat = (c, o = {}) => { const k = c + JSON.stringify(o); return mats[k] || (mats[k] = new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .78, metalness: 0, flatShading: true }, o))); };
+function mesh(geo, color, x = 0, y = 0, z = 0, o) { const m = new THREE.Mesh(geo, typeof color === 'string' ? mat(color, o) : color); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; return m; }
+const box = (w, h, d, c, x, y, z, o) => mesh(new THREE.BoxGeometry(w, h, d), c, x, y, z, o);
+const cyl = (rt, rb, h, c, x, y, z, seg = 14, o) => mesh(new THREE.CylinderGeometry(rt, rb, h, seg), c, x, y, z, o);
+const sph = (r, c, x, y, z, seg = 16, o) => mesh(new THREE.SphereGeometry(r, seg, Math.max(8, seg * .7 | 0)), c, x, y, z, o);
+function canvasTex(w, h, draw, rep) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); }
+  return t;
+}
+const ZH = '"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",sans-serif';
+const UI = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+
+/* ---------- room ---------- */
+const room = new THREE.Group(); scene.add(room);
+// sàn đá hoa
+const floorTex = canvasTex(256, 256, (g, w, h) => {
+  for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+    g.fillStyle = (i + j) % 2 ? '#f3e6cf' : '#e9d6b4'; g.fillRect(i * 128, j * 128, 128, 128);
+    g.strokeStyle = 'rgba(160,120,70,.18)'; g.lineWidth = 2;
+    for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(i * 128 + Math.random() * 128, j * 128); g.bezierCurveTo(i * 128 + 40, j * 128 + 50, i * 128 + 90, j * 128 + 70, i * 128 + Math.random() * 128, j * 128 + 128); g.stroke(); }
+  }
+  g.strokeStyle = 'rgba(120,90,50,.35)'; g.lineWidth = 3; g.strokeRect(0, 0, w, h); g.beginPath(); g.moveTo(128, 0); g.lineTo(128, 256); g.moveTo(0, 128); g.lineTo(256, 128); g.stroke();
+}, [ROOM.w / 2, ROOM.d / 2]);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM.w, ROOM.d), new THREE.MeshStandardMaterial({ map: floorTex, roughness: .55 }));
+floor.rotation.x = -Math.PI / 2; floor.position.set(ROOM.w / 2, 0, ROOM.d / 2); floor.receiveShadow = true; room.add(floor);
+room.add(box(ROOM.w + .3, .3, ROOM.d + .3, '#b98a5a', ROOM.w / 2, -.16, ROOM.d / 2));          // bậc nền
+// tường
+const WALL_H = 3.2;
+room.add(box(ROOM.w, WALL_H, .22, '#f6efe2', ROOM.w / 2, WALL_H / 2, -.11));                  // tường sau (z=0)
+room.add(box(.22, WALL_H, ROOM.d, '#efe3cf', -.11, WALL_H / 2, ROOM.d / 2));                  // tường trái (x=0)
+room.add(box(ROOM.w, .35, .26, '#2a6f8f', ROOM.w / 2, .17, .02));                              // chân tường
+room.add(box(.26, .35, ROOM.d, '#2a6f8f', .02, .17, ROOM.d / 2));
+room.add(box(ROOM.w, .12, .3, '#d9b77a', ROOM.w / 2, WALL_H - .06, .04));                      // phào trần
+room.add(box(.3, .12, ROOM.d, '#d9b77a', .04, WALL_H - .06, ROOM.d / 2));
+// cửa kính nhìn ra vịnh (núi đá vôi, biển, thuyền)
+const bayTex = canvasTex(512, 256, (g, w, h) => {
+  let gr = g.createLinearGradient(0, 0, 0, h * .55); gr.addColorStop(0, '#8fd0f5'); gr.addColorStop(1, '#ffe8c4'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  gr = g.createLinearGradient(0, h * .55, 0, h); gr.addColorStop(0, '#3aa3c2'); gr.addColorStop(1, '#1b6f8c'); g.fillStyle = gr; g.fillRect(0, h * .55, w, h * .45);
+  const karst = (x, bw, bh, c) => { g.fillStyle = c; g.beginPath(); g.moveTo(x - bw / 2, h * .56); g.bezierCurveTo(x - bw * .55, h * .56 - bh * .7, x - bw * .25, h * .56 - bh * 1.05, x, h * .56 - bh); g.bezierCurveTo(x + bw * .3, h * .56 - bh * 1.02, x + bw * .5, h * .56 - bh * .6, x + bw / 2, h * .56); g.fill(); };
+  karst(70, 90, 70, '#7fa3a8'); karst(200, 70, 95, '#6b9196'); karst(330, 110, 60, '#7fa3a8'); karst(440, 80, 110, '#5f868c');
+  karst(140, 60, 45, '#4f777c'); karst(390, 60, 52, '#4f777c');
+  g.fillStyle = 'rgba(255,255,255,.55)'; for (let i = 0; i < 26; i++) g.fillRect(Math.random() * w, h * .6 + Math.random() * h * .38, 10 + Math.random() * 18, 2);
+  g.fillStyle = '#8a4b2a'; g.beginPath(); g.moveTo(250, 182); g.lineTo(300, 182); g.lineTo(292, 192); g.lineTo(258, 192); g.fill();   // thuyền
+  g.fillStyle = '#c0392b'; g.beginPath(); g.moveTo(272, 182); g.lineTo(272, 150); g.lineTo(292, 172); g.fill();
+});
+for (const x of [2.1, 4.6]) {
+  room.add(box(2.1, 1.9, .06, new THREE.MeshStandardMaterial({ map: bayTex, roughness: .3, emissive: '#ffffff', emissiveIntensity: .12, emissiveMap: bayTex }), x, 1.75, .02));
+  room.add(box(2.25, .1, .14, '#2a6f8f', x, .78, .06)); room.add(box(2.25, .1, .14, '#2a6f8f', x, 2.72, .06));
+  room.add(box(.1, 2.04, .14, '#2a6f8f', x - 1.08, 1.75, .06)); room.add(box(.1, 2.04, .14, '#2a6f8f', x + 1.08, 1.75, .06)); room.add(box(.06, 1.9, .1, '#2a6f8f', x, 1.75, .06));
+}
+// biển hiệu quầy trên tường sau
+const signTex = canvasTex(512, 128, (g, w, h) => {
+  g.fillStyle = '#0b3d5c'; g.fillRect(0, 0, w, h); g.strokeStyle = '#FFD91F'; g.lineWidth = 6; g.strokeRect(6, 6, w - 12, h - 12);
+  g.fillStyle = '#FFD91F'; g.textAlign = 'center'; g.font = 'bold 54px ' + ZH; g.fillText('阿宝海湾酒店', w / 2, 66);
+  g.fillStyle = '#fff'; g.font = 'bold 24px ' + UI; g.fillText('Ā Bǎo hǎiwān jiǔdiàn · Khách sạn Vịnh Ā Bǎo', w / 2, 106);
+});
+room.add(box(3.2, .8, .06, new THREE.MeshStandardMaterial({ map: signTex, roughness: .5 }), 7.6, 2.45, .03));
+// thang máy trên tường trái
+room.add(box(.08, 2.3, 1.6, '#c9ced6', .03, 1.15, 3.2, { metalness: .6, roughness: .35 }));
+room.add(box(.1, .06, 1.6, '#16171B', .05, 2.33, 3.2));
+room.add(box(.04, 2.2, .03, '#7d8590', .08, 1.12, 3.2));
+room.add(box(.06, .26, .5, '#16171B', .06, 2.6, 3.2));
+// tranh treo
+const artTex = canvasTex(256, 192, (g, w, h) => { g.fillStyle = '#f7d9a8'; g.fillRect(0, 0, w, h); g.fillStyle = '#e8743b'; g.beginPath(); g.arc(170, 70, 34, 0, 7); g.fill(); g.fillStyle = '#2a6f8f'; g.fillRect(0, 120, w, 72); g.fillStyle = '#1e4f63'; g.beginPath(); g.moveTo(20, 130); g.quadraticCurveTo(60, 40, 100, 130); g.fill(); g.beginPath(); g.moveTo(90, 130); g.quadraticCurveTo(120, 70, 150, 130); g.fill(); });
+room.add(box(.06, 1.0, 1.35, '#8a5a2b', .04, 1.75, 6.0)); room.add(box(.04, .82, 1.15, new THREE.MeshStandardMaterial({ map: artTex }), .08, 1.75, 6.0));
+
+/* ---------- đồ đạc ---------- */
+// quầy lễ tân
+const desk = new THREE.Group(); desk.position.set(7.4, 0, 1.75); room.add(desk);
+desk.add(box(3.2, 1.05, .8, '#7b4a2a', 0, .525, 0)); desk.add(box(3.35, .1, .95, '#f3e6cf', 0, 1.1, 0));
+desk.add(box(3.22, .18, .03, '#FFD91F', 0, .82, .41));
+desk.add(box(.5, .34, .05, '#16171B', .7, 1.37, -.2)); desk.add(box(.08, .2, .08, '#16171B', .7, 1.2, -.15)); desk.add(box(.46, .3, .01, '#7fd3ff', .7, 1.37, -.17, { emissive: '#3aa3c2', emissiveIntensity: .4 }));
+desk.add(cyl(.11, .13, .04, '#c9a227', -.6, 1.17, .15, 16, { metalness: .7, roughness: .3 })); desk.add(sph(.09, '#e6c34a', -.6, 1.2, .15, 12, { metalness: .7, roughness: .3 }));
+desk.add(cyl(.12, .1, .3, '#2a6f8f', -1.2, 1.3, -.1)); desk.add(sph(.18, '#4caf50', -1.2, 1.55, -.1, 8));
+// ghế sofa + bàn trà + thảm
+const rugTex = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#b8323a'; g.fillRect(0, 0, w, h); g.strokeStyle = '#FFD91F'; g.lineWidth = 10; g.strokeRect(14, 14, w - 28, h - 28); g.lineWidth = 3; g.strokeRect(34, 34, w - 68, h - 68); g.fillStyle = '#FFD91F'; g.beginPath(); g.arc(w / 2, h / 2, 26, 0, 7); g.fill(); });
+const rug = new THREE.Mesh(new THREE.PlaneGeometry(3, 2.4), new THREE.MeshStandardMaterial({ map: rugTex, roughness: .95 }));
+rug.rotation.x = -Math.PI / 2; rug.position.set(2.2, .012, 5.6); rug.receiveShadow = true; room.add(rug);
+const sofa = new THREE.Group(); sofa.position.set(.9, 0, 5.6); room.add(sofa);
+sofa.add(box(.85, .42, 2.2, '#2a6f8f', 0, .21, 0)); sofa.add(box(.3, .72, 2.2, '#2a6f8f', -.3, .5, 0));
+sofa.add(box(.85, .55, .25, '#235c77', 0, .3, 1.12)); sofa.add(box(.85, .55, .25, '#235c77', 0, .3, -1.12));
+sofa.add(box(.6, .14, .95, '#3d8db0', .08, .48, .5)); sofa.add(box(.6, .14, .95, '#3d8db0', .08, .48, -.5));
+sofa.add(box(.14, .4, .4, '#FFD91F', -.08, .72, .55)); sofa.add(box(.14, .4, .4, '#ff8a5c', -.08, .72, -.55));
+const table = new THREE.Group(); table.position.set(2.5, 0, 5.6); room.add(table);
+table.add(cyl(.55, .55, .08, '#f3e6cf', 0, .48, 0, 24)); table.add(cyl(.08, .14, .45, '#7b4a2a', 0, .23, 0, 10));
+table.add(cyl(.09, .07, .12, '#fff', .15, .58, .1, 12)); table.add(cyl(.09, .07, .12, '#fff', -.18, .58, -.05, 12));
+// cây cảnh
+function plant(x, z, s = 1) { const p = new THREE.Group(); p.position.set(x, 0, z); p.scale.setScalar(s);
+  p.add(cyl(.3, .22, .55, '#c8693a', 0, .27, 0, 12)); p.add(cyl(.31, .31, .06, '#9e4f2a', 0, .55, 0, 12));
+  for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283, l = mesh(new THREE.ConeGeometry(.16, .9, 5), '#3f9b4f', Math.cos(a) * .14, 1.0, Math.sin(a) * .14); l.rotation.z = Math.cos(a) * .55; l.rotation.x = -Math.sin(a) * .55; p.add(l); }
+  p.add(mesh(new THREE.ConeGeometry(.14, 1.1, 5), '#4fb35f', 0, 1.15, 0)); room.add(p); return p; }
+plant(.55, .55, 1.1); plant(9.4, .55); plant(.6, 7.4, .9);
+// đèn cây
+const lamp = new THREE.Group(); lamp.position.set(.6, 0, 4.3); room.add(lamp);
+lamp.add(cyl(.2, .22, .05, '#16171B', 0, .03, 0)); lamp.add(cyl(.03, .03, 1.7, '#16171B', 0, .88, 0, 8));
+lamp.add(cyl(.18, .3, .35, '#fff3c4', 0, 1.8, 0, 14, { emissive: '#ffd27a', emissiveIntensity: .6 }));
+// xe đẩy hành lý
+const cart = new THREE.Group(); cart.position.set(9.3, 0, 5.3); cart.rotation.y = -.5; room.add(cart);
+cart.add(box(1.0, .08, .6, '#c9a227', 0, .2, 0, { metalness: .6, roughness: .35 }));
+for (const sx of [-.45, .45]) cart.add(cyl(.03, .03, 1.5, '#c9a227', sx, .95, 0, 8, { metalness: .6, roughness: .35 }));
+{ const bar = cyl(.03, .03, .95, '#c9a227', 0, 1.7, 0, 8, { metalness: .6, roughness: .35 }); bar.rotation.z = Math.PI / 2; cart.add(bar); }
+cart.add(box(.55, .6, .32, '#c0392b', -.18, .54, 0)); cart.add(box(.4, .42, .28, '#2a6f8f', .25, .45, .05)); cart.add(box(.35, .3, .25, '#FFD91F', .2, .99, 0));
+for (const [x, z] of [[-.4, -.25], [.4, -.25], [-.4, .25], [.4, .25]]) cart.add(sph(.07, '#16171B', x, .08, z, 8));
+// thảm cửa vào
+room.add(box(1.4, .02, 1.0, '#2a6f8f', 9.2, .01, 7.3));
+
+/* ---------- nhân vật chibi 3D (có khớp thật) ---------- */
+function chibi(o) {
+  const root = new THREE.Group(), hips = new THREE.Group(); root.add(hips); hips.position.y = .5;
+  const legL = new THREE.Group(), legR = new THREE.Group();
+  for (const [lg, sx] of [[legL, -.12], [legR, .12]]) { lg.position.set(sx, 0, 0); hips.add(lg);
+    lg.add(mesh(new THREE.CapsuleGeometry(.09, .26, 4, 8), o.pants, 0, -.22, 0)); lg.add(box(.17, .1, .26, o.shoes || '#16171B', 0, -.45, .04)); }
+  const torso = new THREE.Group(); hips.add(torso);
+  torso.add(mesh(new THREE.CapsuleGeometry(.21, .22, 4, 12), o.shirt, 0, .26, 0));
+  if (o.vest) torso.add(box(.3, .3, .05, o.vest, 0, .3, .19));
+  const armL = new THREE.Group(), armR = new THREE.Group();
+  for (const [ar, sx] of [[armL, -.29], [armR, .29]]) { ar.position.set(sx, .44, 0); torso.add(ar);
+    ar.add(mesh(new THREE.CapsuleGeometry(.07, .22, 4, 8), o.shirt, 0, -.16, 0)); ar.add(sph(.075, o.skin, 0, -.34, 0, 10)); }
+  const head = new THREE.Group(); head.position.y = .68; torso.add(head);
+  head.add(sph(.33, o.skin, 0, .26, 0, 20));
+  const hair = mesh(new THREE.SphereGeometry(.35, 20, 12, 0, Math.PI * 2, 0, Math.PI * .52), o.hair, 0, .3, -.03); hair.rotation.x = -.25; head.add(hair);
+  if (o.bun) head.add(sph(.13, o.hair, 0, .58, -.12, 12));
+  if (o.band) { const b = mesh(new THREE.TorusGeometry(.335, .035, 6, 24), o.band, 0, .38, 0); b.rotation.x = Math.PI / 2 - .2; head.add(b); }
+  for (const sx of [-.11, .11]) { head.add(sph(.045, '#16171B', sx, .26, .3, 8)); head.add(sph(.016, '#ffffff', sx + .015, .28, .34, 6)); head.add(sph(.04, '#ff9a8a', sx * 1.9, .18, .26, 8)); }
+  head.add(box(.09, .025, .02, '#7a2a1a', 0, .14, .32));
+  root.traverse(m => { if (m.isMesh) m.castShadow = true; });
+  scene.add(root);
+  return { root, hips, legL, legR, armL, armR, torso, head, ph: 0, speed: 0, target: null, path: [], face: 0, wave: 0, idle: Math.random() * 9 };
+}
+function pose(c, dt) {
+  c.ph += dt * (c.speed > .1 ? 9.5 : 0);
+  const mv = Math.min(1, c.speed / 1.6), s = Math.sin(c.ph);
+  c.legL.rotation.x = s * .7 * mv; c.legR.rotation.x = -s * .7 * mv;
+  c.armL.rotation.x = -s * .6 * mv; c.armR.rotation.x = s * .6 * mv;
+  c.hips.position.y = .5 + Math.abs(Math.cos(c.ph)) * .05 * mv;
+  c.torso.rotation.x = .08 * mv;
+  c.idle += dt;
+  const br = Math.sin(c.idle * 2.2) * .015 * (1 - mv);
+  c.torso.scale.set(1 + br, 1 - br, 1 + br);
+  c.head.rotation.y = (1 - mv) * Math.sin(c.idle * .7) * .25;
+  if (c.wave > 0) { c.wave = Math.max(0, c.wave - dt); const k = Math.min(1, c.wave * 3, (1.6 - c.wave) * 3); c.armR.rotation.z = 2.5 * k; c.armR.rotation.x = Math.sin(c.idle * 14) * .35 * k; }
+  else c.armR.rotation.z = 0;
+  c.armL.rotation.z = 0;
+}
+function walk(c, dt, spd = 2.2) {
+  if (!c.target && c.path.length) c.target = c.path.shift();
+  if (!c.target) { c.speed += (0 - c.speed) * Math.min(1, dt * 10); return true; }
+  const p = c.root.position, dx = c.target.x - p.x, dz = c.target.z - p.z, d = Math.hypot(dx, dz);
+  if (d < .06) { c.target = null; return !c.path.length; }
+  c.speed += (spd - c.speed) * Math.min(1, dt * 8);
+  const st = Math.min(d, c.speed * dt); p.x += dx / d * st; p.z += dz / d * st;
+  const want = Math.atan2(dx, dz); let df = want - c.face; df = Math.atan2(Math.sin(df), Math.cos(df)); c.face += df * Math.min(1, dt * 12);
+  c.root.rotation.y = c.face; return false;
+}
+const faceTo = (c, ang, dt) => { let df = ang - c.face; df = Math.atan2(Math.sin(df), Math.cos(df)); c.face += df * Math.min(1, dt * 8); c.root.rotation.y = c.face; };
+
+const hero = chibi({ skin: '#ffd9b8', hair: '#1d1d24', shirt: '#1E5AA8', pants: '#16171B', band: '#FFD91F', vest: '#FFD91F' });
+hero.root.position.set(3.4, 0, 3.4); hero.face = .8; hero.root.rotation.y = .8;
+const DESK_SPOT = new THREE.Vector3(7.4, 0, 1.0), GUEST_SPOT = new THREE.Vector3(7.4, 0, 2.55), DOOR = new THREE.Vector3(9.4, 0, 9.4), LIFT = new THREE.Vector3(.75, 0, 3.2);
+const LOOKS = [
+  { skin: '#ffe0c2', hair: '#3b2a1e', shirt: '#c0392b', pants: '#2a2f3a', bun: true },
+  { skin: '#f2c9a0', hair: '#16171B', shirt: '#2ec4b6', pants: '#3a3a46' },
+  { skin: '#ffe6cf', hair: '#7a4a24', shirt: '#8e5bd1', pants: '#1f2d4a', bun: true },
+];
+const LINES = [
+  { g: ['我想办理入住。', 'Wǒ xiǎng bànlǐ rùzhù.', 'Tôi muốn làm thủ tục nhận phòng.'], h: ['好的，请出示护照。', 'Hǎo de, qǐng chūshì hùzhào.', 'Vâng, xin xuất trình hộ chiếu.'] },
+  { g: ['我预订了一个房间。', 'Wǒ yùdìng le yí ge fángjiān.', 'Tôi đã đặt trước một phòng.'], h: ['欢迎光临！', 'Huānyíng guānglín!', 'Chào mừng quý khách!'] },
+  { g: ['早餐几点开始？', 'Zǎocān jǐ diǎn kāishǐ?', 'Bữa sáng bắt đầu lúc mấy giờ?'], h: ['早上七点。', 'Zǎoshang qī diǎn.', 'Bảy giờ sáng.'] },
+];
+let guest = null, gi = 0, coins = 0, phase = 'spawn', pt = 0, served = 0, autopilot = CAPTURE, lastTap = 0, T = 0;
+const coinsFx = [];
+function newGuest() {
+  if (guest) scene.remove(guest.root);
+  guest = chibi(LOOKS[gi % LOOKS.length]);
+  const suit = box(.32, .4, .18, ['#FFD91F', '#2a6f8f', '#ff8a5c'][gi % 3], .26, .2, -.05); guest.root.add(suit); guest.suit = suit;
+  guest.root.position.copy(DOOR); guest.face = Math.PI; guest.path = [new THREE.Vector3(8.6, 0, 6.2), GUEST_SPOT.clone()];
+  phase = 'arrive'; pt = 0;
+}
+
+/* ---------- bóng nói, vòng tiến độ ---------- */
+const v3 = new THREE.Vector3();
+function screenOf(obj, up = 1.75) { obj.getWorldPosition(v3); v3.y += up; v3.project(cam); return [(v3.x + 1) / 2 * stage.clientWidth, (1 - v3.y) / 2 * stage.clientHeight]; }
+function say(el, line, on) {
+  if (on && el.dataset.l !== line[0]) { el.innerHTML = `<span class="zh" lang="zh-CN">${line[0]}</span><span class="py">${line[1]}</span><span class="vi">${line[2]}</span>`; el.dataset.l = line[0]; }
+  el.classList.toggle('on', !!on);
+}
+function coinPop(n) {
+  for (let i = 0; i < n; i++) { const c = cyl(.12, .12, .04, '#FFD91F', 0, 0, 0, 16, { metalness: .8, roughness: .25, emissive: '#c99a10', emissiveIntensity: .25 }); c.rotation.x = Math.PI / 2;
+    c.position.set(GUEST_SPOT.x - .3 + i * .2, 1.25, 1.75); c.userData = { vy: 2.4 + i * .2, t: 0 }; scene.add(c); coinsFx.push(c); }
+}
+
+/* ---------- vòng chơi ---------- */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+renderer.domElement.addEventListener('pointerdown', e => {
+  const r = renderer.domElement.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, cam); const hit = ray.intersectObject(floor)[0]; if (!hit) return;
+  const p = hit.point; p.x = Math.max(.6, Math.min(ROOM.w - .5, p.x)); p.z = Math.max(.6, Math.min(ROOM.d - .4, p.z));
+  // không cho đi xuyên quầy: điểm ở trong quầy thì kéo ra sau quầy
+  if (p.x > 5.5 && p.x < 9.2 && p.z > 1.15 && p.z < 2.3) p.z = p.z < 1.75 ? 1.0 : 2.5;
+  // đi vòng qua đầu trái quầy (x = 5.2) khi đổi giữa sau quầy và sảnh
+  hero.path = []; hero.target = null;
+  const behind = hero.root.position.z < 1.4 && hero.root.position.x > 5.6, toBehind = p.z < 1.4 && p.x > 5.6;
+  if (behind !== toBehind) hero.path = toBehind ? [new THREE.Vector3(5.2, 0, 2.6), new THREE.Vector3(5.2, 0, 1.0)] : [new THREE.Vector3(5.2, 0, 1.0), new THREE.Vector3(5.2, 0, 2.6)];
+  hero.path.push(new THREE.Vector3(p.x, 0, p.z)); lastTap = T; autopilot = false;
+  $('hint').style.opacity = 0;
+});
+const atDesk = () => hero.root.position.distanceTo(DESK_SPOT) < .5;
+function update(dt) {
+  T += dt;
+  if (!guest) newGuest();
+  // tự lái khi không ai chạm (quay video, hoặc người chơi để yên 6 giây)
+  if (!autopilot && T - lastTap > 6) autopilot = true;
+  if (autopilot && !atDesk() && !hero.target && !hero.path.length && phase !== 'spawn') { const hp = hero.root.position; hero.path = (hp.z < 1.4 && hp.x > 5.6) ? [DESK_SPOT.clone()] : [new THREE.Vector3(5.2, 0, 2.6), new THREE.Vector3(5.2, 0, 1.0), DESK_SPOT.clone()]; }
+  const heroIdle = walk(hero, dt, 2.6);
+  if (heroIdle && atDesk()) faceTo(hero, 0, dt);
+  pose(hero, dt);
+
+  pt += dt;
+  const gDone = walk(guest, dt, 1.7); pose(guest, dt);
+  let ring = 0;
+  if (phase === 'arrive' && gDone) { phase = 'wait'; pt = 0; }
+  if (phase === 'wait') { faceTo(guest, Math.PI, dt); if (atDesk()) { phase = 'serve'; pt = 0; } }
+  if (phase === 'serve') { faceTo(guest, Math.PI, dt); ring = Math.min(1, pt / 1.6); if (pt > 1.6) { phase = 'talk'; pt = 0; hero.wave = 1.6; } }
+  if (phase === 'talk') { faceTo(guest, Math.PI, dt); if (pt > 2.6) { phase = 'pay'; pt = 0; coinPop(3); } }
+  if (phase === 'pay' && pt > .9) { phase = 'leave'; pt = 0; guest.wave = 1.6; guest.path = [new THREE.Vector3(5.2, 0, 3.4), LIFT.clone()]; }
+  if (phase === 'leave' && gDone && pt > 1) { phase = 'out'; pt = 0; }
+  if (phase === 'out') { guest.root.scale.setScalar(Math.max(.01, 1 - pt * 2.5)); if (pt > .5) { gi++; served++; newGuest(); } }
+  const L = LINES[gi % LINES.length];
+  const [gx, gy] = screenOf(guest.head, .78), [hx, hy] = screenOf(hero.head, .78);
+  const bg = $('bGuest'), bh = $('bHero');
+  bg.style.left = gx + 'px'; bg.style.top = gy + 'px'; bh.style.left = hx + 'px'; bh.style.top = hy + 'px';
+  say(bg, L.g, phase === 'wait');
+  say(bh, L.h, phase === 'talk' || phase === 'pay');
+  const rg = $('ring'); rg.classList.toggle('on', phase === 'serve'); rg.style.left = gx + 'px'; rg.style.top = (gy - 20) + 'px';
+  $('ringArc').setAttribute('stroke-dashoffset', (62.8 * (1 - ring)).toFixed(1));
+  // xu trong game bay lên rồi vào túi
+  for (let i = coinsFx.length - 1; i >= 0; i--) { const c = coinsFx[i], u = c.userData; u.t += dt; u.vy -= 6 * dt; c.position.y += u.vy * dt; c.rotation.z += dt * 8;
+    if (u.t > .75) { scene.remove(c); coinsFx.splice(i, 1); coins += 10; const ce = $('coins'); ce.textContent = '💰 ' + coins; ce.classList.remove('pop'); void ce.offsetWidth; ce.classList.add('pop'); } }
+  // máy quay đi theo Ā Bǎo (màn dọc), giữ trong phòng
+  if (stage.clientWidth < stage.clientHeight) {
+    const hp = hero.root.position, gp = guest.root.position, mid = phase === 'leave' || phase === 'out' ? .35 : .5;
+    const tx = Math.max(3.2, Math.min(7.2, hp.x * (1 - mid) + gp.x * mid * .6 + 5 * mid * .4)), tz = Math.max(2.2, Math.min(5.6, hp.z * (1 - mid) + gp.z * mid * .6 + 4 * mid * .4));
+    camAt.x += (tx - camAt.x) * Math.min(1, dt * 2.2); camAt.z += (tz - camAt.z) * Math.min(1, dt * 2.2); placeCam();
+  }
+  // video: máy quay đẩy vào nhẹ ở đầu
+  if (CAPTURE) { const z = 0.86 + Math.min(1, T / 2.5) * .14; if (Math.abs(z - zoom) > 1e-4) { zoom = z; fit(); } }
+}
+function render() { renderer.render(scene, cam); }
+
+/* ---------- vòng lặp ---------- */
+fit();
+let last = performance.now();
+function loop(now) { const dt = Math.min(.05, (now - last) / 1000); last = now; update(dt); render(); requestAnimationFrame(loop); }
+if (CAPTURE) { window.__step = (dt = 1 / 30) => { update(dt); render(); }; window.__ready = true; render(); }
+else requestAnimationFrame(loop);
+window.__proto = { get phase() { return phase; }, get served() { return served; }, get coins() { return coins; }, hero, get guest() { return guest; } };
+
+// video 9:16 quay từ chính cảnh này (tools/hotel/capture.js → teaser.mp4)
+$('vidBtn').onclick = () => { const v = $('vidEl'); if (!v.src) v.src = 'teaser.mp4'; $('vid').classList.add('on'); v.play().catch(() => {}); };
+$('vidClose').onclick = () => { $('vid').classList.remove('on'); $('vidEl').pause(); };
+</script>
+</body>
+</html>

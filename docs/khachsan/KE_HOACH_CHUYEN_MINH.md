@@ -1,6 +1,6 @@
 # Kế hoạch chuyển mình game Khách sạn Bảo Khựa
 
-Phiên bản kế hoạch: 1.0 (06/11/2026). Chủ dự án: Bảo. Người soạn: Xưởng Game và Web.
+Phiên bản kế hoạch: 1.1 (06/11/2026; 1.1 ghi quyết định của Bảo ở mục 15, nguồn hình 3D và video không tốn thêm chi phí ở mục 8.2–8.3). Chủ dự án: Bảo. Người soạn: Xưởng Game và Web.
 Đọc kèm: `docs/khachsan/KAIZEN.md` (cách cải tiến liên tục), `docs/BAN_GIAO.md` (quy trình chung), `CLAUDE.md` (luật bắt buộc).
 
 ## 1. Tóm tắt
@@ -266,12 +266,25 @@ Tiêu chí: 80% người chơi thử hoàn thành 10 phút đầu không cần h
 - Nhân vật tỉ lệ chibi (khoảng 2,5 đầu), mặt to, dễ đọc cảm xúc ở màn hình nhỏ.
 - Ngày và đêm có ánh sáng khác nhau; đêm bật đèn phòng, biển hiệu.
 
-### 8.2 Quy trình làm hình
+### 8.2 Quy trình làm hình (v1.1, 06/11/2026: không tốn thêm chi phí)
+
+Bảo hỏi có làm được hình 3D bằng các công cụ AI hiện có mà không tốn thêm tiền không. Trả lời: **được**, theo 4 tầng dưới đây, không thuê ngoài ở giai đoạn 0–1. Bằng chứng: bản thử `hotel/proto/` (sảnh, quầy, sofa, cây, xe hành lý, 2 nhân vật chibi đi lại, nhận phòng) dựng 100% bằng code trong vài giờ, chạy 0 lỗi ở 360×640 và 390×844.
+
+| Tầng | Cách làm | Dùng cho | Chi phí |
+|---|---|---|---|
+| 1. Dựng bằng code | Claude Code viết khối hình học Three.js (hộp, trụ, cầu, khối tròn), màu theo bảng màu thương hiệu, ánh sáng và bóng đổ | Phòng, tường, sàn, đồ nội thất, nhân vật chibi có khớp (hông, vai, cổ), hiệu ứng | 0 đồng |
+| 2. Blender chạy bằng script | Blender (miễn phí, mã nguồn mở) chạy không màn hình, Claude Code viết script Python dựng mô hình cong, chi tiết hơn, khung xương và hoạt ảnh, xuất GLB | Mặt tiền khách sạn, du thuyền, bể bơi, nhân vật cần dáng mềm hơn | 0 đồng (cần cài Blender vào môi trường) |
+| 3. Bộ mô hình giấy phép CC0 | Kenney, KayKit (CC0, dùng thương mại không cần ghi tên), Quaternius (kiểm giấy phép từng gói); đổi màu theo thương hiệu, ghép lại | Đồ vật phụ (đèn, chậu cây, hành lý, bếp) để đỡ công | 0 đồng; ghi từng gói vào `assets/LICENSES.md` |
+| 4. AI tạo mô hình từ ảnh (tuỳ chọn) | Mô hình mở như TRELLIS, Hunyuan3D chạy trên máy có card đồ hoạ mạnh của Bảo (nếu có); dịch vụ trực tuyến bản miễn phí thường giới hạn lượt và ràng buộc giấy phép nên không dùng cho hình chính | Thử nhanh ý tưởng | 0 đồng nếu có máy phù hợp |
+
+Không dùng: mô hình, nhân vật, tên, giao diện lấy từ game khác (mục 4).
+
+Các bước cho mỗi món hình:
 
 1. Phác thảo ý tưởng (có thể dùng công cụ tạo ảnh để tìm hướng, chỉ dùng nội bộ).
-2. Dựng mô hình trong Blender theo bảng quy chuẩn (số đa giác, kích thước, tên).
-3. Dựng khung xương và hoạt ảnh nhân vật (đi, chạy, mang đồ, dọn, ăn, ngủ, vẫy tay, phàn nàn, vui).
-4. Xuất GLB, nén (Meshopt hoặc Draco, ảnh KTX2), kiểm tra bằng trình xem trước trong repo.
+2. Dựng theo tầng phù hợp ở bảng trên, theo bảng quy chuẩn (số đa giác, kích thước, tên).
+3. Nhân vật: khớp thật (hông, vai, cổ, gối khi cần) và hoạt ảnh đi, chạy, mang đồ, dọn, ăn, ngủ, vẫy tay, phàn nàn, vui. Không uốn tranh 2D (bài học game Đánh Boss).
+4. Hình làm bằng code để thẳng trong mã; hình từ Blender hoặc bộ CC0 xuất GLB, nén (Meshopt hoặc Draco, ảnh KTX2), kiểm tra bằng trình xem trước trong repo.
 5. Ghi nguồn và giấy phép vào `assets/LICENSES.md`.
 
 Quy chuẩn kỹ thuật (mục tiêu, chỉnh sau giai đoạn 0):
@@ -282,7 +295,21 @@ Quy chuẩn kỹ thuật (mục tiêu, chỉnh sau giai đoạn 0):
 | Đồ vật nhỏ | ≤ 500 | Bảng màu chung |
 | Công trình | ≤ 5.000 | Bảng màu chung + 1 ảnh chi tiết nếu cần |
 
-### 8.3 Âm thanh
+### 8.3 Video quảng bá (không tốn thêm chi phí)
+
+Một nguồn hình dùng chung cho cả game và video: cảnh 3D của game cũng là trường quay.
+
+| Công cụ | Giấy phép | Dùng cho | Ghi chú |
+|---|---|---|---|
+| `tools/hotel/capture.js` (đã có) | Của dự án | Quay thẳng cảnh game thành MP4 9:16 cho TikTok, Reels | Bước tay từng khung 1/30 giây rồi ghép bằng FFmpeg; 11 giây video quay trong khoảng 35 giây trên máy chủ không card đồ hoạ |
+| HyperFrames (HeyGen) | Apache 2.0, dùng thương mại miễn phí | Video ghép chữ, hiệu ứng, cảnh Three.js viết bằng HTML | Có kỹ năng cho Claude Code; cần Node 22 và FFmpeg (môi trường đã có). Studio miễn phí, gói Pro trả phí thì không dùng |
+| Remotion | Miễn phí cho nhóm tối đa 3 người | Video dựng bằng React (đã dùng cho nền sân đấu game Đánh Boss) | Nhóm lớn hơn 3 người thì phải mua giấy phép công ty |
+| OpenMontage | AGPL-3.0 | Quy trình làm video có kịch bản, lồng tiếng, phụ đề | Dùng như công cụ riêng, đặt ngoài repo; video làm ra được dùng tự do. **Không chép mã hay tệp kỹ năng của nó vào repo Bảo Khựa** (sẽ kéo theo nghĩa vụ AGPL). Đường không cần khoá API: Piper TTS đọc offline, Remotion, HyperFrames, FFmpeg, kho ảnh và video miễn phí. Nhà cung cấp tạo video trên mây tính phí thì không bật |
+| Google Flow / Veo | Theo gói Google của Bảo | Cảnh quay điện ảnh ngắn | Chỉ dùng trong lượt có sẵn của gói hiện tại |
+
+Giọng đọc: Gemini (khi có khoá, mục 6.6) hoặc Piper TTS chạy offline (kiểm giấy phép từng giọng trước khi dùng).
+
+### 8.4 Âm thanh
 
 - Nhạc nền theo chi nhánh (Hạ Long nhẹ nhàng, Hà Nội đàn dân tộc pha nhạc hiện đại…), nhạc sự kiện.
 - Tiếng môi trường: sóng biển, phố, tiếng khách.
@@ -307,6 +334,7 @@ Quy chuẩn kỹ thuật (mục tiêu, chỉnh sau giai đoạn 0):
 
 ```
 hotel/                    mã nguồn game mới (Vite + TypeScript)
+  proto/                  bản thử giai đoạn 0 (một tệp HTML + three.module.min.js, chưa đóng gói), video teaser.mp4
   src/
     core/                 vòng lặp, thời gian, lưu tiến độ, sự kiện nội bộ
     world/                cảnh 3D, camera, ánh sáng, lưới xây dựng
@@ -317,7 +345,7 @@ hotel/                    mã nguồn game mới (Vite + TypeScript)
   data/                   cấu hình: phòng, đồ, khách, nhân viên, mở khoá, sự kiện, câu hỏi
   assets/                 GLB, âm thanh, ảnh (kèm LICENSES.md)
   tests/                  kiểm thử Playwright + kiểm thử kinh tế
-tools/hotel/              mô phỏng cân bằng, kiểm tra dữ liệu, xem trước mô hình
+tools/hotel/              quay video từ cảnh game (capture.js, đã có), mô phỏng cân bằng, kiểm tra dữ liệu, xem trước mô hình
 ```
 
 Bản đã đóng gói đặt ở `/hotel/` trên baokhua.com để thử. Khi Bảo duyệt đăng thì `khachsan.html` chuyển hướng sang bản mới (giống cách `index_1.html` đang chuyển về trang chủ).
@@ -362,8 +390,8 @@ Tổng đến hết giai đoạn 3: khoảng 24 tuần làm việc cộng 6–10
 | Việc | Người làm | Xong khi |
 |---|---|---|
 | Dựng khung dự án Vite + TypeScript + Three.js tự lưu, đăng thử ở `/hotel/` | Lập trình | Trang mở được trên 2 điện thoại thật |
-| Cảnh thử: 1 phòng, 1 quầy, ánh sáng ngày đêm, camera nghiêng | Lập trình + hình | Đo khung hình trên Android tầm trung |
-| Nhân vật thử có khung xương: đi, chạy, mang đồ | Hình | Chạy trong cảnh thử, không lỗi hình |
+| Cảnh thử: 1 phòng, 1 quầy, ánh sáng ngày đêm, camera nghiêng | Lập trình + hình | Đo khung hình trên Android tầm trung (bản đầu đã có ở `hotel/proto/`, chưa có ngày đêm) |
+| Nhân vật thử có khung xương: đi, chạy, mang đồ | Hình | Chạy trong cảnh thử, không lỗi hình (bản đầu: chibi có khớp đi, vẫy tay ở `hotel/proto/`) |
 | Điều khiển: cần ảo và chạm để đi | Lập trình | 5 người thử điều khiển không cần hướng dẫn |
 | Bảng kinh tế đầu tiên (Sheets) + bản mô phỏng 30 ngày | Thiết kế | Nhịp 1★→3★ khớp mục tiêu ±20% |
 | Quy chuẩn hình (mục 8.2), bảng màu, 3 bản phác thảo nhân vật | Hình | Bảo chọn phong cách |
@@ -395,7 +423,7 @@ Tiêu chí qua giai đoạn 1 (Definition of Done):
 | Chủ sản phẩm | Quyết định ưu tiên, duyệt đăng, duyệt nội dung khoá học | Bảo |
 | Thiết kế game | Vòng chơi, kinh tế, nhiệm vụ, sự kiện | Xưởng Game và Web (Claude) + Bảo |
 | Lập trình | Mã game, kiểm thử, công cụ | Xưởng Game và Web (Claude), có thể thêm 1 lập trình viên |
-| Hình 3D | Mô hình, khung xương, hoạt ảnh | Cần 1 người làm 3D (thuê ngoài hoặc cộng tác) |
+| Hình 3D | Mô hình, khung xương, hoạt ảnh | Xưởng Game và Web (Claude Code) dựng bằng code, Blender chạy bằng script và bộ CC0 (mục 8.2); chưa thuê ngoài |
 | Nội dung ngôn ngữ | Câu giao tiếp, duyệt pinyin, nghĩa, văn hoá | Giáo viên Bảo Khựa; người bản ngữ cho từng ngôn ngữ mới |
 | Thử nghiệm | Chơi thử, góp ý | Học viên, đại sứ (không ghi tên vào repo) |
 
@@ -426,7 +454,8 @@ Muốn đo các chỉ số giữ chân trên nhiều máy cần một công cụ
 | Rủi ro | Mức | Cách giảm |
 |---|---|---|
 | 3D chạy chậm trên điện thoại cũ | Cao | Thử ngay giai đoạn 0; chế độ đồ hoạ thấp; giới hạn số nhân vật cùng lúc |
-| Làm hình 3D chậm, tốn công | Cao | Bộ đồ vật dùng chung, quy chuẩn đa giác; thuê ngoài theo gói; ưu tiên ít mô hình đẹp hơn nhiều mô hình xấu |
+| Làm hình 3D chậm, tốn công | Cao | Bộ đồ vật dùng chung, quy chuẩn đa giác; dựng bằng code và bộ CC0 (mục 8.2); ưu tiên ít mô hình đẹp hơn nhiều mô hình xấu |
+| Hình dựng bằng code trông đơn giản, thiếu chất riêng | Trung bình | Bảng màu và ánh sáng thống nhất, nhân vật chủ chốt (Ā Bǎo, khách quốc tế) làm kỹ nhất; Bảo duyệt phong cách hết giai đoạn 0; nếu chưa đạt mới cân nhắc thuê ngoài vài món điểm nhấn |
 | Phạm vi phình to | Cao | Mọi tính năng mới phải ghi trụ cột phục vụ; giữ lộ trình, việc mới vào giai đoạn sau |
 | Học và chơi lệch nhau (câu hỏi làm chậm nhịp) | Trung bình | Câu hỏi ngắn, đúng ngữ cảnh; nhân viên làm thay những việc lặp lại; đo bằng buổi thử |
 | Giống game khác quá mức | Trung bình | Mục 4; người duyệt kiểm tra trước mỗi lần đăng |
@@ -443,17 +472,20 @@ Muốn đo các chỉ số giữ chân trên nhiều máy cần một công cụ
 - Luật nội dung của `CLAUDE.md` áp dụng cho mọi chữ trong game.
 - Repo công khai: không đưa sổ sách, giá vốn, dữ liệu khách hàng, danh sách học viên vào repo. Chi phí dự án ghi trên Drive.
 
-## 15. Việc cần Bảo quyết định
+## 15. Quyết định của Bảo
 
-| Câu hỏi | Đề xuất | Hạn |
-|---|---|---|
-| Duyệt hướng đi: game mô phỏng 3D, làm lại hoàn toàn, giữ v5 đến khi bản mới đạt chuẩn | Duyệt | Trước khi bắt đầu giai đoạn 0 |
-| Tên game | Phương án A, Khách sạn Vịnh Ā Bǎo | Hết giai đoạn 0 |
-| Công nghệ Three.js + Vite, đăng ở `/hotel/` | Duyệt | Hết tuần 1 giai đoạn 0 |
-| Nguồn làm hình 3D (thuê ngoài theo gói hay cộng tác dài hạn) | Thuê theo gói cho giai đoạn 0–1 | Trước tuần 2 giai đoạn 0 |
-| Công cụ đo số liệu người chơi (dịch vụ ngoài) | Chọn công cụ không thu dữ liệu cá nhân | Trước giai đoạn 1 |
-| Thời điểm mở 6–10★ | Chưa mở, chỉ hiện xem trước | Khi chốt |
-| Có bán vật phẩm bằng tiền thật về sau không | Không ở giai đoạn 1–3 | Xem lại ở giai đoạn 4 sau tư vấn pháp lý |
+Bảo trả lời ngày 06/11/2026: duyệt các đề xuất, riêng nguồn hình 3D hỏi có làm được bằng công cụ AI hiện có, không tốn thêm tiền không (trả lời ở mục 8.2: được).
+
+| Câu hỏi | Kết quả |
+|---|---|
+| Hướng đi: game mô phỏng 3D, làm lại hoàn toàn, giữ v5 đến khi bản mới đạt chuẩn | Đã duyệt 06/11 |
+| Tên game | Đã duyệt phương án A, Khách sạn Vịnh Ā Bǎo |
+| Công nghệ Three.js + Vite, đăng ở `/hotel/` | Đã duyệt 06/11 |
+| Nguồn làm hình 3D | Không thuê ngoài: dựng bằng code, Blender chạy bằng script, bộ CC0 (mục 8.2). Bảo duyệt phong cách hết giai đoạn 0 |
+| Video quảng bá | Quay từ chính cảnh game, HyperFrames, Remotion; OpenMontage dùng ngoài repo (mục 8.3) |
+| Công cụ đo số liệu người chơi (dịch vụ ngoài) | Đồng ý nguyên tắc chọn công cụ không thu dữ liệu cá nhân; công cụ cụ thể trình Bảo trước giai đoạn 1 |
+| Thời điểm mở 6–10★ | Chưa mở, chỉ hiện xem trước |
+| Có bán vật phẩm bằng tiền thật về sau không | Không ở giai đoạn 1–3; xem lại ở giai đoạn 4 sau tư vấn pháp lý |
 
 ## Phụ lục A. Mở khoá theo sao (chi nhánh Bãi Cháy)
 
