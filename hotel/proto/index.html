@@ -2,373 +2,855 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Khách sạn Vịnh Ā Bǎo – bản thử 3D</title>
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFD91F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ā Bǎo Hotel">
 <!--
-  Bản thử kỹ thuật giai đoạn 0 (06/11/2026): sảnh khách sạn 3D làm HOÀN TOÀN bằng code.
-  - Không mua hình, không thuê ngoài, không gọi máy chủ ngoài: mọi đồ vật và nhân vật dựng từ khối hình học Three.js (tự lưu: three.module.min.js, MIT).
-  - Nhân vật có khớp thật (hông, vai, cổ) nên đi, vẫy tay không bao giờ xé hình như tranh 2D.
-  - ?capture=1 : chế độ quay video (bước tay từng khung bằng window.__step) – tools/hotel/capture.js quay thành MP4.
+  Bản thử giai đoạn 0 · v0.2 (06/11/2026): sảnh khách sạn 3D dựng HOÀN TOÀN bằng code (Three.js r170 tự lưu, MIT).
+  - Hình: khối bo tròn, tô màu kiểu hoạt hình (toon) + viền, nhân vật chibi có khớp thật (chớp mắt, vui, buồn, vẫy tay).
+  - Học: giáo trình 6 bài HSK0 → HSK4 (COURSE), mỗi khách hỏi 1 câu của bài đang mở; đúng thì thẻ từ vào Bộ thẻ.
+  - Ôn tập kiểu Anki (SM-2 rút gọn): Lại / Khó / Được / Dễ; "Hôm nay cần ôn" + nhắc ôn (huy hiệu app, thông báo, lịch .ics).
+  - Cài như app (PWA): manifest.webmanifest + sw.js. ?capture=1: chế độ quay video (tools/hotel/capture.js).
+  Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức. Xu, sao chỉ dùng trong game.
 -->
 <style>
-:root{--ink:#16171B;--sun:#FFD91F;--sea:#0b3d5c}
+:root{--ink:#2b2233;--sun:#FFD91F;--peach:#ffb38a;--mint:#7fd6c2;--sky:#cfeaf7;--cream:#fff7e8;--rose:#ff7fa0;--denim:#1E5AA8}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:#cfe7f2;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;color:var(--ink)}
+html,body{height:100%;overflow:hidden;background:var(--sky);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;color:var(--ink)}
 [lang^="zh"]{font-family:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Source Han Sans SC","Microsoft YaHei",sans-serif}
-#stage{position:fixed;inset:0}
+button{font:inherit;color:inherit;cursor:pointer}
+#stage{position:fixed;inset:0;background:radial-gradient(120% 80% at 50% 30%,#e9f7ff 0%,#cfeaf7 55%,#b9dcef 100%)}
 canvas{display:block;width:100%;height:100%;touch-action:none}
-.hud{position:fixed;left:10px;right:10px;top:10px;display:flex;gap:8px;align-items:flex-start;justify-content:space-between;pointer-events:none;z-index:3}
-.brand{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:7px 10px;box-shadow:3px 3px 0 var(--ink);max-width:72%}
-.brand b{display:block;font-size:14px;line-height:1.2}
-.brand small{display:block;font-size:11px;opacity:.75;margin-top:2px}
-.coins{background:var(--sun);border:2px solid var(--ink);border-radius:14px;padding:7px 10px;font-weight:900;font-size:15px;box-shadow:3px 3px 0 var(--ink);white-space:nowrap}
-.coins.pop{animation:pop .35s}
-@keyframes pop{50%{transform:scale(1.18)}}
-.hint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(22,23,27,.82);color:#fff;font-size:12.5px;padding:7px 12px;border-radius:999px;z-index:3;white-space:nowrap;pointer-events:none;transition:opacity .4s}
-.bubble{position:fixed;z-index:4;transform:translate(-50%,-100%);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 9px;font-size:12px;line-height:1.3;box-shadow:2px 2px 0 var(--ink);pointer-events:none;max-width:250px;text-align:center;opacity:0;transition:opacity .25s}
-.bubble.on{opacity:1}
-.bubble:after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-6px;border:6px solid transparent;border-top-color:var(--ink);border-bottom:0}
-.bubble .zh{font-size:15px;font-weight:800;display:block;white-space:nowrap}
-.bubble .py{font-style:italic;color:#1E5AA8;display:block}
+.vig{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(130% 95% at 50% 45%,transparent 60%,rgba(43,34,51,.16) 100%)}
+/* HUD */
+.hud{position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));display:flex;gap:6px;align-items:flex-start;z-index:5;pointer-events:none}
+.brand{background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:6px 10px;box-shadow:0 3px 0 var(--ink);flex:1;min-width:0}
+.brand b{display:block;font-size:13.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{display:block;font-size:10.5px;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pills{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.pill{background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:4px 10px;font-weight:900;font-size:13.5px;box-shadow:0 3px 0 var(--ink);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.pill.coin{background:var(--sun)}
+.pill .bar{width:44px;height:7px;border-radius:9px;background:#f1e6d4;overflow:hidden;border:1.5px solid var(--ink)}
+.pill .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffcf3a,#ff9f43);transition:width .5s}
+.bump{animation:bump .4s cubic-bezier(.3,1.8,.5,1)}@keyframes bump{40%{transform:scale(1.2)}}
+.side{position:fixed;right:10px;top:calc(96px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:22px;z-index:5}
+.fab{position:relative;width:52px;height:52px;border-radius:18px;border:2.5px solid var(--ink);background:#fff;box-shadow:0 4px 0 var(--ink);font-size:23px;display:flex;align-items:center;justify-content:center;transition:transform .12s}
+.fab:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.fab small{position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:800;white-space:nowrap;background:rgba(255,255,255,.9);padding:0 4px;border-radius:5px}
+.fab .badge{position:absolute;top:-7px;right:-7px;min-width:21px;height:21px;border-radius:11px;background:var(--rose);color:#fff;font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);padding:0 4px}
+.fab .badge[hidden]{display:none}
+.fab.wiggle{animation:wig 1.6s ease-in-out infinite}@keyframes wig{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(-9deg)}85%{transform:rotate(8deg)}92%{transform:rotate(-4deg)}}
+.hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(43,34,51,.86);color:#fff;font-size:12.5px;padding:7px 13px;border-radius:999px;z-index:4;white-space:nowrap;pointer-events:none;transition:opacity .4s}
+/* bóng nói */
+.bubble{position:fixed;z-index:4;transform:translate(-50%,-100%) scale(.6);transform-origin:50% 100%;background:#fff;border:2.5px solid var(--ink);border-radius:16px;padding:6px 11px 7px;font-size:12px;line-height:1.3;box-shadow:0 3px 0 var(--ink);pointer-events:none;max-width:250px;text-align:center;opacity:0;transition:opacity .2s,transform .3s cubic-bezier(.3,1.7,.5,1)}
+.bubble.on{opacity:1;transform:translate(-50%,-100%) scale(1)}
+.bubble:after{content:"";position:absolute;left:50%;bottom:-10px;margin-left:-7px;border:7px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.bubble .zh{font-size:16px;font-weight:800;display:block;white-space:nowrap}
+.bubble .py{font-style:italic;color:var(--denim);display:block}
 .bubble .vi{display:block;opacity:.85}
-.ring{position:fixed;z-index:4;width:34px;height:34px;transform:translate(-50%,-50%);pointer-events:none;opacity:0}
-.ring.on{opacity:1}
-body.capture .hint{display:none}
-#vidBtn{position:fixed;left:10px;bottom:54px;z-index:5;border:2px solid var(--ink);background:#fff;border-radius:10px;padding:6px 9px;font-weight:800;font-size:12px;box-shadow:2px 2px 0 var(--ink)}
-#vid{position:fixed;inset:0;z-index:9;background:rgba(0,10,20,.9);display:none;align-items:center;justify-content:center;padding:16px}
-#vid.on{display:flex}#vid video{max-width:100%;max-height:86vh;border-radius:12px;border:2px solid #fff}
-#vid button{position:absolute;top:12px;right:12px;border:0;border-radius:10px;padding:8px 12px;font-weight:800;background:var(--sun)}
-body.capture #vidBtn{display:none}
+.key{color:#e8590c}
+/* câu hỏi khi đón khách */
+.ask{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:6;background:#fff;border:2.5px solid var(--ink);border-radius:22px;box-shadow:0 5px 0 var(--ink);padding:11px 12px 12px;transform:translateY(130%);transition:transform .35s cubic-bezier(.3,1.3,.5,1);max-width:520px;margin:0 auto}
+.ask.on{transform:none}
+.ask .top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.ask .tag{font-size:10.5px;font-weight:900;background:var(--mint);border:2px solid var(--ink);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.ask .q{font-size:13px;font-weight:700;flex:1}
+.ask .say{border:2px solid var(--ink);background:var(--cream);border-radius:12px;width:38px;height:34px;font-size:17px;flex:none}
+.ask .line{text-align:center;margin:2px 0 8px}
+.ask .line .zh{font-size:21px;font-weight:900;display:block}
+.ask .line .py{font-style:italic;color:var(--denim);font-size:13px}
+.ask .opts{display:grid;gap:7px}
+.ask .opts button{border:2.5px solid var(--ink);background:var(--cream);border-radius:14px;padding:10px 12px;font-weight:800;font-size:14px;text-align:left;box-shadow:0 3px 0 var(--ink);transition:transform .1s}
+.ask .opts button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.ask .opts button.ok{background:#b8f0c8}.ask .opts button.no{background:#ffc9cf}
+.ask .opts.done button{pointer-events:none}
+.ask .res{display:none;margin-top:8px;font-size:12.5px;text-align:center;font-weight:700}
+.ask .res.on{display:block}
+/* toast lớn */
+.toast{position:fixed;left:50%;top:38%;z-index:8;transform:translate(-50%,-50%) scale(.4);opacity:0;background:var(--sun);border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:12px 18px;text-align:center;font-weight:900;font-size:18px;pointer-events:none;transition:opacity .25s,transform .45s cubic-bezier(.3,1.8,.5,1);width:max-content;max-width:88vw}
+.toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.toast small{display:block;font-size:12.5px;font-weight:700;margin-top:3px}
+/* nhắc ôn */
+.remind{position:fixed;left:10px;right:76px;top:calc(96px + env(safe-area-inset-top));z-index:5;background:#fff;border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 3px 0 var(--ink);padding:8px 10px;font-size:12.5px;display:flex;gap:8px;align-items:center;transform:translateX(-120%);transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.remind.on{transform:none}
+.remind b{color:#e8590c}
+.remind button{border:2px solid var(--ink);background:var(--sun);border-radius:10px;padding:5px 9px;font-weight:900;font-size:12px;white-space:nowrap}
+.remind .x{background:#fff;padding:5px 7px}
+/* bảng Thẻ từ */
+.sheet{position:fixed;inset:0;z-index:9;background:rgba(43,34,51,.45);opacity:0;pointer-events:none;transition:opacity .25s}
+.sheet.on{opacity:1;pointer-events:auto}
+.sheet .panel{position:absolute;left:0;right:0;bottom:0;top:calc(44px + env(safe-area-inset-top));background:var(--cream);border-top:3px solid var(--ink);border-radius:26px 26px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .38s cubic-bezier(.3,1.2,.5,1);max-width:560px;margin:0 auto}
+.sheet.on .panel{transform:none}
+.sheet .head{display:flex;align-items:center;gap:8px;padding:12px 14px 8px}
+.sheet .head h3{flex:1;font-size:17px}
+.sheet .close{border:2.5px solid var(--ink);background:#fff;border-radius:12px;padding:5px 10px;font-weight:900;box-shadow:0 2px 0 var(--ink)}
+.tabs{display:flex;gap:6px;padding:0 12px 10px}
+.tabs button{flex:1;border:2.5px solid var(--ink);background:#fff;border-radius:999px;padding:7px 6px;font-weight:800;font-size:12.5px;white-space:nowrap}
+.tabs button.on{background:var(--sun);box-shadow:0 3px 0 var(--ink)}
+.body{flex:1;overflow:auto;padding:4px 14px 30px;-webkit-overflow-scrolling:touch}
+.sec{font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;opacity:.7;margin:14px 0 7px}
+.note{font-size:11.5px;opacity:.75;margin-top:10px;line-height:1.45}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:2.5px solid var(--ink);background:var(--sun);border-radius:14px;padding:9px 13px;font-weight:900;font-size:13.5px;box-shadow:0 3px 0 var(--ink);text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.btn.alt{background:#fff}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+/* thẻ lật 3D */
+.flip{perspective:900px;height:248px;margin:6px auto 12px;max-width:340px;cursor:pointer}
+.flip .in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.3,1.3,.5,1)}
+.flip.back .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;text-align:center;background:#fff}
+.face.f{background:linear-gradient(160deg,#fff 0%,#fff3d6 100%)}
+.face.b{transform:rotateY(180deg);background:linear-gradient(160deg,#fff 0%,#e3f6ff 100%)}
+.face .hz{font-size:54px;font-weight:900;line-height:1.1}
+.face .lv{position:absolute;top:10px;left:12px;font-size:10.5px;font-weight:900;background:var(--mint);border:2px solid var(--ink);border-radius:999px;padding:1px 8px}
+.face .tap{position:absolute;bottom:10px;font-size:11px;opacity:.6}
+.face .spk{position:absolute;top:8px;right:10px;border:2px solid var(--ink);background:var(--sun);border-radius:12px;width:38px;height:34px;font-size:17px}
+.face .py{font-size:22px;font-style:italic;color:var(--denim);font-weight:700}
+.face .vi{font-size:18px;font-weight:900;margin:4px 0 10px}
+.face .ex{font-size:12.5px;line-height:1.45;border-top:2px dashed rgba(43,34,51,.2);padding-top:8px;width:100%}
+.face .ex .zh{font-size:16px;font-weight:800;display:block}
+.face .ex i{color:var(--denim);display:block}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:400px;margin:0 auto}
+.grades button{border:2.5px solid var(--ink);border-radius:14px;padding:8px 2px 7px;font-weight:900;font-size:13px;box-shadow:0 3px 0 var(--ink);background:#fff;line-height:1.2}
+.grades button small{display:block;font-size:10.5px;font-weight:700;opacity:.7}
+.grades .g0{background:#ffc9cf}.grades .g1{background:#ffe1b0}.grades .g2{background:#c8f2d4}.grades .g3{background:#c9e8ff}
+.grades[hidden]{display:none}
+.stat{display:flex;gap:8px;margin:2px 0 8px}
+.stat div{flex:1;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:7px 8px;text-align:center;box-shadow:0 3px 0 var(--ink)}
+.stat b{display:block;font-size:20px}
+.stat small{font-size:10.5px;font-weight:700;opacity:.7}
+.deck{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.mini{background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:8px 4px;text-align:center;box-shadow:0 3px 0 var(--ink);min-height:70px}
+.mini .zh{font-size:19px;font-weight:900;display:block}
+.mini small{font-size:10.5px;color:var(--denim);font-style:italic;display:block}
+.mini.lock{background:#efe7da;opacity:.65;box-shadow:none}
+.mini.new{background:#fffbe6}
+.mini .due{display:inline-block;margin-top:2px;font-size:9.5px;font-weight:900;background:var(--rose);color:#fff;border-radius:6px;padding:0 5px}
+.unit{background:#fff;border:2.5px solid var(--ink);border-radius:18px;padding:10px 12px;margin-bottom:9px;box-shadow:0 3px 0 var(--ink);display:flex;gap:10px;align-items:center}
+.unit .no{width:42px;height:42px;border-radius:13px;border:2.5px solid var(--ink);background:var(--sun);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex:none}
+.unit.lock{background:#f4ede2}.unit.lock .no{background:#ddd}
+.unit .t{flex:1;min-width:0}
+.unit .t b{display:block;font-size:14px}
+.unit .t small{display:block;font-size:11.5px;opacity:.75}
+.unit .pb{height:8px;border-radius:9px;background:#f1e6d4;border:1.5px solid var(--ink);margin-top:5px;overflow:hidden}
+.unit .pb i{display:block;height:100%;background:linear-gradient(90deg,#7fd6c2,#3fb39b)}
+select{border:2.5px solid var(--ink);border-radius:12px;padding:7px 8px;font-weight:800;background:#fff;font-size:13px}
+#vid{position:fixed;inset:0;z-index:12;background:rgba(0,10,20,.9);display:none;align-items:center;justify-content:center;padding:16px}
+#vid.on{display:flex}#vid video{max-width:100%;max-height:86vh;border-radius:14px;border:3px solid #fff}
+#vid button{position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px}
+body.capture .hint,body.capture .side,body.capture .remind{display:none}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div id="stage"></div>
+<div class="vig"></div>
 <div class="hud">
-  <div class="brand"><b>Khách sạn Vịnh Ā Bǎo</b><small><span lang="zh-CN">阿宝海湾酒店</span> · Ā Bǎo hǎiwān jiǔdiàn</small><small>Bản thử 3D giai đoạn 0 · hình dựng 100% bằng code</small></div>
-  <div class="coins" id="coins">💰 0</div>
+  <div class="brand"><b>Khách sạn Vịnh Ā Bǎo</b><small><span lang="zh-CN">阿宝海湾酒店</span> · Ā Bǎo hǎiwān jiǔdiàn</small></div>
+  <div class="pills">
+    <div class="pill coin" id="coins">💰 0</div>
+    <div class="pill" id="stars"><span id="starTx">0★</span><span class="bar"><i id="starBar"></i></span></div>
+  </div>
 </div>
+<div class="side">
+  <button type="button" class="fab" id="cardsBtn" aria-label="Thẻ từ và ôn tập">📚<span class="badge" id="dueBadge" hidden>0</span><small>Thẻ từ</small></button>
+  <button type="button" class="fab" id="muteBtn" aria-label="Tắt hoặc bật tiếng">🔊<small>Âm thanh</small></button>
+  <button type="button" class="fab" id="vidBtn" aria-label="Xem video">🎬<small>Video</small></button>
+</div>
+<div class="remind" id="remind"><span>📚 Hôm nay có <b id="remindN">0</b> thẻ cần ôn</span><button type="button" id="remindGo">Ôn ngay</button><button type="button" class="x" id="remindX" aria-label="Để sau">✕</button></div>
 <div class="bubble" id="bGuest"></div>
 <div class="bubble" id="bHero"></div>
-<svg class="ring" id="ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="14" fill="rgba(255,255,255,.85)" stroke="#16171B" stroke-width="2"/><circle id="ringArc" cx="18" cy="18" r="10" fill="none" stroke="#2ec4b6" stroke-width="5" stroke-dasharray="62.8" stroke-dashoffset="62.8" transform="rotate(-90 18 18)"/></svg>
-<div class="hint" id="hint">Chạm sàn để Ā Bǎo đi tới quầy đón khách</div>
-<button type="button" id="vidBtn">▶ Video quay từ cảnh này</button>
-<div id="vid"><video id="vidEl" controls playsinline loop></video><button type="button" id="vidClose">Đóng</button></div>
+<div class="hint" id="hint">Chạm sàn để Ā Bǎo ra quầy đón khách</div>
+<div class="ask" id="ask" aria-live="polite">
+  <div class="top"><span class="tag" id="askTag">Bài 1</span><span class="q" id="askQ">Khách vừa nói gì?</span><button type="button" class="say" id="askSay" aria-label="Nghe lại">🔊</button></div>
+  <div class="line" id="askLine"></div>
+  <div class="opts" id="askOpts"></div>
+  <div class="res" id="askRes"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="head"><h3 id="sheetTitle">📚 Thẻ từ của Ā Bǎo</h3><button type="button" class="close" id="sheetClose">Đóng</button></div>
+    <div class="tabs"><button type="button" data-tab="review" class="on">Ôn hôm nay</button><button type="button" data-tab="deck">Bộ thẻ</button><button type="button" data-tab="course">Giáo trình</button></div>
+    <div class="body" id="sheetBody"></div>
+  </div>
+</div>
+<div id="vid"><video id="vidEl" controls playsinline loop preload="none"></video><button type="button" class="btn" id="vidClose">Đóng</button></div>
 
 <script type="importmap">{ "imports": { "three": "./three.module.min.js" } }</script>
 <script type="module">
 import * as THREE from 'three';
 
 const CAPTURE = /[?&]capture=1/.test(location.search);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (CAPTURE) document.body.classList.add('capture');
 const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-/* ---------- renderer, camera ---------- */
+/* =====================================================================
+   GIÁO TRÌNH (luyện tập theo khung HSK, không phải đề thi chính thức)
+   Mỗi bài gắn với 1 mức sao của khách sạn: lên sao thì mở bài mới, khách mới nói câu của bài đó.
+   Thẻ: zh · py · vi · ex [câu mẫu Hán, pinyin, nghĩa Việt] – câu mẫu luôn chứa từ của thẻ.
+   ===================================================================== */
+const COURSE = [
+  { id: 'u1', lv: 'HSK0', star: 0, title: 'Chào hỏi', zone: 'Sảnh đón', reply: ['欢迎光临！', 'Huānyíng guānglín!', 'Chào mừng quý khách!'], cards: [
+    { id: 'nihao', zh: '你好', py: 'nǐ hǎo', vi: 'xin chào', ex: ['你好，欢迎光临！', 'Nǐ hǎo, huānyíng guānglín!', 'Xin chào, chào mừng quý khách!'] },
+    { id: 'xiexie', zh: '谢谢', py: 'xièxie', vi: 'cảm ơn', ex: ['谢谢您！', 'Xièxie nín!', 'Cảm ơn quý khách!'] },
+    { id: 'huanying', zh: '欢迎', py: 'huānyíng', vi: 'chào mừng', ex: ['欢迎来到下龙湾！', 'Huānyíng lái dào Xiàlóng Wān!', 'Chào mừng đến vịnh Hạ Long!'] },
+    { id: 'zaijian', zh: '再见', py: 'zàijiàn', vi: 'tạm biệt', ex: ['再见，明天见！', 'Zàijiàn, míngtiān jiàn!', 'Tạm biệt, mai gặp lại!'] },
+    { id: 'duibuqi', zh: '对不起', py: 'duìbuqǐ', vi: 'xin lỗi', ex: ['对不起，请等一下。', 'Duìbuqǐ, qǐng děng yíxià.', 'Xin lỗi, xin đợi một chút.'] },
+    { id: 'bukeqi', zh: '不客气', py: 'bú kèqi', vi: 'không có gì', ex: ['不客气，祝您愉快！', 'Bú kèqi, zhù nín yúkuài!', 'Không có gì, chúc quý khách vui vẻ!'] },
+  ] },
+  { id: 'u2', lv: 'HSK1', star: 1, title: 'Nhận phòng', zone: 'Quầy lễ tân', reply: ['好的，请稍等。', 'Hǎo de, qǐng shāo děng.', 'Vâng, xin đợi một chút.'], cards: [
+    { id: 'fangjian', zh: '房间', py: 'fángjiān', vi: 'phòng', ex: ['您的房间在八楼。', 'Nín de fángjiān zài bā lóu.', 'Phòng của quý khách ở tầng tám.'] },
+    { id: 'huzhao', zh: '护照', py: 'hùzhào', vi: 'hộ chiếu', ex: ['请出示您的护照。', 'Qǐng chūshì nín de hùzhào.', 'Xin xuất trình hộ chiếu.'] },
+    { id: 'ruzhu', zh: '入住', py: 'rùzhù', vi: 'nhận phòng', ex: ['我想办理入住。', 'Wǒ xiǎng bànlǐ rùzhù.', 'Tôi muốn làm thủ tục nhận phòng.'] },
+    { id: 'yuding', zh: '预订', py: 'yùdìng', vi: 'đặt trước', ex: ['您有预订吗？', 'Nín yǒu yùdìng ma?', 'Quý khách có đặt phòng trước không?'] },
+    { id: 'jiwei', zh: '几位', py: 'jǐ wèi', vi: 'mấy vị (mấy người)', ex: ['请问您几位？', 'Qǐngwèn nín jǐ wèi?', 'Xin hỏi quý khách đi mấy người?'] },
+    { id: 'fangka', zh: '房卡', py: 'fángkǎ', vi: 'thẻ phòng', ex: ['这是您的房卡。', 'Zhè shì nín de fángkǎ.', 'Đây là thẻ phòng của quý khách.'] },
+  ] },
+  { id: 'u3', lv: 'HSK1', star: 2, title: 'Giờ giấc và tiện ích', zone: 'Nhà hàng, thang máy', reply: ['没问题！', 'Méi wèntí!', 'Không vấn đề gì!'], cards: [
+    { id: 'zaocan', zh: '早餐', py: 'zǎocān', vi: 'bữa sáng', ex: ['早餐七点开始。', 'Zǎocān qī diǎn kāishǐ.', 'Bữa sáng bắt đầu lúc bảy giờ.'] },
+    { id: 'jidian', zh: '几点', py: 'jǐ diǎn', vi: 'mấy giờ', ex: ['现在几点？', 'Xiànzài jǐ diǎn?', 'Bây giờ là mấy giờ?'] },
+    { id: 'dianti', zh: '电梯', py: 'diàntī', vi: 'thang máy', ex: ['电梯在那边。', 'Diàntī zài nàbiān.', 'Thang máy ở bên kia.'] },
+    { id: 'lou', zh: '楼', py: 'lóu', vi: 'tầng', ex: ['餐厅在二楼。', 'Cāntīng zài èr lóu.', 'Nhà hàng ở tầng hai.'] },
+    { id: 'duoshao', zh: '多少钱', py: 'duōshao qián', vi: 'bao nhiêu tiền', ex: ['一晚多少钱？', 'Yì wǎn duōshao qián?', 'Một đêm bao nhiêu tiền?'] },
+    { id: 'mima', zh: '密码', py: 'mìmǎ', vi: 'mật khẩu', ex: ['WiFi密码是多少？', 'WiFi mìmǎ shì duōshao?', 'Mật khẩu WiFi là gì?'] },
+  ] },
+  { id: 'u4', lv: 'HSK2', star: 3, title: 'Phục vụ phòng', zone: 'Buồng phòng', reply: ['我马上来。', 'Wǒ mǎshàng lái.', 'Tôi đến ngay.'], cards: [
+    { id: 'maojin', zh: '毛巾', py: 'máojīn', vi: 'khăn tắm', ex: ['可以再给我一条毛巾吗？', 'Kěyǐ zài gěi wǒ yì tiáo máojīn ma?', 'Cho tôi thêm một chiếc khăn được không?'] },
+    { id: 'dasao', zh: '打扫', py: 'dǎsǎo', vi: 'dọn dẹp', ex: ['请打扫一下房间。', 'Qǐng dǎsǎo yíxià fángjiān.', 'Xin dọn phòng giúp tôi.'] },
+    { id: 'xuyao', zh: '需要', py: 'xūyào', vi: 'cần', ex: ['您需要什么？', 'Nín xūyào shénme?', 'Quý khách cần gì ạ?'] },
+    { id: 'mashang', zh: '马上', py: 'mǎshàng', vi: 'ngay lập tức', ex: ['我马上来。', 'Wǒ mǎshàng lái.', 'Tôi đến ngay.'] },
+    { id: 'reshui', zh: '热水', py: 'rèshuǐ', vi: 'nước nóng', ex: ['房间没有热水。', 'Fángjiān méiyǒu rèshuǐ.', 'Phòng không có nước nóng.'] },
+    { id: 'bang', zh: '帮', py: 'bāng', vi: 'giúp', ex: ['我帮您拿行李。', 'Wǒ bāng nín ná xíngli.', 'Tôi xách hành lý giúp quý khách.'] },
+  ] },
+  { id: 'u5', lv: 'HSK3', star: 4, title: 'Xử lý sự cố', zone: 'Phòng quản lý', reply: ['非常抱歉，我们马上解决。', 'Fēicháng bàoqiàn, wǒmen mǎshàng jiějué.', 'Thành thật xin lỗi, chúng tôi giải quyết ngay.'], cards: [
+    { id: 'huaile', zh: '坏了', py: 'huài le', vi: 'hỏng rồi', ex: ['空调坏了。', 'Kōngtiáo huài le.', 'Điều hoà hỏng rồi.'] },
+    { id: 'huan', zh: '换', py: 'huàn', vi: 'đổi', ex: ['我给您换房间。', 'Wǒ gěi nín huàn fángjiān.', 'Tôi đổi phòng cho quý khách.'] },
+    { id: 'manyi', zh: '满意', py: 'mǎnyì', vi: 'hài lòng', ex: ['您满意吗？', 'Nín mǎnyì ma?', 'Quý khách có hài lòng không?'] },
+    { id: 'anjing', zh: '安静', py: 'ānjìng', vi: 'yên tĩnh', ex: ['我想要一个安静的房间。', 'Wǒ xiǎng yào yí ge ānjìng de fángjiān.', 'Tôi muốn một phòng yên tĩnh.'] },
+    { id: 'jiejue', zh: '解决', py: 'jiějué', vi: 'giải quyết', ex: ['我们马上解决。', 'Wǒmen mǎshàng jiějué.', 'Chúng tôi giải quyết ngay.'] },
+    { id: 'baoqian', zh: '抱歉', py: 'bàoqiàn', vi: 'xin lỗi (trang trọng)', ex: ['非常抱歉。', 'Fēicháng bàoqiàn.', 'Thành thật xin lỗi.'] },
+  ] },
+  { id: 'u6', lv: 'HSK4', star: 5, title: 'Trả phòng và tiễn khách', zone: 'Sảnh tiễn khách', reply: ['祝您一路平安！', 'Zhù nín yílù píng\'ān!', 'Chúc quý khách thượng lộ bình an!'], cards: [
+    { id: 'tuifang', zh: '退房', py: 'tuìfáng', vi: 'trả phòng', ex: ['退房时间是十二点。', 'Tuìfáng shíjiān shì shí\'èr diǎn.', 'Giờ trả phòng là mười hai giờ.'] },
+    { id: 'fapiao', zh: '发票', py: 'fāpiào', vi: 'hoá đơn', ex: ['请帮我开发票。', 'Qǐng bāng wǒ kāi fāpiào.', 'Xin xuất hoá đơn giúp tôi.'] },
+    { id: 'xingli', zh: '行李', py: 'xíngli', vi: 'hành lý', ex: ['我可以寄存行李吗？', 'Wǒ kěyǐ jìcún xíngli ma?', 'Tôi gửi hành lý lại được không?'] },
+    { id: 'chuzuche', zh: '出租车', py: 'chūzūchē', vi: 'taxi', ex: ['请帮我叫一辆出租车。', 'Qǐng bāng wǒ jiào yí liàng chūzūchē.', 'Xin gọi giúp tôi một chiếc taxi.'] },
+    { id: 'zailai', zh: '再来', py: 'zài lái', vi: 'lại đến', ex: ['欢迎您再来！', 'Huānyíng nín zài lái!', 'Mong quý khách lại đến!'] },
+    { id: 'pingan', zh: '一路平安', py: 'yílù píng\'ān', vi: 'thượng lộ bình an', ex: ['祝您一路平安！', 'Zhù nín yílù píng\'ān!', 'Chúc quý khách thượng lộ bình an!'] },
+  ] },
+];
+const CARD = {}; COURSE.forEach(u => u.cards.forEach(c => { c.unit = u; CARD[c.id] = c; }));
+const STAR_AT = [0, 30, 75, 135, 210, 300];        // điểm sao để lên 0★ … 5★ (bản thử: nhịp nhanh để xem đủ)
+
+/* =====================================================================
+   LƯU TIẾN ĐỘ + ÔN TẬP KIỂU ANKI (SM-2 rút gọn)
+   Mỗi thẻ đã gặp: { ivl (ngày), ease, reps, lapses, due (ms), seen }. Ngày mới tính từ 4 giờ sáng như Anki.
+   ===================================================================== */
+const KEY = 'bk_hotel_proto_v2';
+const MIN = 6e4, DAY = 864e5;
+const fresh = () => ({ coins: 0, pts: 0, served: 0, cards: {}, hour: 20, remind: false, notified: '', mute: false, learnedToday: {} });
+let S = fresh();
+if (!CAPTURE) { try { const v = JSON.parse(localStorage.getItem(KEY) || 'null'); if (v && typeof v === 'object') S = Object.assign(fresh(), v); } catch (e) {} }
+else S.pts = 22;   // video: khách thứ 1 đủ điểm lên 1★ để thấy mở khoá
+function save() { if (CAPTURE) return; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} syncSW(); }
+function dayStart(t = Date.now()) { const d = new Date(t); d.setHours(4, 0, 0, 0); if (t < d.getTime()) d.setDate(d.getDate() - 1); return d.getTime(); }
+const today = () => { const d = new Date(dayStart()); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+// dueList: thẻ đến hạn trong hôm nay (số đỏ, nhắc ôn). dueNow: thẻ đã tới giờ ôn (phiên ôn chỉ đưa thẻ này, như Anki: thẻ vừa quên hẹn 10 phút sau mới hiện lại)
+const dueList = () => Object.keys(S.cards).filter(id => CARD[id] && S.cards[id].due < dayStart() + DAY).sort((a, b) => S.cards[a].due - S.cards[b].due);
+const dueNow = () => dueList().filter(id => S.cards[id].due <= Date.now());
+function nextIvl(c, g) {   // trả về [ivl ngày (0 = học lại trong ngày), phút nếu học lại]
+  if (!c || !c.reps) return g === 0 ? [0, 1] : g === 1 ? [0, 10] : g === 2 ? [1] : [4];
+  if (g === 0) return [0, 10];
+  const ivl = c.ivl || 1;
+  if (g === 1) return [Math.max(ivl + 1, Math.round(ivl * 1.2))];
+  if (g === 2) return [Math.max(ivl + 1, Math.round(ivl * c.ease))];
+  return [Math.max(ivl + 2, Math.round(ivl * c.ease * 1.3), Math.max(ivl + 1, Math.round(ivl * c.ease)) + 1)];   // Dễ luôn xa hơn Được
+}
+const ivlLabel = r => r[0] === 0 ? `${r[1]} phút` : r[0] === 1 ? '1 ngày' : r[0] < 31 ? `${r[0]} ngày` : `${Math.round(r[0] / 30)} tháng`;
+function grade(id, g) {
+  const c = S.cards[id] || (S.cards[id] = { ivl: 0, ease: 2.5, reps: 0, lapses: 0, due: 0, seen: Date.now() });
+  const r = nextIvl(c, g), now = Date.now();
+  if (g === 0) { c.lapses += c.reps ? 1 : 0; c.ease = Math.max(1.3, c.ease - .2); c.reps = 0; c.ivl = 0; c.due = now + r[1] * MIN; }
+  else if (r[0] === 0) { c.ivl = 0; c.due = now + r[1] * MIN; }
+  else { if (g === 1) c.ease = Math.max(1.3, c.ease - .15); if (g === 3) c.ease += .15; c.ivl = r[0]; c.reps++; c.due = dayStart(now) + r[0] * DAY; }
+  save(); hud();
+}
+const starLv = () => { let s = 0; STAR_AT.forEach((v, i) => { if (S.pts >= v) s = i; }); return s; };
+const openUnits = () => COURSE.filter(u => u.star <= starLv());
+
+/* ---------- âm thanh nhỏ (tự tổng hợp, không tải tệp) + giọng đọc tiếng Trung của máy ---------- */
+let AC = null;
+function tone(f, d = .12, type = 'sine', v = .12, at = 0) {
+  if (S.mute || CAPTURE) return; try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const t = AC.currentTime + at, o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g).connect(AC.destination); o.start(t); o.stop(t + d + .02);
+  } catch (e) {} }
+const SFX = { ding: () => { tone(1568, .5, 'sine', .1); tone(2093, .6, 'sine', .06, .02); }, coin: () => { tone(988, .08, 'square', .05); tone(1319, .18, 'square', .05, .07); },
+  ok: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .16, 'triangle', .09, i * .07)), no: () => { tone(220, .22, 'sawtooth', .05); tone(165, .3, 'sawtooth', .05, .12); },
+  pop: () => tone(660, .1, 'triangle', .1), flip: () => { tone(440, .06, 'sine', .05); tone(880, .08, 'sine', .04, .05); },
+  up: () => [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, .22, 'triangle', .08, i * .08)) };
+function speak(t) { if (S.mute || CAPTURE || !('speechSynthesis' in window)) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'zh-CN'; u.rate = .85;
+  const v = speechSynthesis.getVoices().find(v => /^zh[-_]CN/i.test(v.lang)) || speechSynthesis.getVoices().find(v => /^zh/i.test(v.lang)); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {} }
+
+/* =====================================================================
+   CẢNH 3D
+   ===================================================================== */
 const stage = $('stage');
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.NoToneMapping;
 stage.appendChild(renderer.domElement);
-
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#cfe7f2');
-const ROOM = { w: 10, d: 8 };                       // sàn: x 0..10, z 0..8; tường ở x=0 và z=0
-const center = new THREE.Vector3(5, 0.8, 4);
-const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
-const camDir = new THREE.Vector3(1, 0.95, 1).normalize();
+const ROOM = { w: 10, d: 8 };
+const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 100);
+const camDir = new THREE.Vector3(1, .95, 1).normalize(), camAt = new THREE.Vector3(5, .8, 4);
 let zoom = 1;
-const camAt = center.clone();
 function placeCam() { cam.position.copy(camAt).addScaledVector(camDir, 30); cam.lookAt(camAt); }
 function fit() {
-  const w = stage.clientWidth, h = stage.clientHeight, a = w / h;
-  renderer.setSize(w, h, false);
-  // dọc (điện thoại): khung theo chiều ngang phòng; ngang: theo chiều cao
-  // điện thoại dọc: phóng gần, máy quay đi theo Ā Bǎo (kiểu game quản lý khách sạn); màn ngang: thấy cả phòng
-  let halfW = a < 1 ? 4.9 : 6.4 * a, halfH = halfW / a;
-  if (a >= 1) halfH = 6.4;
-  halfW /= zoom; halfH /= zoom;
-  cam.left = -halfW; cam.right = halfW; cam.top = halfH; cam.bottom = -halfH;
-  placeCam();
-  cam.updateProjectionMatrix();
+  const w = stage.clientWidth, h = stage.clientHeight, a = w / h; renderer.setSize(w, h, false);
+  let halfW = a < 1 ? 4.7 : 6.4 * a, halfH = a < 1 ? halfW / a : 6.4;
+  cam.left = -halfW / zoom; cam.right = halfW / zoom; cam.top = halfH / zoom; cam.bottom = -halfH / zoom; placeCam(); cam.updateProjectionMatrix();
 }
 window.addEventListener('resize', fit);
-
-/* ---------- light ---------- */
-scene.add(new THREE.HemisphereLight('#fff7e8', '#9fb7c9', 1.25));
-const sun = new THREE.DirectionalLight('#ffe7c4', 2.3);
-sun.position.set(9, 14, 11); sun.target.position.set(5, 0, 4);
-sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
-Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
-sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.02;
+scene.add(new THREE.HemisphereLight('#fff8ec', '#c9b6d9', 1.55));
+const sun = new THREE.DirectionalLight('#fff0d6', 2.0);
+sun.position.set(8, 14, 11); sun.target.position.set(5, 0, 4); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
+Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 }); sun.shadow.bias = -.0008; sun.shadow.normalBias = .03; sun.shadow.radius = 4;
 scene.add(sun, sun.target);
+const fill = new THREE.DirectionalLight('#d6ecff', .55); fill.position.set(-6, 6, 8); scene.add(fill);
 
-/* ---------- helpers ---------- */
-const mats = {};
-const mat = (c, o = {}) => { const k = c + JSON.stringify(o); return mats[k] || (mats[k] = new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .78, metalness: 0, flatShading: true }, o))); };
-function mesh(geo, color, x = 0, y = 0, z = 0, o) { const m = new THREE.Mesh(geo, typeof color === 'string' ? mat(color, o) : color); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; return m; }
-const box = (w, h, d, c, x, y, z, o) => mesh(new THREE.BoxGeometry(w, h, d), c, x, y, z, o);
-const cyl = (rt, rb, h, c, x, y, z, seg = 14, o) => mesh(new THREE.CylinderGeometry(rt, rb, h, seg), c, x, y, z, o);
-const sph = (r, c, x, y, z, seg = 16, o) => mesh(new THREE.SphereGeometry(r, seg, Math.max(8, seg * .7 | 0)), c, x, y, z, o);
-function canvasTex(w, h, draw, rep) {
-  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
-  if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); }
-  return t;
+/* ---------- vật liệu hoạt hình + hình bo tròn + viền ---------- */
+const grad = (() => { const t = new THREE.DataTexture(new Uint8Array([120, 120, 120, 255, 190, 190, 190, 255, 255, 255, 255, 255]), 3, 1); t.minFilter = t.magFilter = THREE.NearestFilter; t.needsUpdate = true; return t; })();
+const MATS = {};
+const toon = (c, o = {}) => { const k = c + JSON.stringify(o); return MATS[k] || (MATS[k] = new THREE.MeshToonMaterial(Object.assign({ color: c, gradientMap: grad }, o))); };
+const OUTL = new THREE.MeshBasicMaterial({ color: '#3a2c3f', side: THREE.BackSide });
+function rbox(w, h, d, r = .06, seg = 3) {
+  r = Math.min(r, w / 2 - .001, h / 2 - .001, d / 2 - .001);
+  const g = new THREE.BoxGeometry(w, h, d, seg * 2, seg * 2, seg * 2), p = g.attributes.position, n = g.attributes.normal, v = new THREE.Vector3(), c = new THREE.Vector3(), hw = w / 2 - r, hh = h / 2 - r, hd = d / 2 - r;
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); c.set(THREE.MathUtils.clamp(v.x, -hw, hw), THREE.MathUtils.clamp(v.y, -hh, hh), THREE.MathUtils.clamp(v.z, -hd, hd));
+    const dv = v.clone().sub(c); if (dv.lengthSq() > 1e-12) { dv.normalize(); v.copy(c).addScaledVector(dv, r); p.setXYZ(i, v.x, v.y, v.z); n.setXYZ(i, dv.x, dv.y, dv.z); } }
+  return g;
 }
-const ZH = '"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",sans-serif';
-const UI = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+const put = (p, c) => (p.add(c), c);   // add() trả về cha; put() trả về vật con để xoay/dời tiếp
+function M(geo, color, x = 0, y = 0, z = 0, o) { const m = new THREE.Mesh(geo, typeof color === 'string' ? toon(color, o) : color); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; return m; }
+const rb = (w, h, d, c, x, y, z, r, o) => M(rbox(w, h, d, r === undefined ? Math.min(w, h, d) * .18 : r), c, x, y, z, o);
+const cyl = (rt, rbm, h, c, x, y, z, seg = 18, o) => M(new THREE.CylinderGeometry(rt, rbm, h, seg), c, x, y, z, o);
+const sph = (r, c, x, y, z, seg = 18, o) => M(new THREE.SphereGeometry(r, seg, Math.max(10, seg * .7 | 0)), c, x, y, z, o);
+function ol(m, s = .035) { const o = new THREE.Mesh(m.geometry, OUTL); const sc = m.geometry.boundingSphere || (m.geometry.computeBoundingSphere(), m.geometry.boundingSphere); const k = 1 + s / Math.max(.05, sc.radius); o.scale.setScalar(k); o.castShadow = false; m.add(o); return m; }
+function canvasTex(w, h, draw, rep) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); } t.userData.canvas = c; return t; }
+const ZH = '"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",sans-serif', UI = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+const spriteTex = draw => canvasTex(64, 64, draw);
+const TX = {
+  dot: spriteTex((g) => { const r = g.createRadialGradient(32, 32, 0, 32, 32, 30); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); }),
+  heart: spriteTex(g => { g.fillStyle = '#ff6b8f'; g.strokeStyle = '#3a2c3f'; g.lineWidth = 4; g.beginPath(); g.moveTo(32, 54); g.bezierCurveTo(4, 34, 8, 8, 32, 20); g.bezierCurveTo(56, 8, 60, 34, 32, 54); g.fill(); g.stroke(); g.fillStyle = 'rgba(255,255,255,.7)'; g.beginPath(); g.ellipse(21, 22, 5, 3, -.6, 0, 7); g.fill(); }),
+  spark: spriteTex(g => { g.fillStyle = '#fff3a6'; g.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, r = i % 2 ? 7 : 28; g.lineTo(32 + Math.cos(a) * r, 32 + Math.sin(a) * r); } g.fill(); }),
+  puff: spriteTex(g => { const r = g.createRadialGradient(32, 32, 4, 32, 32, 30); r.addColorStop(0, 'rgba(255,255,255,.95)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.beginPath(); g.arc(32, 32, 30, 0, 7); g.fill(); }),
+  sweat: spriteTex(g => { g.fillStyle = '#7cc6ff'; g.strokeStyle = '#3a2c3f'; g.lineWidth = 4; g.beginPath(); g.moveTo(32, 6); g.quadraticCurveTo(54, 40, 32, 56); g.quadraticCurveTo(10, 40, 32, 6); g.fill(); g.stroke(); }),
+  bang: spriteTex(g => { g.fillStyle = '#FFD91F'; g.strokeStyle = '#3a2c3f'; g.lineWidth = 4; g.beginPath(); g.arc(32, 30, 24, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#3a2c3f'; g.font = 'bold 34px ' + UI; g.textAlign = 'center'; g.fillText('!', 32, 42); }),
+  glow: spriteTex(g => { const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,224,150,.9)'); r.addColorStop(.4, 'rgba(255,214,120,.35)'); r.addColorStop(1, 'rgba(255,214,120,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); }),
+};
 
-/* ---------- room ---------- */
+/* ---------- phòng ---------- */
 const room = new THREE.Group(); scene.add(room);
-// sàn đá hoa
-const floorTex = canvasTex(256, 256, (g, w, h) => {
-  for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
-    g.fillStyle = (i + j) % 2 ? '#f3e6cf' : '#e9d6b4'; g.fillRect(i * 128, j * 128, 128, 128);
-    g.strokeStyle = 'rgba(160,120,70,.18)'; g.lineWidth = 2;
-    for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(i * 128 + Math.random() * 128, j * 128); g.bezierCurveTo(i * 128 + 40, j * 128 + 50, i * 128 + 90, j * 128 + 70, i * 128 + Math.random() * 128, j * 128 + 128); g.stroke(); }
-  }
-  g.strokeStyle = 'rgba(120,90,50,.35)'; g.lineWidth = 3; g.strokeRect(0, 0, w, h); g.beginPath(); g.moveTo(128, 0); g.lineTo(128, 256); g.moveTo(0, 128); g.lineTo(256, 128); g.stroke();
-}, [ROOM.w / 2, ROOM.d / 2]);
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM.w, ROOM.d), new THREE.MeshStandardMaterial({ map: floorTex, roughness: .55 }));
+const floorTex = canvasTex(256, 256, (g) => {
+  for (let i = 0; i < 4; i++) { g.fillStyle = ['#f7e3c4', '#f2dbb8', '#f5e0bf', '#efd6b0'][i]; g.fillRect(0, i * 64, 256, 64);
+    g.strokeStyle = 'rgba(176,128,78,.35)'; g.lineWidth = 3; g.beginPath(); g.moveTo(0, i * 64 + 1); g.lineTo(256, i * 64 + 1); g.stroke();
+    const off = i % 2 ? 64 : 0; for (let x = off; x < 256; x += 128) { g.beginPath(); g.moveTo(x, i * 64); g.lineTo(x, i * 64 + 64); g.stroke(); }
+    g.strokeStyle = 'rgba(176,128,78,.12)'; g.lineWidth = 2; for (let k = 0; k < 3; k++) { g.beginPath(); const y = i * 64 + 14 + k * 16; g.moveTo(0, y); g.bezierCurveTo(80, y + 6, 170, y - 6, 256, y + 2); g.stroke(); } }
+}, [ROOM.w / 3, ROOM.d / 3]);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM.w, ROOM.d), new THREE.MeshToonMaterial({ map: floorTex, gradientMap: grad }));
 floor.rotation.x = -Math.PI / 2; floor.position.set(ROOM.w / 2, 0, ROOM.d / 2); floor.receiveShadow = true; room.add(floor);
-room.add(box(ROOM.w + .3, .3, ROOM.d + .3, '#b98a5a', ROOM.w / 2, -.16, ROOM.d / 2));          // bậc nền
-// tường
+room.add(rb(ROOM.w + .4, .34, ROOM.d + .4, '#c98f5e', ROOM.w / 2, -.18, ROOM.d / 2, .12));
+room.add(rb(ROOM.w + .6, .2, ROOM.d + .6, '#a8714a', ROOM.w / 2, -.4, ROOM.d / 2, .08));
 const WALL_H = 3.2;
-room.add(box(ROOM.w, WALL_H, .22, '#f6efe2', ROOM.w / 2, WALL_H / 2, -.11));                  // tường sau (z=0)
-room.add(box(.22, WALL_H, ROOM.d, '#efe3cf', -.11, WALL_H / 2, ROOM.d / 2));                  // tường trái (x=0)
-room.add(box(ROOM.w, .35, .26, '#2a6f8f', ROOM.w / 2, .17, .02));                              // chân tường
-room.add(box(.26, .35, ROOM.d, '#2a6f8f', .02, .17, ROOM.d / 2));
-room.add(box(ROOM.w, .12, .3, '#d9b77a', ROOM.w / 2, WALL_H - .06, .04));                      // phào trần
-room.add(box(.3, .12, ROOM.d, '#d9b77a', .04, WALL_H - .06, ROOM.d / 2));
-// cửa kính nhìn ra vịnh (núi đá vôi, biển, thuyền)
-const bayTex = canvasTex(512, 256, (g, w, h) => {
-  let gr = g.createLinearGradient(0, 0, 0, h * .55); gr.addColorStop(0, '#8fd0f5'); gr.addColorStop(1, '#ffe8c4'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
-  gr = g.createLinearGradient(0, h * .55, 0, h); gr.addColorStop(0, '#3aa3c2'); gr.addColorStop(1, '#1b6f8c'); g.fillStyle = gr; g.fillRect(0, h * .55, w, h * .45);
-  const karst = (x, bw, bh, c) => { g.fillStyle = c; g.beginPath(); g.moveTo(x - bw / 2, h * .56); g.bezierCurveTo(x - bw * .55, h * .56 - bh * .7, x - bw * .25, h * .56 - bh * 1.05, x, h * .56 - bh); g.bezierCurveTo(x + bw * .3, h * .56 - bh * 1.02, x + bw * .5, h * .56 - bh * .6, x + bw / 2, h * .56); g.fill(); };
-  karst(70, 90, 70, '#7fa3a8'); karst(200, 70, 95, '#6b9196'); karst(330, 110, 60, '#7fa3a8'); karst(440, 80, 110, '#5f868c');
-  karst(140, 60, 45, '#4f777c'); karst(390, 60, 52, '#4f777c');
-  g.fillStyle = 'rgba(255,255,255,.55)'; for (let i = 0; i < 26; i++) g.fillRect(Math.random() * w, h * .6 + Math.random() * h * .38, 10 + Math.random() * 18, 2);
-  g.fillStyle = '#8a4b2a'; g.beginPath(); g.moveTo(250, 182); g.lineTo(300, 182); g.lineTo(292, 192); g.lineTo(258, 192); g.fill();   // thuyền
-  g.fillStyle = '#c0392b'; g.beginPath(); g.moveTo(272, 182); g.lineTo(272, 150); g.lineTo(292, 172); g.fill();
-});
-for (const x of [2.1, 4.6]) {
-  room.add(box(2.1, 1.9, .06, new THREE.MeshStandardMaterial({ map: bayTex, roughness: .3, emissive: '#ffffff', emissiveIntensity: .12, emissiveMap: bayTex }), x, 1.75, .02));
-  room.add(box(2.25, .1, .14, '#2a6f8f', x, .78, .06)); room.add(box(2.25, .1, .14, '#2a6f8f', x, 2.72, .06));
-  room.add(box(.1, 2.04, .14, '#2a6f8f', x - 1.08, 1.75, .06)); room.add(box(.1, 2.04, .14, '#2a6f8f', x + 1.08, 1.75, .06)); room.add(box(.06, 1.9, .1, '#2a6f8f', x, 1.75, .06));
+room.add(rb(ROOM.w, WALL_H, .24, '#fff1de', ROOM.w / 2, WALL_H / 2, -.12, .05));
+room.add(rb(.24, WALL_H, ROOM.d, '#ffe7d1', -.12, WALL_H / 2, ROOM.d / 2, .05));
+room.add(rb(ROOM.w, 1.0, .1, '#8fd8c6', ROOM.w / 2, .5, .02, .03)); room.add(rb(.1, 1.0, ROOM.d, '#8fd8c6', .02, .5, ROOM.d / 2, .03));   // ốp chân tường xanh bạc hà
+room.add(rb(ROOM.w, .1, .16, '#fffaf0', ROOM.w / 2, 1.02, .06, .04)); room.add(rb(.16, .1, ROOM.d, '#fffaf0', .06, 1.02, ROOM.d / 2, .04));
+room.add(rb(ROOM.w, .16, .22, '#f6c98e', ROOM.w / 2, WALL_H - .08, .05, .06)); room.add(rb(.22, .16, ROOM.d, '#f6c98e', .05, WALL_H - .08, ROOM.d / 2, .06));
+// cửa sổ nhìn ra vịnh: vẽ lại liên tục (mây trôi, sóng, thuyền nhấp nhô)
+const bay = canvasTex(256, 160, () => {});
+function drawBay(t) {
+  const g = bay.userData.canvas.getContext('2d'), w = 256, h = 160, sea = h * .58;
+  let gr = g.createLinearGradient(0, 0, 0, sea); gr.addColorStop(0, '#8ed3f7'); gr.addColorStop(1, '#ffe9c9'); g.fillStyle = gr; g.fillRect(0, 0, w, sea);
+  g.fillStyle = '#fff3b0'; g.beginPath(); g.arc(200, 34, 14, 0, 7); g.fill();
+  g.fillStyle = 'rgba(255,255,255,.9)'; for (const [x0, y, s] of [[30, 26, 1], [150, 44, .8], [240, 18, .7]]) { const x = ((x0 + t * 6 * s) % (w + 80)) - 40; g.beginPath(); g.ellipse(x, y, 20 * s, 7 * s, 0, 0, 7); g.ellipse(x + 12 * s, y - 5 * s, 12 * s, 7 * s, 0, 0, 7); g.fill(); }
+  const k = (x, bw, bh, c) => { g.fillStyle = c; g.beginPath(); g.moveTo(x - bw / 2, sea + 1); g.bezierCurveTo(x - bw * .6, sea - bh * .7, x - bw * .3, sea - bh * 1.05, x, sea - bh); g.bezierCurveTo(x + bw * .35, sea - bh * 1.02, x + bw * .55, sea - bh * .6, x + bw / 2, sea + 1); g.fill(); };
+  k(34, 50, 40, '#9cc3c0'); k(104, 40, 56, '#86b2b0'); k(168, 62, 36, '#9cc3c0'); k(226, 46, 62, '#79a6a4'); k(70, 34, 24, '#5f908e'); k(196, 30, 28, '#5f908e');
+  gr = g.createLinearGradient(0, sea, 0, h); gr.addColorStop(0, '#53b9d6'); gr.addColorStop(1, '#2a88a8'); g.fillStyle = gr; g.fillRect(0, sea, w, h - sea);
+  g.fillStyle = 'rgba(255,255,255,.65)'; for (let i = 0; i < 18; i++) { const y = sea + 6 + (i * 37 % 60), x = ((i * 53 + t * (8 + i % 4 * 3)) % (w + 30)) - 15; g.fillRect(x, y + Math.sin(t * 2 + i) * 1.5, 8 + i % 3 * 5, 2); }
+  const bx = ((t * 7) % (w + 60)) - 30, by = sea + 22 + Math.sin(t * 2.2) * 2;
+  g.fillStyle = '#9b5a34'; g.beginPath(); g.moveTo(bx - 16, by); g.lineTo(bx + 16, by); g.lineTo(bx + 11, by + 7); g.lineTo(bx - 11, by + 7); g.fill();
+  g.fillStyle = '#e8593c'; g.beginPath(); g.moveTo(bx - 2, by); g.lineTo(bx - 2, by - 24); g.quadraticCurveTo(bx + 12, by - 14, bx + 10, by - 2); g.fill();
+  bay.needsUpdate = true;
 }
-// biển hiệu quầy trên tường sau
-const signTex = canvasTex(512, 128, (g, w, h) => {
-  g.fillStyle = '#0b3d5c'; g.fillRect(0, 0, w, h); g.strokeStyle = '#FFD91F'; g.lineWidth = 6; g.strokeRect(6, 6, w - 12, h - 12);
-  g.fillStyle = '#FFD91F'; g.textAlign = 'center'; g.font = 'bold 54px ' + ZH; g.fillText('阿宝海湾酒店', w / 2, 66);
-  g.fillStyle = '#fff'; g.font = 'bold 24px ' + UI; g.fillText('Ā Bǎo hǎiwān jiǔdiàn · Khách sạn Vịnh Ā Bǎo', w / 2, 106);
-});
-room.add(box(3.2, .8, .06, new THREE.MeshStandardMaterial({ map: signTex, roughness: .5 }), 7.6, 2.45, .03));
-// thang máy trên tường trái
-room.add(box(.08, 2.3, 1.6, '#c9ced6', .03, 1.15, 3.2, { metalness: .6, roughness: .35 }));
-room.add(box(.1, .06, 1.6, '#16171B', .05, 2.33, 3.2));
-room.add(box(.04, 2.2, .03, '#7d8590', .08, 1.12, 3.2));
-room.add(box(.06, .26, .5, '#16171B', .06, 2.6, 3.2));
-// tranh treo
-const artTex = canvasTex(256, 192, (g, w, h) => { g.fillStyle = '#f7d9a8'; g.fillRect(0, 0, w, h); g.fillStyle = '#e8743b'; g.beginPath(); g.arc(170, 70, 34, 0, 7); g.fill(); g.fillStyle = '#2a6f8f'; g.fillRect(0, 120, w, 72); g.fillStyle = '#1e4f63'; g.beginPath(); g.moveTo(20, 130); g.quadraticCurveTo(60, 40, 100, 130); g.fill(); g.beginPath(); g.moveTo(90, 130); g.quadraticCurveTo(120, 70, 150, 130); g.fill(); });
-room.add(box(.06, 1.0, 1.35, '#8a5a2b', .04, 1.75, 6.0)); room.add(box(.04, .82, 1.15, new THREE.MeshStandardMaterial({ map: artTex }), .08, 1.75, 6.0));
+drawBay(0);
+const winMat = new THREE.MeshBasicMaterial({ map: bay });
+for (const x of [2.3, 4.55]) {
+  put(room, new THREE.Mesh(new THREE.PlaneGeometry(1.86, 1.72), winMat)).position.set(x, 1.95, .02);
+  const fr = new THREE.Group(); fr.position.set(x, 1.95, .05); room.add(fr);
+  fr.add(rb(2.06, .14, .14, '#ffffff', 0, .93, 0, .05)); fr.add(rb(2.06, .16, .2, '#ffffff', 0, -.93, .02, .05)); fr.add(rb(.14, 2.0, .14, '#ffffff', -.98, 0, 0, .05)); fr.add(rb(.14, 2.0, .14, '#ffffff', .98, 0, 0, .05)); fr.add(rb(.07, 1.8, .08, '#ffffff', 0, 0, 0, .03));
+  for (const s of [-1, 1]) { const cu = rb(.34, 2.2, .12, '#ffb38a', s * 1.18, .05, .08, .06); fr.add(cu); for (let i = 0; i < 3; i++) fr.add(rb(.06, 2.1, .14, '#ff9f7a', s * 1.18 + (i - 1) * .1, .05, .1, .03)); }
+  put(fr, cyl(.035, .035, 2.9, '#c98f5e', 0, 1.1, .08, 8)).rotation.z = Math.PI / 2;
+}
+// tia nắng chiếu xiên qua cửa sổ + bụi sáng
+const beamTex = canvasTex(64, 128, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(255,240,190,.55)'); gr.addColorStop(1, 'rgba(255,240,190,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+const beams = [];
+for (const x of [2.3, 4.55]) { const b = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 3.4), new THREE.MeshBasicMaterial({ map: beamTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: .55, side: THREE.DoubleSide }));
+  b.position.set(x + .5, 1.3, 1.25); b.rotation.set(-.75, .35, 0); scene.add(b); beams.push(b); }
+const MOTE_N = 46, moteGeo = new THREE.BufferGeometry(), motePos = new Float32Array(MOTE_N * 3), moteSeed = [];
+for (let i = 0; i < MOTE_N; i++) { moteSeed.push([1.6 + Math.random() * 4, .3 + Math.random() * 2.4, .4 + Math.random() * 2.6, Math.random() * 9]); }
+moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3));
+const motes = new THREE.Points(moteGeo, new THREE.PointsMaterial({ map: TX.dot, size: 4 * Math.min(2, devicePixelRatio || 1), sizeAttenuation: false, transparent: true, depthWrite: false, opacity: .8, color: '#fff3c4', blending: THREE.AdditiveBlending }));
+scene.add(motes);
+// biển hiệu
+const signTex = canvasTex(512, 140, (g, w, h) => { g.fillStyle = '#1E5AA8'; g.beginPath(); g.roundRect(4, 4, w - 8, h - 8, 34); g.fill(); g.strokeStyle = '#FFD91F'; g.lineWidth = 7; g.stroke();
+  g.fillStyle = '#FFD91F'; g.textAlign = 'center'; g.font = 'bold 56px ' + ZH; g.fillText('阿宝海湾酒店', w / 2, 72); g.fillStyle = '#fff'; g.font = 'bold 22px ' + UI; g.fillText('Ā Bǎo hǎiwān jiǔdiàn · Khách sạn Vịnh Ā Bǎo', w / 2, 112); });
+put(room, new THREE.Mesh(new THREE.PlaneGeometry(3.3, .9), new THREE.MeshBasicMaterial({ map: signTex, transparent: true }))).position.set(7.5, 2.55, .06);
+// bảng chìa khoá sau quầy
+const keys = new THREE.Group(); keys.position.set(7.5, 1.72, .08); room.add(keys);
+keys.add(rb(1.5, .5, .06, '#c98f5e', 0, 0, 0, .04));
+for (let i = 0; i < 6; i++) { keys.add(sph(.025, '#d4a72c', -.6 + i * .24, .12, .05, 8)); keys.add(rb(.07, .14, .03, ['#ff7fa0', '#7fd6c2', '#FFD91F', '#8fb8ff', '#ffb38a', '#c9a0ff'][i], -.6 + i * .24, -.03, .06, .02)); }
+// đồng hồ treo tường (kim chạy theo giờ thật)
+const clock = new THREE.Group(); clock.position.set(.07, 2.35, 1.65); clock.rotation.y = Math.PI / 2; room.add(clock);
+put(clock, ol(cyl(.32, .32, .08, '#ffffff', 0, 0, 0, 28))).rotation.x = Math.PI / 2;
+put(clock, cyl(.34, .34, .06, '#ff9f7a', 0, 0, -.03, 28)).rotation.x = Math.PI / 2;
+for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; clock.add(sph(.02, '#3a2c3f', Math.sin(a) * .25, Math.cos(a) * .25, .05, 6)); }
+const hHand = new THREE.Group(), mHand = new THREE.Group(); hHand.position.z = mHand.position.z = .06; clock.add(hHand, mHand);
+hHand.add(rb(.04, .15, .02, '#3a2c3f', 0, .07, 0, .01)); mHand.add(rb(.03, .22, .02, '#e8593c', 0, .1, .01, .01)); clock.add(sph(.03, '#3a2c3f', 0, 0, .07, 8));
+// thang máy
+const lift = new THREE.Group(); lift.position.set(.06, 0, 3.4); room.add(lift);
+lift.add(rb(.14, 2.5, 1.9, '#f6c98e', 0, 1.25, 0, .05));
+const doorL = rb(.06, 2.2, .78, '#d9dee8', .08, 1.12, -.4, .03, { }), doorR = rb(.06, 2.2, .78, '#d9dee8', .08, 1.12, .4, .03); lift.add(doorL, doorR);
+lift.add(rb(.06, .3, .6, '#3a2c3f', .08, 2.6, 0, .05)); const liftLamp = M(new THREE.CircleGeometry(.06, 12), new THREE.MeshBasicMaterial({ color: '#7fffb0' }), .12, 2.6, -.15); liftLamp.rotation.y = Math.PI / 2; lift.add(liftLamp);
+// tranh treo trên sofa
+const artTex = canvasTex(256, 192, (g, w, h) => { g.fillStyle = '#ffe6c7'; g.fillRect(0, 0, w, h); g.fillStyle = '#ff9f7a'; g.beginPath(); g.arc(178, 62, 30, 0, 7); g.fill(); g.fillStyle = '#7fd6c2'; g.fillRect(0, 122, w, 70); g.fillStyle = '#4f9d94'; g.beginPath(); g.moveTo(14, 126); g.quadraticCurveTo(58, 26, 104, 126); g.fill(); g.beginPath(); g.moveTo(92, 126); g.quadraticCurveTo(124, 64, 156, 126); g.fill(); });
+const art = new THREE.Group(); art.position.set(.08, 1.9, 5.7); art.rotation.y = Math.PI / 2; art.rotation.z = .03; room.add(art);
+art.add(rb(1.4, 1.05, .06, '#c98f5e', 0, 0, 0, .04)); put(art, new THREE.Mesh(new THREE.PlaneGeometry(1.2, .86), new THREE.MeshBasicMaterial({ map: artTex }))).position.z = .04;
 
 /* ---------- đồ đạc ---------- */
-// quầy lễ tân
 const desk = new THREE.Group(); desk.position.set(7.4, 0, 1.75); room.add(desk);
-desk.add(box(3.2, 1.05, .8, '#7b4a2a', 0, .525, 0)); desk.add(box(3.35, .1, .95, '#f3e6cf', 0, 1.1, 0));
-desk.add(box(3.22, .18, .03, '#FFD91F', 0, .82, .41));
-desk.add(box(.5, .34, .05, '#16171B', .7, 1.37, -.2)); desk.add(box(.08, .2, .08, '#16171B', .7, 1.2, -.15)); desk.add(box(.46, .3, .01, '#7fd3ff', .7, 1.37, -.17, { emissive: '#3aa3c2', emissiveIntensity: .4 }));
-desk.add(cyl(.11, .13, .04, '#c9a227', -.6, 1.17, .15, 16, { metalness: .7, roughness: .3 })); desk.add(sph(.09, '#e6c34a', -.6, 1.2, .15, 12, { metalness: .7, roughness: .3 }));
-desk.add(cyl(.12, .1, .3, '#2a6f8f', -1.2, 1.3, -.1)); desk.add(sph(.18, '#4caf50', -1.2, 1.55, -.1, 8));
-// ghế sofa + bàn trà + thảm
-const rugTex = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#b8323a'; g.fillRect(0, 0, w, h); g.strokeStyle = '#FFD91F'; g.lineWidth = 10; g.strokeRect(14, 14, w - 28, h - 28); g.lineWidth = 3; g.strokeRect(34, 34, w - 68, h - 68); g.fillStyle = '#FFD91F'; g.beginPath(); g.arc(w / 2, h / 2, 26, 0, 7); g.fill(); });
-const rug = new THREE.Mesh(new THREE.PlaneGeometry(3, 2.4), new THREE.MeshStandardMaterial({ map: rugTex, roughness: .95 }));
-rug.rotation.x = -Math.PI / 2; rug.position.set(2.2, .012, 5.6); rug.receiveShadow = true; room.add(rug);
-const sofa = new THREE.Group(); sofa.position.set(.9, 0, 5.6); room.add(sofa);
-sofa.add(box(.85, .42, 2.2, '#2a6f8f', 0, .21, 0)); sofa.add(box(.3, .72, 2.2, '#2a6f8f', -.3, .5, 0));
-sofa.add(box(.85, .55, .25, '#235c77', 0, .3, 1.12)); sofa.add(box(.85, .55, .25, '#235c77', 0, .3, -1.12));
-sofa.add(box(.6, .14, .95, '#3d8db0', .08, .48, .5)); sofa.add(box(.6, .14, .95, '#3d8db0', .08, .48, -.5));
-sofa.add(box(.14, .4, .4, '#FFD91F', -.08, .72, .55)); sofa.add(box(.14, .4, .4, '#ff8a5c', -.08, .72, -.55));
-const table = new THREE.Group(); table.position.set(2.5, 0, 5.6); room.add(table);
-table.add(cyl(.55, .55, .08, '#f3e6cf', 0, .48, 0, 24)); table.add(cyl(.08, .14, .45, '#7b4a2a', 0, .23, 0, 10));
-table.add(cyl(.09, .07, .12, '#fff', .15, .58, .1, 12)); table.add(cyl(.09, .07, .12, '#fff', -.18, .58, -.05, 12));
-// cây cảnh
-function plant(x, z, s = 1) { const p = new THREE.Group(); p.position.set(x, 0, z); p.scale.setScalar(s);
-  p.add(cyl(.3, .22, .55, '#c8693a', 0, .27, 0, 12)); p.add(cyl(.31, .31, .06, '#9e4f2a', 0, .55, 0, 12));
-  for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283, l = mesh(new THREE.ConeGeometry(.16, .9, 5), '#3f9b4f', Math.cos(a) * .14, 1.0, Math.sin(a) * .14); l.rotation.z = Math.cos(a) * .55; l.rotation.x = -Math.sin(a) * .55; p.add(l); }
-  p.add(mesh(new THREE.ConeGeometry(.14, 1.1, 5), '#4fb35f', 0, 1.15, 0)); room.add(p); return p; }
-plant(.55, .55, 1.1); plant(9.4, .55); plant(.6, 7.4, .9);
-// đèn cây
-const lamp = new THREE.Group(); lamp.position.set(.6, 0, 4.3); room.add(lamp);
-lamp.add(cyl(.2, .22, .05, '#16171B', 0, .03, 0)); lamp.add(cyl(.03, .03, 1.7, '#16171B', 0, .88, 0, 8));
-lamp.add(cyl(.18, .3, .35, '#fff3c4', 0, 1.8, 0, 14, { emissive: '#ffd27a', emissiveIntensity: .6 }));
+desk.add(ol(rb(3.3, 1.0, .82, '#ffb38a', 0, .5, 0, .14)));
+desk.add(ol(rb(3.5, .12, 1.0, '#fff7e8', 0, 1.06, 0, .05)));
+desk.add(rb(3.0, .62, .04, '#ff9f7a', 0, .5, .42, .03));
+for (let i = 0; i < 5; i++) desk.add(rb(.05, .62, .05, '#ffd2b5', -1.2 + i * .6, .5, .44, .02));
+const plate = new THREE.Mesh(new THREE.PlaneGeometry(1.1, .28), new THREE.MeshBasicMaterial({ map: canvasTex(256, 64, (g, w, h) => { g.fillStyle = '#FFD91F'; g.beginPath(); g.roundRect(2, 2, w - 4, h - 4, 18); g.fill(); g.strokeStyle = '#3a2c3f'; g.lineWidth = 4; g.stroke(); g.fillStyle = '#3a2c3f'; g.textAlign = 'center'; g.font = 'bold 30px ' + ZH; g.fillText('前台 qiántái · Lễ tân', w / 2, 43); }), transparent: true }));
+plate.position.set(0, .66, .47); desk.add(plate);
+const bell = new THREE.Group(); bell.position.set(-.8, 1.12, .2); desk.add(bell);
+bell.add(cyl(.12, .14, .04, '#d4a72c', 0, .02, 0, 20)); bell.add(M(new THREE.SphereGeometry(.11, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), '#f2c94c', 0, .04, 0)); bell.add(sph(.025, '#d4a72c', 0, .16, 0, 8));
+desk.add(ol(rb(.56, .36, .05, '#3a2c3f', .7, 1.38, -.22, .04))); desk.add(rb(.5, .3, .01, '#9fe3ff', .7, 1.38, -.19, .02, { emissive: '#4aa8c9', emissiveIntensity: .35 })); desk.add(cyl(.04, .07, .2, '#3a2c3f', .7, 1.2, -.24, 10));
+desk.add(rb(.4, .05, .3, '#e8593c', -.1, 1.14, .1, .02)); desk.add(rb(.38, .02, .28, '#fffaf0', -.1, 1.17, .1, .01));
+const deskPlant = new THREE.Group(); deskPlant.position.set(-1.35, 1.12, -.1); desk.add(deskPlant);
+deskPlant.add(cyl(.12, .09, .2, '#ffffff', 0, .1, 0, 14)); for (let i = 0; i < 5; i++) { const a = i / 5 * 6.28; deskPlant.add(sph(.09, '#5fc27a', Math.cos(a) * .08, .3 + (i % 2) * .05, Math.sin(a) * .08, 10)); }
+// sofa, bàn trà, thảm
+const rugTex = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#ff9fb4'; g.beginPath(); g.arc(128, 128, 126, 0, 7); g.fill(); g.strokeStyle = '#fff2c4'; g.lineWidth = 12; g.beginPath(); g.arc(128, 128, 104, 0, 7); g.stroke(); g.lineWidth = 5; g.beginPath(); g.arc(128, 128, 76, 0, 7); g.stroke(); g.fillStyle = '#fff2c4'; for (let i = 0; i < 12; i++) { const a = i / 12 * 6.28; g.beginPath(); g.arc(128 + Math.cos(a) * 90, 128 + Math.sin(a) * 90, 6, 0, 7); g.fill(); } });
+const rug = new THREE.Mesh(new THREE.CircleGeometry(1.45, 40), new THREE.MeshToonMaterial({ map: rugTex, transparent: true, gradientMap: grad }));
+rug.rotation.x = -Math.PI / 2; rug.position.set(2.2, .012, 5.7); rug.receiveShadow = true; room.add(rug);
+const sofa = new THREE.Group(); sofa.position.set(.95, 0, 5.7); room.add(sofa);
+sofa.add(ol(rb(.95, .46, 2.3, '#7fd6c2', 0, .27, 0, .16))); sofa.add(ol(rb(.36, .86, 2.3, '#6cc8b3', -.32, .55, 0, .16)));
+sofa.add(ol(rb(.95, .66, .3, '#6cc8b3', 0, .36, 1.18, .14))); sofa.add(ol(rb(.95, .66, .3, '#6cc8b3', 0, .36, -1.18, .14)));
+sofa.add(rb(.66, .18, .98, '#a5e8d8', .08, .56, .5, .08)); sofa.add(rb(.66, .18, .98, '#a5e8d8', .08, .56, -.5, .08));
+sofa.add(ol(rb(.16, .44, .44, '#FFD91F', -.08, .82, .5, .12))); sofa.add(ol(rb(.16, .44, .44, '#ff9fb4', -.08, .82, -.5, .12)));
+for (const z of [-1.0, 1.0]) for (const x of [-.35, .35]) sofa.add(cyl(.04, .03, .08, '#c98f5e', x, .04, z, 8));
+const table = new THREE.Group(); table.position.set(2.5, 0, 5.7); room.add(table);
+table.add(ol(cyl(.58, .58, .1, '#fff7e8', 0, .5, 0, 28))); table.add(cyl(.07, .12, .45, '#c98f5e', 0, .25, 0, 12)); table.add(cyl(.32, .32, .04, '#c98f5e', 0, .02, 0, 20));
+const pot = new THREE.Group(); pot.position.set(-.12, .55, -.05); table.add(pot);
+pot.add(sph(.13, '#ffffff', 0, .1, 0, 16)); put(pot, cyl(.02, .03, .14, '#ffffff', .15, .14, 0, 6)).rotation.z = -.9; pot.add(sph(.03, '#ff9f7a', 0, .23, 0, 8));
+const cups = [[.25, .15], [.18, -.25]].map(([x, z]) => { const c = cyl(.06, .045, .08, '#ffffff', x, .6, z, 14); table.add(c); return c; });
+// cây cảnh nhiều kiểu
+const plants = [];
+function plant(x, z, s = 1, kind = 0) { const p = new THREE.Group(); p.position.set(x, 0, z); p.scale.setScalar(s);
+  p.add(ol(cyl(.27, .2, .48, ['#ff9f7a', '#ffffff', '#8fb8ff'][kind % 3], 0, .24, 0, 16))); p.add(cyl(.28, .28, .06, '#c98f5e', 0, .47, 0, 16));
+  const top = new THREE.Group(); top.position.y = .5; p.add(top);
+  if (kind === 1) { for (let i = 0; i < 9; i++) { const a = i / 9 * 6.28, r = .14 + (i % 3) * .05; top.add(ol(sph(.15 + (i % 2) * .04, i % 2 ? '#6fd08a' : '#4fb870', Math.cos(a) * r, .35 + (i % 3) * .14, Math.sin(a) * r, 12), .02)); } }
+  else { for (let i = 0; i < 7; i++) { const a = i / 7 * 6.28, l = M(new THREE.SphereGeometry(.2, 12, 8), i % 2 ? '#6fd08a' : '#4fb870'); l.scale.set(.5, 1.25, .25); l.position.set(Math.cos(a) * .17, .45, Math.sin(a) * .17); l.rotation.set(-Math.sin(a) * .7, 0, Math.cos(a) * .7); top.add(l); }
+    put(top, M(new THREE.SphereGeometry(.17, 12, 8), '#5fc27a', 0, .6, 0)).scale.set(.5, 1.4, .3); }
+  room.add(p); plants.push({ top, ph: Math.random() * 6 }); return p; }
+plant(9.45, .6, 1.05, 0); const cornerPlant = plant(.6, .6, 1.0, 1);   // lên 3★ thì kệ sách thay chỗ chậu cây này plant(.62, 7.35, .9, 2); plant(9.5, 7.3, .85, 1);
+// đèn cây + đèn thả trần (có quầng sáng)
+const glows = [];
+function glow(parent, x, y, z, s) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.glow, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: .8 })); sp.position.set(x, y, z); sp.scale.setScalar(s); parent.add(sp); glows.push(sp); return sp; }
+const lamp = new THREE.Group(); lamp.position.set(.6, 0, 4.35); room.add(lamp);
+lamp.add(cyl(.2, .24, .06, '#3a2c3f', 0, .03, 0)); lamp.add(cyl(.03, .03, 1.65, '#3a2c3f', 0, .86, 0, 8)); lamp.add(ol(cyl(.2, .32, .36, '#fff3c4', 0, 1.8, 0, 18, { emissive: '#ffd27a', emissiveIntensity: .6 })));
+glow(lamp, 0, 1.75, 0, 1.6);
+for (const [x, z] of [[6.4, 2.7], [8.4, 2.7]]) { const pl = new THREE.Group(); pl.position.set(x, 0, z); room.add(pl);
+  pl.add(cyl(.012, .012, 1.0, '#3a2c3f', 0, 3.25, 0, 6)); pl.add(ol(M(new THREE.ConeGeometry(.24, .26, 18, 1, true), '#FFD91F', 0, 2.66, 0, { side: THREE.DoubleSide }))); pl.add(sph(.08, '#fff8d8', 0, 2.55, 0, 10, { emissive: '#ffe08a', emissiveIntensity: .8 })); glow(pl, 0, 2.5, 0, 1.2); }
 // xe đẩy hành lý
-const cart = new THREE.Group(); cart.position.set(9.3, 0, 5.3); cart.rotation.y = -.5; room.add(cart);
-cart.add(box(1.0, .08, .6, '#c9a227', 0, .2, 0, { metalness: .6, roughness: .35 }));
-for (const sx of [-.45, .45]) cart.add(cyl(.03, .03, 1.5, '#c9a227', sx, .95, 0, 8, { metalness: .6, roughness: .35 }));
-{ const bar = cyl(.03, .03, .95, '#c9a227', 0, 1.7, 0, 8, { metalness: .6, roughness: .35 }); bar.rotation.z = Math.PI / 2; cart.add(bar); }
-cart.add(box(.55, .6, .32, '#c0392b', -.18, .54, 0)); cart.add(box(.4, .42, .28, '#2a6f8f', .25, .45, .05)); cart.add(box(.35, .3, .25, '#FFD91F', .2, .99, 0));
-for (const [x, z] of [[-.4, -.25], [.4, -.25], [-.4, .25], [.4, .25]]) cart.add(sph(.07, '#16171B', x, .08, z, 8));
-// thảm cửa vào
-room.add(box(1.4, .02, 1.0, '#2a6f8f', 9.2, .01, 7.3));
+const cart = new THREE.Group(); cart.position.set(7.4, 0, 7.25); cart.rotation.y = .5;   // xe hành lý đứng gần cửa vào room.add(cart);
+cart.add(ol(rb(1.05, .08, .62, '#d4a72c', 0, .2, 0, .03, { emissive: '#7a5a10', emissiveIntensity: .15 })));
+for (const sx of [-.47, .47]) cart.add(cyl(.032, .032, 1.5, '#d4a72c', sx, .95, 0, 10));
+{ const bar = cyl(.032, .032, .98, '#d4a72c', 0, 1.7, 0, 10); bar.rotation.z = Math.PI / 2; cart.add(bar); }
+cart.add(ol(rb(.56, .62, .34, '#e8593c', -.18, .55, 0, .07))); cart.add(ol(rb(.42, .44, .3, '#8fb8ff', .25, .46, .04, .07))); cart.add(ol(rb(.36, .32, .26, '#FFD91F', .2, .99, 0, .07)));
+for (const [x, z] of [[-.42, -.26], [.42, -.26], [-.42, .26], [.42, .26]]) cart.add(sph(.07, '#3a2c3f', x, .08, z, 10));
+// thảm cửa
+room.add(rb(1.5, .03, 1.0, '#7fd6c2', 9.2, .015, 7.35, .015)); room.add(rb(1.2, .035, .7, '#a5e8d8', 9.2, .02, 7.35, .015));
 
-/* ---------- nhân vật chibi 3D (có khớp thật) ---------- */
+/* ---------- đồ mở khoá theo sao (lên sao → đồ mới hiện ra) ---------- */
+const UNLOCK = {};
+function unlockable(star, label, build) { const g = new THREE.Group(); build(g); g.visible = false; g.scale.setScalar(.001); room.add(g); UNLOCK[star] = { g, label }; }
+const fishes = [];
+unlockable(1, 'Bể cá cảnh', g => { g.position.set(.38, 0, 1.75);
+  g.add(ol(rb(.6, .6, 1.2, '#c98f5e', 0, .3, 0, .06)));
+  const glass = new THREE.Mesh(rbox(.56, .62, 1.14, .05), new THREE.MeshPhysicalMaterial({ color: '#9fe3ff', transparent: true, opacity: .35, roughness: .05 })); glass.position.y = .92; g.add(glass);
+  g.add(rb(.5, .1, 1.06, '#f7e3c4', 0, .66, 0, .03)); for (let i = 0; i < 4; i++) g.add(M(new THREE.ConeGeometry(.04, .3, 5), '#4fb870', (i % 2 - .5) * .2, .82, -.4 + i * .26));
+  for (let i = 0; i < 3; i++) { const f = new THREE.Group(); f.add(sph(.06, ['#ff9f43', '#ff6b8f', '#FFD91F'][i], 0, 0, 0, 10)); put(f, M(new THREE.ConeGeometry(.04, .07, 4), ['#ff9f43', '#ff6b8f', '#FFD91F'][i], 0, 0, -.08)).rotation.x = -Math.PI / 2; g.add(f); fishes.push({ f, ph: i * 2.1, y: .82 + i * .1 }); }
+});
+unlockable(2, 'Đèn chùm', g => { g.position.set(2.4, 0, 5.6);
+  g.add(cyl(.015, .015, .8, '#d4a72c', 0, 3.0, 0, 6)); g.add(ol(cyl(.42, .28, .14, '#f2c94c', 0, 2.55, 0, 20))); put(g, M(new THREE.TorusGeometry(.5, .03, 8, 28), '#d4a72c', 0, 2.48, 0)).rotation.x = Math.PI / 2;
+  for (let i = 0; i < 8; i++) { const a = i / 8 * 6.28; g.add(sph(.06, '#fff8d8', Math.cos(a) * .5, 2.42, Math.sin(a) * .5, 10, { emissive: '#ffe08a', emissiveIntensity: .9 })); }
+  glow(g, 0, 2.4, 0, 2.4);
+});
+unlockable(3, 'Kệ sách', g => { g.position.set(1.0, 0, .28);
+  g.add(ol(rb(1.3, 2.0, .42, '#c98f5e', 0, 1.0, 0, .06))); for (let s = 0; s < 3; s++) { g.add(rb(1.16, .05, .36, '#a8714a', 0, .45 + s * .55, .02, .02));
+    for (let i = 0; i < 6; i++) g.add(rb(.12, .32 + (i % 3) * .05, .26, ['#ff7fa0', '#7fd6c2', '#FFD91F', '#8fb8ff', '#ffb38a', '#c9a0ff'][(i + s) % 6], -.42 + i * .17, .64 + s * .55 + (i % 3) * .025, .05, .02)); }
+});
+unlockable(4, 'Đèn lồng đỏ', g => { g.position.set(9.0, 0, 6.6);
+  for (const dz of [-.7, .7]) { g.add(cyl(.012, .012, .7, '#3a2c3f', 0, 3.0, dz, 6)); const l = ol(sph(.26, '#e8343a', 0, 2.5, dz, 18)); l.scale.y = .85; g.add(l); g.add(cyl(.12, .12, .06, '#d4a72c', 0, 2.75, dz, 12)); g.add(cyl(.12, .12, .06, '#d4a72c', 0, 2.27, dz, 12)); g.add(cyl(.01, .01, .25, '#d4a72c', 0, 2.1, dz, 6)); glow(g, 0, 2.5, dz, 1.1); }
+});
+unlockable(5, 'Tượng vàng 宝', g => { g.position.set(6.0, 0, 6.6);
+  g.add(ol(cyl(.42, .5, .3, '#fff7e8', 0, .15, 0, 24))); g.add(ol(sph(.36, '#f2c94c', 0, .68, 0, 20, { emissive: '#8a6a10', emissiveIntensity: .2 })));
+  const t = new THREE.Mesh(new THREE.PlaneGeometry(.5, .5), new THREE.MeshBasicMaterial({ map: canvasTex(128, 128, (c) => { c.fillStyle = '#8a5a00'; c.font = 'bold 96px ' + ZH; c.textAlign = 'center'; c.fillText('宝', 64, 98); }), transparent: true })); t.position.set(0, .68, .37); g.add(t);
+});
+
+/* ---------- nhân vật chibi (khớp thật, viền, chớp mắt) ---------- */
 function chibi(o) {
-  const root = new THREE.Group(), hips = new THREE.Group(); root.add(hips); hips.position.y = .5;
+  const root = new THREE.Group(), hips = new THREE.Group(); root.add(hips); hips.position.y = .4;
   const legL = new THREE.Group(), legR = new THREE.Group();
-  for (const [lg, sx] of [[legL, -.12], [legR, .12]]) { lg.position.set(sx, 0, 0); hips.add(lg);
-    lg.add(mesh(new THREE.CapsuleGeometry(.09, .26, 4, 8), o.pants, 0, -.22, 0)); lg.add(box(.17, .1, .26, o.shoes || '#16171B', 0, -.45, .04)); }
+  for (const [lg, sx] of [[legL, -.11], [legR, .11]]) { lg.position.set(sx, 0, 0); hips.add(lg); lg.add(ol(M(new THREE.CapsuleGeometry(.085, .14, 4, 10), o.pants, 0, -.17, 0), .025)); lg.add(ol(rb(.17, .1, .25, o.shoes || '#3a2c3f', 0, -.35, .04, .045), .02)); }
   const torso = new THREE.Group(); hips.add(torso);
-  torso.add(mesh(new THREE.CapsuleGeometry(.21, .22, 4, 12), o.shirt, 0, .26, 0));
-  if (o.vest) torso.add(box(.3, .3, .05, o.vest, 0, .3, .19));
+  torso.add(ol(M(new THREE.CapsuleGeometry(.2, .14, 6, 14), o.shirt, 0, .22, 0), .03));
+  if (o.vest) torso.add(rb(.26, .26, .06, o.vest, 0, .24, .17, .05));
+  if (o.tie) put(torso, M(new THREE.ConeGeometry(.04, .14, 4), o.tie, 0, .3, .2)).rotation.x = Math.PI;
   const armL = new THREE.Group(), armR = new THREE.Group();
-  for (const [ar, sx] of [[armL, -.29], [armR, .29]]) { ar.position.set(sx, .44, 0); torso.add(ar);
-    ar.add(mesh(new THREE.CapsuleGeometry(.07, .22, 4, 8), o.shirt, 0, -.16, 0)); ar.add(sph(.075, o.skin, 0, -.34, 0, 10)); }
-  const head = new THREE.Group(); head.position.y = .68; torso.add(head);
-  head.add(sph(.33, o.skin, 0, .26, 0, 20));
-  const hair = mesh(new THREE.SphereGeometry(.35, 20, 12, 0, Math.PI * 2, 0, Math.PI * .52), o.hair, 0, .3, -.03); hair.rotation.x = -.25; head.add(hair);
-  if (o.bun) head.add(sph(.13, o.hair, 0, .58, -.12, 12));
-  if (o.band) { const b = mesh(new THREE.TorusGeometry(.335, .035, 6, 24), o.band, 0, .38, 0); b.rotation.x = Math.PI / 2 - .2; head.add(b); }
-  for (const sx of [-.11, .11]) { head.add(sph(.045, '#16171B', sx, .26, .3, 8)); head.add(sph(.016, '#ffffff', sx + .015, .28, .34, 6)); head.add(sph(.04, '#ff9a8a', sx * 1.9, .18, .26, 8)); }
-  head.add(box(.09, .025, .02, '#7a2a1a', 0, .14, .32));
-  root.traverse(m => { if (m.isMesh) m.castShadow = true; });
+  for (const [ar, sx] of [[armL, -.27], [armR, .27]]) { ar.position.set(sx, .36, 0); torso.add(ar); ar.add(ol(M(new THREE.CapsuleGeometry(.065, .14, 4, 10), o.shirt, 0, -.12, 0), .025)); ar.add(ol(sph(.07, o.skin, 0, -.27, 0, 12), .02)); }
+  const head = new THREE.Group(); head.position.y = .55; torso.add(head);
+  const skull = ol(sph(.37, o.skin, 0, .3, 0, 24), .03); head.add(skull);
+  const hair = M(new THREE.SphereGeometry(.395, 24, 14, 0, Math.PI * 2, 0, Math.PI * .5), o.hair, 0, .32, -.02); hair.rotation.x = -.32; head.add(ol(hair, .02));
+  for (let i = -1; i <= 1; i++) head.add(sph(.11, o.hair, i * .14, .55, .26 - Math.abs(i) * .05, 12));
+  if (o.bun) head.add(ol(sph(.15, o.hair, 0, .72, -.14, 14), .02));
+  if (o.twin) for (const s of [-1, 1]) head.add(ol(sph(.12, o.hair, s * .36, .42, -.1, 12), .02));
+  let ahoge = null; if (o.ahoge) { ahoge = new THREE.Group(); ahoge.position.set(.02, .66, .04); head.add(ahoge); const a = M(new THREE.ConeGeometry(.05, .26, 6), o.hair, 0, .12, 0); a.rotation.z = -.5; ahoge.add(a); }
+  if (o.band) { const b = M(new THREE.TorusGeometry(.375, .04, 8, 30), o.band, 0, .42, 0); b.rotation.x = Math.PI / 2 - .22; head.add(b);
+    const tails = new THREE.Group(); tails.position.set(.12, .48, -.36); head.add(tails); put(tails, rb(.06, .22, .04, o.band, .03, -.1, -.02, .02)).rotation.z = .4; put(tails, rb(.06, .2, .04, o.band, -.04, -.1, -.03, .02)).rotation.z = -.25; o._tails = tails; }
+  if (o.hat) { head.add(ol(cyl(.48, .48, .04, o.hat, 0, .6, 0, 28), .02)); head.add(ol(M(new THREE.SphereGeometry(.3, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), o.hat, 0, .6, 0), .02)); head.add(cyl(.305, .305, .06, o.hatBand || '#ff7fa0', 0, .64, 0, 24)); }
+  const eyes = [];
+  for (const sx of [-.13, .13]) { const e = new THREE.Group(); e.position.set(sx, .29, .33); head.add(e); const pupil = M(new THREE.SphereGeometry(.055, 12, 10), '#2b2233', 0, 0, 0); pupil.scale.set(1, 1.3, .55); e.add(pupil); e.add(sph(.02, '#ffffff', .018, .03, .03, 8)); eyes.push(e); }
+  if (o.glasses) for (const sx of [-.13, .13]) head.add(M(new THREE.TorusGeometry(.085, .012, 6, 18), '#3a2c3f', sx, .29, .36));
+  const mouth = M(new THREE.TorusGeometry(.05, .014, 6, 12, Math.PI), '#7a2a2a', 0, .15, .35); mouth.rotation.z = Math.PI; head.add(mouth);
+  for (const sx of [-.22, .22]) { const bl = M(new THREE.SphereGeometry(.05, 10, 8), '#ff9fb4', sx, .19, .29); bl.scale.set(1, .6, .3); head.add(bl); }
+  if (o.bag) { const bag = ol(rb(.3, .38, .2, o.bag, .3, -.08, -.12, .07), .02); torso.add(bag); }
   scene.add(root);
-  return { root, hips, legL, legR, armL, armR, torso, head, ph: 0, speed: 0, target: null, path: [], face: 0, wave: 0, idle: Math.random() * 9 };
+  return { root, hips, legL, legR, armL, armR, torso, head, eyes, mouth, ahoge, tails: o._tails, ph: 0, speed: 0, target: null, path: [], face: 0, wave: 0, idle: Math.random() * 9, blink: 2 + Math.random() * 3, joy: 0, sad: 0, hop: 0 };
 }
 function pose(c, dt) {
-  c.ph += dt * (c.speed > .1 ? 9.5 : 0);
-  const mv = Math.min(1, c.speed / 1.6), s = Math.sin(c.ph);
-  c.legL.rotation.x = s * .7 * mv; c.legR.rotation.x = -s * .7 * mv;
-  c.armL.rotation.x = -s * .6 * mv; c.armR.rotation.x = s * .6 * mv;
-  c.hips.position.y = .5 + Math.abs(Math.cos(c.ph)) * .05 * mv;
-  c.torso.rotation.x = .08 * mv;
+  c.ph += dt * (c.speed > .1 ? 10 : 0);
+  const mv = Math.min(1, c.speed / 1.6), s = Math.sin(c.ph), bob = Math.abs(Math.cos(c.ph));
+  c.legL.rotation.x = s * .75 * mv; c.legR.rotation.x = -s * .75 * mv;
+  c.armL.rotation.x = -s * .7 * mv; c.armR.rotation.x = s * .7 * mv;
   c.idle += dt;
-  const br = Math.sin(c.idle * 2.2) * .015 * (1 - mv);
-  c.torso.scale.set(1 + br, 1 - br, 1 + br);
-  c.head.rotation.y = (1 - mv) * Math.sin(c.idle * .7) * .25;
-  if (c.wave > 0) { c.wave = Math.max(0, c.wave - dt); const k = Math.min(1, c.wave * 3, (1.6 - c.wave) * 3); c.armR.rotation.z = 2.5 * k; c.armR.rotation.x = Math.sin(c.idle * 14) * .35 * k; }
-  else c.armR.rotation.z = 0;
-  c.armL.rotation.z = 0;
+  // nảy khi đi + nén giãn nhẹ (dễ thương hơn đi trượt)
+  let y = .4 + bob * .07 * mv; const sq = 1 - (1 - bob) * .06 * mv;
+  c.torso.scale.set(1 + (1 - sq) * .8, sq, 1 + (1 - sq) * .8);
+  c.torso.rotation.x = .1 * mv; c.torso.rotation.z = Math.sin(c.ph) * .05 * mv;
+  const br = Math.sin(c.idle * 2.4) * .018 * (1 - mv); c.torso.scale.y *= 1 - br; c.torso.scale.x *= 1 + br;
+  c.head.rotation.y = (1 - mv) * Math.sin(c.idle * .7) * .22; c.head.rotation.z = (1 - mv) * Math.sin(c.idle * .9) * .06;
+  // vui: nhảy cẫng + giơ tay; buồn: cúi đầu
+  if (c.joy > 0) { c.joy = Math.max(0, c.joy - dt); const k = Math.min(1, c.joy * 3); y += Math.abs(Math.sin(c.joy * 9)) * .22 * k; c.armL.rotation.z = -2.4 * k; c.armR.rotation.z = 2.4 * k; c.mouth.scale.set(1.3, 1.4, 1); }
+  else if (c.wave > 0) { c.wave = Math.max(0, c.wave - dt); const k = Math.min(1, c.wave * 3, (1.6 - c.wave) * 3); c.armR.rotation.z = 2.5 * k; c.armR.rotation.x = Math.sin(c.idle * 14) * .35 * k; c.armL.rotation.z = 0; c.mouth.scale.set(1.1, 1.1, 1); }
+  else { c.armL.rotation.z = 0; c.armR.rotation.z = 0; c.mouth.scale.set(1, 1, 1); }
+  if (c.sad > 0) { c.sad = Math.max(0, c.sad - dt); c.head.rotation.x = .35 * Math.min(1, c.sad * 3); c.mouth.rotation.z = 0; } else { c.head.rotation.x = 0; c.mouth.rotation.z = Math.PI; }
+  c.hips.position.y = y;
+  // chớp mắt
+  c.blink -= dt; const closed = c.blink < .12 && c.blink > 0; if (c.blink <= 0) c.blink = 2.2 + Math.random() * 3.5;
+  c.eyes.forEach(e => e.scale.y = closed ? .12 : 1);
+  if (c.ahoge) c.ahoge.rotation.z = Math.sin(c.idle * 6 + c.ph) * .25 * (.4 + mv);
+  if (c.tails) c.tails.rotation.x = -.3 - mv * .5 + Math.sin(c.idle * 8) * .15 * mv;
 }
 function walk(c, dt, spd = 2.2) {
   if (!c.target && c.path.length) c.target = c.path.shift();
   if (!c.target) { c.speed += (0 - c.speed) * Math.min(1, dt * 10); return true; }
   const p = c.root.position, dx = c.target.x - p.x, dz = c.target.z - p.z, d = Math.hypot(dx, dz);
-  if (d < .06) { c.target = null; return !c.path.length; }
-  c.speed += (spd - c.speed) * Math.min(1, dt * 8);
-  const st = Math.min(d, c.speed * dt); p.x += dx / d * st; p.z += dz / d * st;
-  const want = Math.atan2(dx, dz); let df = want - c.face; df = Math.atan2(Math.sin(df), Math.cos(df)); c.face += df * Math.min(1, dt * 12);
-  c.root.rotation.y = c.face; return false;
+  if (d < (c.path.length ? .3 : .05)) { c.target = null; return !c.path.length; }   // đi vòng mềm qua điểm giữa đường
+  c.speed += (spd - c.speed) * Math.min(1, dt * 6);
+  const want = Math.atan2(dx, dz); let df = want - c.face; df = Math.atan2(Math.sin(df), Math.cos(df)); c.face += df * Math.min(1, dt * 9); c.root.rotation.y = c.face;
+  const st = Math.min(d, c.speed * dt * Math.max(.35, Math.cos(df))); p.x += Math.sin(c.face) * st; p.z += Math.cos(c.face) * st;
+  if (Math.random() < dt * 6) puff(p.x, .05, p.z, .25);
+  return false;
 }
 const faceTo = (c, ang, dt) => { let df = ang - c.face; df = Math.atan2(Math.sin(df), Math.cos(df)); c.face += df * Math.min(1, dt * 8); c.root.rotation.y = c.face; };
 
-const hero = chibi({ skin: '#ffd9b8', hair: '#1d1d24', shirt: '#1E5AA8', pants: '#16171B', band: '#FFD91F', vest: '#FFD91F' });
+/* ---------- hạt hiệu ứng ---------- */
+const fx = [];
+function sprite(tex, x, y, z, s, life, vel, o = {}) { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: o.add ? THREE.AdditiveBlending : THREE.NormalBlending })); m.position.set(x, y, z); m.scale.setScalar(s); scene.add(m); fx.push({ m, life, max: life, vel: vel || new THREE.Vector3(), s, grav: o.grav || 0, grow: o.grow || 0, spin: o.spin || 0 }); return m; }
+const puff = (x, y, z, s = .3) => { if (!REDUCED) sprite(TX.puff, x + (Math.random() - .5) * .1, y, z + (Math.random() - .5) * .1, s * .6, .5, new THREE.Vector3(0, .25, 0), { grow: .8 }); };
+const hearts = (x, y, z, n = 4) => { for (let i = 0; i < n; i++) sprite(TX.heart, x + (Math.random() - .5) * .5, y, z + (Math.random() - .5) * .3, .26, 1.3 + i * .1, new THREE.Vector3((Math.random() - .5) * .4, .9 + Math.random() * .4, 0)); };
+const sparkles = (x, y, z, n = 8, r = .6) => { for (let i = 0; i < n; i++) { const a = Math.random() * 6.28; sprite(TX.spark, x, y, z, .22, .7 + Math.random() * .4, new THREE.Vector3(Math.cos(a) * r * 2, .6 + Math.random() * 1.2, Math.sin(a) * r * 2), { add: true, grav: 2.2 }); } };
+const CONF = ['#ff7fa0', '#7fd6c2', '#FFD91F', '#8fb8ff', '#ffb38a', '#c9a0ff'].map(c => new THREE.MeshBasicMaterial({ color: c, side: THREE.DoubleSide }));
+const confGeo = new THREE.PlaneGeometry(.09, .14);
+function confetti(x, y, z, n = 60) { if (REDUCED) return; for (let i = 0; i < n; i++) { const m = new THREE.Mesh(confGeo, CONF[i % CONF.length]); m.position.set(x, y, z); scene.add(m); const a = Math.random() * 6.28, sp = 1.5 + Math.random() * 2.5; fx.push({ m, life: 2.2, max: 2.2, vel: new THREE.Vector3(Math.cos(a) * sp, 3 + Math.random() * 3, Math.sin(a) * sp), s: 1, grav: 6, spin: 8 + Math.random() * 8, conf: true }); } }
+const coinFx = [];
+function coins3d(x, y, z, n = 3) { for (let i = 0; i < n; i++) { const c = cyl(.12, .12, .045, '#f2c94c', x - .3 + i * .22, y, z, 18, { emissive: '#8a6a10', emissiveIntensity: .25 }); c.rotation.x = Math.PI / 2; ol(c, .015); scene.add(c); coinFx.push({ c, vy: 2.6 + i * .25, t: 0 }); } }
+function stepFx(dt) {
+  for (let i = fx.length - 1; i >= 0; i--) { const p = fx[i]; p.life -= dt; if (p.life <= 0) { scene.remove(p.m); if (p.m.material && !p.conf) p.m.material.dispose(); fx.splice(i, 1); continue; }
+    p.vel.y -= p.grav * dt; p.m.position.addScaledVector(p.vel, dt); const k = p.life / p.max;
+    if (p.conf) { p.m.rotation.x += p.spin * dt; p.m.rotation.y += p.spin * .7 * dt; if (p.m.position.y < .02) { p.m.position.y = .02; p.vel.set(0, 0, 0); p.grav = 0; } p.m.scale.setScalar(Math.min(1, k * 3)); }
+    else { p.m.material.opacity = Math.min(1, k * 2.2); p.m.scale.setScalar(p.s * (1 + p.grow * (1 - k))); } }
+  for (let i = coinFx.length - 1; i >= 0; i--) { const o = coinFx[i]; o.t += dt; o.vy -= 6 * dt; o.c.position.y += o.vy * dt; o.c.rotation.z += dt * 9;
+    if (Math.random() < dt * 14) sprite(TX.spark, o.c.position.x, o.c.position.y, o.c.position.z, .14, .4, new THREE.Vector3(0, .2, 0), { add: true });
+    if (o.t > .8) { scene.remove(o.c); coinFx.splice(i, 1); S.coins += 5; SFX.coin(); hud(true); } }
+}
+
+/* =====================================================================
+   VÒNG CHƠI: khách vào → Ā Bǎo ra quầy → khách nói câu của bài đang học → chọn nghĩa → thẻ vào Bộ thẻ
+   ===================================================================== */
+const hero = chibi({ skin: '#ffe0c7', hair: '#2b2233', shirt: '#1E5AA8', pants: '#3a2c3f', band: '#FFD91F', vest: '#FFD91F', ahoge: true });
 hero.root.position.set(3.4, 0, 3.4); hero.face = .8; hero.root.rotation.y = .8;
-const DESK_SPOT = new THREE.Vector3(7.4, 0, 1.0), GUEST_SPOT = new THREE.Vector3(7.4, 0, 2.55), DOOR = new THREE.Vector3(9.4, 0, 9.4), LIFT = new THREE.Vector3(.75, 0, 3.2);
+const DESK_SPOT = new THREE.Vector3(7.4, 0, 1.0), GUEST_SPOT = new THREE.Vector3(7.4, 0, 2.6), DOOR = new THREE.Vector3(9.3, 0, 9.4), LIFT = new THREE.Vector3(.8, 0, 3.4);
 const LOOKS = [
-  { skin: '#ffe0c2', hair: '#3b2a1e', shirt: '#c0392b', pants: '#2a2f3a', bun: true },
-  { skin: '#f2c9a0', hair: '#16171B', shirt: '#2ec4b6', pants: '#3a3a46' },
-  { skin: '#ffe6cf', hair: '#7a4a24', shirt: '#8e5bd1', pants: '#1f2d4a', bun: true },
+  { skin: '#ffe6cf', hair: '#5a3a28', shirt: '#ff7fa0', pants: '#4a4060', bun: true, hat: '#fff3c4', bag: '#FFD91F' },
+  { skin: '#f6cfab', hair: '#2b2233', shirt: '#7fd6c2', pants: '#3a3a52', glasses: true, bag: '#8fb8ff', tie: '#e8593c' },
+  { skin: '#ffe9d6', hair: '#8a5a34', shirt: '#c9a0ff', pants: '#2f3d5c', twin: true, bag: '#ff9f7a' },
+  { skin: '#f2c9a0', hair: '#3a2c3f', shirt: '#ffb38a', pants: '#40506a', hat: '#7fd6c2', hatBand: '#FFD91F', bag: '#e8593c' },
 ];
-const LINES = [
-  { g: ['我想办理入住。', 'Wǒ xiǎng bànlǐ rùzhù.', 'Tôi muốn làm thủ tục nhận phòng.'], h: ['好的，请出示护照。', 'Hǎo de, qǐng chūshì hùzhào.', 'Vâng, xin xuất trình hộ chiếu.'] },
-  { g: ['我预订了一个房间。', 'Wǒ yùdìng le yí ge fángjiān.', 'Tôi đã đặt trước một phòng.'], h: ['欢迎光临！', 'Huānyíng guānglín!', 'Chào mừng quý khách!'] },
-  { g: ['早餐几点开始？', 'Zǎocān jǐ diǎn kāishǐ?', 'Bữa sáng bắt đầu lúc mấy giờ?'], h: ['早上七点。', 'Zǎoshang qī diǎn.', 'Bảy giờ sáng.'] },
-];
-let guest = null, gi = 0, coins = 0, phase = 'spawn', pt = 0, served = 0, autopilot = CAPTURE, lastTap = 0, T = 0;
-const coinsFx = [];
+let guest = null, gi = 0, phase = 'spawn', pt = 0, autopilot = CAPTURE, lastTap = 0, T = 0, cur = null, answered = null, askT = 0;
+function pickCard() {
+  const open = openUnits(), due = dueNow().filter(id => open.includes(CARD[id].unit));
+  if (due.length && Math.random() < .45) return CARD[due[0]];                      // khách hỏi lại đúng từ đến hạn ôn
+  for (let k = open.length - 1; k >= 0; k--) { const n = open[k].cards.find(c => !S.cards[c.id]); if (n) return n; }   // từ mới của bài mới nhất
+  const all = open.flatMap(u => u.cards); return all[Math.floor(Math.random() * all.length)];
+}
 function newGuest() {
   if (guest) scene.remove(guest.root);
   guest = chibi(LOOKS[gi % LOOKS.length]);
-  const suit = box(.32, .4, .18, ['#FFD91F', '#2a6f8f', '#ff8a5c'][gi % 3], .26, .2, -.05); guest.root.add(suit); guest.suit = suit;
-  guest.root.position.copy(DOOR); guest.face = Math.PI; guest.path = [new THREE.Vector3(8.6, 0, 6.2), GUEST_SPOT.clone()];
-  phase = 'arrive'; pt = 0;
+  guest.root.position.copy(DOOR); guest.face = Math.PI; guest.path = [new THREE.Vector3(8.8, 0, 6.6), new THREE.Vector3(8.0, 0, 4.0), GUEST_SPOT.clone()];
+  cur = pickCard(); answered = null; phase = 'arrive'; pt = 0;
 }
-
-/* ---------- bóng nói, vòng tiến độ ---------- */
 const v3 = new THREE.Vector3();
-function screenOf(obj, up = 1.75) { obj.getWorldPosition(v3); v3.y += up; v3.project(cam); return [(v3.x + 1) / 2 * stage.clientWidth, (1 - v3.y) / 2 * stage.clientHeight]; }
-function say(el, line, on) {
-  if (on && el.dataset.l !== line[0]) { el.innerHTML = `<span class="zh" lang="zh-CN">${line[0]}</span><span class="py">${line[1]}</span><span class="vi">${line[2]}</span>`; el.dataset.l = line[0]; }
-  el.classList.toggle('on', !!on);
+function screenOf(obj, up) { obj.getWorldPosition(v3); v3.y += up; v3.project(cam); return [(v3.x + 1) / 2 * stage.clientWidth, (1 - v3.y) / 2 * stage.clientHeight]; }
+const hl = (s, w) => { const i = s.indexOf(w); return i < 0 ? esc(s) : esc(s.slice(0, i)) + '<b class="key">' + esc(w) + '</b>' + esc(s.slice(i + w.length)); };
+function say(el, line, on, key) { const k = line ? line[0] : ''; if (on && el.dataset.l !== k) { el.innerHTML = `<span class="zh" lang="zh-CN">${key ? hl(line[0], key) : esc(line[0])}</span><span class="py">${esc(line[1])}</span>${line[2] ? `<span class="vi">${esc(line[2])}</span>` : ''}`; el.dataset.l = k; } el.classList.toggle('on', !!on); }
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function openAsk() {
+  const u = cur.unit, others = shuffle(COURSE.flatMap(x => x.cards).filter(c => c !== cur && c.ex[2] !== cur.ex[2])).sort((a, b) => (b.unit === u) - (a.unit === u)).slice(0, 2);
+  const opts = shuffle([cur, ...others]);
+  $('askTag').textContent = `Bài ${COURSE.indexOf(u) + 1} · ${u.lv}`;
+  $('askQ').textContent = S.cards[cur.id] ? 'Từ đến hạn ôn! Khách vừa nói gì?' : 'Khách vừa nói gì?';
+  $('askLine').innerHTML = `<span class="zh" lang="zh-CN">${hl(cur.ex[0], cur.zh)}</span><span class="py">${esc(cur.ex[1])}</span>`;
+  const box = $('askOpts'); box.classList.remove('done'); box.innerHTML = '';
+  opts.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.textContent = c.ex[2]; b.onclick = () => answer(c === cur, b, opts.indexOf(cur)); box.appendChild(b); });
+  $('askRes').classList.remove('on'); $('ask').classList.add('on'); askT = 0;
+  speak(cur.ex[0]);
 }
-function coinPop(n) {
-  for (let i = 0; i < n; i++) { const c = cyl(.12, .12, .04, '#FFD91F', 0, 0, 0, 16, { metalness: .8, roughness: .25, emissive: '#c99a10', emissiveIntensity: .25 }); c.rotation.x = Math.PI / 2;
-    c.position.set(GUEST_SPOT.x - .3 + i * .2, 1.25, 1.75); c.userData = { vy: 2.4 + i * .2, t: 0 }; scene.add(c); coinsFx.push(c); }
+function answer(ok, btn, okIdx) {
+  if (answered !== null) return; answered = ok; const box = $('askOpts'); box.classList.add('done');
+  [...box.children].forEach((b, i) => { if (i === okIdx) b.classList.add('ok'); }); if (!ok && btn) btn.classList.add('no');
+  const isNew = !S.cards[cur.id]; grade(cur.id, ok ? 2 : 0);
+  S.pts += ok ? (askT < 5 ? 15 : 10) : 3;
+  $('askRes').innerHTML = `${ok ? '✓ Đúng rồi!' : '✗ Chưa đúng, nhớ nhé:'} <span lang="zh-CN">${esc(cur.zh)}</span> <i>${esc(cur.py)}</i> = ${esc(cur.vi)} · ${isNew ? '🆕 thẻ mới vào Bộ thẻ' : ok ? `ôn lại sau ${ivlLabel([S.cards[cur.id].ivl])}` : 'ôn lại sau 10 phút'}`;
+  $('askRes').classList.add('on');
+  if (ok) { SFX.ok(); guest.joy = 1.4; } else { SFX.no(); guest.sad = 1.6; const p = guest.head.getWorldPosition(new THREE.Vector3()); sprite(TX.sweat, p.x + .3, p.y + .7, p.z, .22, 1.2, new THREE.Vector3(0, -.2, 0)); }
+  phase = 'reply'; pt = 0; save(); hud(true);
 }
+function closeAsk() { $('ask').classList.remove('on'); }
 
-/* ---------- vòng chơi ---------- */
+/* ---------- chạm sàn để đi ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 renderer.domElement.addEventListener('pointerdown', e => {
   const r = renderer.domElement.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ndc, cam); const hit = ray.intersectObject(floor)[0]; if (!hit) return;
-  const p = hit.point; p.x = Math.max(.6, Math.min(ROOM.w - .5, p.x)); p.z = Math.max(.6, Math.min(ROOM.d - .4, p.z));
-  // không cho đi xuyên quầy: điểm ở trong quầy thì kéo ra sau quầy
-  if (p.x > 5.5 && p.x < 9.2 && p.z > 1.15 && p.z < 2.3) p.z = p.z < 1.75 ? 1.0 : 2.5;
-  // đi vòng qua đầu trái quầy (x = 5.2) khi đổi giữa sau quầy và sảnh
+  const p = hit.point; p.x = THREE.MathUtils.clamp(p.x, .7, ROOM.w - .5); p.z = THREE.MathUtils.clamp(p.z, .7, ROOM.d - .4);
+  if (p.x > 5.5 && p.x < 9.3 && p.z > 1.15 && p.z < 2.35) p.z = p.z < 1.75 ? 1.0 : 2.55;
   hero.path = []; hero.target = null;
   const behind = hero.root.position.z < 1.4 && hero.root.position.x > 5.6, toBehind = p.z < 1.4 && p.x > 5.6;
   if (behind !== toBehind) hero.path = toBehind ? [new THREE.Vector3(5.2, 0, 2.6), new THREE.Vector3(5.2, 0, 1.0)] : [new THREE.Vector3(5.2, 0, 1.0), new THREE.Vector3(5.2, 0, 2.6)];
   hero.path.push(new THREE.Vector3(p.x, 0, p.z)); lastTap = T; autopilot = false;
+  sprite(TX.spark, p.x, .1, p.z, .35, .5, new THREE.Vector3(0, .5, 0), { add: true });
   $('hint').style.opacity = 0;
 });
 const atDesk = () => hero.root.position.distanceTo(DESK_SPOT) < .5;
+
+/* ---------- HUD ---------- */
+let lastStar = starLv();
+function hud(bump) {
+  $('coins').textContent = '💰 ' + S.coins;
+  const s = starLv(), a = STAR_AT[s], b = STAR_AT[s + 1];
+  $('starTx').textContent = s + '★'; $('starBar').style.width = (b ? Math.min(100, (S.pts - a) / (b - a) * 100) : 100) + '%';
+  const n = dueList().length, bd = $('dueBadge'); bd.textContent = n; bd.hidden = !n; $('cardsBtn').classList.toggle('wiggle', n > 0 && !REDUCED);
+  try { if (navigator.setAppBadge) (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(() => {}); } catch (e) {}
+  if (bump) { const c = $('coins'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); }
+  if (s > lastStar) { const was = lastStar; lastStar = s; for (let k = was + 1; k <= s; k++) setTimeout(() => starUp(k), (k - was - 1) * 2600 + 600); }
+}
+function toast(html, ms = 2400) { const t = $('toast'); t.innerHTML = html; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), ms); }
+function starUp(k) {
+  const u = COURSE.find(x => x.star === k), it = UNLOCK[k];
+  SFX.up(); confetti(5, 2.6, 3.5, 70);
+  toast(`⭐ Lên ${k}★!${u ? `<small>Mở khoá Bài ${COURSE.indexOf(u) + 1} · ${esc(u.title)} (${u.lv})</small>` : ''}${it ? `<small>Đồ mới: ${esc(it.label)}</small>` : ''}`, 3000);
+  if (it) { it.g.visible = true; it.pop = 0; const p = it.g.position; sparkles(p.x, 1.2, p.z, 18, .5); }
+  if (k === 3) { cornerPlant.visible = false; puff(.6, .5, .6, .9); }
+}
+function popUnlocks(dt) { for (const k in UNLOCK) { const it = UNLOCK[k]; if (!it.g.visible || it.pop === undefined) continue; it.pop += dt; const t = Math.min(1, it.pop / .7), e = t === 1 ? 1 : 1 - Math.pow(2, -10 * t) * Math.cos(t * 10.5); it.g.scale.setScalar(Math.max(.001, e)); if (t === 1) delete it.pop; } }
+for (const k in UNLOCK) if (+k <= lastStar) { UNLOCK[k].g.visible = true; UNLOCK[k].g.scale.setScalar(1); }
+if (lastStar >= 3) cornerPlant.visible = false;
+
+/* ---------- vòng cập nhật ---------- */
+let bayT = 0;
 function update(dt) {
   T += dt;
   if (!guest) newGuest();
-  // tự lái khi không ai chạm (quay video, hoặc người chơi để yên 6 giây)
-  if (!autopilot && T - lastTap > 6) autopilot = true;
-  if (autopilot && !atDesk() && !hero.target && !hero.path.length && phase !== 'spawn') { const hp = hero.root.position; hero.path = (hp.z < 1.4 && hp.x > 5.6) ? [DESK_SPOT.clone()] : [new THREE.Vector3(5.2, 0, 2.6), new THREE.Vector3(5.2, 0, 1.0), DESK_SPOT.clone()]; }
-  const heroIdle = walk(hero, dt, 2.6);
-  if (heroIdle && atDesk()) faceTo(hero, 0, dt);
-  pose(hero, dt);
-
-  pt += dt;
-  const gDone = walk(guest, dt, 1.7); pose(guest, dt);
-  let ring = 0;
-  if (phase === 'arrive' && gDone) { phase = 'wait'; pt = 0; }
-  if (phase === 'wait') { faceTo(guest, Math.PI, dt); if (atDesk()) { phase = 'serve'; pt = 0; } }
-  if (phase === 'serve') { faceTo(guest, Math.PI, dt); ring = Math.min(1, pt / 1.6); if (pt > 1.6) { phase = 'talk'; pt = 0; hero.wave = 1.6; } }
-  if (phase === 'talk') { faceTo(guest, Math.PI, dt); if (pt > 2.6) { phase = 'pay'; pt = 0; coinPop(3); } }
-  if (phase === 'pay' && pt > .9) { phase = 'leave'; pt = 0; guest.wave = 1.6; guest.path = [new THREE.Vector3(5.2, 0, 3.4), LIFT.clone()]; }
-  if (phase === 'leave' && gDone && pt > 1) { phase = 'out'; pt = 0; }
-  if (phase === 'out') { guest.root.scale.setScalar(Math.max(.01, 1 - pt * 2.5)); if (pt > .5) { gi++; served++; newGuest(); } }
-  const L = LINES[gi % LINES.length];
-  const [gx, gy] = screenOf(guest.head, .78), [hx, hy] = screenOf(hero.head, .78);
-  const bg = $('bGuest'), bh = $('bHero');
+  if (!autopilot && T - lastTap > 6 && !$('sheet').classList.contains('on')) autopilot = true;
+  if (autopilot && !atDesk() && !hero.target && !hero.path.length) { const hp = hero.root.position; hero.path = (hp.z < 1.4 && hp.x > 5.6) ? [DESK_SPOT.clone()] : [new THREE.Vector3(5.2, 0, 2.6), new THREE.Vector3(5.2, 0, 1.0), DESK_SPOT.clone()]; }
+  const heroIdle = walk(hero, dt, 2.6); if (heroIdle && atDesk()) faceTo(hero, 0, dt); pose(hero, dt);
+  pt += dt; askT += dt;
+  const gDone = walk(guest, dt, 1.8); pose(guest, dt);
+  if (phase === 'arrive' && gDone) { phase = 'wait'; pt = 0; const p = guest.head.getWorldPosition(new THREE.Vector3()); sprite(TX.bang, p.x, p.y + 1.05, p.z, .35, 1.0, new THREE.Vector3(0, .3, 0)); SFX.pop(); }
+  if (phase === 'wait') { faceTo(guest, Math.PI, dt); if (atDesk() && pt > .4) { phase = 'ask'; pt = 0; SFX.ding(); bell.scale.y = .7; openAsk(); } }
+  if (phase === 'ask') { faceTo(guest, Math.PI, dt); if (CAPTURE && pt > 1.6) answer(true, null, [...$('askOpts').children].findIndex(b => b.textContent === cur.ex[2])); }
+  if (phase === 'reply') { faceTo(guest, Math.PI, dt); if (pt > .3 && pt - dt <= .3) { hero.wave = 1.6; if (answered) hearts(guest.root.position.x, 1.9, guest.root.position.z, 4); }
+    if (pt > 2.4) { closeAsk(); phase = 'pay'; pt = 0; if (answered) coins3d(GUEST_SPOT.x, 1.3, 1.85, 3); } }
+  if (phase === 'pay' && pt > 1.0) { phase = 'leave'; pt = 0; guest.wave = 1.6; guest.path = [new THREE.Vector3(5.6, 0, 3.6), LIFT.clone()]; S.served++; save(); }
+  if (phase === 'leave' && gDone && pt > 1) { phase = 'out'; pt = 0; doorL.position.z = -.4; }
+  if (phase === 'out') { const k = Math.min(1, pt * 2); doorL.position.z = -.4 - .35 * Math.sin(k * Math.PI); doorR.position.z = .4 + .35 * Math.sin(k * Math.PI); guest.root.scale.setScalar(Math.max(.01, 1 - pt * 2.2)); if (pt > .6) { gi++; newGuest(); } }
+  bell.scale.y += (1 - bell.scale.y) * Math.min(1, dt * 10);
+  // bóng nói
+  const [gx, gy] = screenOf(guest.head, .82), [hx, hy] = screenOf(hero.head, .82), bg = $('bGuest'), bh = $('bHero');
   bg.style.left = gx + 'px'; bg.style.top = gy + 'px'; bh.style.left = hx + 'px'; bh.style.top = hy + 'px';
-  say(bg, L.g, phase === 'wait');
-  say(bh, L.h, phase === 'talk' || phase === 'pay');
-  const rg = $('ring'); rg.classList.toggle('on', phase === 'serve'); rg.style.left = gx + 'px'; rg.style.top = (gy - 20) + 'px';
-  $('ringArc').setAttribute('stroke-dashoffset', (62.8 * (1 - ring)).toFixed(1));
-  // xu trong game bay lên rồi vào túi
-  for (let i = coinsFx.length - 1; i >= 0; i--) { const c = coinsFx[i], u = c.userData; u.t += dt; u.vy -= 6 * dt; c.position.y += u.vy * dt; c.rotation.z += dt * 8;
-    if (u.t > .75) { scene.remove(c); coinsFx.splice(i, 1); coins += 10; const ce = $('coins'); ce.textContent = '💰 ' + coins; ce.classList.remove('pop'); void ce.offsetWidth; ce.classList.add('pop'); } }
-  // máy quay đi theo Ā Bǎo (màn dọc), giữ trong phòng
+  say(bg, cur && cur.ex, phase === 'wait', cur && cur.zh);
+  say(bh, cur && cur.unit.reply, phase === 'reply' && pt > .3 && answered);
+  // sống động: cây đung đưa, cá bơi, khói trà, bụi sáng, tia nắng, đồng hồ, cửa sổ
+  plants.forEach(p => { p.top.rotation.z = Math.sin(T * 1.3 + p.ph) * .05; p.top.rotation.x = Math.cos(T * 1.1 + p.ph) * .04; });
+  fishes.forEach(f => { const a = T * .8 + f.ph; f.f.position.set(Math.sin(a * 1.3) * .14, f.y + Math.sin(a * 2) * .05, Math.sin(a) * .42); f.f.rotation.y = Math.cos(a) > 0 ? 0 : Math.PI; });
+  if (Math.random() < dt * 2.2 && !REDUCED) cups.forEach(c => { const p = c.getWorldPosition(new THREE.Vector3()); sprite(TX.puff, p.x, p.y + .08, p.z, .1, 1.2, new THREE.Vector3(.03, .25, 0), { grow: 1.6 }); });
+  for (let i = 0; i < MOTE_N; i++) { const s = moteSeed[i]; motePos[i * 3] = s[0] + Math.sin(T * .3 + s[3]) * .2; motePos[i * 3 + 1] = s[1] + Math.sin(T * .2 + s[3] * 2) * .25; motePos[i * 3 + 2] = s[2] + Math.cos(T * .25 + s[3]) * .2; }
+  moteGeo.attributes.position.needsUpdate = true;
+  beams.forEach((b, i) => b.material.opacity = .45 + Math.sin(T * .7 + i) * .1);
+  glows.forEach((g, i) => g.material.opacity = .7 + Math.sin(T * 2 + i) * .08);
+  const now = new Date(); hHand.rotation.z = -((now.getHours() % 12) + now.getMinutes() / 60) / 12 * Math.PI * 2; mHand.rotation.z = -(now.getMinutes() + now.getSeconds() / 60) / 60 * Math.PI * 2;
+  liftLamp.material.color.set(phase === 'out' ? '#ffd27a' : '#7fffb0');
+  bayT += dt; if (bayT > (CAPTURE ? 0 : .1)) { drawBay(T); bayT = 0; }
+  stepFx(dt); popUnlocks(dt);
+  // máy quay đi theo Ā Bǎo trên màn dọc; khi hỏi thì nhích lên cho bảng câu hỏi không che nhân vật
   if (stage.clientWidth < stage.clientHeight) {
-    const hp = hero.root.position, gp = guest.root.position, mid = phase === 'leave' || phase === 'out' ? .35 : .5;
-    const tx = Math.max(3.2, Math.min(7.2, hp.x * (1 - mid) + gp.x * mid * .6 + 5 * mid * .4)), tz = Math.max(2.2, Math.min(5.6, hp.z * (1 - mid) + gp.z * mid * .6 + 4 * mid * .4));
+    const hp = hero.root.position, gp = guest.root.position, asking = phase === 'ask' || phase === 'reply';
+    const tx = THREE.MathUtils.clamp(hp.x * .55 + gp.x * .25 + 5 * .2, 3.2, 7.2), tz = THREE.MathUtils.clamp(hp.z * .55 + gp.z * .25 + 4 * .2 + (asking ? 1.3 : 0), 2.2, 6.2);
     camAt.x += (tx - camAt.x) * Math.min(1, dt * 2.2); camAt.z += (tz - camAt.z) * Math.min(1, dt * 2.2); placeCam();
   }
-  // video: máy quay đẩy vào nhẹ ở đầu
-  if (CAPTURE) { const z = 0.86 + Math.min(1, T / 2.5) * .14; if (Math.abs(z - zoom) > 1e-4) { zoom = z; fit(); } }
+  if (CAPTURE) { const z = .88 + Math.min(1, T / 2.5) * .12; if (Math.abs(z - zoom) > 1e-4) { zoom = z; fit(); }
+    if (T > 14.2 && !update.shown) { update.shown = true; openSheet('course'); } }   // video: kết bằng màn Giáo trình
 }
 function render() { renderer.render(scene, cam); }
 
-/* ---------- vòng lặp ---------- */
-fit();
-let last = performance.now();
-function loop(now) { const dt = Math.min(.05, (now - last) / 1000); last = now; update(dt); render(); requestAnimationFrame(loop); }
-if (CAPTURE) { window.__step = (dt = 1 / 30) => { update(dt); render(); }; window.__ready = true; render(); }
-else requestAnimationFrame(loop);
-window.__proto = { get phase() { return phase; }, get served() { return served; }, get coins() { return coins; }, hero, get guest() { return guest; } };
+/* =====================================================================
+   BẢNG THẺ TỪ: Ôn hôm nay (Anki) · Bộ thẻ · Giáo trình
+   ===================================================================== */
+let tab = 'review', reviewId = null;
+function openSheet(t) { tab = t || tab; $('sheet').classList.add('on'); $('sheet').setAttribute('aria-hidden', 'false'); autopilot = false; lastTap = T + 999; renderSheet(); }
+function closeSheet() { $('sheet').classList.remove('on'); $('sheet').setAttribute('aria-hidden', 'true'); lastTap = T; }
+$('cardsBtn').onclick = () => { SFX.pop(); openSheet('review'); };
+$('sheetClose').onclick = closeSheet;
+$('sheet').addEventListener('pointerdown', e => { if (e.target === $('sheet')) closeSheet(); });
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { tab = b.dataset.tab; SFX.pop(); renderSheet(); });
+function cardFace(c, back, withSpk = true) {
+  return `<div class="flip${back ? ' back' : ''}" id="flip"><div class="in">
+    <div class="face f"><span class="lv">Bài ${COURSE.indexOf(c.unit) + 1} · ${c.unit.lv}</span>${withSpk ? '<button type="button" class="spk" data-say="1" aria-label="Nghe">🔊</button>' : ''}<div class="hz" lang="zh-CN">${esc(c.zh)}</div><span class="tap">Chạm để lật thẻ</span></div>
+    <div class="face b">${withSpk ? '<button type="button" class="spk" data-say="1" aria-label="Nghe">🔊</button>' : ''}<div class="hz" lang="zh-CN" style="font-size:34px">${esc(c.zh)}</div><div class="py">${esc(c.py)}</div><div class="vi">${esc(c.vi)}</div>
+      <div class="ex"><span class="zh" lang="zh-CN">${hl(c.ex[0], c.zh)}</span><i>${esc(c.ex[1])}</i>${esc(c.ex[2])}</div></div></div></div>`;
+}
+function bindFlip(c, onFlip) { const f = $('flip'); if (!f) return; f.onclick = e => { if (e.target.closest('[data-say]')) { speak(c.zh + '。' + c.ex[0]); return; } f.classList.toggle('back'); SFX.flip(); if (onFlip) onFlip(f.classList.contains('back')); }; }
+function renderSheet() {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  const B = $('sheetBody'), due = dueList(), learned = Object.keys(S.cards).length, total = COURSE.reduce((a, u) => a + u.cards.length, 0);
+  if (tab === 'review') {
+    const nd = Object.values(S.cards).map(c => c.due).filter(t => t > dayStart() + DAY).sort((a, b) => a - b)[0];
+    let h = `<div class="stat"><div><b>${due.length}</b><small>cần ôn hôm nay</small></div><div><b>${learned}/${total}</b><small>thẻ đã có</small></div><div><b>${starLv()}★</b><small>khách sạn</small></div></div>`;
+    const now = dueNow(), later = due.filter(id => !now.includes(id));
+    if (now.length) { reviewId = now[0]; const c = CARD[reviewId], sc = S.cards[reviewId];
+      h += cardFace(c, false) + `<div class="grades" id="grades" hidden>${['Lại', 'Khó', 'Được', 'Dễ'].map((t, g) => `<button type="button" class="g${g}" data-g="${g}">${t}<small>${ivlLabel(nextIvl(sc, g))}</small></button>`).join('')}</div>
+        <p class="note">Nhớ nghĩa trước, rồi chạm thẻ để lật. Chấm thật lòng: quên thì bấm "Lại", thẻ sẽ quay lại sau 10 phút. Ôn đúng lịch giúp nhớ lâu (cách ôn ngắt quãng như Anki).</p>`;
+    } else if (later.length) { const t = new Date(S.cards[later[0]].due); h += `<div style="text-align:center;margin:18px 0 6px;font-size:40px">⏳</div><p style="text-align:center;font-weight:900">Còn ${later.length} thẻ hẹn ôn lại lúc ${t.getHours()}:${String(t.getMinutes()).padStart(2, '0')}</p><p class="note" style="text-align:center">Nghỉ một chút rồi quay lại, hoặc đón thêm khách.</p>`;
+    } else h += `<div style="text-align:center;margin:18px 0 6px;font-size:40px">🎉</div><p style="text-align:center;font-weight:900">${learned ? 'Hôm nay ôn xong rồi!' : 'Chưa có thẻ nào. Đón khách để nhận thẻ từ đầu tiên nhé!'}</p>
+      <p class="note" style="text-align:center">${nd ? 'Lần ôn tới: ' + new Date(nd).toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric' }) : ''}</p>`;
+    h += `<div class="sec">Nhắc ôn mỗi ngày</div>
+      <div class="row"><label for="hour" style="font-size:13px;font-weight:700">Giờ nhắc</label><select id="hour">${[7, 12, 19, 20, 21, 22].map(x => `<option value="${x}"${x === S.hour ? ' selected' : ''}>${x}:00</option>`).join('')}</select></div>
+      <div class="row" style="margin-top:8px"><button type="button" class="btn" id="notifyOn">🔔 ${S.remind ? 'Đã bật thông báo' : 'Bật thông báo'}</button><button type="button" class="btn alt" id="icsBtn">📅 Thêm vào lịch</button>${installEvt ? '<button type="button" class="btn alt" id="installBtn">📲 Cài như app</button>' : ''}</div>
+      <p class="note">Mở game là thấy ngay số thẻ cần ôn (số đỏ trên nút 📚, cả trên biểu tượng app nếu đã cài). Thông báo khi không mở game: Android (Chrome) đã cài app có thể tự nhắc; iPhone dùng nút "Thêm vào lịch" để lịch điện thoại nhắc mỗi ngày. Cài app: Android bấm "Cài như app"; iPhone mở bằng Safari, bấm Chia sẻ rồi "Thêm vào MH chính".</p>`;
+    B.innerHTML = h;
+    if (now.length) { const c = CARD[reviewId]; bindFlip(c, back => { $('grades').hidden = !back; if (back) speak(c.zh); });
+      B.querySelectorAll('[data-g]').forEach(b => b.onclick = () => { const g = +b.dataset.g; grade(reviewId, g); g ? SFX.ok() : SFX.no(); if (g) { S.pts += 2; save(); hud(); } renderSheet(); }); }
+    $('hour').onchange = e => { S.hour = +e.target.value; save(); };
+    $('notifyOn').onclick = enableNotify; $('icsBtn').onclick = downloadICS; if ($('installBtn')) $('installBtn').onclick = () => { installEvt.prompt(); installEvt = null; };
+  } else if (tab === 'deck') {
+    let h = '';
+    COURSE.forEach((u, i) => { const open = u.star <= starLv();
+      h += `<div class="sec">Bài ${i + 1} · ${esc(u.title)} · ${u.lv}</div><div class="deck">` + u.cards.map(c => { const sc = S.cards[c.id], isDue = sc && sc.due < dayStart() + DAY;
+        return !open ? `<div class="mini lock"><span class="zh">🔒</span><small>Mở ở ${u.star}★</small></div>` : sc ? `<button type="button" class="mini" data-card="${c.id}"><span class="zh" lang="zh-CN">${esc(c.zh)}</span><small>${esc(c.py)}</small>${isDue ? '<span class="due">cần ôn</span>' : ''}</button>` : `<div class="mini new"><span class="zh" lang="zh-CN" style="opacity:.35">${esc(c.zh)}</span><small>chưa gặp khách nói</small></div>`; }).join('') + '</div>'; });
+    B.innerHTML = `<p class="note" style="margin-top:0">Mỗi khách nói một câu có từ của bài đang học. Trả lời đúng là thẻ vào Bộ thẻ. Chạm thẻ để xem lại.</p>${h}<div id="detail"></div>`;
+    B.querySelectorAll('[data-card]').forEach(b => b.onclick = () => { const c = CARD[b.dataset.card]; $('detail').innerHTML = `<div class="sec">Thẻ ${esc(c.zh)}</div>` + cardFace(c, true); bindFlip(c); $('detail').scrollIntoView({ behavior: 'smooth', block: 'center' }); speak(c.zh); });
+  } else {
+    B.innerHTML = `<p class="note" style="margin-top:0">Lộ trình HSK0 → HSK4 của Bảo Khựa, gắn với từng khu khách sạn. Lên sao là mở bài mới, khách mới nói câu của bài đó. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.</p>` +
+      COURSE.map((u, i) => { const open = u.star <= starLv(), n = u.cards.filter(c => S.cards[c.id]).length;
+        return `<div class="unit${open ? '' : ' lock'}"><div class="no">${open ? i + 1 : '🔒'}</div><div class="t"><b>Bài ${i + 1} · ${esc(u.title)}</b><small>${u.lv} · ${esc(u.zone)} · ${open ? `${n}/${u.cards.length} thẻ` : `mở ở ${u.star}★`}</small><div class="pb"><i style="width:${n / u.cards.length * 100}%"></i></div></div></div>`; }).join('') +
+      `<div class="sec">Học sâu hơn với Bảo</div><p class="note" style="margin-top:0">Game giúp nhớ từ. Muốn nói trôi chảy thì vào lớp Zoom theo đúng lộ trình này.</p><div class="row"><a class="btn" href="../../membership.html" target="_blank" rel="noopener">📚 Học online với Bảo</a></div>`;
+  }
+}
 
-// video 9:16 quay từ chính cảnh này (tools/hotel/capture.js → teaser.mp4)
+/* ---------- nhắc ôn: thông báo, lịch .ics, cài app ---------- */
+let installEvt = null, swReg = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if ($('sheet').classList.contains('on')) renderSheet(); });
+if ('serviceWorker' in navigator && !CAPTURE) navigator.serviceWorker.register('sw.js').then(r => { swReg = r; syncSW(); }).catch(() => {});
+function syncSW() {   // gửi lịch ôn cho sw.js (đọc được khi app đóng để tự nhắc)
+  if (!('caches' in window) || CAPTURE) return; clearTimeout(syncSW.t);
+  syncSW.t = setTimeout(async () => { try { const c = await caches.open('bk-srs'), old = await c.match('./__srs').then(r => r ? r.json() : {}).catch(() => ({}));   // giữ dấu "đã nhắc hôm nay" do sw.js ghi
+    await c.put('./__srs', new Response(JSON.stringify({ due: Object.values(S.cards).map(x => x.due), hour: S.hour, on: S.remind, notified: old.notified || '' }))); } catch (e) {} }, 400);
+}
+async function enableNotify() {
+  if (!('Notification' in window)) { toast('Máy này chưa hỗ trợ thông báo web<small>Dùng "Thêm vào lịch" để được nhắc mỗi ngày</small>', 3200); return; }
+  try { const p = await Notification.requestPermission(); if (p !== 'granted') { toast('Chưa cho phép thông báo<small>Dùng "Thêm vào lịch" để được nhắc</small>', 3000); return; }
+    S.remind = true; save();
+    if (swReg) { try { if (swReg.periodicSync) await swReg.periodicSync.register('bk-review', { minInterval: 6 * 3600e3 }); } catch (e) {}
+      swReg.showNotification('Khách sạn Vịnh Ā Bǎo', { body: `Đã bật nhắc ôn lúc ${S.hour}:00 mỗi ngày. Hôm nay có ${dueList().length} thẻ cần ôn.`, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'bk-review' }); }
+    toast('🔔 Đã bật nhắc ôn', 1800); renderSheet();
+  } catch (e) { toast('Không bật được thông báo<small>Dùng "Thêm vào lịch" nhé</small>', 3000); }
+}
+function downloadICS() {
+  const d = new Date(); d.setHours(S.hour, 0, 0, 0); if (d < new Date()) d.setDate(d.getDate() + 1);
+  const p = n => String(n).padStart(2, '0'), stamp = x => `${x.getFullYear()}${p(x.getMonth() + 1)}${p(x.getDate())}T${p(x.getHours())}${p(x.getMinutes())}00`;
+  const url = location.href.split('#')[0].split('?')[0] + '#on-tap';
+  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Bao Khua//Khach san Vinh A Bao//VI', 'BEGIN:VEVENT', 'UID:bk-review-' + Date.now() + '@baokhua.com', 'DTSTAMP:' + stamp(new Date()), 'DTSTART:' + stamp(d), 'DURATION:PT10M', 'RRULE:FREQ=DAILY',
+    'SUMMARY:Ôn thẻ từ tiếng Trung (5 phút) · Khách sạn Vịnh Ā Bǎo', 'DESCRIPTION:Mở game và ôn các thẻ đến hạn hôm nay: ' + url, 'URL:' + url,
+    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Đến giờ ôn thẻ từ rồi!', 'TRIGGER:PT0M', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })); a.download = 'nhac-on-the-tu.ics'; document.body.appendChild(a); a.click(); a.remove(); toast('📅 Mở tệp vừa tải để thêm vào lịch', 2600); }
+  catch (e) { toast('Trình duyệt chặn tải tệp', 2000); }
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && swReg && swReg.active && S.remind) { syncSW(); setTimeout(() => { try { swReg.active.postMessage('remind'); } catch (e) {} }, 500); } });
+// nhắc ngay khi mở: banner "Hôm nay có N thẻ cần ôn"
+function remindBanner() { const n = dueList().length; if (!n || CAPTURE) return; $('remindN').textContent = n; $('remind').classList.add('on'); setTimeout(() => $('remind').classList.remove('on'), 9000); }
+$('remindGo').onclick = () => { $('remind').classList.remove('on'); openSheet('review'); };
+$('remindX').onclick = () => $('remind').classList.remove('on');
+$('muteBtn').onclick = () => { S.mute = !S.mute; $('muteBtn').firstChild.textContent = S.mute ? '🔇' : '🔊'; save(); if (S.mute && 'speechSynthesis' in window) speechSynthesis.cancel(); };
+$('muteBtn').firstChild.textContent = S.mute ? '🔇' : '🔊';
+$('askSay').onclick = () => cur && speak(cur.ex[0]);
 $('vidBtn').onclick = () => { const v = $('vidEl'); if (!v.src) v.src = 'teaser.mp4'; $('vid').classList.add('on'); v.play().catch(() => {}); };
 $('vidClose').onclick = () => { $('vid').classList.remove('on'); $('vidEl').pause(); };
+
+/* ---------- chạy ---------- */
+fit(); hud();
+if (location.hash === '#on-tap') setTimeout(() => openSheet('review'), 600); else setTimeout(remindBanner, 1500);
+let last = performance.now();
+function loop(now) { const dt = Math.min(.05, (now - last) / 1000); last = now; update(dt); render(); requestAnimationFrame(loop); }
+if (CAPTURE) { window.__step = (dt = 1 / 30) => { update(dt); render(); }; window.__ready = true; render(); } else requestAnimationFrame(loop);
+window.__proto = { S, COURSE, CARD, grade, nextIvl, dueList, dueNow, dayStart, starLv, openSheet, closeSheet, hud, UNLOCK, renderSheet, answer: i => { const b = [...$('askOpts').children][i]; if (b) b.click(); }, get phase() { return phase; }, get cur() { return cur; }, hero, get guest() { return guest; } };
 </script>
 </body>
 </html>
