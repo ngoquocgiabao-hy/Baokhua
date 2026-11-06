@@ -297,7 +297,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-bet
 .toast.is-on{transform:translate(-50%,0);opacity:1}
 
 
-/* ---------- 2 nút 3D: Chơi game · Học online (07/11) ----------
+/* ---------- 2 nút 3D: Chơi game · Học online (06/11) ----------
    Khối có độ dày thật (các lớp xếp theo trục Z), nổi nhẹ, nghiêng theo chuột, vệt sáng lướt, vòng sáng gọi bấm.
    Chỉ đổi transform/opacity (card đồ hoạ lo), dừng khi khuất màn hình, tắt hẳn khi máy bật giảm chuyển động. */
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px;max-width:560px}
@@ -1016,7 +1016,7 @@ const CONFIG = {
   const onScroll = () => {
     const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
     nav.classList.toggle('is-stuck', y > 20);
-    dock.classList.toggle('is-on', !window.__duoSeen && y < max - 500);   // 07/11: thanh dưới có nút Chơi game / Học online hiện ngay từ đầu, ẩn khi 2 nút 3D lớn đang trong tầm nhìn
+    dock.classList.toggle('is-on', !window.__duoSeen && y < max - 500);   // 06/11: thanh dưới có nút Chơi game / Học online hiện ngay từ đầu, ẩn khi 2 nút 3D lớn đang trong tầm nhìn
     bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
     const r = tl.getBoundingClientRect();
     tl.style.setProperty('--p', Math.min(1, Math.max(0, (vh * .75 - r.top) / r.height)).toFixed(3));
@@ -1278,7 +1278,7 @@ const CONFIG = {
   }
 })();
 
-/* ---- 2 nút 3D + bảng chọn game + chuyển cảnh (07/11) ---- */
+/* ---- 2 nút 3D + bảng chọn game + chuyển cảnh (06/11) ---- */
 (function () {
   const q = s => document.querySelector(s), qa = s => [...document.querySelectorAll(s)];
   const pick = q('#gpick'), portal = q('#portal'); if (!pick || !portal) return;

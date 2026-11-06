@@ -1,6 +1,6 @@
 # Kế hoạch chuyển mình game Khách sạn Bảo Khựa
 
-Phiên bản kế hoạch: 1.1 (06/11/2026; 1.1 ghi quyết định của Bảo ở mục 15, nguồn hình 3D và video không tốn thêm chi phí ở mục 8.2–8.3). Chủ dự án: Bảo. Người soạn: Xưởng Game và Web.
+Phiên bản kế hoạch: 1.2 (06/11/2026; 1.1 ghi quyết định của Bảo ở mục 15, nguồn hình 3D và video không tốn thêm chi phí ở mục 8.2–8.3; 1.2 thêm giáo trình, thẻ từ, ôn kiểu Anki, nhắc ôn ở mục 6.17 và phát hành web, PWA, chợ ứng dụng ở mục 9.5). Chủ dự án: Bảo. Người soạn: Xưởng Game và Web.
 Đọc kèm: `docs/khachsan/KAIZEN.md` (cách cải tiến liên tục), `docs/BAN_GIAO.md` (quy trình chung), `CLAUDE.md` (luật bắt buộc).
 
 ## 1. Tóm tắt
@@ -156,7 +156,7 @@ Mỗi nhân viên có cấp tốc độ, sức mang, và **kỹ năng ngôn ng�
 - Tình huống giao tiếp theo khu: nhận phòng, trả phòng, chỉ đường, gọi món, xử lý phàn nàn, giới thiệu tiện ích, đặt tour, gọi taxi.
 - Dạng bài: chọn câu đáp, nghe và chọn nghĩa, sắp xếp câu, điền từ, tình huống (đã có trong `QUESTIONS_RAW`). Thêm dạng mới: nói theo mẫu (ghi âm và so khớp đơn giản), chỉ làm khi đã thử trên điện thoại thật.
 - Độ khó bám khung HSK0 → HSK4 theo sao khách sạn. Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức.
-- Ôn lặp lại ngắt quãng: câu sai quay lại sau 1 phiên, 1 ngày, 3 ngày, 7 ngày (mở rộng từ Sổ ôn hiện có).
+- Ôn lặp lại ngắt quãng kiểu Anki, gắn với giáo trình và thẻ từ: xem mục 6.17 (đã làm trong bản thử v0.2).
 - Giọng đọc: ưu tiên file giọng tạo sẵn (dây chuyền `tools/voice`, cần khoá Gemini), dự phòng giọng máy.
 - Ngôn ngữ thứ hai trở đi (tiếng Anh nghề khách sạn, tiếng Hàn, tiếng Nhật): giai đoạn 3–4, mỗi ngôn ngữ cần người duyệt nội dung là người dạy ngôn ngữ đó.
 - Luật nội dung: chữ Hán luôn kèm pinyin có dấu và nghĩa Việt; tiếng Hàn, Nhật kèm phiên âm và nghĩa; không ghi "miễn phí", không nhắc hoàn tiền, không nhắc S-VIP.
@@ -248,13 +248,28 @@ Tiêu chí: 80% người chơi thử hoàn thành 10 phút đầu không cần h
 - Link Google Form và Zalo có UTM để đo nguồn.
 - Không gắn quyền lợi trong game với việc mua thẻ khi chưa có ý kiến pháp lý.
 
+### 6.17 Giáo trình, thẻ từ và ôn tập kiểu Anki (v1.2, đã có trong bản thử v0.2)
+
+Học và chơi là một vòng: lên sao thì mở bài, khách nói câu của bài, đúng thì có thẻ từ, thẻ từ được ôn đúng lịch, ôn đều thì nhớ và chơi giỏi hơn.
+
+| Thành phần | Cách làm |
+|---|---|
+| Giáo trình | 6 bài theo lộ trình HSK0 → HSK4 của Bảo Khựa, mỗi bài gắn 1 khu khách sạn và 1 mức sao: Chào hỏi (HSK0, 0★), Nhận phòng (HSK1, 1★), Giờ giấc và tiện ích (HSK1, 2★), Phục vụ phòng (HSK2, 3★), Xử lý sự cố (HSK3, 4★), Trả phòng và tiễn khách (HSK4, 5★). Bản chính thức mở rộng mỗi bài 15–25 thẻ, giáo viên duyệt |
+| Thẻ từ | Chữ Hán, pinyin có dấu, nghĩa Việt, câu mẫu (Hán, pinyin, nghĩa) luôn chứa từ của thẻ, nút nghe. Thẻ lật 3D |
+| Trong game | Mỗi khách nói câu mẫu của bài đang mở; người chơi chọn nghĩa đúng. Đúng: khách vui, boa xu (chỉ dùng trong game), thẻ vào Bộ thẻ. Sai: hiện đáp án, thẻ hẹn ôn lại sau 10 phút. Khách cũng hỏi lại đúng từ đang đến hạn ôn |
+| Ôn hôm nay | Lịch ôn SM-2 rút gọn như Anki, ngày mới tính từ 4 giờ sáng. 4 nút: Lại (10 phút), Khó, Được, Dễ, hiện trước khoảng ngày hẹn. Thẻ vừa quên chỉ hiện lại khi tới giờ |
+| Nhắc ôn | Mở game: banner "Hôm nay có N thẻ cần ôn" + số đỏ trên nút Thẻ từ và trên biểu tượng app (đã cài). App đóng: Android (Chrome, đã cài app) thông báo lúc giờ người chơi chọn, mỗi ngày 1 lần (sw.js đọc lịch ôn). iPhone và máy khác: tệp lịch .ics nhắc hằng ngày, mở thẳng vào màn ôn |
+| Nối với lớp học | Màn Giáo trình có nút "Học online với Bảo" tới trang thẻ hội viên; bài trong game trùng tên bài trên lớp Zoom |
+
+Giới hạn hiện tại: thông báo đẩy thật (máy chủ gửi tới iPhone khi app đóng) cần một máy chủ gửi thông báo, đó là dịch vụ ngoài nên phải trình Bảo duyệt trước. Tiến độ và lịch ôn lưu trên máy người chơi; đồng bộ nhiều máy cần tài khoản, để giai đoạn 4.
+
 ## 7. Yếu tố quốc tế
 
 - **Giao diện ba thứ tiếng** (Việt, Anh, Trung) từ giai đoạn 2: mọi chữ trên giao diện nằm trong file ngôn ngữ, không viết cứng trong mã. Người chơi chọn ngôn ngữ giao diện và ngôn ngữ học riêng.
 - **Nội dung văn hoá chính xác:** câu nói, món ăn, phong tục của từng nước do người bản ngữ hoặc giáo viên duyệt trước khi đưa vào.
 - **Phông chữ:** dùng phông hệ thống cho chữ Việt, phông Trung cho chữ Hán (bài học từ game Đánh Boss: không gắn phông Trung vào chữ Việt), thêm phông cho Hàn, Nhật khi mở ngôn ngữ đó.
 - **Giờ và lịch:** sự kiện tính theo giờ máy người chơi; lịch sự kiện có cả lễ của Việt Nam và các nước có khách.
-- **Phát hành:** giai đoạn 1–3 trên web (baokhua.com, có thể cài như ứng dụng PWA). Giai đoạn 4 cân nhắc đóng gói lên kho ứng dụng iOS/Android (cần tài khoản nhà phát triển, chính sách quyền riêng tư, kiểm tra giấy phép phát hành game).
+- **Phát hành:** web và cài như app (PWA) trước; App Store và CH Play để sau, xem mục 9.5.
 - **Quyền riêng tư:** không thu dữ liệu cá nhân khi chưa có chính sách quyền riêng tư được Bảo duyệt; lưu tiến độ trên máy người chơi.
 
 ## 8. Mỹ thuật và âm thanh
@@ -372,6 +387,25 @@ Bản đã đóng gói đặt ở `/hotel/` trên baokhua.com để thử. Khi B
 - Kiểm thử kinh tế: mô phỏng 30 ngày, báo lỗi khi nhịp lên sao lệch quá 20% so với mục tiêu.
 - Chạy kiểm thử tự động trên GitHub Actions cho mọi thay đổi (thêm sau giai đoạn 0).
 - Đăng theo luật hiện có: làm trên nhánh, chỉ đưa lên `main` khi Bảo gõ "duyệt đăng".
+
+### 9.5 Phát hành: web, cài như app, chợ ứng dụng (v1.2)
+
+Bảo hỏi về app thật trên App Store và CH Play: nếu chi phí quá cao thì bỏ qua, tập trung web cho mượt.
+
+| Cách | Chi phí | Thủ tục, rủi ro | Kết luận |
+|---|---|---|---|
+| Web baokhua.com | 0 đồng (GitHub Pages) | Không | Làm ngay |
+| Cài như app (PWA) | 0 đồng | Không qua chợ. Có biểu tượng trên màn hình chính, mở toàn màn hình, chạy được khi mạng yếu, số đỏ trên biểu tượng. Android cài bằng một nút; iPhone vào Safari, Chia sẻ, "Thêm vào MH chính" | Làm ngay (bản thử đã có manifest, sw.js, biểu tượng) |
+| CH Play (Google Play), gói PWA bằng Trusted Web Activity hoặc Capacitor | Phí đăng ký 25 USD một lần (khoảng 650 nghìn đồng) | Tài khoản cá nhân mới phải có 12 người thử liên tục 14 ngày trước khi đăng chính thức; cần chính sách quyền riêng tư; game phát hành ở Việt Nam phải làm thủ tục thông báo phát hành (Nghị định 147/2024); người dưới 18 tuổi bị giới hạn giờ chơi | Để giai đoạn 4, sau khi hỏi pháp lý về thủ tục game hay ứng dụng giáo dục |
+| App Store (iPhone) | 99 USD mỗi năm (khoảng 2,6 triệu đồng mỗi năm) | Apple hay từ chối ứng dụng chỉ bọc trang web, phải có thêm tính năng của máy; cần máy Mac hoặc dịch vụ dựng trên mây; cùng thủ tục pháp lý như trên | Để sau CH Play, khi có doanh thu |
+
+Đề xuất: **chưa lên chợ ứng dụng**. Tập trung web và PWA cho mượt từ lúc vào trang tới lúc chơi. Chi phí CH Play không cao, nhưng thủ tục (12 người thử, thông báo phát hành game, quyền riêng tư) tốn công hơn tiền. Mở lại câu hỏi ở giai đoạn 4.
+
+Đường vào game trên baokhua.com (đã làm trên nhánh làm việc, chờ duyệt đăng):
+
+- Màn đầu trang chủ có 2 nút 3D lớn: Chơi game (cam đỏ, nhãn MỚI 3D) và Học online (xanh, tới trang thẻ hội viên). Thanh dưới trên điện thoại có sẵn 2 nút này ngay từ màn đầu.
+- Bấm Chơi game mở bảng chọn 3 game ngay trong trang (không tải lại), đồng thời tải trước game để vào nhanh. Chọn game thì có chuyển cảnh vòng tròn vàng rồi vào game.
+- Hiệu ứng 3D chỉ dùng biến đổi hình (transform) và độ mờ, card đồ hoạ xử lý nên không lag; dừng khi khuất màn hình; máy bật giảm chuyển động thì tắt.
 
 ## 10. Lộ trình
 

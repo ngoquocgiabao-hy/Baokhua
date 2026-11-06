@@ -18,7 +18,7 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
 
 ## 0. Ưu tiên dự án (06/11/2026)
 
-- **Dự án chính: game Khách sạn mới** (mô phỏng xây và quản lý khách sạn 3D, quốc tế). Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md`. Cách cải tiến liên tục: `docs/khachsan/KAIZEN.md`. Bảo đã duyệt hướng đi ngày 06/11 (mục 15 của kế hoạch). Đang ở giai đoạn 0 (2 tuần, mục 10.1): bản thử đầu ở `hotel/proto/` (sảnh 3D dựng 100% bằng code, video `teaser.mp4` quay từ cảnh bằng `tools/hotel/capture.js`). Hình 3D và video làm không tốn thêm chi phí (mục 8.2–8.3 của kế hoạch).
+- **Dự án chính: game Khách sạn mới** (mô phỏng xây và quản lý khách sạn 3D, quốc tế). Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md`. Cách cải tiến liên tục: `docs/khachsan/KAIZEN.md`. Bảo đã duyệt hướng đi ngày 06/11 (mục 15 của kế hoạch). Đang ở giai đoạn 0 (2 tuần, mục 10.1): bản thử v0.2 ở `hotel/proto/` (sảnh 3D dựng 100% bằng code, kiểu hoạt hình dễ thương; giáo trình 6 bài HSK0 → HSK4, thẻ từ, ôn kiểu Anki, nhắc ôn; cài như app), kiểm bằng `node tools/test/hotel.js`; video `teaser.mp4` quay bằng `tools/hotel/capture.js`. Hình 3D và video làm không tốn thêm chi phí (mục 8.2–8.3 của kế hoạch). Chưa lên App Store, CH Play; tập trung web và PWA (mục 9.5).
 - **Game Đánh Boss là game nhánh:** đóng băng tính năng ở v16, chỉ sửa lỗi. Tổng kết: `docs/TONG_KET_GAME_DANH_BOSS.md`.
 - `khachsan.html` v5 tiếp tục chạy trên baokhua.com cho đến khi bản mới đạt chuẩn và Bảo duyệt đăng.
 
@@ -26,7 +26,7 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
 | Nơi | Nội dung |
 |---|---|
 | `main` (trang thật) | Bản đăng 06/11 (Bảo duyệt đăng): game Đánh Boss v16, trang chủ 11.11 (ưu đãi thẻ năm 299k đến 23:59 11/11, không ghi ngày khai giảng), trang thẻ hội viên 11.11, Khách sạn v5. Commit `0036e89`. |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Như `main` cộng bản thử game Khách sạn mới `hotel/proto/` và công cụ quay video `tools/hotel/capture.js`. Phần này **chưa đăng**. |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Như `main` cộng: bản thử game Khách sạn mới v0.2 `hotel/proto/`, công cụ quay video `tools/hotel/capture.js`, kiểm thử `tools/test/hotel.js`, trang chủ có 2 nút 3D Chơi game / Học online + bảng chọn game. Phần này **chưa đăng**, chờ Bảo gõ "duyệt đăng". |
 | Bản xem thử (riêng tư) | Game Đánh Boss: https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Bản thử 3D Khách sạn: https://claude.ai/artifact/75dWtZMQe9gUqRtUXTGyfQ. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
