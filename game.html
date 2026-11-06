@@ -37,8 +37,8 @@ const STAGES = [
 ];
 
 const FORM_UTM_GAME = 'utm_source=game&utm_campaign=lop_0211';
-const INVITE_BLURB = '99k cho 3 tháng, 299k cho 1 năm, học Zoom thứ Hai, Tư, Sáu lúc 20:00';
-const INVITE_SHARE_LINE = 'Thẻ 99k/299k · Zoom 20:00 T2 T4 T6 · buổi đầu 04/11';
+const INVITE_BLURB = 'Thẻ tự học: 99.000đ / 3 tháng, 299.000đ / 1 năm. Đã gồm game, tài liệu và nhóm Zalo bài giảng. Không gồm Zoom.';
+const INVITE_SHARE_LINE = 'Thẻ tự học 99k/299k · tài liệu + Zalo bài giảng · không gồm Zoom';
 const OFFER_HOLD = '⏰ Giữ chỗ đến 20:00 thứ Ba 03/11';
 const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 20:00 thứ Ba 03/11 → bạn được cộng thêm 7 ngày.';
 const OFFER_MINIGAME = '🎯 Mini game Zalo đoán nghĩa → giảm đến 20k';
@@ -1882,7 +1882,7 @@ function buildShareCard() {
   wrapText(g, OFFER_MINIGAME, W/2, 1445, W - 220, 34);
   g.font = '24px system-ui,sans-serif';
   const formUrl = withUtm(GOOGLE_FORM_LINK, FORM_UTM_GAME);
-  wrapText(g, /THAY_/.test(formUrl) ? 'Đăng ký thẻ · Zoom T2 T4 T6 20:00' : formUrl, W/2, 1500, W - 220, 34);
+  wrapText(g, /THAY_/.test(formUrl) ? 'Đăng ký thẻ tự học · không gồm Zoom' : formUrl, W/2, 1500, W - 220, 34);
   g.fillStyle = '#16171B'; g.font = '22px system-ui,sans-serif';
   g.fillText('baokhua.com', W/2, 1860);
   return c;
