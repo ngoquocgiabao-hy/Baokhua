@@ -77,7 +77,7 @@ Các tỉ lệ trên lượt xem tính theo %, tỉ lệ xem hết nhân 10, đ�
 
 ## 4. Bài giảng 3D hằng ngày (sau khi chốt long mạch)
 - **Mỗi ngày 1 video bài giảng** (F3 hoặc F4) lúc 11:30. Khung 20:00 dành cho thể loại thắng.
-- **Kho hiện có:** 24 video (bỏ kg01 vì ghi ngày cũ), đủ khoảng 3,5 tuần. Phải dựng lại trước khi đăng, vì CTA cũ ghi "khai giảng 04/11". Câu kêu gọi đã sửa trong `config.json`.
+- **Kho hiện có:** 24 video (bỏ kg01 vì ghi ngày cũ), đủ khoảng 3,5 tuần. Đã dựng lại với câu kêu gọi mới ngày 06/11 (CTA cũ ghi "khai giảng 04/11").
   - Lệnh: `node tools/build.mjs` (khoảng 2,5 giờ máy cho 24 video).
 - **Nối dài kho:**
   - Gemini soạn thêm câu vào `QUESTIONS_RAW` (việc V04, V15 trong hàng đợi). Cứ 3 câu mới là có thêm 1 video F4.
@@ -98,7 +98,7 @@ Các tỉ lệ trên lượt xem tính theo %, tỉ lệ xem hết nhân 10, đ�
 - Không né cơ chế chống bot của nền tảng. Video TikTok cũ thì Bảo lưu từ máy hoặc từ ứng dụng rồi gửi lại.
 
 ## 6. Việc còn mở
-1. ~~Dựng lại 24 video F3/F4 với CTA mới~~ (đang chạy 06/11; 8 câu nhà máy trong `QUESTIONS_RAW` đã thêm dấu 。 cho đồng bộ).
+1. ~~Dựng lại 24 video F3/F4 với CTA mới~~ (xong 06/11, đã gửi Bảo bản nén kèm `CAPTIONS_BAI_GIANG_24.md`; 8 câu nhà máy trong `QUESTIONS_RAW` đã thêm dấu 。 cho đồng bộ).
 2. Bảo gửi raw 02–04 qua chat (Drive chỉ tải được tệp dưới 5 MB) để làm F8 #2–#4. Raw 01 đã thành F8 #1 và bản short.
 3. Bảo chụp 10 biển hiệu tiếng Trung quanh Bãi Cháy để làm F6. Không chê bai cơ sở cụ thể nào.
 4. ~~Gemini kiểm pinyin và nghĩa~~: xong 06/11 cho F1 bản 2, F2 tập 1–2, F8 tập 1 và 24 video bài giảng (125 mục, 0 lỗi phải sửa). Còn chờ Bảo duyệt thêm dấu 。 cho 5 câu nhà máy trong `QUESTIONS_RAW`.
