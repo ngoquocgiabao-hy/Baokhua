@@ -3,9 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "capture": "node tools/capture.cjs",
-    "build": "node tools/build.mjs",
-    "list": "node tools/build.mjs --list"
+    "giaotrinh": "node series/giaotrinh3d.mjs",
+    "check": "python3 tools/gemini_check.py"
   },
   "devDependencies": {
     "gsap": "3.15.0",

@@ -1,0 +1,178 @@
+{
+ "id": "gt01",
+ "level": "HSK0 · BÀI 1",
+ "_nguon": "Giáo trình game Khách sạn Vịnh Ā Bǎo, bài u1 Chào hỏi (你好) + giáo án khung HSK0 buổi 1 (4 thanh với ma)",
+ "beats": [
+  {
+   "type": "hook",
+   "dur": 4.5,
+   "stamp": "GIÁO TRÌNH 3D · PHÂN TÍCH SÂU",
+   "line": "Sách viết **nǐ hǎo**, nhưng người Trung KHÔNG đọc như vậy 🤯",
+   "key": "你好",
+   "py": "nǐ hǎo",
+   "ask": "Bí mật nằm ở **thanh 3** 👇"
+  },
+  {
+   "type": "tones",
+   "dur": 10,
+   "tag": "01 · BẢN ĐỒ 4 THANH",
+   "title": "Cao độ chia 5 mức. Mỗi thanh là một **đường đi**",
+   "items": [
+    {
+     "zh": "妈",
+     "py": "mā",
+     "vi": "mẹ",
+     "c": [
+      5,
+      5
+     ],
+     "lab": "5 → 5"
+    },
+    {
+     "zh": "麻",
+     "py": "má",
+     "vi": "cây gai",
+     "c": [
+      3,
+      5
+     ],
+     "lab": "3 → 5"
+    },
+    {
+     "zh": "马",
+     "py": "mǎ",
+     "vi": "ngựa",
+     "c": [
+      2,
+      1,
+      4
+     ],
+     "lab": "2 → 1 → 4"
+    },
+    {
+     "zh": "骂",
+     "py": "mà",
+     "vi": "mắng",
+     "c": [
+      5,
+      1
+     ],
+     "lab": "5 → 1"
+    }
+   ],
+   "note": "Thanh 3 là thanh duy nhất **xuống thấp rồi mới lên**"
+  },
+  {
+   "type": "morph",
+   "dur": 11,
+   "tag": "02 · LUẬT VÀNG",
+   "title": "Hai thanh 3 đứng liền nhau thì sao?",
+   "chars": "你好",
+   "idx": 0,
+   "from": [
+    2,
+    1,
+    4
+   ],
+   "to": [
+    3,
+    5
+   ],
+   "rest": [
+    null,
+    [
+     2,
+     1,
+     4
+    ]
+   ],
+   "formula": "3 + 3 → **2** + 3",
+   "written": "nǐ hǎo",
+   "spoken": "**ní** hǎo",
+   "note": "Sách vẫn **viết nǐ hǎo**. Chỉ khi **nói** chữ đầu mới đổi sang thanh 2, cho dễ nói"
+  },
+  {
+   "type": "words",
+   "dur": 11.2,
+   "tag": "03 · GẶP SUỐT KHI ĐI LÀM",
+   "title": "Viết một kiểu, **đọc một kiểu**",
+   "items": [
+    {
+     "zh": "很好",
+     "written": "hěn hǎo",
+     "spoken": "**hén** hǎo",
+     "vi": "rất tốt"
+    },
+    {
+     "zh": "可以",
+     "written": "kěyǐ",
+     "spoken": "**ké**yǐ",
+     "vi": "được, có thể"
+    },
+    {
+     "zh": "水果",
+     "written": "shuǐguǒ",
+     "spoken": "**shuí**guǒ",
+     "vi": "hoa quả"
+    },
+    {
+     "zh": "洗手间",
+     "written": "xǐshǒujiān",
+     "spoken": "**xí**shǒujiān",
+     "vi": "nhà vệ sinh"
+    }
+   ]
+  },
+  {
+   "type": "half",
+   "dur": 9,
+   "tag": "04 · BÍ QUYẾT NÓI TỰ NHIÊN",
+   "title": "Thanh 3 đứng trước thanh 1, 2, 4: chỉ **xuống thấp**, không vòng lên",
+   "full": [
+    2,
+    1,
+    4
+   ],
+   "half": [
+    2,
+    1,
+    1
+   ],
+   "items": [
+    {
+     "zh": "老师",
+     "py": "lǎoshī",
+     "vi": "thầy cô"
+    },
+    {
+     "zh": "好吃",
+     "py": "hǎochī",
+     "vi": "ngon"
+    }
+   ],
+   "note": "Chữ nào cũng đọc đủ 2 → 1 → 4 thì nghe **cứng như robot** 🤖"
+  },
+  {
+   "type": "use",
+   "dur": 5.5,
+   "tag": "05 · ĐI LÀM NÓI LUÔN",
+   "zh": "你好，欢迎光临！",
+   "written": "Nǐ hǎo, huānyíng guānglín!",
+   "spoken": "**Ní** hǎo, huānyíng guānglín!",
+   "vi": "Xin chào, chào mừng quý khách!"
+  },
+  {
+   "type": "cta",
+   "dur": 7,
+   "q": "Muốn tai **nghe ra** thanh điệu?",
+   "game": [
+    "Game Khách sạn Vịnh Ā Bǎo",
+    "Chặng HSK0: hạ Cua Thanh Điệu"
+   ],
+   "online": [
+    "Học online cùng Bảo",
+    "Nhóm nhỏ, sửa thanh điệu từng người"
+   ]
+  }
+ ]
+}

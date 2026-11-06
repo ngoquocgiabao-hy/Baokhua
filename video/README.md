@@ -1,72 +1,41 @@
-# Xưởng video Bảo Khựa (HyperFrames)
+# Xưởng video Bảo Khựa 阿宝
 
-Dựng hàng loạt video dọc 9:16 (1080×1920, 30 khung hình/giây) cho TikTok. Bảo không phải quay màn hình.
+Máy tự dựng video dọc 9:16 (1080×1920, 30 khung hình/giây) bằng HyperFrames: mỗi video là một trang HTML, chữ Hán là quân bài 3D thật (three.js), nhạc viết bằng code nên không dính bản quyền.
+Đọc **`HANDOFF.md`** trước (thể loại, lịch đăng, luật). Luật chung của repo ở `../CLAUDE.md`.
 
-## Ngôn ngữ hình ảnh (v2 – 3D)
-- **Cảnh game là thế giới**: quay ở độ nét gấp 6, phủ kín khung dọc. Máy quay nghiêng, kéo lùi, trôi ngang.
-- **Chữ Hán là quân bài 3D thật**: three.js, động cơ `tools/engine3d.js`. Quân bài rơi, lật, xoay lên, đập vào, rồi bị đánh bay khi đổi từ. Có ánh sáng môi trường, bóng mềm và pháo giấy.
-- **Pinyin, nghĩa, tiêu đề**: chữ phồng nhiều lớp viền kiểu show tạp kỹ, cùng băng dính vàng đen. Mỗi thứ vào một kiểu, không lặp.
-- **Kết bằng hành động**: thế giới thu lại thành màn hình điện thoại nghiêng 3D, sau đó quân 阿宝 đập xuống.
-- Học từ các repo mg-styles-15 (Hanazi, Isometric), huashu-art-motion (luật dùng ống kính, 6 cách làm hỏng) và từ tài liệu chuyển động của HyperFrames.
-
-## Ba mẫu video
-
-| Mã | Mẫu | Nội dung | Dài |
-|---|---|---|---|
-| `tv01`–`tv14` | Từ vựng | Quân bài 3D cho mỗi từ; pinyin là chữ phồng, nghĩa nằm trên băng dính; máy quay đổi góc mỗi từ | 16–20 giây |
-| `hn-hotel-*`, `hn-factory-*` | 3 giây trả lời | Câu Việt, đếm ngược bằng quân bài 3D 3-2-1, chớp sáng rồi lật câu Trung, pháo giấy | 26 giây |
-| `kg01` | Khai giảng | 1★ vụt sang 5★, quân bài lịch 3D "04/11", thông tin lớp, kết bằng điện thoại 3D | 19 giây |
-
-Mọi video kết bằng câu kêu gọi trong `config.json` → `cta`.
-
-## Dữ liệu lấy từ đâu
-- Từ vựng: `WORDS` trong `../khachsan.html`.
-- Câu hỏi: `QUESTIONS_RAW` trong `../khachsan.html`.
-
-Game và video dùng chung một nguồn, nên sửa câu trong game là video tự đúng theo. `config.json` chỉ giữ tiêu đề, cách chia nhóm từ, câu kêu gọi và thông tin lớp.
+## Cấu trúc thư mục
+| Thư mục | Có gì | Trong git |
+|---|---|---|
+| `tools/` | `engine3d.js` (quân bài, tấm ảnh 3D, pháo giấy, vòng sáng), `gemini_check.py` (Gemini kiểm pinyin và nghĩa) | Có |
+| `series/` | Khuôn dựng từng thể loại: `giaotrinh3d.mjs` (F9), `cauthat.mjs` (F8), `chuthat.mjs` (F2), nhạc `music_bed.py`, `music_series.py` | Có |
+| `giaotrinh/` | Dữ liệu tập F9 lấy từ giáo trình HSK0 → HSK4 của game mới (`gt01.json`…) | Có |
+| `debut/` | Trailer thương hiệu, nhạc, bản 16:9 / 4:5 (`platforms.cjs`) | Có |
+| `story/` | Nhạc piano kể chuyện (trong git); ảnh, raw, kịch bản, chú thích đời tư (ngoài git) | Một phần |
+| `_luu_tru/game-cu/` | Bộ dựng video từ game cũ `khachsan.html` (F3, F4). Đã bỏ 06/11/2026 | Có |
+| `out/`, `assets/*.mp4` | Video dựng ra, cảnh quay | Không |
 
 ## Chạy
 ```bash
 cd video
-npm i                      # cài HyperFrames, GSAP, three.js (một lần)
-npm run capture            # máy tự quay game → assets/clip_*.mp4 (khoảng 8 phút, cần Playwright)
-npm run list               # xem danh sách mã video
-node tools/build.mjs       # dựng tất cả → out/*.mp4 và out/CAPTIONS.md
-node tools/build.mjs tv04 kg01   # chỉ dựng vài video
+npm i                                              # một lần: HyperFrames, GSAP, three.js
+node series/giaotrinh3d.mjs giaotrinh/gt01.json    # sinh trang → out/gt01/
+cd out/gt01 && npx hyperframes snapshot --at 3,12,24 --no-end -o /tmp/snap .   # xem nhanh vài khung
+npx hyperframes render -o ../BAOKHUA_GIAO_TRINH_3D_GT01_master.mp4              # dựng thật, khoảng 10 phút cho 60 giây
 ```
-Mỗi video mất khoảng 5–9 phút để dựng (3D vẽ bằng CPU). Xem trước và sửa tay: `node tools/build.mjs tv04 --no-render`, sau đó `npx hyperframes preview out/build/tv04`.
+Nén bản đăng: `ffmpeg -i X_master.mp4 -c:v libx264 -crf 20 -preset slow -maxrate 18M -bufsize 36M -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart X_9x16.mp4`.
+Kiểm chữ Trung trước khi đăng: `GEMINI_API_KEY=... python3 tools/gemini_check.py . out/KIEM.json giaotrinh/gt01.json` (khoá chỉ đặt trong biến môi trường).
+Máy dựng chạy lâu: chạy tách hẳn khỏi phiên bằng `HYPERFRAMES_RENDER_DETACHED=1 setsid nohup ... &`.
 
-## Thêm video mới (ít token nhất)
-- Thêm một nhóm từ: thêm một dòng vào `config.json` → `tuvung`, với các khoá trong `WORDS` (ví dụ `"moto"`).
-- Thêm câu hỏi: thêm vào `QUESTIONS_RAW` trong game. Công cụ tự chia thành video 3 câu.
-- Sau ngày 04/11: sửa `cta.line2` và `khaigiang`, rồi dựng lại.
+## Thể loại đang dùng
+| Mã | Tên | Khuôn | Ghi chú |
+|---|---|---|---|
+| F9 | Giáo trình 3D · phân tích sâu (≤ 60 giây) | `series/giaotrinh3d.mjs` | Thay toàn bộ video game cũ. Bảo lồng tiếng theo `out/<mã>/vo.md` |
+| F8 | Chuyện thật · Câu thật | `series/cauthat.mjs` | Raw đời thật của Bảo |
+| F2 | Chữ thật · ảnh thật | `series/chuthat.mjs` | Ảnh có chữ Hán thật |
+| F1 | Chuyện thật (hành trình) | `story/build_story*.mjs` (ngoài git) | |
+| F5 | Trailer | `debut/build_debut.mjs` | Đoạn 14–22 giây đang dùng game cũ, phải quay lại bằng game mới |
 
 ## Luật
-- Không commit MP4: `out/` và `assets/*.mp4` đã được bỏ qua. Video xong thì cất lên Drive `03_VIDEO`.
-- Câu Trung mới phải qua Gemini kiểm trước khi Bảo đăng. Bot không tự đăng.
-- Không ghi "miễn phí", không nhắc S-VIP, không hứa ngày mở 6–10★.
-- Âm thanh lấy từ `../v4/audio`, là đồ của dự án. Muốn dùng nhạc thịnh hành thì Bảo thêm trong TikTok/CapCut.
-
-## Trailer debut (`debut/`)
-Trailer 46 giây, tông vàng Minion và đen, nhạc 120 BPM tự tổng hợp bằng code (`debut/music.py`, không dính bản quyền, −14 LUFS).
-```bash
-node debut/build_debut.mjs                 # bản có ngày khai giảng → out/debut/
-node debut/build_debut.mjs --evergreen     # bản không ghi ngày → out/debut-evergreen/
-cd out/debut && npx hyperframes render -o ../BAOKHUA_DEBUT_9x16_master.mp4    # khoảng 9 phút
-node debut/platforms.cjs [--evergreen]     # 16:9, 4:5, ảnh bìa (cần bản 9:16 đã nén ở out/)
-```
-Chú thích từng nền tảng: `debut/CAPTIONS_DEBUT.md`. Mọi dữ kiện về Bảo lấy từ trang chủ đã công khai.
-
-## Video cá nhân (`story/`)
-Công cụ chung nằm trong git: `story/music_story.py`, `story/music_story2.py` (nhạc piano 84 BPM viết bằng code), ảnh polaroid trong `tools/engine3d.js`, tham số `--story`/`--story2` của `debut/platforms.cjs`.
-Kịch bản, chú thích, ảnh bìa và ảnh cá nhân (`story/build_story*.mjs`, `story/CAPTIONS_*.md`, `story/thumbs_story.cjs`, `story/photos/`) để ngoài git, vì repo công khai (CLAUDE.md luật 3). Bản sao kịch bản và chú thích cất ở Drive `BAO KHUA - SO CAI/07_TU_LIEU_VIDEO`.
-Không bao giờ đưa vào video: ảnh gốc chưa che thông tin, ảnh trẻ em, ảnh có nội dung chính trị, tài liệu nội bộ của công ty.
-
-## Series "Chữ thật · ảnh thật" (`series/`)
-Phóng kính lúp vào chữ Hán có thật trong ảnh, dựng chữ thành quân bài 3D, kèm pinyin, nghĩa, nơi chụp. Kết bằng câu hỏi "Bạn đọc được mấy chữ?". 120 BPM, mỗi chữ 4 giây.
-```bash
-node series/chuthat.mjs story/episodes/ct01.json      # dữ liệu tập để ngoài git
-cd out/ct01 && npx hyperframes render -o ../BAOKHUA_CHU_THAT_T1_9x16_master.mp4
-```
-Nhạc dùng chung cho series ngắn: `series/music_series.py` (120 BPM, dài theo số đoạn).
-Kế hoạch thử thị trường, bài giảng 3D hằng ngày và quy tắc bàn giao: **`video/HANDOFF.md`**.
+- Không commit video, ảnh cá nhân, khoá API. Video xong cất lên Drive `BAO KHUA - SO CAI/03_VIDEO`.
+- Không ghi "miễn phí", không nhắc S-VIP, hoàn tiền, không hứa ngày mở 6–10★. Tiếng Trung luôn kèm pinyin có dấu và nghĩa Việt.
+- Bot không tự đăng. Bảo đăng bằng tài khoản của mình.

@@ -5,7 +5,7 @@ Bản đầy đủ có danh mục tư liệu cá nhân nằm ở Drive: `BAO KHU
 
 ## 1. Xưởng làm được gì
 Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 4:5 cho YouTube, Facebook:
-- Không cần quay màn hình: máy tự quay game Khách sạn (`tools/capture.cjs`).
+- Video bài giảng dựng từ giáo trình HSK0 → HSK4 của game mới, không quay game cũ nữa (bộ quay game cũ nằm ở `_luu_tru/game-cu/`).
 - Chữ Hán là quân bài 3D thật (three.js, `tools/engine3d.js`). Có ảnh polaroid 3D, pháo giấy, vòng xung kích.
 - Nhạc viết bằng code, không dính bản quyền: `debut/music.py` (120 BPM), `story/music_story*.py` (84 BPM), `series/music_series.py` (dùng chung cho series ngắn). Âm lượng khoảng −14 LUFS.
 - Chạy bằng HyperFrames: mỗi video là một trang HTML, máy chụp từng khung rồi ghép MP4.
@@ -16,12 +16,12 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 |---|---|---|---|---|
 | F1 | Chuyện thật (cảm xúc, hành trình) | `story/build_story*.mjs` (ngoài git) | Ảnh và lời của Bảo | 2 bản, đã chốt bản 2 |
 | F2 | Chữ thật · ảnh thật (phóng kính lúp vào chữ Hán trong ảnh thật) | `series/chuthat.mjs` | `story/episodes/*.json` (ngoài git) | Tập 1–2 đã dựng |
-| F3 | Từ vựng 3D trên nền game | `tools/build.mjs` (tv01–tv14) | `WORDS` trong `khachsan.html` | 14 video, cần dựng lại vì CTA cũ |
-| F4 | 3 giây trả lời (câu đố) | `tools/build.mjs` (hn-*) | `QUESTIONS_RAW` | 10 video, cần dựng lại vì CTA cũ |
-| F5 | Trailer thương hiệu | `debut/build_debut.mjs` | Dữ kiện công khai trên trang chủ | Bản EVERGREEN dùng lâu dài |
+| F3, F4 | Từ vựng và câu đố trên nền game cũ | `_luu_tru/game-cu/` | `khachsan.html` | **Đã bỏ 06/11/2026** vì đã có game mới. Không đăng 24 video này |
+| F5 | Trailer thương hiệu | `debut/build_debut.mjs` | Dữ kiện công khai trên trang chủ | Đoạn 14–22 giây là game cũ: quay lại bằng game mới trước khi đăng |
 | F6 | Chữ thật ở Hạ Long (biển hiệu tiếng Trung quanh Bãi Cháy) | `series/chuthat.mjs` | Bảo chụp biển hiệu, ghi khung chữ | Chưa có ảnh |
 | F7 | Bảo quay mặt: tiểu phẩm hai vai, POV quầy lễ tân | Quay tay, dựng bằng skill "cắt cắt" (CapCut) | Bảo quay | Chưa làm |
 | F8 | Chuyện thật · Câu thật (raw câu chuyện → câu tiếng Trung trong chuyện → điểm ăn tiền + câu đi làm → kêu gọi game và học online) | `series/cauthat.mjs` + nhạc `series/music_bed.py` | Raw video của Bảo trong `story/raw/` (ngoài git), tập trong `story/episodes/` | Tập 1 và bản short đã dựng |
+| F9 | Giáo trình 3D · phân tích sâu (≤ 60 giây: gây hit → biểu đồ, luật, ví dụ đi làm, bí quyết → câu nói ngay → kêu gọi game mới + học online) | `series/giaotrinh3d.mjs` | `giaotrinh/*.json` (công khai, lấy từ `COURSE` trong game mới và giáo án khung HSK0–HSK4) | GT01 bản mẫu đã dựng, chờ Bảo duyệt và lồng tiếng |
 
 ### Thêm một tập F2 hoặc F6 (khoảng 10 phút làm, 7 phút máy dựng)
 1. Đặt ảnh vào `story/photos/` (đã che thông tin cá nhân, xem mục 5).
@@ -51,15 +51,16 @@ Mục tiêu: sau 14 ngày biết 2 thể loại nào kéo người vào nhóm Za
 
 | Ngày | 11:30 | 19:30 |
 |---|---|---|
-| T2 09/11 | F5 trailer EVERGREEN (ghim) | F1 Chuyện thật bản 2 |
-| T3 10/11 | F3 tv04 | F8 Câu thật #1 |
-| T4 11/11 | F4 hn-hotel-1 | F2 Chữ thật tập 1 |
-| T5 12/11 | F3 tv01 | F4 hn-factory-1 |
-| T6 13/11 | F3 tv05 | F8 Câu thật #1 bản short |
-| T7 14/11 | F4 hn-hotel-2 | F2 Chữ thật tập 2 |
-| CN 15/11 | F3 tv09 | Nghỉ, đọc số tuần 1 |
-| T2 16/11 → CN 22/11 | F3/F4 xen kẽ (tv02, tv06, tv10, tv03, tv07; hn-hotel-3, 4; hn-factory-2, 3, 4) | F8 #2–#4 từ raw 02–04 (chờ Bảo gửi; chưa có thì đăng F2/F3 dự phòng), 22/11 nghỉ chốt |
+| T2 09/11 | Nghỉ (F9 chưa duyệt) | F1 Chuyện thật bản 2 |
+| T3 10/11 | F9 GT01 (nếu Bảo duyệt và lồng tiếng xong) | F8 Câu thật #1 |
+| T4 11/11 | F9 GT02 | F2 Chữ thật tập 1 |
+| T5 12/11 | F9 GT03 | F8 Câu thật #1 bản short |
+| T6 13/11 | F9 GT04 | F2 Chữ thật tập 2 |
+| T7 14/11 | F9 GT05 | F8 #2 (raw 02) |
+| CN 15/11 | F9 GT06 | Nghỉ, đọc số tuần 1 |
+| T2 16/11 → CN 22/11 | F9 GT07 → GT12, mỗi ngày 1 tập | F8 #3–#4, F2 tập 3 nếu có ảnh; 22/11 nghỉ chốt |
 
+Trailer F5 và mọi video có hình game cũ không đăng. F9 nhắc game mới, nên chỉ đăng sau khi game Khách sạn Vịnh Ā Bǎo được "duyệt đăng" lên baokhua.com.
 20/11 là Ngày Nhà giáo: thêm story chúc 老师辛苦了 (lǎoshī xīnkǔ le – Thầy cô vất vả rồi).
 
 **Số cần ghi cho mỗi video** (TikTok Studio → Phân tích, đọc sau 48 giờ): lượt xem, thời gian xem trung bình, tỉ lệ xem hết, lượt thích, bình luận, chia sẻ, lưu, người theo dõi mới, lượt xem hồ sơ. Ghi thêm số người vào nhóm Zalo trong ngày.
@@ -75,17 +76,26 @@ Các tỉ lệ trên lượt xem tính theo %, tỉ lệ xem hết nhân 10, đ�
 - Thể loại ở giữa giữ 1 video mỗi tuần để theo dõi.
 - Dừng sớm thể loại nào bị phàn nàn hoặc tốn hơn 30 phút mỗi ngày của Bảo.
 
-## 4. Bài giảng 3D hằng ngày (sau khi chốt long mạch)
-- **Mỗi ngày 1 video bài giảng** (F3 hoặc F4) lúc 11:30. Khung 20:00 dành cho thể loại thắng.
-- **Kho hiện có:** 24 video (bỏ kg01 vì ghi ngày cũ), đủ khoảng 3,5 tuần. Đã dựng lại với câu kêu gọi mới ngày 06/11 (CTA cũ ghi "khai giảng 04/11").
-  - Lệnh: `node tools/build.mjs` (khoảng 2,5 giờ máy cho 24 video).
-- **Nối dài kho:**
-  - Gemini soạn thêm câu vào `QUESTIONS_RAW` (việc V04, V15 trong hàng đợi). Cứ 3 câu mới là có thêm 1 video F4.
-  - Thêm nhóm từ vào `config.json → tuvung`: mỗi dòng mới là 1 video F3.
-- **Mỗi Chủ nhật:**
-  - Dựng sẵn 7 video cho tuần sau.
-  - Nén bản đăng.
-  - Cập nhật bảng lịch đăng trên Drive.
+## 4. Bài giảng 3D hằng ngày: F9 "Giáo trình 3D"
+Nguồn: giáo trình 6 bài HSK0 → HSK4 trong game mới (mảng `COURSE` trong `hotel/index.html`, nhánh game) và giáo án khung HSK0–HSK4 trên Drive `06_LOP_HOC`. Mỗi tập mổ xẻ **một** điểm người Việt hay sai, có biểu đồ, luật, 2–4 ví dụ đi làm và một câu nói ngay.
+
+| Tập | Chặng | Điểm phân tích | Câu nói ngay |
+|---|---|---|---|
+| GT01 | HSK0 · Chào hỏi | Thanh 3 gặp thanh 3: viết nǐ hǎo, đọc ní hǎo; nửa thanh 3 | 你好，欢迎光临！ |
+| GT02 | HSK0 | 不 lúc bù lúc bú: 不客气 bú kèqi, 不是 bú shì | 不客气，祝您愉快！ |
+| GT03 | HSK0 | 一 đổi 3 kiểu: 一下 yíxià, 一起 yìqǐ, 一个 yí ge | 请等一下。 |
+| GT04 | HSK1 · Nhận phòng | 几 hay 多少: hỏi số lượng thế nào cho đúng | 请问您几位？ |
+| GT05 | HSK1 | 请 + động từ: lịch sự với khách, khác 麻烦 ở đâu | 请出示您的护照。 |
+| GT06 | HSK1 · Giờ giấc | 点 (lúc mấy giờ) và 小时 (mấy tiếng) | 早餐七点开始。 |
+| GT07 | HSK1 | 在 chỉ chỗ: người Việt hay đặt sai thứ tự | 餐厅在二楼。 |
+| GT08 | HSK2 · Phục vụ phòng | 马上 và 一会儿: hứa với khách bao lâu | 我马上来。 |
+| GT09 | HSK2 | 帮 + người + việc | 我帮您拿行李。 |
+| GT10 | HSK3 · Sự cố | 了 báo đổi trạng thái: 坏了 | 空调坏了，我们马上解决。 |
+| GT11 | HSK3 | 3 mức xin lỗi: 不好意思 · 对不起 · 非常抱歉 | 非常抱歉，我们马上解决。 |
+| GT12 | HSK4 · Tiễn khách | 一路平安 và 一路顺风: chúc khách đi máy bay câu nào | 祝您一路平安！ |
+
+Quy trình mỗi tập (khoảng 20 phút người + 10 phút máy): viết `giaotrinh/gtNN.json` → Gemini kiểm (`tools/gemini_check.py`) → `snapshot` soát bố cục → dựng → Bảo lồng tiếng theo `out/gtNN/vo.md` trong CapCut (giọng thật của thầy, không dùng giọng máy cho bài phát âm: giọng máy Gemini đã thử 06/11, đọc sai thanh chữ 麻) → đăng.
+Nâng cấp hình sau này: cảnh mở đầu bằng video AI (Google Flow / Veo, Seedance) khi Bảo cấp quyền; phần chữ, biểu đồ, quân bài vẫn dựng bằng HyperFrames để đúng nội dung.
 
 ## 5. Luật bắt buộc
 - Repo công khai: ảnh cá nhân, kịch bản đời tư, tập dữ liệu F1/F2 để ngoài git (`.gitignore` đã có sẵn). Bản sao để trên Drive.
@@ -98,8 +108,10 @@ Các tỉ lệ trên lượt xem tính theo %, tỉ lệ xem hết nhân 10, đ�
 - Không né cơ chế chống bot của nền tảng. Video TikTok cũ thì Bảo lưu từ máy hoặc từ ứng dụng rồi gửi lại.
 
 ## 6. Việc còn mở
-1. ~~Dựng lại 24 video F3/F4 với CTA mới~~ (xong 06/11, đã gửi Bảo bản nén kèm `CAPTIONS_BAI_GIANG_24.md`; 8 câu nhà máy trong `QUESTIONS_RAW` đã thêm dấu 。 cho đồng bộ).
-2. Bảo gửi raw 02–04 qua chat (Drive chỉ tải được tệp dưới 5 MB) để làm F8 #2–#4. Raw 01 đã thành F8 #1 và bản short.
-3. Bảo chụp 10 biển hiệu tiếng Trung quanh Bãi Cháy để làm F6. Không chê bai cơ sở cụ thể nào.
-4. ~~Gemini kiểm pinyin và nghĩa~~: xong 06/11 cho F1 bản 2, F2 tập 1–2, F8 tập 1 và 24 video bài giảng (125 mục, 0 lỗi phải sửa). Còn chờ Bảo duyệt thêm dấu 。 cho 5 câu nhà máy trong `QUESTIONS_RAW`.
-5. ~~Lập bảng số liệu thử thị trường~~: xong, `SO_LONG_MACH_14_NGAY` trên Drive.
+1. F9: Bảo duyệt GT01 và lồng tiếng (`out/gt01/vo.md`); duyệt xong thì dựng GT02 → GT12 theo bảng mục 4.
+2. Game mới "Khách sạn Vịnh Ā Bǎo" chờ "duyệt đăng". F9 và F8 nhắc game mới, nên đăng sau khi game lên baokhua.com.
+3. Trailer F5: quay lại đoạn game (14–22 giây) bằng game mới, sau khi game được duyệt.
+4. Bảo gửi raw 02–04 qua chat (Drive chỉ tải được tệp dưới 5 MB) để làm F8 #2–#4.
+5. Video dài trên Drive: công cụ Drive của Claude không tải lên được tệp video lớn. Bảo kéo thả các tệp đã gửi trong chat vào `03_VIDEO/01_DA_DUYET` hoặc `02_CHO_DUYET` theo bảng `00_DANH_MUC_VIDEO` ở đó.
+6. Sổ `SO_LONG_MACH_14_NGAY`: đổi các khung 11:30 từ F3/F4 sang F9 (cần bật connector Google Sheets để Claude sửa thẳng vào tệp).
+7. Bảo chụp 10 biển hiệu tiếng Trung quanh Bãi Cháy để làm F6.
