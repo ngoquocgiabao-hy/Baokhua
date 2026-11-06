@@ -8,9 +8,10 @@ Trang web và game học tiếng Trung giao tiếp cho người làm khách sạ
 - Chạy bằng GitHub Pages từ nhánh `main`. Không thư viện ngoài, mỗi trang là một tệp.
 
 Người phát triển tiếp theo đọc theo thứ tự:
-1. [`docs/BAN_GIAO.md`](docs/BAN_GIAO.md): hiện trạng, quy trình, việc đang chờ.
+1. [`docs/BAN_GIAO.md`](docs/BAN_GIAO.md): hiện trạng, ưu tiên, quy trình, việc đang chờ.
 2. [`CLAUDE.md`](CLAUDE.md): luật bắt buộc (nội dung, pháp lý, quy trình đăng).
-3. [`docs/KY_THUAT_GAME.md`](docs/KY_THUAT_GAME.md): kiến trúc mã game.
+3. Dự án chính, game Khách sạn mới: [`docs/khachsan/KE_HOACH_CHUYEN_MINH.md`](docs/khachsan/KE_HOACH_CHUYEN_MINH.md) và [`docs/khachsan/KAIZEN.md`](docs/khachsan/KAIZEN.md).
+4. Game nhánh Đánh Boss: [`docs/TONG_KET_GAME_DANH_BOSS.md`](docs/TONG_KET_GAME_DANH_BOSS.md), kiến trúc mã ở [`docs/KY_THUAT_GAME.md`](docs/KY_THUAT_GAME.md).
 
 Chạy thử:
 

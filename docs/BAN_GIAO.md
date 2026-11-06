@@ -16,11 +16,17 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
   - `game.html`: Đánh Boss "Hành trình HSK0 → HSK4". Tự điều khiển Ā Bǎo qua thành phố Hạ Long thu nhỏ, gặp người, đấu quái, vào 5 trạm đánh boss bằng câu hỏi.
 - Repo **công khai**. Sổ sách, giá vốn, dữ liệu học viên, hiến chương nội bộ chỉ để ở Google Drive "BAO KHUA - SO CAI".
 
-## 2. Hiện trạng (05/11/2026)
+## 0. Ưu tiên dự án (06/11/2026)
+
+- **Dự án chính: game Khách sạn mới** (mô phỏng xây và quản lý khách sạn 3D, quốc tế). Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md`. Cách cải tiến liên tục: `docs/khachsan/KAIZEN.md`. Bước tiếp theo: giai đoạn 0 (2 tuần, mục 10.1 của kế hoạch), sau khi Bảo duyệt hướng đi.
+- **Game Đánh Boss là game nhánh:** đóng băng tính năng ở v16, chỉ sửa lỗi. Tổng kết: `docs/TONG_KET_GAME_DANH_BOSS.md`.
+- `khachsan.html` v5 tiếp tục chạy trên baokhua.com cho đến khi bản mới đạt chuẩn và Bảo duyệt đăng.
+
+## 2. Hiện trạng (06/11/2026)
 | Nơi | Nội dung |
 |---|---|
 | `main` (trang thật) | Bản đăng 01/11: tên miền, trang chủ có game Khách sạn, Khách sạn v5. **Game Đánh Boss trên trang thật vẫn là bản cũ "Đánh Boss v4 (3D · 2 chặng)".** |
-| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v15 và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
+| Nhánh `claude/project-investment-strategy-3oj0pf` | Game Đánh Boss v6 → v16 (game nhánh, đóng băng tính năng), tài liệu dự án game Khách sạn mới, và trang chủ 11.11 (bỏ ngày khai giảng, ưu đãi thẻ năm 299k đến 23:59 11/11). **Chưa đăng**, chờ Bảo gõ "duyệt đăng". |
 | Bản xem thử (riêng tư) | https://claude.ai/artifact/NmNrwXTvr6EvJptufwGx7B. Chỉ người được chia sẻ mới mở được. |
 
 Lịch sử chính của game Đánh Boss trên nhánh:
@@ -39,6 +45,7 @@ Lịch sử chính của game Đánh Boss trên nhánh:
   - tuyệt chiêu phải trả lời đúng câu hỏi; độ khó tăng theo trạm;
   - dáng đi nhấc gối hợp tranh nhìn chính diện (sửa lỗi chân đi ngược);
   - nền sân đấu là video lặp dựng bằng Remotion.
+- **v16:** chuyển động đa dạng (5 kiểu đứng chờ, phanh gấp, đẩy rào, lộn vòng khi nhảy lúc chạy nhanh, giơ nắm đấm, người quen cúi chào, người đi đường vẫy tay; trong trận: lộn ngược khi né đẹp, khiêu khích 来吧 (lái ba · lại đây nào), boss gầm khi nổi giận và cười khi đánh trúng); rà soát chữ hướng dẫn theo kiểu đánh thật; sao trạm tính cả chiêu chữ; sửa 14 lỗi từ lượt rà soát tổng thể (bấm nhầm khi bảng vừa hiện, câu nghe trên máy không có giọng, nút đánh lại khi thua, nền lộ đường nối, thẻ đấu quái ở 360×640, tên boss bị cắt, ảnh chia sẻ, từ đỡ hụt được lưu vào Sổ ôn, nút vào game ở màn đầu…; danh sách đủ ở `docs/TONG_KET_GAME_DANH_BOSS.md`).
 - **v15:**
   - sửa lỗi "ngược hướng người khi di chuyển": dấu góc thân/đầu trong khung xương bị đảo từ v11 → ngả tới thành ngả ra sau (chạy, lao, đá); quái tuần tra quay mặt một hướng mà trượt hướng kia;
   - đi map mượt hơn (nảy hình sin, nén giãn, làm đều nhịp khung hình) và nhiều hiệu ứng: chạy nhanh khi giữ nút, bóng mờ, vệt gió, vệt khí theo màu phi tiêu, bụi + dấu chân theo khu, hạt bay theo khu (bụi nước, đốm sáng, tàn lửa, đom đóm, cánh hoa), nén giãn khi đáp đất.
@@ -79,7 +86,8 @@ tools/
   motion/ src/ render.sh        nền sân đấu chuyển động (Remotion) → v4/motion
   voice/ collect.js gen_gemini.py  gom câu tiếng Trung → tạo giọng Gemini (cần GEMINI_API_KEY)
   test/  *.js run-all.sh        kiểm thử tự động bằng Playwright (xem mục 5)
-docs/   BAN_GIAO.md (tệp này), KY_THUAT_GAME.md
+docs/   BAN_GIAO.md (tệp này), KY_THUAT_GAME.md, TONG_KET_GAME_DANH_BOSS.md
+  khachsan/  KE_HOACH_CHUYEN_MINH.md (kế hoạch game Khách sạn mới), KAIZEN.md (cải tiến liên tục)
 CLAUDE.md          luật làm việc của Xưởng (bắt buộc đọc)
 ```
 
@@ -159,7 +167,7 @@ Máy thử không có card đồ hoạ thì WebGL chạy bằng phần mềm. Kh
 
 ## 8. Việc đang chờ / đề xuất làm tiếp (theo thứ tự ưu tiên)
 **Chờ Bảo:**
-1. "duyệt đăng" game v15 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
+1. "duyệt đăng" game Đánh Boss v16 và trang chủ 11.11 trước 23:59 ngày 11/11 (sau hạn thì bỏ hoặc đổi chữ ưu đãi trong `index.html` và `game.html`: `SALE_END`, `OFFER_*`).
 2. 4 câu hỏi về giá: 299k là giá gì; giá sau 11/11; thẻ có gồm Zoom không; có gia hạn hoa hồng giới thiệu không.
 3. Chỉnh Google Form theo góp ý cũ.
 4. Khoá `GEMINI_API_KEY` để có giọng người thật.

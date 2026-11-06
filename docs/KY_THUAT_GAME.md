@@ -122,7 +122,7 @@ Mỗi câu hỏi (`QUESTIONS_RAW`) gồm 9 trường gốc:
   - Hẹn giờ `st.wordT` (đếm khi boss không gồng / không ra đòn), mỗi `WORD_EVERY[trạm]` giây boss gồng một chiêu chữ.
   - `wordPool(trạm)`: từ ngắn (≤ 4 chữ Hán) có pinyin + nghĩa, lấy từ đáp án có `optionPy/optionVi`, `STAGES[].learn`, từ người đã gặp. Ưu tiên từ đúng trạm.
   - `wordStart()` → sân đấu `wordCharge([zh, py], giây)` (bong bóng chỉ có chữ Hán + pinyin, boss gồng tím, dừng nhịp đánh thường); khay nút đổi thành 3 nghĩa (`#parryPad`, phím 1/2/3), thời gian `WORD_SEC[trạm]` (lần đầu ×1,25).
-  - `wordAnswer(i)`: đúng → `wordResolve(true)` (ĐỠ CHỮ, boss khựng, tướng lướt chém phản đòn, sát thương `k.b × 1,9`, +26 nộ); sai/hết giờ → `wordResolve(false)` = `counter()`, sát thương ×1,5, hiện nghĩa đúng, từ vào `st.parryMiss` → Sổ ôn cuối trận.
+  - `wordAnswer(i)`: đúng → `wordResolve(true)` (ĐỠ CHỮ, boss khựng, tướng lướt chém phản đòn, sát thương `k.b × 1,9`, +26 nộ); sai/hết giờ → `wordResolve(false)` = `counter()`, sát thương ×1,5, hiện nghĩa đúng, từ vào `st.parryMiss` → Sổ ôn cuối trận. v16: từ đỡ hụt còn lưu lâu dài ở `prog.wmiss` (chữ Hán, tối đa 24), `wordStart` ưu tiên hô lại (70%), đỡ đúng thì xoá khỏi danh sách. Khay chiêu chữ và bảng lên cấp bỏ qua chạm trong 0,45 giây / 0,7 giây đầu (`W2.shownAt`, `openedAt`) để bấm liên tục nút đánh không chọn nhầm.
 - **v13 · chuỗi HIT + phản đòn:** mỗi đòn trúng `st.hits++` (mất sau 2,4 giây không đánh hoặc khi trúng đòn), +5% sát thương mỗi 5 hit (tối đa +30%), hiện ở `#hitCount`. Trong 1,2 giây sau NÉ ĐẸP (`st.counterUntil`), đòn kế là PHẢN ĐÒN ×1,8.
 - **Nền chuyển động:** `bgVideo(look)` phát `v4/motion/<look>.mp4|.webm` vào lớp nền mỗi khung, phủ `bgOv` (tông màu + sàn tối). Lỗi thì dùng ảnh `paintBg`.
 
