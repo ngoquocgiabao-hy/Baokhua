@@ -44,6 +44,35 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .item.vip .buy{background:#16171B;color:#FFD91F;box-shadow:0 3px 0 #000}
 .member-card{background:linear-gradient(160deg,#FFF7D6,#FFD91F);color:#16171B}
 .member-card .perks li{background:rgba(22,23,27,.07)}
+/* v8 · thẻ học viên */
+.ov-card{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
+.gate-prev{margin:4px auto 8px;position:relative;border-radius:16px;overflow:hidden;border:3px solid #FFD91F;box-shadow:0 4px 0 rgba(0,0,0,.35);max-width:320px}
+.gate-prev img{display:block;width:100%;aspect-ratio:1.3;object-fit:cover;background:#9fd8f0}
+.gate-prev figcaption{position:absolute;left:8px;bottom:8px;background:rgba(22,23,27,.8);color:#FFD91F;font:800 12px/1.2 system-ui,sans-serif;padding:4px 9px;border-radius:999px}
+.price-row{display:grid;grid-template-columns:1fr 1.2fr;gap:8px;margin:8px 0}
+.price-row>div{border:2px solid rgba(255,255,255,.35);border-radius:14px;padding:8px 6px;text-align:center}
+.price-row>div b{display:block;font-size:20px;color:#FFD91F}.price-row>div small{font-size:11.5px;opacity:.9}
+.price-row>.best{border-color:#FFD91F;background:rgba(255,217,31,.12)}
+.member-card .price-row>div{border-color:rgba(22,23,27,.25)}.member-card .price-row>div b{color:#16171B}.member-card .price-row>.best{border-color:#16171B;background:rgba(255,255,255,.45)}
+.code-box{margin-top:12px;text-align:left}.code-box label{font-size:12.5px;font-weight:800;opacity:.9}
+.code-row{display:flex;gap:6px;margin-top:5px}.code-row input{flex:1;min-width:0;font:800 16px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;padding:11px 10px;border-radius:12px;border:2.5px solid #16171B;background:#fff;color:#16171B;text-transform:uppercase}
+.code-row .btn{margin:0!important;width:auto;padding:0 14px;white-space:nowrap}
+.code-msg{font-size:12.5px;font-weight:700;margin-top:5px;min-height:1em}.code-msg.no{color:#ff8a8a}.code-msg.ok{color:#7fe3a8}
+.member-card .code-msg.no{color:#b8413a}.member-card .code-msg.ok{color:#1d7a46}
+.card-note{margin-top:10px;background:rgba(255,255,255,.1);border:2px dashed rgba(255,217,31,.6);border-radius:14px;padding:8px 10px;font-size:13px;line-height:1.4}
+.card-note.hot{border-style:solid;background:rgba(255,217,31,.1)}.card-note.ok{border-color:rgba(127,227,168,.7)}
+.card-note .gate-prev{max-width:220px}
+.lnk{background:none;border:0;padding:0;color:#FFD91F;font:inherit;font-weight:800;text-decoration:underline;cursor:pointer}
+/* v8 · bay nhanh tới các khu, phóng to/thu nhỏ */
+.zoom-pad{position:fixed;right:8px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:30;display:flex;flex-direction:column;gap:6px}
+.zoom-pad .sbtn{font-size:22px}
+body[data-mode=inside] .zoom-pad,body.st-on .zoom-pad,body.dr-on .zoom-pad{display:none}
+.place-menu{position:fixed;right:58px;top:calc(8px + env(safe-area-inset-top));z-index:31;background:rgba(20,40,80,.92);border:2px solid #FFD91F;border-radius:16px;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;width:min(300px,calc(100vw - 76px));box-shadow:0 6px 0 rgba(10,20,40,.4)}
+.place-menu[hidden]{display:none}
+.place-menu b{grid-column:1/-1;color:#FFD91F;font:900 13px/1.2 system-ui,sans-serif;padding:2px 4px}
+.place-menu button{display:flex;align-items:center;gap:6px;text-align:left;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;padding:6px 7px;font:800 12.5px/1.2 system-ui,sans-serif;cursor:pointer}
+.place-menu button .pi{font-size:19px;flex:none}.place-menu button .pn{min-width:0}.place-menu button small{display:block;color:#FFE97A;font-weight:700;font-size:10.5px}
+.place-menu button:active{transform:scale(.97)}
 .pill.star .top{display:flex;justify-content:space-between;font-size:12px}
 #starTxt{color:#FFD91F;letter-spacing:1px;font-size:14px}
 .mini{height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden}
@@ -505,7 +534,7 @@ body.st-on .dock,body.st-on .jcard,body.onb-on .dock,body.onb-on .hud,body.onb-o
 <div id="app">
  <div class="scene-wrap" id="sceneWrap">
   <canvas id="scene" aria-label="Phố Bãi Cháy bên vịnh Hạ Long và khách sạn Vịnh Ā Bǎo"></canvas>
-  <div class="scene-tip" id="sceneTip">☝️ Kéo để đi · 🤏 chụm để phóng to/thu nhỏ · chạm khách sạn để vào trong</div>
+  <div class="scene-tip" id="sceneTip">☝️ Kéo để đi · 🤏 chụm hoặc chạm đúp để phóng · 📍 đi tới các khu · chạm người dân để học từ</div>
  </div>
  <header class="hud">
   <div class="pill coin" id="coinPill"><span>🪙</span><b id="coinTxt">0</b></div>
@@ -517,8 +546,11 @@ body.st-on .dock,body.st-on .jcard,body.onb-on .dock,body.onb-on .hud,body.onb-o
   <button class="sbtn" id="musicBtn" type="button" aria-label="Bật/tắt nhạc lofi" title="Nhạc lofi chill">🎧</button>
   <button class="sbtn" id="muteBtn" type="button" aria-label="Tắt/bật tiếng">🔊</button>
   <button class="sbtn map" id="zoomBtn" type="button" aria-label="Bản đồ Hành trình" title="Bản đồ Hành trình · toàn vịnh">🗺️</button>
+  <button class="sbtn" id="placeBtn" type="button" aria-label="Đi tới các khu trong thành phố" title="Đi tới: chợ đêm, khu vui chơi, vòng quay, Hòn Gai…" aria-expanded="false">📍</button>
   <button class="sbtn clock" id="clockBtn" type="button" title="Đổi tốc độ thời gian">🕘 00:00</button>
  </div>
+ <div class="place-menu" id="placeMenu" hidden role="menu" aria-label="Đi tới"></div>
+ <div class="zoom-pad"><button class="sbtn" id="zinBtn" type="button" aria-label="Phóng to">＋</button><button class="sbtn" id="zoutBtn" type="button" aria-label="Thu nhỏ">－</button></div>
  <button type="button" class="evt-banner" id="evtBanner" hidden></button>
  <nav class="dock" aria-label="Điều khiển chính">
   <button type="button" class="dk-btn" id="insideBtn"><span class="di">🛋️</span><b>Vào trong</b><small id="insideSub">Sảnh 3D</small></button>
@@ -603,6 +635,16 @@ function fastSecs(q) { return FAST_SECONDS + (FAST_BONUS[q && q.type] || 0); }
 const STAR_PTS = [0, 50, 160, 400, 750, 1200, 1800, 2600, 3600, 5000];   // thang 10 sao
 const FREE_MAX_STAR = 5;                          // bản hiện tại: tối đa 5★, 6★–10★ khoá
 const MEMBER_PRICE = '299.000đ', MEMBER_3M = '99.000đ';
+/* v8 · THẺ HỌC VIÊN: bản thường mở tới 2★ và Hành trình chặng 1–2 (HSK0–HSK1).
+   Từ 3★, chặng 3–4 (HSK2–HSK3) và Thử thách Boss cần thẻ. Mỗi người một mã riêng, Bảo gửi qua Zalo sau khi chuyển khoản.
+   Game chỉ giữ dấu băm SHA-256 có muối (16 ký tự đầu) của 300 mã, không giữ mã gốc.
+   Danh sách mã gốc ở Google Sheet riêng trong Drive "BAO KHUA - SO CAI", không nằm trong mã nguồn. */
+const FREE_STAR = 2, FREE_PARTS = 2;
+const CARD_DAYS = { BK3M: 92, BK1Y: 366 }, CARD_NAME = { BK3M: 'Thẻ 3 tháng', BK1Y: 'Thẻ 1 năm' };
+const CARD_SALT = 'ff0eabfd3755b34a';
+const CARD_HASHES = new Set('417ffa570932aaa6 1852b2dac4a8bf0c 1aa9f995dc47d7ec 114a254c1f1ab5f7 f03543e4d407ad81 728dff0102aa5bf2 2224673c788df209 db912d4ea03a1365 78d0be1a59c5ee23 b86edfcba6b25855 d1cbe1b9df2dbe30 7ea9681c98b90a8d d39d9496a0b9d025 9ed8c425cf83597c 421928a4f445a83c 6e6b13b675bfac86 eb9c24b8f4e9dd4d b04a069083a7d341 5efacdfeaf723a83 bcfc98379d949ecf 242ec9e0b18c477c 890fbdb4eb820d1d 2c638274924324cb 22ec3bfa57d424b0 0b8feec633ac4333 e8531cca39d0c5b7 3f4603dda0021743 2ec028900ee2fa83 46f71f6c17457888 69b97bcf3d46a7dd 5819ad3256c616a0 2f16462c6a2f78a1 be7061ea92cb692b 9bd0827738ca0066 e3311a5562dc3974 93b7cb1782384cef 1ab02f5a0855d6b9 3b80169b20d75224 3843d780679601c1 56fd08f1eff0f55c a3a2bc337c97bb86 a4f2da13b9258781 3b61edecf0d9072c 7ce91780d52a6685 d9a576fcbe389620 e3803dec31e2c8b1 47be694241097389 df72c06c8a77d5ab 86b816063e125000 40075c48c22c978f 585c409bfbe80dd8 87d781df14869bd6 ff0e5ac89b52c45c d672914556b05554 45c54209613a2e7c 0eb57401280e6801 d059c900cb52ad24 237ce6d4d9b29866 94a9be957c9ce7a5 7c931b64b8601d8d 3396867355556f71 59f9d97c547f9ba9 58b09c4a88cd00b6 61b15370edb12dd1 274a8b3f3b828c86 0e49cbb48a613cfc 1c4365fda15cfbd3 5412f998c0abc251 e71624ece1399a69 1ab15e96708dd7ce 2e4eb33b42617306 7352302dcce7faca f2876e880e3c95b3 f0efe08b57304348 44634d50d812a778 77150e8c135f87ef 497ea77bd882c6e3 cf4bb17f09900267 e37467bdf11f94a2 a186807c6ff1ce89 6fcadbd344510c1b d754cb7974224083 737d92b7bfca352c 3e9c0e4a15992ba9 a81eaba203562707 08c783e1ae12ca1c b71c936cbe6c1017 400af635d457875c 829cba4b1a299d4b c112b0404b07791d 55e9bc7f55e6eeda 9fa8e7066f4e619a 6caf44b124eb33f3 4b625916efdfd1ef f2c1c2f351a89a85 7baa1bc74c64f70a a7cbe39d79edfe28 1fe1a49dca7b670b 82df6456d96e72eb b42b1e14ff96fd38 12276e29ced68a32 ce2a55fd8e09b035 b738a8714ebd3e74 4f0f1ffad0ee18d3 1606bc8be0e80067 2149a265718a7f50 ad76dd41670d0686 56e80f20f72d8c17 b4045d4dd46327c0 acc1b50ecd439140 5c1ce50fda0b0758 548f3a166a5ea8e8 551b1676955493b4 d989d0bc6d0439f4 ec912646e3a603a8 324ffd7ccf2779c3 7f887a5c11b11265 013dd50b971e7799 1460e4ede1c37305 0511b6c5ee77f6dc 5eb6277f749f5aee 37551423a433e225 693181d5c7f687e4 7104650d819d309b 324dc083c3f62b71 5abaab602644e6e2 057f5e66ee6e17a1 6c86195f1c83a981 f19bb741bff2c092 a3f8365bc2ff81e3 f9b29a5d958d9bb6 8aece5e465e445fd 7e15b166810fd7fc 7ec206aa98202124 9b70ac78148b6fae 317cb6d8572355b8 de9d6779b6f88914 48952fc272cf35ee 2aed69df07791c1f db353c0d7f4d59d1 828eb24273ecb1de 72dd379ecbac37ed 40a1a22f05a2fd58 54a8081215b4bc3b 048212508d20d2c7 cf0d6475d1ce2a2f 3ddb205e64c96815 fb282495ed49943b 83e517ded48c3734 a3c48bb4d5b78045 2ec7bd57be722300 718a6e219866ae6f 0fd6486ed70fde8b 42929f23b16d3ab5 a12761c9063664ee ffd2d0b47913a67f 016d3db39d63dd44 1c5180f199ef4d07 ead45b46c41c00fe 8144daf4e76b1612 cedbf7bf2c66c32c 6f84188ced3b5508 f5b584486fbec556 a2fd500abd5923fe 989c851d97fdbb06 259c281a2c10cebd 15c7812efe386a34 136b60eafbbecb66 fbfa3f207c1836f0 d514383cf08de9ab eadfc7f8e4758753 214745060fa9d8f8 3dff0bb61142255e a02f620d5440fc96 6aa243e857ce7865 168004a7c25fda58 c04e243663b772da 1acb585eae9b3e18 2e771c8cb6add9db 5a7c5c18e52ea6f0 2f26b8d495597fa0 12ec00b74fe50ba0 a7154d7f02b87c0a 64cfd01c4c4e178f d3b66cc029f5e8a1 be0d865f2bcec5d9 6e71c8b1d5160649 f65eb2dd6a48bd26 c54d8cbc27ea30ed 6a6be31fdb514f80 043eb5604c179ee2 7ddeae55a5079339 b7fb4b72a0d32f93 e5f220d29f8a7893 911772c526e90e4c f642b4fd217094f0 aede7ae3f3154d84 481f8cd1ae8fc643 a3802175507a976c a1ce5e74fa8eba5b 94ada353a6bb4b54 1ad386993699705a 1b8c842ca644b20f 94540a62212268b8 daabc3eb60d66ae6 dd35f7a99f9c53d6 88485de253cb7798 f7b554eb90ede102 527ece3b89e29ae9 ce6995470a628cda e24315fd70f4643e 0e5e4287009a532c ba7e961abd5057d8 489b6bdf8ce8d8c2 b33b41f22d8fd5fb c60e5d184ea454bd e574a2e8584c542e d6ec15f0c0cfe6a2 8f249e7716619521 95c5e99a7d795223 0a72df70c4875dad 19e2e52581e65567 b416c0e99d3d64a7 d9e59190f2f71a5e 17b703f8df29c87b 92414edb827f44fe f156084583550392 7a57f3c377350569 7786f347301bae69 1bf6c463638e590f b798220cbf3fc4a7 4dfa75a18d519ddf 29485d62c353f16b 96221c4229a7bfb5 5f688dd8ef067cbe 65346fcba079b8b8 2a39fb9c3701f964 a41dcb850dc5e4e3 3e6894fe391ffb4f 1cc12151fba24813 e1b144cc366cbc34 c250a46615336489 7cbb0dafa01ba6f8 a2987b417afb875b 241de8a7e4e8b2e9 bb59f3657a906a3b 82d015d1082e0389 4e7ffdd7e14340e0 8d8fd3b1f4f25f1f c1d42c5fc946fe61 7bc9f3fca8a8322d e13b226262b1c98d 8490c39cd1dc38d9 302f9117a5a28354 9b479281e3093d09 7f9f637021824989 98040abf815d5eec ddb50d22b2b9a75d 40fb1e34ddd29437 ca2aa80e22a83010 64b95ad3c69046e4 464f53a895ced142 24ced2a85378446c d90277af664c9846 dae720ff113aae19 5e772ee4e29c6cc1 7b2b82c639866c14 12ab0246aef92a0d 5b706cfc747593e1 adb0172b3ccbffbb ea2ba90f41f992a4 f202a905321bffd9 41c4f01c7b254579 5d5ca69d2d9b1870 9678b7ac913dcd44 c4b4b2494145138e cab9519f7afd8e73 182afded86ed21d0 f62fa2c76665386b 245bf6ffbd8fe031 0090cf19d0d1b611 b03d1e7b72b7e4aa 16d68f13f03ebd5f 1ff6e73e7615182f 17cd728973f524e6 97a20dc1576b58b4 1641fba68edad7e4 3822116fe659b82b d45bd119a66fe5c7 e80c8f7b897d384d 3c2240316d004e9f 7c99ac47d50c4bfc 34307346baf7ea02 cf3b97294ed69e3d c6dfa2406c53e569 fcdc1f929d3b48b0 15f514bb47f92b95 5dea536a512eb204 35f87f07fe5bdf86 ca91f94e20ebbfb1'.split(' '));
+const CARD_URL = '../membership.html';
+const FORM_UTM_CARD = 'utm_source=game_khachsan&utm_campaign=the_hoc_vien';
 const FORM_UTM_MEMBER = 'utm_source=game_khachsan&utm_campaign=hoivien_nam';
 const PITCH_AFTER_SERVES = 12;                    // mỗi ngày nhắc hội viên 1 lần sau 12 khách
 const IDLE_EVERY_MS = 15000;
@@ -616,7 +658,10 @@ const PATIENCE_DESK = .1;        // có quầy lễ tân đẹp: chịu chờ th
 const WRONG_MOOD = 25;           // trả lời sai: khách bớt vui ngần này điểm (về 0 là bỏ đi)
 const HAPPY_AT = 60;             // tâm trạng từ mức này trở lên = khách hài lòng, có boa thêm
 const SAT_START = 80;            // chỉ số hài lòng khi mới mở khách sạn (%)
-const MUSIC_VOL = .55;           // âm lượng nhạc nền chill (0–1)
+const MUSIC_VOL = .7;            // âm lượng nhạc nền chill (0–1)
+/* Nhạc có giấy phép: chỉ thêm bài đã được tác giả cho phép dùng (hoặc nhạc không bản quyền), đặt tệp vào hotel/music/.
+   Ví dụ: { src: 'music/ha-long-lofi.mp3', name: 'Tên bài', by: 'Tác giả · giấy phép' }. Để trống thì game phát 3 bài lofi tự soạn. */
+const MUSIC_FILES = [];
 
 /* ===== NGÂN HÀNG CÂU HỎI (dùng chung với game Đánh Boss) ===== */
 /** Schema bắt buộc (9 field) → runtime. Field phụ: type/topic/zh/optionPy/optionVi/words/... */
@@ -744,7 +789,7 @@ const ITEMS = [
   { id:'meeting',    zh:'会议室',   py:'huìyìshì',       vi:'Phòng họp',       ico:'🏭', price:260, pts:100, star:3, fare:4, unlock:'factory', need:'floor2', eff:'Đón đoàn kỹ sư nhà máy Cẩm Phả · +4 xu' },
   { id:'garden',     zh:'屋顶花园', py:'wūdǐng huāyuán', vi:'Vườn trên mái',   ico:'🪴', price:380, pts:130, star:4, fare:5, eff:'Vườn cây và đèn dây trên sân thượng · +5 xu' },
   { id:'boat',       zh:'游船',     py:'yóuchuán',       vi:'Du thuyền',       ico:'🛥️', price:420, pts:150, star:4, fare:6, eff:'Du thuyền riêng neo ở cầu tàu · +6 xu' },
-  { id:'wheel',      zh:'摩天轮',   py:'mótiānlún',      vi:'Vòng quay',       ico:'🎡', price:650, pts:220, star:4, fare:6, eff:'Vòng quay trên đồi, đổi màu ban đêm · +6 xu' },
+  { id:'wheel',      zh:'摩天轮',   py:'mótiānlún',      vi:'Vòng quay',       ico:'🎡', price:650, pts:220, star:4, fare:6, eff:'Bật màn đèn 7 màu cho Vòng quay Mặt Trời trên đồi · +6 xu' },
   { id:'fireworks',  zh:'烟花',     py:'yānhuā',         vi:'Pháo hoa',        ico:'🎆', price:900, pts:300, star:5, fare:8, eff:'Pháo hoa trên vịnh 20:00–21:30 mỗi tối · +8 xu' }
 ];
 { const k = ITEMS.findIndex(i => i.id === 'desk'); if (k >= 0) ITEMS.splice(k, 1); }   // 前台 quầy lễ tân giờ mua trong sảnh 3D (khu Quầy lễ tân)
@@ -778,6 +823,11 @@ const WORDS = {
   garden:['花园','huāyuán','Vườn hoa'], staff:['服务员','fúwùyuán','Nhân viên phục vụ'], guest:['客人','kèrén','Khách'],
   // v6.1 · cảnh Hạ Long: cầu Bãi Cháy, cáp treo, đảo đá vôi, hòn Gà Chọi, hải âu, mây
   bridge:['大桥','dàqiáo','Cầu lớn (cầu Bãi Cháy)'], cablecar:['缆车','lǎnchē','Cáp treo'], island:['岛','dǎo','Đảo (đảo đá vôi)'],
+  // v8 · thành phố sống: chợ đêm, khu vui chơi, Hòn Gai, người dân sinh hoạt
+  market:['夜市','yèshì','Chợ đêm'], museum:['博物馆','bówùguǎn','Bảo tàng'], square:['广场','guǎngchǎng','Quảng trường'], park:['游乐园','yóulèyuán','Khu vui chơi'],
+  coaster:['过山车','guòshānchē','Tàu lượn siêu tốc'], carousel:['旋转木马','xuánzhuǎn mùmǎ','Ngựa quay'], volleyball:['排球','páiqiú','Bóng chuyền'], kite:['风筝','fēngzheng','Con diều'],
+  noodle:['面馆','miànguǎn','Quán mì'], book:['书店','shūdiàn','Hiệu sách'], tea2:['茶馆','cháguǎn','Quán trà'], bbq:['烧烤','shāokǎo','Đồ nướng'], icecream:['冰淇淋','bīngqílín','Kem'],
+  drink:['喝饮料','hē yǐnliào','Uống nước'], talk:['聊天','liáotiān','Trò chuyện'], dance:['跳舞','tiàowǔ','Nhảy múa'], cheer:['好玩！','hǎowán','Vui quá!'], clap:['鼓掌','gǔzhǎng','Vỗ tay'], play:['玩','wán','Chơi'],
   rooster:['斗鸡石','Dòujī Shí','Hòn Gà Chọi'], gull:['海鸥','hǎi\'ōu','Hải âu'], cloud:['云','yún','Mây'], mountain:['山','shān','Núi'], river:['江','jiāng','Sông'], factory:['工厂','gōngchǎng','Nhà máy'], eat2:['吃饭','chī fàn','Ăn cơm']
 };
 
@@ -927,12 +977,31 @@ S = Object.assign({}, DEFAULT, RAW);
 if (RAW.answered == null) S.answered = S.served || 0;   // bản cũ: "served" đếm số câu đã trả lời
 ['own', 'mem', 'found', 'streak', 'furn', 'cards', 'ev'].forEach(k => { if (!S[k] || typeof S[k] !== 'object') S[k] = JSON.parse(JSON.stringify(DEFAULT[k])); });
 if (!S.own.floor) S.own.floor = 1;
+if (S.cardV == null) { let s0 = 0; STAR_PTS.forEach(t => { if (S.pts >= t) s0++; }); s0 = Math.max(1, Math.min(FREE_MAX_STAR, s0, S.lv == null ? FREE_MAX_STAR : lvCap())); if (RAW.pts && s0 > FREE_STAR) S.legacyStar = s0; S.cardV = 1; }
 ['bought', 'boss'].forEach(k => { if (!S.ev[k] || typeof S.ev[k] !== 'object') S.ev[k] = {}; });
 if (S.own.desk && !S.furn.desk) S.furn.desk = 1;   // bản cũ đã mua quầy lễ tân ngoài phố   // khách sạn 1★ luôn có sẵn 1 tầng = 3 phòng
 function save() { S.lastSeen = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
 
 const owned = id => id === 'desk' ? (S.furn && S.furn.desk ? 1 : 0) : (S.own[id] || 0);
-function starOf(pts) { let s = 0; STAR_PTS.forEach(t => { if (pts >= t) s++; }); return Math.max(1, Math.min(S.vip ? 10 : FREE_MAX_STAR, s, S.vip ? 10 : lvCap())); }
+function starOf(pts) { let s = 0; STAR_PTS.forEach(t => { if (pts >= t) s++; }); return Math.max(1, Math.min(S.vip ? 10 : FREE_MAX_STAR, s, S.vip ? 10 : lvCap(), cardCap())); }
+/* ---------- thẻ học viên ---------- */
+function hasCard() { return !!(S.card && S.card.until > Date.now()); }
+function cardCap() { return hasCard() || S.vip ? 99 : Math.max(FREE_STAR, S.legacyStar || 0); }
+function cardDays() { return S.card ? Math.max(0, Math.ceil((S.card.until - Date.now()) / 864e5)) : 0; }
+const partFree = p => p < FREE_PARTS || hasCard() || (S.lv || 0) > p;
+function normCode(t) { const c = String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); return c.length === 12 ? `${c.slice(0, 4)}-${c.slice(4, 8)}-${c.slice(8)}` : ''; }
+async function cardHash(code) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(CARD_SALT + code)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 16); }
+async function redeemCard(raw) {
+  const code = normCode(raw), kind = code.slice(0, 4);
+  if (!code || !CARD_DAYS[kind]) return { ok: false, msg: 'Mã gồm 12 ký tự, dạng BK3M-XXXX-XXXX (3 tháng) hoặc BK1Y-XXXX-XXXX (1 năm).' };
+  if (!(window.crypto && crypto.subtle)) return { ok: false, msg: 'Trình duyệt này chưa kiểm tra được mã. Mở game bằng Chrome hoặc Safari bản mới nhé.' };
+  let h = ''; try { h = await cardHash(code); } catch (e) { return { ok: false, msg: 'Chưa kiểm tra được mã, thử lại sau ít phút.' }; }
+  if (!CARD_HASHES.has(h)) return { ok: false, msg: 'Mã chưa đúng. Soát lại từng ký tự (mã không có chữ O, I và số 0, 1).' };
+  S.cardUsed = Array.isArray(S.cardUsed) ? S.cardUsed : []; if (S.cardUsed.includes(h)) return { ok: false, msg: 'Mã này đã kích hoạt trên máy này rồi.' };
+  const base = hasCard() ? S.card.until : Date.now();
+  S.card = { kind, until: base + CARD_DAYS[kind] * 864e5, tail: code.slice(-4), at: Date.now() }; S.cardUsed.push(h); save();
+  return { ok: true, kind };
+}
 const star = () => starOf(S.pts);
 const floors = () => owned('floor');
 function fare() { let f = 8 + 2 * star() + zonesDone(); ITEMS.forEach(it => { f += (it.fare || 0) * owned(it.id); }); if (S.furn && S.furn.desk) f += 2; return f; }
@@ -1022,11 +1091,25 @@ const Snd = (() => {
   /* ---------- nhạc nền chill tự soạn: lo-fi + đàn tranh ngũ cung, không cần tệp nhạc ----------
      piano điện ấm (FM nhẹ) · bass tam giác · trống lo-fi có swing · giai điệu ngũ cung kiểu đàn tranh · tiếng đĩa than
      ngày: sáng, có trống · tối: trầm hơn · khuya (23–6h): tắt trống, chỉ còn piano và đàn tranh */
-  const BPM = 68, BEAT = 60 / BPM, SIX = BEAT / 4;   // v6.1: lofi chậm hơn cho dễ tập trung
-  const PROGS = [
-    { ch: [[53, 57, 60, 64, 67], [52, 55, 59, 62], [50, 53, 57, 60, 64], [48, 52, 55, 59, 62]], bs: [41, 40, 38, 36] },   // Fmaj9 Em7 Dm9 Cmaj9
-    { ch: [[57, 60, 64, 67], [53, 57, 60, 64, 67], [48, 52, 55, 59, 62], [55, 59, 62, 64]], bs: [45, 41, 36, 43] }        // Am7 Fmaj9 Cmaj9 G6
+  /* v8 · 3 bài lofi tự soạn (giai điệu riêng, ngũ cung kiểu Việt), mỗi bài 8 ô nhịp × 4 vòng rồi chuyển bài:
+     vòng 1 giai điệu chính · vòng 2 thêm bè · vòng 3 nghỉ (ứng tác thưa) · vòng 4 giai điệu chính đổi nhạc cụ.
+     Nốt: [vị trí 0–15 trong ô nhịp, MIDI, độ dài tính bằng nốt móc kép] */
+  const TRACKS = [
+    { name: 'Sóng Bãi Cháy', zh: '海浪', py: 'hǎilàng', bpm: 72, lead: 'tranh', alt: 'sao',
+      ch: [[53, 57, 60, 64, 67], [50, 53, 57, 60, 64], [55, 58, 62, 65, 69], [48, 55, 58, 62, 65]], bs: [41, 38, 43, 36],
+      mel: [[[0, 72, 3], [3, 74, 3], [6, 77, 4], [12, 74, 4]], [[0, 72, 6], [6, 69, 2], [8, 72, 8]], [[0, 74, 4], [4, 72, 2], [6, 69, 2], [8, 67, 8]], [[0, 69, 3], [3, 67, 3], [6, 65, 10]],
+        [[0, 77, 3], [3, 79, 3], [6, 81, 4], [10, 79, 2], [12, 77, 4]], [[0, 74, 6], [6, 77, 2], [8, 74, 4], [12, 72, 4]], [[0, 69, 4], [4, 72, 4], [8, 74, 3], [11, 72, 2], [13, 69, 3]], [[0, 67, 6], [6, 69, 2], [8, 65, 8]]] },
+    { name: 'Chiều Hòn Gai', zh: '黄昏', py: 'huánghūn', bpm: 80, lead: 'sao', alt: 'tranh',
+      ch: [[57, 60, 64, 67, 71], [53, 57, 60, 64], [48, 52, 55, 59, 62], [55, 59, 62, 64]], bs: [45, 41, 36, 43],
+      mel: [[[0, 76, 4], [4, 74, 2], [6, 72, 2], [8, 69, 8]], [[0, 72, 3], [3, 74, 3], [6, 76, 6], [12, 79, 4]], [[0, 76, 8], [8, 74, 4], [12, 72, 4]], [[0, 74, 6], [6, 72, 2], [8, 67, 8]],
+        [[0, 69, 2], [2, 72, 2], [4, 76, 4], [8, 81, 6], [14, 79, 2]], [[0, 76, 4], [4, 79, 4], [8, 76, 4], [12, 74, 4]], [[0, 72, 6], [6, 74, 2], [8, 76, 4], [12, 74, 4]], [[0, 72, 4], [4, 69, 12]]] },
+    { name: 'Đêm Tuần Châu', zh: '夜晚', py: 'yèwǎn', bpm: 64, lead: 'tranh', alt: 'ep',
+      ch: [[50, 53, 57, 60, 64], [58, 62, 65, 69], [55, 58, 62, 65], [57, 62, 64, 67]], bs: [38, 46, 43, 45],
+      mel: [[[0, 74, 4], [4, 77, 4], [8, 79, 4], [12, 77, 4]], [[0, 74, 10], [10, 72, 2], [12, 69, 4]], [[0, 67, 4], [4, 69, 4], [8, 72, 4], [12, 74, 4]], [[0, 69, 12], [12, 72, 4]],
+        [[0, 81, 4], [4, 79, 2], [6, 77, 2], [8, 79, 8]], [[0, 77, 4], [4, 74, 4], [8, 72, 8]], [[0, 74, 3], [3, 72, 3], [6, 69, 4], [10, 67, 2], [12, 69, 4]], [[0, 62, 4], [4, 65, 4], [8, 74, 8]]] }
   ];
+  let mTrack = Math.floor(Math.random() * TRACKS.length), mLoop = 0, onTrack = null;
+  const sixOf = () => 60 / TRACKS[mTrack].bpm / 4;
   const PENT = [72, 74, 76, 79, 81, 84, 86, 88];   // C D E G A – ngũ cung
   const hz = m => 440 * Math.pow(2, (m - 69) / 12);
   let mBus = null, mLP = null, mOn = false, mTimer = 0, mNext = 0, mStep = 0, noise = null, vinyl = null, mel = {}, ducked = false;
@@ -1059,15 +1142,30 @@ const Snd = (() => {
     const src = ctx.createBufferSource(), fl = ctx.createBiquadFilter(), g = ctx.createGain(); src.buffer = noise; fl.type = type; fl.frequency.value = f; fl.Q.value = .8;
     g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); src.connect(fl); fl.connect(g); g.connect(mLP); src.start(t, Math.random() * .6, dur + .05);
   }
-  function pluck(m, t, v) {               // đàn tranh: gảy, luyến nhẹ lên nốt
-    const f = hz(m), o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain();
+  function pluck(m, t, v, dur = 1.6) {    // đàn tranh: gảy, luyến nhẹ lên nốt, rung cuối nốt
+    const f = hz(m), o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain(), vb = ctx.createOscillator(), vg = ctx.createGain();
     o.type = 'triangle'; o.frequency.setValueAtTime(f * .97, t); o.frequency.exponentialRampToValueAtTime(f, t + .07);
+    vb.frequency.value = 5.2; vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * .006, t + Math.min(.9, dur * .7)); vb.connect(vg); vg.connect(o.frequency);
     o2.frequency.value = f * 2; g2.gain.value = .3;
-    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + 1.6);
-    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(mLP); o.start(t); o2.start(t); o.stop(t + 1.7); o2.stop(t + 1.7);
+    const end = Math.max(1.2, dur + .5);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .005); g.gain.exponentialRampToValueAtTime(v * .35, t + .35); g.gain.exponentialRampToValueAtTime(.0001, t + end);
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(mLP); [o, o2, vb].forEach(x => { x.start(t); x.stop(t + end + .05); });
   }
-  function phrase(chord) {                // giai điệu 1 ô nhịp: 3–5 nốt ngũ cung, bám nốt của hợp âm
-    const out = {}; if (Math.random() < .55) return out;   // giai điệu thưa, không giành sự chú ý
+  function flute(m, t, dur, v) {          // sáo trúc: hơi thổi, luyến từ dưới lên, rung hơi
+    const f = hz(m), o = ctx.createOscillator(), g = ctx.createGain(), vb = ctx.createOscillator(), vg = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(f * .944, t); o.frequency.exponentialRampToValueAtTime(f, t + .09);
+    vb.frequency.value = 5.6; vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * .008, t + Math.min(.6, dur * .6)); vb.connect(vg); vg.connect(o.frequency);
+    const end = dur + .18;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .07); g.gain.setValueAtTime(v * .85, t + Math.max(.08, dur * .7)); g.gain.exponentialRampToValueAtTime(.0001, t + end);
+    o.connect(g); g.connect(mLP); o.start(t); vb.start(t); o.stop(t + end + .05); vb.stop(t + end + .05);
+    const br = ctx.createBufferSource(), bf = ctx.createBiquadFilter(), bg = ctx.createGain(); br.buffer = noise; bf.type = 'bandpass'; bf.frequency.value = f * 2; bf.Q.value = 2;
+    bg.gain.setValueAtTime(v * .25, t); bg.gain.exponentialRampToValueAtTime(.0001, t + .25); br.connect(bf); bf.connect(bg); bg.connect(mLP); br.start(t, Math.random() * .5, .3);
+  }
+  function voice(kind, m, t, dur, k = 1) {
+    if (kind === 'sao') flute(m, t, dur, .085 * k); else if (kind === 'ep') ep(m, t, Math.max(.6, dur * 1.4), .075 * k); else pluck(m, t, .12 * k, dur);
+  }
+  function phrase(chord) {                // ứng tác thưa ở vòng nghỉ: 3–5 nốt ngũ cung bám hợp âm
+    const out = {}; if (Math.random() < .45) return out;
     const slots = shuffle([0, 2, 3, 6, 8, 10, 11, 14]).slice(0, 3 + ((Math.random() * 3) | 0)).sort((a, b) => a - b);
     const tones = chord.map(n => n % 12);
     let k = PENT.findIndex(n => tones.includes(n % 12)); if (k < 0) k = 2;
@@ -1076,28 +1174,41 @@ const Snd = (() => {
     return out;
   }
   function step(n, t) {
-    const pos = n % 16, bar = Math.floor(n / 16), P = PROGS[Math.floor(bar / 8) % 2], ci = bar % 4, ch = P.ch[ci], md = mood();
-    const sw = pos % 4 === 2 ? SIX * .35 : 0, tt = t + sw, drums = md !== 'late', soft = md === 'day' ? 1 : .7;
+    let pos = n % 16, bar = Math.floor(n / 16);
+    if (pos === 0 && bar > 0 && bar % 8 === 0) { mLoop++; if (mLoop >= 4) { mLoop = 0; mTrack = (mTrack + 1) % TRACKS.length; mStep = 0; bar = 0; if (onTrack) setTimeout(() => onTrack(TRACKS[mTrack]), Math.max(0, (t - ctx.currentTime) * 1000)); } }
+    const TR = TRACKS[mTrack], SIX = sixOf(), BEAT = SIX * 4, ci = bar % 4, ch = TR.ch[ci], md = mood();
+    const sw = pos % 4 === 2 ? SIX * .3 : 0, tt = t + sw, drums = md !== 'late' && mLoop !== 2, soft = md === 'day' ? 1 : .75;
     if (pos === 0) {
-      mel = phrase(ch);
-      ch.forEach((m, i) => ep(m, t + i * .012, BEAT * 4.2, .05 * soft));
-      bass(P.bs[ci], t, BEAT * 1.9, .16);
-      if (mLP) mLP.frequency.setTargetAtTime(md === 'day' ? 1900 : md === 'eve' ? 1350 : 950, t, 1.5);
+      mel = mLoop === 2 ? phrase(ch) : {};
+      ch.forEach((m, i) => ep(m, t + i * .014, BEAT * 4.2, .07 * soft));
+      bass(TR.bs[ci], t, BEAT * 1.9, .17);
+      if (mLP) mLP.frequency.setTargetAtTime(md === 'day' ? 2600 : md === 'eve' ? 1800 : 1250, t, 1.5);
     }
-    if (pos === 6 && Math.random() < .6) bass(P.bs[ci] + (Math.random() < .5 ? 7 : 12), tt, BEAT * .9, .09);
-    if (pos === 8) { bass(P.bs[ci], t, BEAT * 1.4, .12); if (Math.random() < .5) ch.slice(-3).forEach(m => ep(m, t, BEAT * 2, .022 * soft)); }
+    if (pos === 6 && Math.random() < .6) bass(TR.bs[ci] + (Math.random() < .5 ? 7 : 12), tt, BEAT * .9, .09);
+    if (pos === 8) { bass(TR.bs[ci], t, BEAT * 1.4, .13); if (Math.random() < .5) ch.slice(-3).forEach(m => ep(m, t, BEAT * 2, .03 * soft)); }
     if (drums) {
       if (pos === 0 || pos === 8 || (pos === 10 && Math.random() < .35)) kick(tt, pos === 0 ? .42 * soft : .32 * soft);
       if (pos === 4 || pos === 12) hiss(tt, .07 * soft, 'bandpass', 1700, .16);
       if (pos % 2 === 0 && Math.random() < .85) hiss(tt, (pos % 4 ? .016 : .022) * soft, 'highpass', 7000, .045);
     }
-    if (mel[pos]) pluck(mel[pos], tt, (md === 'late' ? .055 : .07));
+    if (mLoop === 2) { if (mel[pos]) pluck(mel[pos], tt, md === 'late' ? .07 : .09); return; }
+    const notes = TR.mel[bar % 8], lead = mLoop === 3 ? TR.alt : TR.lead, k = md === 'late' ? .75 : 1;
+    for (const [p0, m, len] of notes) if (p0 === pos) { voice(lead, m, tt, len * SIX, k); if (mLoop === 1) voice(lead === 'sao' ? 'tranh' : 'sao', m - 12, tt + SIX * .5, len * SIX, .45 * k); }
   }
   function mTick() {
     if (!mOn || !ctx || ctx.state !== 'running') return;
     const now = ctx.currentTime;
     if (mNext < now) mNext = now + .08;
-    while (mNext < now + .5) { try { step(mStep, mNext); } catch (e) {} mStep++; mNext += SIX; }
+    while (mNext < now + .5) { try { step(mStep, mNext); } catch (e) {} mStep++; mNext += sixOf(); }
+  }
+  /* bài nhạc có giấy phép (tệp mp3 thật): thêm vào MUSIC_FILES là game phát các tệp này thay cho nhạc tự soạn */
+  let mEl = null, mElSrc = null, mFi = 0;
+  function playFile() {
+    try {
+      if (!mEl) { mEl = new Audio(); mEl.preload = 'auto'; mEl.onended = () => { mFi = (mFi + 1) % MUSIC_FILES.length; playFile(); }; mElSrc = ctx.createMediaElementSource(mEl); mElSrc.connect(mBus); }
+      const f = MUSIC_FILES[mFi % MUSIC_FILES.length]; mEl.src = f.src; const pr = mEl.play(); if (pr && pr.catch) pr.catch(() => {});
+      if (onTrack) onTrack({ name: f.name, by: f.by });
+    } catch (e) {}
   }
   function startMusic() {
     if (S.muted || !S.music || mOn || !ens()) return;
@@ -1114,13 +1225,15 @@ const Snd = (() => {
         wv.buffer = mkNoise(4, false); wv.loop = true; wl.type = 'lowpass'; wl.frequency.value = 480; wg.gain.value = .07; lfo.frequency.value = .09; lg.gain.value = .05;
         lfo.connect(lg); lg.connect(wg.gain); wv.connect(wl); wl.connect(wg); wg.connect(mBus); wv.start(); lfo.start();
       }
-      mOn = true; mStep = 0; mNext = ctx.currentTime + .15;
+      mOn = true; mStep = 0; mLoop = 0; mNext = ctx.currentTime + .15;
       mBus.gain.cancelScheduledValues(ctx.currentTime); mBus.gain.setTargetAtTime(ducked ? MUSIC_VOL * .3 : MUSIC_VOL, ctx.currentTime, .9);
+      if (MUSIC_FILES.length) { playFile(); return; }
       clearInterval(mTimer); mTimer = setInterval(mTick, 110); mTick();
+      if (onTrack) onTrack(TRACKS[mTrack]);
     } catch (e) { mOn = false; }
   }
   function stopMusic() {
-    mOn = false; clearInterval(mTimer);
+    mOn = false; clearInterval(mTimer); if (mEl) try { mEl.pause(); } catch (e) {}
     if (mBus && ctx) try { mBus.gain.cancelScheduledValues(ctx.currentTime); mBus.gain.setTargetAtTime(0, ctx.currentTime, .3); } catch (e) {}
   }
   function setMusic(on) { S.music = on; if (on) { unlock(); startMusic(); } else stopMusic(); }
@@ -1130,7 +1243,8 @@ const Snd = (() => {
   function duck(on) { ducked = on; if (!ctx || !mBus || !mOn) return; try { mBus.gain.setTargetAtTime(on ? MUSIC_VOL * .3 : MUSIC_VOL, ctx.currentTime, .12); } catch (e) {} }
   function suspend() { if (ctx && ctx.state === 'running') try { ctx.suspend(); } catch (e) {} }
   function resume() { if (ctx && ctx.state === 'suspended') try { ctx.resume(); } catch (e) {} }
-  return { play, coin, build, starUp, discover, click, boom, unlock, setMuted, setMusic, suspend, resume, duck, get musicOn() { return mOn; } };
+  function nextTrack() { if (MUSIC_FILES.length) { mFi = (mFi + 1) % MUSIC_FILES.length; if (mOn) playFile(); return; } mTrack = (mTrack + 1) % TRACKS.length; mLoop = 0; mStep = 0; if (mOn && ctx) { mNext = ctx.currentTime + .2; if (onTrack) onTrack(TRACKS[mTrack]); } }
+  return { play, coin, build, starUp, discover, click, boom, unlock, setMuted, setMusic, suspend, resume, duck, nextTrack, set onTrack(f) { onTrack = f; }, get track() { return MUSIC_FILES.length ? MUSIC_FILES[mFi % MUSIC_FILES.length] : TRACKS[mTrack]; }, get musicOn() { return mOn; } };
 })();
 /* ===== giọng đọc tiếng Trung: luôn đọc trọn câu =====
    - không cắt câu khi bảng đóng; câu mới chỉ thay câu cũ khi người chơi chủ động bấm nghe/hỏi tiếp
@@ -1271,7 +1385,7 @@ function renderHud() {
   const st = star();
   $('starTxt').innerHTML = '★'.repeat(st) + `<span style="opacity:.28">${'★'.repeat(5 - st)}</span><span class="lock10">🔒10</span>`;
   if (st >= FREE_MAX_STAR) { $('starBar').style.width = '100%'; $('starNext').textContent = '👑 6★'; }
-  else if (S.pts >= STAR_PTS[st]) { $('starBar').style.width = '100%'; $('starNext').textContent = '🔒 Hành trình'; }   // đủ điểm nhưng chưa đi chặng tiếp theo
+  else if (S.pts >= STAR_PTS[st]) { $('starBar').style.width = '100%'; $('starNext').textContent = st >= cardCap() ? `🎫 ${st + 1}★` : '🔒 Hành trình'; }   // đủ điểm nhưng chưa đi chặng tiếp theo
   else { const a = STAR_PTS[st - 1], b = STAR_PTS[st]; $('starBar').style.width = Math.min(100, Math.round((S.pts - a) / (b - a) * 100)) + '%'; $('starNext').textContent = `${S.pts}/${b}`; }
   const sv = Math.round(S.sat); $('satTxt').textContent = sv + '%'; $('satFace').textContent = satFace(sv);
   $('satPill').className = 'pill sat ' + (sv >= 65 ? 'good' : sv >= 45 ? 'mid' : 'bad') + ($('satPill').classList.contains('up') ? ' up' : $('satPill').classList.contains('down') ? ' down' : '');
@@ -1794,7 +1908,7 @@ function resolve(ok, el) {
   const cx = r ? r.left + r.width / 2 : innerWidth / 2, cy = r ? r.top + r.height / 2 : innerHeight / 2;
   if (Q.kind === 'serve') {
     const g = Q.g; S.answered++; sessionServed++;
-    if (sessionServed >= PITCH_AFTER_SERVES && S.pitchDay !== localDay(0) && star() >= 2) { S.pitchDay = localDay(0); const tryPitch = (n = 0) => { if (!Q && !$('ov').classList.contains('on')) memberPitch('daily'); else if (n < 60) setTimeout(() => tryPitch(n + 1), 700); }; setTimeout(tryPitch, 2600); }
+    if (sessionServed >= PITCH_AFTER_SERVES && S.pitchDay !== localDay(0) && star() >= 2) { S.pitchDay = localDay(0); const tryPitch = (n = 0) => { if (!Q && !$('ov').classList.contains('on')) { if (!hasCard() && star() >= cardCap()) Gate.show('star', star() + 1); else memberPitch('daily'); } else if (n < 60) setTimeout(() => tryPitch(n + 1), 700); }; setTimeout(tryPitch, 2600); }
     if (ok) {
       combo++; S.correct++; S.bestCombo = Math.max(S.bestCombo, combo);
       const fast = secs <= (Q.fast || FAST_SECONDS), vip = S.vipDay !== localDay(0);
@@ -1880,8 +1994,8 @@ function starUp(s) {
     `<p>Khách sạn lên <b>${s}★ · ${HSK_OF_STAR[s]}</b>: mặt tiền và sảnh cùng nâng cấp, giá phòng tăng, khách mới nói câu của bài học mới. Mở khoá:</p>
      <div class="unlock-list">${un.map(i => `<span>${i.ico} ${esc(i.zh)} · ${esc(i.vi)}</span>`).join('')}${ZONES.filter(Z => Z.star === s).map(Z => `<span>${Z.ico} Khu ${esc(Z.name)}</span>`).join('')}${COURSE.filter(u => unitStar(u) === s).map(u => `<span>📚 Bài ${COURSE.indexOf(u) + 1} · ${esc(u.title)}</span>`).join('')}</div>
      ${BOSSES[s - 1] && s - 1 >= 3 && S.lv >= 4 ? `<p class="note">⚔️ Cẩn thận: ${esc(BOSSES[s - 1].name)} (${BOSSES[s - 1].lv}) sắp lạc vào khách sạn…</p>` : ''}
-     ${s >= 3 ? `<p>Bạn đã phục vụ được khách thật rồi đấy. Muốn nói trôi chảy ở quầy lễ tân thật?</p><a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo học cùng Bảo</a><button type="button" class="btn dark" id="ovPerks">👑 Xem đặc quyền hội viên năm</button>` : `<p class="note">Lên ${s + 1}★ để mở thêm công trình. Đích đến: 10★ 👑</p>`}`, 'Tiếp tục xây');
-  if ($('ovPerks')) $('ovPerks').onclick = () => memberPitch('star' + s);
+     ${Gate.note(s)}`, 'Tiếp tục xây');
+  Gate.bindNote(s);
   if (BOSSES[s - 1] && s - 1 >= 3 && S.lv >= 4) { S.ev.bossDue = s - 1; S.ev.cnt = Math.max(S.ev.cnt || 0, (S.ev.nextAt || 4) - 2); save(); }   // boss chỉ đến như sự kiện, sau khoảng 2 khách
   const r = rectOf($('ovBig')); if (r) setTimeout(() => burstAt(r.left + r.width / 2, r.top + r.height / 2, 30, 150), 300);
 }
@@ -1901,6 +2015,71 @@ function memberPitch(src) {
   S.pitchN = (S.pitchN || 0) + 1; S.pitchSrc = src; save();
   showOv('👑', 'Hội viên năm Bảo Khựa', `<p>Bản hiện tại chơi được tới <b>5★</b>. Hạng <b>6★ → 10★</b> đang được Bảo hoàn thiện, hội viên năm được mở đầu tiên.</p>${perksHtml(true)}`, 'Để sau', null);
 }
+/* ===== v8 · THẺ HỌC VIÊN: màn mở khoá, nhắc cuối mỗi lần lên sao, ô nhập mã ===== */
+const Gate = (() => {
+  const prevCache = {};
+  function prevImg(n) {
+    n = Math.max(2, Math.min(FREE_MAX_STAR, n)); const W = Scene.W, k = n + '|' + floors();
+    let u = prevCache[k] && Date.now() - prevCache[k].t < 120000 ? prevCache[k].u : null;
+    if (!u && W && W.preview) { try { u = W.preview(n); } catch (e) { u = null; } if (u) prevCache[k] = { u, t: Date.now() }; }
+    return u ? `<figure class="gate-prev"><img src="${u}" alt="Khách sạn ${n} sao"><figcaption>Khách sạn ${n}★ của bạn</figcaption></figure>` : '';
+  }
+  const perks = () => `<ul class="perks"><li>🏨 <b>Khách sạn 3★ → 5★</b>: mặt tiền, sảnh, bể bơi, đèn vòng quay 7 màu, pháo hoa… mỗi món một từ mới</li>
+      <li>🗺️ <b>Hành trình chặng 3–4</b>: 6 chương HSK2–HSK3 (Cẩm Phả, chợ Hạ Long, cầu Bãi Cháy, Bạch Đằng…)</li>
+      <li>⚔️ <b>Thử thách Boss HSK3–HSK4</b> · khách nói câu dài như ở quầy lễ tân thật</li>
+      <li>👑 Thẻ 1 năm: mở 6★ → 10★ ngay khi ra mắt</li></ul>`;
+  const prices = () => `<div class="price-row"><div><b>${MEMBER_3M}</b><small>Thẻ 3 tháng</small></div><div class="best"><b>${MEMBER_PRICE}</b><small>Thẻ 1 năm · chưa tới 1.000đ/ngày</small></div></div>`;
+  const buy = () => `<a class="btn dark" href="${withUtm(CARD_URL, FORM_UTM_CARD)}" target="_blank" rel="noopener">🎫 Mua thẻ · chuyển khoản QR</a>
+      <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Nhắn Zalo cho Bảo nhận mã</a>`;
+  const form = id => `<div class="code-box"><label for="cardIn_${id}">${hasCard() ? 'Có mã mới? Nhập để cộng thêm hạn' : 'Đã có mã? Nhập vào đây'}</label><div class="code-row"><input id="cardIn_${id}" placeholder="BK3M-XXXX-XXXX" maxlength="14" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Mã thẻ học viên"><button type="button" class="btn" id="cardGo_${id}">Kích hoạt</button></div><div class="code-msg" id="cardMsg_${id}" role="status"></div></div>`;
+  function bind(id) {
+    const inp = $('cardIn_' + id), go = $('cardGo_' + id), msg = $('cardMsg_' + id); if (!inp) return;
+    inp.oninput = () => { const c = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12); inp.value = c.replace(/(.{4})(?=.)/g, '$1-'); };
+    const run = async () => {
+      if (go.disabled) return; go.disabled = true; msg.className = 'code-msg'; msg.textContent = 'Đang kiểm tra…';
+      const before = star(), r = await redeemCard(inp.value); go.disabled = false;
+      if (!r.ok) { msg.className = 'code-msg no'; msg.textContent = r.msg; Snd.play('hurt', .5); vib([40, 30, 40]); return; }
+      msg.className = 'code-msg ok'; msg.textContent = `✓ ${CARD_NAME[r.kind]} · hạn tới ${new Date(S.card.until).toLocaleDateString('vi-VN')}`;
+      Snd.starUp(); vib([30, 40, 80]); S.star = star(); save(); Scene.rebuild(); renderHud(); renderBuild(); Journey.refresh();
+      setTimeout(() => {
+        if (id === 'ov') { $('ov').classList.remove('on'); ovOpen = false; } else if ($('tab-me').classList.contains('on')) renderMe();
+        toast(`🎫 Đã kích hoạt ${CARD_NAME[r.kind]}: mở 3★ → 5★, Hành trình chặng 3–4, Thử thách Boss`);
+        const after = star();
+        if (after > before) setTimeout(() => starUp(after), 600);
+        else if (lvCap() <= after && Journey.curIdx() >= 0) setTimeout(() => { const i = Journey.curIdx(); toast(`🗺️ Đi tiếp Hành trình chương ${i + 1} (${STORY[i].place}) để khách sạn lên ${after + 1}★`); if (Scene.mode !== 'bay' && !Inside.open) Scene.flyTo('bay'); }, 900);
+      }, 1100);
+    };
+    go.onclick = run; inp.onkeydown = e => { if (e.key === 'Enter') run(); };
+  }
+  /** màn mở khoá: why = 'star' (lên hạng) · 'part' (chặng Hành trình) · 'boss' */
+  function show(why = 'star', arg) {
+    const s = star(), n = why === 'star' ? Math.min(FREE_MAX_STAR, arg || s + 1) : 3;
+    S.gateN = (S.gateN || 0) + 1; S.gateSrc = why; save();
+    const lead = why === 'part' ? `<p>Bạn đã đi hết phần mở sẵn của Hành trình (chặng 1–2 · HSK0–HSK1) 👏 <b>Chặng ${arg + 1} · ${PARTS[arg].lv} · ${esc(PARTS[arg].name)}</b> dùng thẻ học viên.</p>`
+      : why === 'boss' ? '<p><b>Thử thách Boss HSK3–HSK4</b> dùng thẻ học viên.</p>'
+      : `<p>Khách sạn ${S.pts >= STAR_PTS[s] ? 'đã đủ điểm' : 'đang tích điểm'} lên <b>${n}★ · ${HSK_OF_STAR[n]}</b>. Từ hạng này dùng thẻ học viên${lvCap() < n ? `, rồi đi tiếp Hành trình chặng ${Math.min(4, n)} (${PARTS[Math.min(3, n - 1)].lv}) để khách sạn lên hạng` : ''}.</p>`;
+    showOv('🎫', why === 'part' ? 'Đi tiếp Hành trình' : `Mở khoá khách sạn ${n}★`, `${prevImg(why === 'star' ? n : 3)}${lead}${perks()}${prices()}${buy()}${form('ov')}`, 'Để sau', null);
+    bind('ov');
+  }
+  /** ghi chú cuối mỗi lần lên sao */
+  function note(s) {
+    if (s >= FREE_MAX_STAR) return '';
+    if (hasCard()) { const d = cardDays(); return `<div class="card-note ok">🎫 ${CARD_NAME[S.card.kind]} đang mở · còn ${d} ngày${d <= 14 ? ' · <button type="button" class="lnk" id="ovCard">gia hạn</button>' : ''}</div>`; }
+    if (s + 1 > cardCap()) return `<div class="card-note hot">${prevImg(s + 1)}<p><b>Hạng ${s + 1}★ · ${HSK_OF_STAR[s + 1]} dùng thẻ học viên.</b> Bản thường dừng ở ${cardCap()}★ và Hành trình chặng 1–2. Có thẻ: khách sạn 3★ → 5★, chặng 3–4 (HSK2–HSK3), Thử thách Boss.</p><button type="button" class="btn dark" id="ovCard">🎫 Mở khoá ${s + 1}★ · từ ${MEMBER_3M}</button></div>`;
+    return `<div class="card-note">🎫 Bản thường mở tới ${cardCap()}★. Từ 3★ (HSK2), chặng 3–4 và Boss dùng thẻ học viên · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE} · <button type="button" class="lnk" id="ovCard">xem thẻ</button></div>`;
+  }
+  function bindNote(s) { const b = $('ovCard'); if (b) b.onclick = () => { Snd.play('ui'); show('star', Math.max(3, s + 1)); }; const p = $('ovCardP'); if (p) p.onclick = () => { Snd.play('ui'); show('part', FREE_PARTS); }; }
+  function partNote(p) { return p === FREE_PARTS - 1 && !hasCard() ? `<div class="card-note hot"><p><b>Chặng 3 · HSK2</b> và khách sạn 3★ dùng thẻ học viên · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE}.</p><button type="button" class="btn dark" id="ovCardP">🎫 Xem thẻ học viên</button></div>` : ''; }
+  /** khối thẻ trong "Của tôi" */
+  function me() {
+    if (hasCard()) { const d = cardDays(); return `<div class="card member-card"><b style="font-size:17px">🎫 ${CARD_NAME[S.card.kind]} đang mở</b>
+      <p style="margin:6px 0">Còn <b>${d} ngày</b> (tới ${new Date(S.card.until).toLocaleDateString('vi-VN')}) · mã …${esc(S.card.tail)}. Đã mở: khách sạn 3★ → 5★, Hành trình chặng 3–4, Thử thách Boss.</p>
+      ${d <= 14 ? `<p style="margin:6px 0">Sắp hết hạn: gia hạn để giữ hạng sao.</p>${buy()}` : ''}${form('me')}</div>`; }
+    return `<div class="card member-card"><b style="font-size:17px">🎫 Thẻ học viên Bảo Khựa 阿宝</b>
+      <p style="margin:6px 0">Bản thường đang mở: khách sạn tới <b>${cardCap()}★</b> · Hành trình chặng 1–2 (HSK0–HSK1).</p>${perks()}${prices()}${buy()}${form('me')}</div>`;
+  }
+  return { show, note, bindNote, partNote, me, bind, prevImg };
+})();
 function showOv(big, title, body, btn, onClose, extra) {
   $('ovExtra').innerHTML = extra || '';
   $('ovBig').textContent = big; $('ovBig').style.fontSize = [...big].length > 3 ? '36px' : ''; $('ovTitle').textContent = title; $('ovBody').innerHTML = body; $('ovBtn').textContent = btn || 'Tiếp tục';
@@ -2303,7 +2482,7 @@ const Journey = (() => {
     el.innerHTML = `<div class="jc-top"><b>${p.ico} Chặng ${c.part + 1} · ${p.lv} · ${esc(p.name)}</b><span>${doneN}/${STORY.length}</span></div>
       <div class="jc-dots">${STORY.map((x, k) => `<i class="${isDone(x) ? 'd' : k === i ? 'c' : ''}${k && STORY[k - 1].part !== x.part ? ' gap' : ''}"></i>`).join('')}</div>
       <p class="jc-t"><span class="jc-ico">${c.ico}</span><span><small>Chương ${i + 1}</small><b>${esc(c.title)}</b> · ${esc(c.place)} <span lang="zh-CN">${c.zh}</span> <i>${c.zpy}</i></span></p>
-      <button type="button" class="btn" id="jcGo">▶ Vào chương ${i + 1}</button>
+      <button type="button" class="btn${partFree(c.part) ? '' : ' dark'}" id="jcGo">${partFree(c.part) ? `▶ Vào chương ${i + 1}` : `🎫 Chặng ${c.part + 1} dùng thẻ học viên`}</button>
       <p class="jc-r">Xong chặng ${c.part + 1}: ${esc(p.reward)}</p>`;
     $('jcGo').onclick = () => openCh(c.id);
   }
@@ -2321,6 +2500,7 @@ const Journey = (() => {
   function openCh(id) {
     const i = STORY.findIndex(c => c.id === id), c = STORY[i]; if (!c) return;
     if (!unlocked(i)) { Snd.play('hurt', .5); toast(`🔒 Đi hết chương ${i} trước nhé`); return; }
+    if (!partFree(c.part)) { Snd.unlock(); Snd.play('ui'); Gate.show('part', c.part); return; }
     Snd.unlock(); Snd.play('ui');
     const go = () => sheet(c);
     if (Scene.W) Scene.flyTo({ x: c.x, z: c.z + 8, S: 30, d: 1.1 }, go); else go();
@@ -2409,8 +2589,9 @@ const Journey = (() => {
       Scene.rebuild(); Scene.refill(); return;
     }
     Scene.rebuild();
-    showOv(P.ico, `Xong chặng ${p + 1} · ${P.lv}!`, `<p><b>${esc(P.reward)}</b>.</p>${p === 3 ? '<p>⚔️ Thử thách Boss HSK3, HSK4 sẽ đến như sự kiện khi khách sạn đạt 4★, 5★.</p>' : '<p>Khách mới sẽ nói câu dài hơn một chút. Cứ bình tĩnh: luôn có pinyin và nghĩa sau mỗi câu trả lời.</p>'}`,
+    showOv(P.ico, `Xong chặng ${p + 1} · ${P.lv}!`, `<p><b>${esc(P.reward)}</b>.</p>${after > before ? '' : Gate.partNote(p)}${p === 3 ? '<p>⚔️ Thử thách Boss HSK3, HSK4 sẽ đến như sự kiện khi khách sạn đạt 4★, 5★.</p>' : '<p>Khách mới sẽ nói câu dài hơn một chút. Cứ bình tĩnh: luôn có pinyin và nghĩa sau mỗi câu trả lời.</p>'}`,
       after > before ? 'Tuyệt!' : 'Về khách sạn ▶', () => { if (after > before) starUp(after); else Scene.flyTo('street'); });
+    Gate.bindNote(after);
   }
   return { refresh, onMode, next, openCh, card, cta, close, get open() { return open; }, curIdx, isDone, _t: () => ({ qs, qi }) };
 })();
@@ -2420,8 +2601,8 @@ const Onboard = (() => {
   const LEVELS = [
     { lv: 0, ico: '🌱', t: 'Chưa biết gì', s: 'Bắt đầu từ pinyin, chào hỏi, số đếm (HSK0)', go: 'Đi Hành trình từ chương 1 · nhà nghỉ mở cửa sau chặng 1' },
     { lv: 1, ico: '🌿', t: 'Biết chào hỏi, đếm số', s: 'Đã học một chút (khoảng HSK1)', go: 'Mở khách sạn ngay · Hành trình bắt đầu từ chặng 2' },
-    { lv: 3, ico: '🌳', t: 'Giao tiếp cơ bản', s: 'Nói được câu đơn giản (HSK2–3)', go: 'Khách sạn đến 3★ · còn chặng 4 trên bản đồ' },
-    { lv: 4, ico: '🏆', t: 'Khá trở lên', s: 'HSK4 hoặc đi làm bằng tiếng Trung', go: 'Mở hết: 5★ và Thử thách Boss HSK3–HSK4' }
+    { lv: 3, ico: '🌳', t: 'Giao tiếp cơ bản', s: 'Nói được câu đơn giản (HSK2–3)', go: 'Khách sạn mở sẵn 2★ · 3★, chặng 4 và Boss dùng thẻ học viên' },
+    { lv: 4, ico: '🏆', t: 'Khá trở lên', s: 'HSK4 hoặc đi làm bằng tiếng Trung', go: 'Mở sẵn 2★ · 3★ → 5★ và Boss HSK3–HSK4 dùng thẻ học viên' }
   ];
   const TEST = [
     { lv: 0, zh: '你好！', py: 'Nǐ hǎo!', o: ['Xin chào!', 'Cảm ơn!', 'Tạm biệt!', 'Xin lỗi!'] },
@@ -2656,6 +2837,7 @@ function renderBuild() {
     const can = !maxed && !lock && !need && S.coins >= price;
     let btn;
     if (maxed) btn = `<button class="buy" disabled>✓ Đã xây</button>`;
+    else if (lock && it.star > cardCap()) btn = `<button class="buy" data-gate="${it.star}">🎫 ${it.star}★</button>`;
     else if (lock) btn = `<button class="buy" disabled>🔒 ${it.star}★</button>`;
     else if (need) btn = `<button class="buy" disabled>${esc(need)}</button>`;
     else btn = `<button class="buy" data-buy="${it.id}" ${S.coins >= price ? '' : 'disabled'}>${price} 🪙</button>`;
@@ -2671,6 +2853,7 @@ function renderBuild() {
   $('tab-build').querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { const it = ITEM[b.dataset.buy]; if (S.coins < priceOf(it)) return toast('Chưa đủ xu – phục vụ thêm khách nhé'); openBuy(it); });
   $('tab-build').querySelectorAll('[data-vip]').forEach(el => el.onclick = e => { if (e.target.closest('[data-pitch]')) return; speak(VIP_ITEMS[+el.dataset.vip].zh, true); });
   $('tab-build').querySelectorAll('[data-pitch]').forEach(b => b.onclick = () => memberPitch('item'));
+  $('tab-build').querySelectorAll('[data-gate]').forEach(b => b.onclick = e => { e.stopPropagation(); Snd.play('ui'); Gate.show('star', +b.dataset.gate); });
   $('vipCta').onclick = () => memberPitch('build');
   bindFurn();
   if ($('insideSub')) $('insideSub').textContent = zoneBadge();
@@ -2705,23 +2888,20 @@ function renderMe() {
   $('tab-me').innerHTML = `<div class="stats"><div><b>${S.served}</b>khách đã phục vụ</div><div><b>${acc}%</b>trả lời đúng</div><div><b>${S.bestCombo}</b>combo cao nhất</div>
       <div><b>${satFace(S.sat)} ${Math.round(S.sat)}%</b>độ hài lòng</div><div><b>${S.happy || 0}</b>khách hài lòng</div><div><b>${S.left || 0}</b>khách bỏ đi</div>
       <div><b>${built}/${total}</b>công trình</div><div><b>${FURN.filter(f => hasF(f.id)).length}/${FURN.length}</b>món nội thất</div><div><b>${STORY.filter(c => Journey.isDone(c)).length}/${STORY.length}</b>chương Hành trình</div><div><b>${Object.keys(S.ev.boss).filter(k => +k >= 3).length}/2</b>boss HSK3–4</div><div><b>🔥${streakAlive()}</b>ngày liên tiếp</div><div><b>${S.checkouts || 0}</b>lượt trả phòng</div></div>
-    <div class="card member-card">
-      <b style="font-size:17px">👑 Hội viên năm Bảo Khựa 阿宝</b>
-      ${perksHtml(false)}
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><a class="btn dark" href="${withUtm(GOOGLE_FORM_LINK, FORM_UTM_MEMBER)}" target="_blank" rel="noopener">👑 Đăng ký hội viên năm</a>
-      <a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a></div>
-      <p style="font-size:12px;margin-top:8px;opacity:.8">Thẻ tự học HSK0 → HSK4 (không gồm lớp Zoom) · <a href="../membership.html" target="_blank" rel="noopener" style="color:#16171B">thẻ 3 tháng ${MEMBER_3M}</a></p></div>
-    <div class="card setlist"><label class="toggle"><span>🎵 Nhạc nền chill (lo-fi + đàn tranh)</span><input type="checkbox" id="musicChk" ${S.music ? 'checked' : ''}></label>
+    ${Gate.me()}
+    <div class="card setlist"><label class="toggle"><span>🎵 Nhạc nền lofi tự soạn (đàn tranh, sáo trúc, sóng biển)</span><input type="checkbox" id="musicChk" ${S.music ? 'checked' : ''}></label>
+      <button type="button" class="btn ghost" id="trackBtn">⏭️ Đổi bài · đang: ${esc(Snd.track.name)}</button>
       <label class="toggle"><span>🔋 Chế độ mượt cho máy yếu (30 khung hình/giây, ít người xe hơn)</span><input type="checkbox" id="lowChk" ${Scene.low ? 'checked' : ''}></label>
       <button type="button" class="btn ghost" id="lvBtn">🎚️ Đổi trình độ (đang: ${S.lv == null ? 'chưa chọn' : ['HSK0', 'HSK1', 'HSK2', 'HSK3', 'HSK4+'][S.lv]})</button>
       <button type="button" class="btn ghost" id="tutBtn">📖 Xem lại hướng dẫn chơi</button></div>
     <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button></div>
     ${EMBED ? '' : '<a class="btn ghost" href="../index.html">🏠 Trang giới thiệu Bảo Khựa</a>'}`;
-  $('shareBtn').onclick = share;
+  $('shareBtn').onclick = share; Gate.bind('me');
   $('lowChk').onchange = e => Scene.setLow(e.target.checked);
   $('musicChk').onchange = e => { Snd.setMusic(e.target.checked); save(); toast(e.target.checked ? '🎵 Đã bật nhạc nền' : 'Đã tắt nhạc nền'); };
   $('tutBtn').onclick = () => { if (!hotelOpen()) { toast('Hướng dẫn khách sạn mở sau chặng 1 · đang ở bản đồ Hành trình'); return; } closeDrawer(); switchTab('build'); Tut.start(); };
   $('lvBtn').onclick = () => { closeDrawer(); Onboard.pick(); };
+  $('trackBtn').onclick = () => { Snd.unlock(); if (!S.music) { Snd.setMusic(true); save(); musicUi(); $('musicChk').checked = true; } Snd.nextTrack(); setTimeout(() => { const b = $('trackBtn'); if (b) b.textContent = `⏭️ Đổi bài · đang: ${Snd.track.name}`; }, 60); };
 }
 async function share() {
   const text = `Khách sạn Bảo Khựa của mình đạt ${star()}★, phục vụ ${S.served} khách bằng tiếng Trung! 🏨\nXây khách sạn của bạn: ${GAME_URL}`;
@@ -2738,6 +2918,7 @@ function toggleFull() {
   if (!rq) return tip();
   try { const pr = rq.call(el, { navigationUI: 'hide' }); if (pr && pr.catch) pr.catch(tip); } catch (e) { tip(); }
 }
+function hideTipNow() { const t = $('sceneTip'); if (t) t.style.opacity = '0'; }
 function musicUi() { const b = $('musicBtn'); if (b) b.classList.toggle('off', !S.music || S.muted); }
 function switchTab(t) {
   openDrawer();
@@ -2769,6 +2950,7 @@ function init() {
   document.querySelector('.pill.star').onclick = () => {
     const st = star();
     if (st >= FREE_MAX_STAR) return memberPitch('hud');
+    if (S.pts >= STAR_PTS[st] && st >= cardCap()) { Snd.play('ui'); return Gate.show('star', st + 1); }
     if (S.pts >= STAR_PTS[st]) { const i = Journey.curIdx(); toast(`🔒 Đủ điểm rồi! Đi tiếp Hành trình${i >= 0 ? ` (chương ${i + 1}: ${STORY[i].place})` : ''} để mở ${st + 1}★`); return; }
     toast(`Còn ${STAR_PTS[st] - S.pts} điểm nữa lên ${st + 1}★ · đích đến 10★ 👑`);
   };
@@ -2785,7 +2967,21 @@ function init() {
   document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
   $('drClose').onclick = () => closeDrawer();
   $('fsBtn').onclick = toggleFull; if (EMBED) $('fsBtn').hidden = true;
-  $('musicBtn').onclick = () => { Snd.unlock(); Snd.setMusic(!S.music); save(); musicUi(); toast(S.music ? '🎧 Nhạc lofi chill: bật' : 'Đã tắt nhạc nền'); }; musicUi();
+  let lastTrackToast = 0;
+  Snd.onTrack = t => { if (!S.music || S.muted || document.hidden) return; const now = Date.now(); if (now - lastTrackToast < 4000) return; lastTrackToast = now; toast(`🎵 Đang phát: ${t.name}${t.zh ? ` · ${t.zh} ${t.py}` : ''}${t.by ? ` · ${t.by}` : ' · lofi tự soạn'}`); };
+  $('musicBtn').onclick = () => { Snd.unlock(); Snd.setMusic(!S.music); save(); musicUi(); if (!S.music) toast('Đã tắt nhạc nền'); }; musicUi();
+  const pm = $('placeMenu');
+  const placeClose = () => { pm.hidden = true; $('placeBtn').setAttribute('aria-expanded', 'false'); };
+  $('placeBtn').onclick = e => {
+    e.stopPropagation(); Snd.unlock(); Snd.play('ui'); const W = Scene.W; if (!W || !W.places) { toast('Máy chưa mở được hình 3D'); return; }
+    if (!pm.hidden) return placeClose();
+    pm.innerHTML = '<b>📍 Đi tới</b>' + W.places.map(p => `<button type="button" role="menuitem" data-pl="${p.id}"><span class="pi">${p.ico}</span><span class="pn">${esc(p.name)}<small lang="zh-CN">${p.zh} ${p.py}</small></span></button>`).join('');
+    pm.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const p = W.places.find(x => x.id === b.dataset.pl); placeClose(); Snd.play('ui'); if (Inside.open) Inside.close(); W.goPlace(p.id); speak(p.zh); toast(`${p.ico} ${p.name} · ${p.zh} ${p.py}`); hideTipNow(); });
+    pm.hidden = false; $('placeBtn').setAttribute('aria-expanded', 'true');
+  };
+  document.addEventListener('pointerdown', e => { if (!pm.hidden && !e.target.closest('#placeMenu,#placeBtn')) placeClose(); }, true);
+  $('zinBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(.7); };
+  $('zoutBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(1.42); };
   $('insideBtn').onclick = () => { Snd.unlock(); Snd.play('ui'); if (Inside.open) Inside.close(); else Inside.show(); };
   $('evtClose').onclick = () => { if (S.ev.pend && S.ev.pend.fid && FURNI[S.ev.pend.fid]) { S.coins += FURNI[S.ev.pend.fid].price; toast(`Đã quay về · hoàn ${FURNI[S.ev.pend.fid].price} 🪙`); } S.ev.pend = null; save(); Ev.close(); };
   $('insideSub').textContent = zoneBadge();

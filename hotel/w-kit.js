@@ -206,18 +206,22 @@ export const faceTo = (c, ang, dt) => { let df = ang - c.face; df = Math.atan2(M
 export function disposeTree(o) { o.traverse(m => { if (m.material && m.material.map && m.material.map.userData && m.material.map.userData.own) m.material.map.dispose(); }); }
 
 /* ---------- gộp khối tĩnh: mọi lưới cùng vật liệu → 1 lưới (ít lệnh vẽ, nhẹ máy) ---------- */
+const VC_MAT = new THREE.MeshToonMaterial({ color: '#ffffff', vertexColors: true, gradientMap: grad });
 export function bake(src, dst, o = {}) {
   src.updateMatrixWorld(true);
   const buckets = new Map();
-  src.traverse(m => { if (!m.isMesh || m.isInstancedMesh) return; let v = true; for (let p = m; p; p = p.parent) if (!p.visible) { v = false; break; } if (!v) return; if (!buckets.has(m.material)) buckets.set(m.material, []); buckets.get(m.material).push(m); });
+  // o.vc: mọi vật liệu tô màu trơn (không ảnh, không phát sáng, không trong suốt) gộp thành 1 lưới tô màu theo đỉnh → 1 lệnh vẽ
+  const VCM = o.vcMat || VC_MAT;
+  const plain = m => o.vc && m.isMeshToonMaterial && !m.map && !m.vertexColors && (o.vcMat ? m.opacity === 1 : !m.transparent) && m.side === THREE.FrontSide && m.emissive.r + m.emissive.g + m.emissive.b === 0;
+  src.traverse(m => { if (!m.isMesh || m.isInstancedMesh) return; let v = true; for (let p = m; p; p = p.parent) if (!p.visible) { v = false; break; } if (!v) return; const key = plain(m.material) ? VCM : m.material; if (!buckets.has(key)) buckets.set(key, []); buckets.get(key).push(m); });
   const out = [];
   for (const [mat, list] of buckets) {
-    const useUv = !!mat.map, useCol = !!mat.vertexColors;
-    const parts = list.map(m => { let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); g.applyMatrix4(m.matrixWorld); return g; });
+    const useUv = !!mat.map, useCol = !!mat.vertexColors, tint = mat === VCM;
+    const parts = list.map(m => { let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); g.applyMatrix4(m.matrixWorld); if (tint) g.userData.tint = m.material.color; return g; });
     let n = 0; parts.forEach(g => { n += g.attributes.position.count; });
     const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uv = useUv ? new Float32Array(n * 2) : null, col = useCol ? new Float32Array(n * 3) : null;
     let k = 0;
-    for (const g of parts) { const c = g.attributes.position.count; pos.set(g.attributes.position.array, k * 3); if (g.attributes.normal) nor.set(g.attributes.normal.array, k * 3); if (uv && g.attributes.uv) uv.set(g.attributes.uv.array, k * 2); if (col && g.attributes.color) col.set(g.attributes.color.array, k * 3); k += c; g.dispose(); }
+    for (const g of parts) { const c = g.attributes.position.count; if (tint) { const t = g.userData.tint; for (let i = 0; i < c; i++) { col[(k + i) * 3] = t.r; col[(k + i) * 3 + 1] = t.g; col[(k + i) * 3 + 2] = t.b; } } pos.set(g.attributes.position.array, k * 3); if (g.attributes.normal) nor.set(g.attributes.normal.array, k * 3); if (uv && g.attributes.uv) uv.set(g.attributes.uv.array, k * 2); if (col && !tint && g.attributes.color) col.set(g.attributes.color.array, k * 3); k += c; g.dispose(); }
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
     if (uv) geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); if (col) geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     geo.computeBoundingSphere();

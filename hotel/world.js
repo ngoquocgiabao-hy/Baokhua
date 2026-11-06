@@ -11,6 +11,7 @@ import * as THREE from 'three';
 import { REDUCED, V3, clamp, lerp, sstep, easeIO, rng, ZH, UI, INK, toon, ownToon, OUTL, shellBegin, shellEnd, setSeg, rbox, cylG, sphG, coneG, planeG, put, M, rb, cyl, sph, cone, ol,
   canvasTex, signTex, stripeTex, TX, fxRoot, sprite, puff, sparkles, confetti, burst, stepFx, setCoinHook, chibi, pose, walk, faceTo, tickClock, bake, grad } from './w-kit.js';
 import { buildLobby, ROOM, DESK_SPOT, GUEST_SPOT, DOOR_IN, DOOR_OUT, LIFT } from './w-lobby.js';
+import { buildLife, roadY, roadSlope, BR, LANE, ROUTE, mini, lifePose, LOOK, vcMerge } from './w-life.js';
 
 const LOBBY_H = 3.8, FLOOR_H = 3.0, DOOR_X = 9.25;
 const SLOT = i => new V3(DOOR_X + .15 + i * 1.05, 0, 9.85 + (i % 2) * .32);
@@ -91,13 +92,14 @@ function buildTerrain(g) {
   slab(g, -66, 66, 19.4, 22.5, -.03, '#f7e0a3', .5, .1); slab(g, -66, 66, 22.5, 25.5, -.08, '#f3d894', .5, .1); slab(g, -66, 66, 25.5, 28.6, -.13, '#ecd08a', .5, .1);
   // đồi Ba Đèo sau phố + rặng núi phía bắc
   const hill = M(new THREE.SphereGeometry(30, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), '#8fcf7a', 30, -.5, -44); hill.scale.y = .62; g.add(hill);
-  const hill2 = M(new THREE.SphereGeometry(22, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), '#9ad683', -28, -.5, -40); hill2.scale.y = .5; g.add(hill2);
+  const hill2 = M(new THREE.SphereGeometry(22, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), '#9ad683', -38, -.5, -88); hill2.scale.y = .5; g.add(hill2);
   const r = rng(7);
   for (let i = 0; i < 26; i++) { const x = -330 + i * 28 + r() * 10, h = 24 + r() * 26, w = 34 + r() * 20; const m = M(new THREE.SphereGeometry(w, 14, 7, 0, Math.PI * 2, 0, Math.PI / 2), i % 2 ? '#8cc47c' : '#9fd18a', x, -.5, -132 - r() * 14); m.scale.y = h / w; g.add(m); }
   for (let i = 0; i < 70; i++) { const a = r() * 6.283, d = r() * 26, x = 30 + Math.cos(a) * d, z = -44 + Math.sin(a) * d, y = Math.sqrt(Math.max(0, 900 - d * d)) * .62 - .5; if (z > -20) continue; tree(g, x, z, 1.6 + r(), y - .3); }
-  for (let i = 0; i < 40; i++) { const x = -60 + r() * 124, z = -9 - r() * 14; if (Math.abs(x - 30) < 22 && z < -16) continue; tree(g, x, z, 1.1 + r() * .7); }
+  for (const x of [-60, -52, -19, -15, -3, 2, 22, 30, 38, 46]) tree(g, x + r() * 2, -6.3, 1.1 + r() * .5);
+  for (let i = 0; i < 26; i++) { const x = -16 + r() * 82, z = -24 - r() * 6; if (Math.hypot(x - 30, z + 44) < 27) continue; tree(g, x, z, 1.2 + r() * .7); }
   // bờ tây: đường ra Tuần Châu, Quảng Yên · sông Bạch Đằng cắt ngang
-  slab(g, -170, -70, -150, 6, -.05, '#bfe0a0', 2, .6); slab(g, -330, -200, -150, 6, -.05, '#b5d996', 2, .6);
+  slab(g, -170, -70, -150, 6, -.05, '#bfe0a0', 2, .6); slab(g, -73, -67, -150, 6, -.065, '#bfe0a0', 2, .1); slab(g, -330, -200, -150, 6, -.05, '#b5d996', 2, .6);
   slab(g, -170, -70, 3, 6.5, -.02, '#e3d8bf', .3, .1); slab(g, -330, -200, 3, 6.5, -.02, '#e3d8bf', .3, .1); g.add(rb(34, .5, 4, '#cfd8e3', -185, .3, 4.7, .1));
   for (let i = 0; i < 26; i++) tree(g, -165 + r() * 92, -10 - r() * 120, 2 + r() * 1.5);
   for (let i = 0; i < 20; i++) tree(g, -325 + r() * 120, -10 - r() * 120, 2 + r() * 1.5);
@@ -107,7 +109,7 @@ function buildTerrain(g) {
   for (let i = 0; i < 20; i++) { const a = r() * 6.283, d = r() * 18; if (Math.hypot(Math.cos(a) * d, Math.sin(a) * d * .8 - 10) < 9) continue; tree(g, -113 + Math.cos(a) * d, 60 + Math.sin(a) * d * .8, 1.8 + r()); }
   // Hòn Gai (bên kia cầu) + Cẩm Phả
   slab(g, 140, 262, -150, 22, -.05, '#bfe0a0', 2, .6); slab(g, 262, 380, -150, 8, -.05, '#c6cda9', 2, .6); slab(g, 195, 300, 21, 100, -.05, '#c6cda9', 2, .6);
-  slab(g, 146, 258, -40, 14, -.02, '#e6decb', .2, .05);
+  slab(g, 146, 258, -40, -16, -.02, '#e6decb', .2, .05);
   for (let i = 0; i < 20; i++) tree(g, 146 + r() * 110, -50 - r() * 90, 2 + r());
 }
 
@@ -155,11 +157,22 @@ function buildTower(g) {
   g.add(M(rbox(x1 - x0 - 1, 2.2, .1, .04), glassMat, cx, 1.3, 7.95));
   tapBox(x0, 0, 1, x1, h, 8.4, 'hotel');
 }
-function lampPost(g, x, z) {
-  g.add(cyl(.09, .12, 4.2, '#2b3a55', x, 2.1, z, 8)); g.add(rb(.9, .1, .1, '#2b3a55', x + .35, 4.1, z, .03));
-  g.add(ol(sph(.22, '#fff6d8', x + .75, 3.95, z, 10, { emissive: '#ffe08a', emissiveIntensity: .4 }), .03));
-  const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.glow, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })); gl.position.set(x + .75, 3.9, z); gl.scale.setScalar(4.2); dyn.add(gl); lampGlows.push(gl);
-  tapBox(x - .3, 0, z - .3, x + 1, 4.3, z + .3, 'lamp');
+const lampSpots = [];
+function lampPost(g, x, z, y = 0) {
+  g.add(cyl(.09, .12, 4.2, '#2b3a55', x, y + 2.1, z, 8)); g.add(rb(.9, .1, .1, '#2b3a55', x + .35, y + 4.1, z, .03));
+  g.add(ol(sph(.22, '#fff6d8', x + .75, y + 3.95, z, 10, { emissive: '#ffe08a', emissiveIntensity: .4 }), .03));
+  const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.glow, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })); gl.position.set(x + .75, y + 3.9, z); gl.scale.setScalar(4.2); dyn.add(gl); lampGlows.push(gl);
+  lampSpots.push([x + .75, y, z]);
+  tapBox(x - .3, y, z - .3, x + 1, y + 4.3, z + .3, 'lamp');
+}
+/** vũng sáng vàng dưới chân đèn đường (1 lệnh vẽ cho tất cả) */
+let poolMesh = null;
+function buildLightPools() {
+  const n = lampSpots.length, pos = new Float32Array(n * 18), uv = new Float32Array(n * 12), Q = [[-1, -1, 0, 0], [1, -1, 1, 0], [1, 1, 1, 1], [-1, -1, 0, 0], [1, 1, 1, 1], [-1, 1, 0, 1]];
+  lampSpots.forEach(([x, y, z], i) => Q.forEach(([a, b, u, v], k) => { pos.set([x + a * 2.6, y + .09, z + b * 2.6], i * 18 + k * 3); uv.set([u, v], i * 12 + k * 2); }));
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); geo.computeBoundingSphere();
+  poolMesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: TX.glow, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, color: '#ffcf7a' }));
+  poolMesh.renderOrder = 1; poolMesh.visible = false; dyn.add(poolMesh);
 }
 function bench(g, x, z) { g.add(rb(2.0, .12, .55, '#c98f5e', x, .55, z, .04)); g.add(rb(2.0, .5, .1, '#c98f5e', x, .85, z - .25, .04)); for (const s of [-.8, .8]) g.add(rb(.12, .5, .5, '#3a2c3f', x + s, .3, z, .03)); }
 function busStop(g, x, z) {
@@ -171,7 +184,7 @@ function busStop(g, x, z) {
 }
 function buildCity(g) {
   SHOPS.forEach(s => buildShop(g, s)); buildTower(g);
-  for (const x of [-58, -49, -40, -31, -22, 18, 27, 36, 45, 54, 62]) lampPost(g, x, 11.0);
+  for (const x of [-58, -49, -40, -31, -22, 18, 27, 36, 45, 54]) lampPost(g, x, 11.0);
   for (const x of [-54, -42, -30, -18, -6, 6, 18, 30, 42, 54]) lampPost(g, x, 17.6);
   for (const x of [-48, -24, 0, 36, 58]) bench(g, x, 18.7);
   busStop(g, 26, 10.4);
@@ -185,17 +198,7 @@ function buildCity(g) {
    ===================================================================== */
 let cableCabs = [], cableA, cableB, chimneys = [], wheel = null;
 function buildLandmarks(g) {
-  // cầu Bãi Cháy (dây văng 1 mặt phẳng dây, 2 trụ)
-  const zb = 4, yd = 7;
-  g.add(rb(86, .7, 3.8, '#f1f3f7', 103, yd, zb, .12)); g.add(rb(86, .5, .2, '#ffffff', 103, yd + .55, zb - 1.8, .05)); g.add(rb(86, .5, .2, '#ffffff', 103, yd + .55, zb + 1.8, .05));
-  g.add(rb(86, .08, .15, '#FFD91F', 103, yd + .37, zb, .02));
-  for (const [x0, x1, dir] of [[44, 60, 1], [146, 162, -1]]) { const m = rb(Math.hypot(16, yd), .6, 3.8, '#f1f3f7', (x0 + x1) / 2, yd / 2, zb, .1); m.rotation.z = Math.atan2(yd, 16) * dir; g.add(m); }
-  for (const xp of [88, 118]) {
-    g.add(ol(rb(1.8, 31, 1.8, '#ffffff', xp, 12.5, zb, .3), .08)); g.add(rb(4, 3, 4.5, '#dfe5ee', xp, -1, zb, .3));
-    for (let i = 1; i <= 7; i++) for (const s of [-1, 1]) rod(g, new V3(xp, 26 + i * .45, zb), new V3(xp + s * (3 + i * 3.1), yd + .5, zb), .05, '#f7f7f7', 4);
-  }
-  for (const xp of [62, 75, 131, 144]) g.add(rb(1.2, yd + 3, 1.2, '#dfe5ee', xp, yd / 2 - 1.6, zb, .1));
-  tapBox(60, 0, zb - 2, 146, 28, zb + 2, 'bridge');
+  // cầu Bãi Cháy: dựng trong w-life.js, mặt cầu nằm đúng trên tim đường (xe và người đi qua được sang Hòn Gai)
   // cáp treo từ phố lên đồi
   cableA = new V3(52, 4.5, 2.5); cableB = new V3(34, 20.5, -36);
   g.add(rb(4, 4.6, 3, '#e8593c', 52, 2.3, 2.5, .2)); g.add(rb(4.6, .5, 3.6, '#fffaf0', 52, 4.8, 2.5, .1));
@@ -236,13 +239,7 @@ function buildLandmarks(g) {
   g.add(ol(rb(10, 4, 8, '#ffffff', -104, 2, 72, .3), .1)); g.add(rb(10.6, .5, 8.6, '#1E5AA8', -104, 4.2, 72, .1));
   { const sg = new THREE.Mesh(planeG(8, 2.4), new THREE.MeshBasicMaterial({ map: signTex('巡州港', 'Xúnzhōu gǎng · Cảng Tuần Châu') })); sg.position.set(-104, 2.6, 76.05); g.add(sg); }
   tapBox(-139, 0, 38, -87, 6, 100, 'cruise');
-  // Hòn Gai: phố + chợ Hạ Long
-  const hr = rng(9);
-  for (let i = 0; i < 34; i++) { const x = 150 + (i % 7) * 15 + hr() * 4, z = -36 + Math.floor(i / 7) * 10 + hr() * 3, h = 4 + hr() * 12; if (Math.abs(x - 158) < 14 && Math.abs(z - 6) < 10) continue; const c = pick(['#ffe08a', '#9fc5ff', '#ffb38a', '#e5edf6', '#b8e0a0', '#ff9fb4']);
-    g.add(ol(rb(8, h, 7, c, x, h / 2, z, .2), .08)); g.add(rb(8.3, .3, 7.3, '#fffaf0', x, h + .15, z, .08)); for (let k = 0; k < Math.floor(h / 3); k++) g.add(M(rbox(6, 1, .1, .03), k % 2 ? winA : winB, x, 2 + k * 3, z + 3.55)); }
-  g.add(ol(rb(18, 5, 12, '#fff3c4', 158, 2.5, 6, .3), .1)); { const roof = M(new THREE.ConeGeometry(12, 4, 4), '#e8593c', 158, 7, 6); roof.rotation.y = Math.PI / 4; roof.scale.set(1.05, 1, .72); g.add(ol(roof, .1)); }
-  { const sg = new THREE.Mesh(planeG(10, 3), new THREE.MeshBasicMaterial({ map: signTex('下龙市场', 'Xiàlóng shìchǎng · Chợ Hạ Long') })); sg.position.set(158, 3.4, 12.05); g.add(sg); }
-  tapBox(148, 0, -1, 168, 9, 13, 'seafood');
+  // Hòn Gai: phố, chợ, bảo tàng, quảng trường → w-life.js
   // Cẩm Phả: nhà máy, ống khói, bãi than
   for (let i = 0; i < 3; i++) { g.add(ol(rb(24, 7, 12, i % 2 ? '#cfd8e3' : '#b8c4d2', 214 + i * 27, 3.5, 70, .3), .1)); g.add(rb(24.4, 1, 12.4, '#1E5AA8', 214 + i * 27, 7.4, 70, .1)); }
   for (let i = 0; i < 3; i++) { const x = 220 + i * 22; g.add(ol(cyl(1.4, 1.8, 26, '#f1f3f7', x, 13, 52, 12), .1)); for (let k = 0; k < 3; k++) g.add(cyl(1.5 - k * .05, 1.5 - k * .05, 1.6, '#e8343a', x, 8 + k * 7, 52, 12)); chimneys.push(new V3(x, 26.5, 52)); }
@@ -270,22 +267,74 @@ function buildLandmarks(g) {
   // vài đảo gần bờ nhìn thấy từ phố
   karst(g, -40, 52, 5, 11, 1, .4); karst(g, -22, 60, 4, 8, 2); karst(g, 70, 48, 4.5, 10, 3, 1); karst(g, 82, 58, 6, 14, 0, 2);
 }
-/* vòng quay Mặt Trời trên đồi (mua 摩天轮 mới hiện) */
-function buildWheel() {
-  const gr = new THREE.Group(); gr.position.set(22, 0, -30); gr.rotation.y = Math.PI / 4;
-  const H = 27, R = 10;
-  for (const s of [-1, 1]) { rod(gr, new V3(-5, 13, s * 1.2), new V3(0, H, s * .6), .25, '#e5edf6', 8); rod(gr, new V3(5, 13, s * 1.2), new V3(0, H, s * .6), .25, '#e5edf6', 8); }
-  gr.add(rb(12, 1.4, 4, '#e5edf6', 0, 12.6, 0, .2));
+/* VÒNG QUAY MẶT TRỜI trên đỉnh đồi Ba Đèo: luôn có, màu đỏ, quay chậm; tối lên đèn.
+   Mua 摩天轮 thì có màn trình diễn đèn đổi màu, chạy đuổi quanh vành. */
+const WHEEL = { x: 26, z: -48, y: 17.2, H: 24, R: 15, N: 24 };
+function buildWheel(g) {
+  const { x, z, y, H, R, N } = WHEEL, ry = Math.PI / 4;
+  // phần đứng yên (gộp chung khối tĩnh): 4 chân chữ A, giằng ngang, nhà ga
+  const base = new THREE.Group(); base.position.set(x, y, z); base.rotation.y = ry; g.add(base);
+  for (const s of [-1, 1]) {
+    rod(base, new V3(-8, 0, s * 2.6), new V3(0, H, s * .9), .5, '#e8343a', 8); rod(base, new V3(8, 0, s * 2.6), new V3(0, H, s * .9), .5, '#e8343a', 8);
+    rod(base, new V3(-4.6, H * .42, s * 1.85), new V3(4.6, H * .42, s * 1.85), .22, '#fffaf0', 6); rod(base, new V3(-2.4, H * .7, s * 1.35), new V3(2.4, H * .7, s * 1.35), .18, '#fffaf0', 6);
+  }
+  base.add(ol(rb(11, 2.8, 5, '#fffaf0', 0, 1.4, 5.2, .3), .06)); base.add(rb(11.6, .45, 5.6, '#e8343a', 0, 3.0, 5.2, .1));
+  base.add(M(rbox(9, 1.6, .08, .03), glassMat, 0, 1.3, 7.72));
+  { const sg = new THREE.Mesh(planeG(6.4, 2), new THREE.MeshBasicMaterial({ map: signTex('摩天轮', 'mótiānlún · Vòng quay Mặt Trời', { bg: '#e8343a', fg: '#FFD91F', edge: '#FFD91F' }) })); sg.position.set(0, 4.4, 7.6); base.add(sg); base.add(rb(6.8, 2.3, .2, '#e8343a', 0, 4.4, 7.45, .06)); }
+  base.add(rb(16, .5, 9, '#e8e2d2', 0, -.1, 2.5, .1));
+  tapBox(x - 13, y - 1, z - 13, x + 13, y + H + R + 1, z + 13, 'wheel');
+  // phần quay
+  const gr = new THREE.Group(); gr.position.set(x, y, z); gr.rotation.y = ry; dyn.add(gr);
   const rot = new THREE.Group(); rot.position.y = H; gr.add(rot);
-  const ringMat = new THREE.MeshToonMaterial({ color: '#ffffff', gradientMap: grad, emissive: '#ff7fa0', emissiveIntensity: 0 });
-  for (const z of [-.5, .5]) { const ring = new THREE.Mesh(new THREE.TorusGeometry(R, .22, 6, 48), ringMat); ring.position.z = z; rot.add(ring); }
-  for (let i = 0; i < 16; i++) { const a = i / 16 * 6.283; rod(rot, new V3(0, 0, 0), new V3(Math.cos(a) * R, Math.sin(a) * R, 0), .07, '#ffffff', 4); }
-  const cabs = [];
-  for (let i = 0; i < 16; i++) { const c = new THREE.Group(); const a = i / 16 * 6.283; c.position.set(Math.cos(a) * R, Math.sin(a) * R, 0); rot.add(c); c.add(ol(rb(1.1, 1.0, 1.1, ['#FFD91F', '#ff7fa0', '#7fd6c2', '#8fb8ff'][i % 4], 0, -.7, 0, .25), .05)); cabs.push(c); }
-  put(rot, cyl(.8, .8, 1.6, '#FFD91F', 0, 0, 0, 12)).rotation.x = Math.PI / 2;
-  gr.visible = false; dyn.add(gr);
-  wheel = { gr, rot, cabs, ringMat };
-  return gr;
+  const ringMat = new THREE.MeshToonMaterial({ color: '#e8343a', gradientMap: grad, emissive: '#ff3030', emissiveIntensity: 0 });
+  const spokeMat = new THREE.MeshToonMaterial({ color: '#fffaf0', gradientMap: grad, emissive: '#ffd0d0', emissiveIntensity: 0 });
+  const tmp = new THREE.Group();
+  for (const zz of [-.8, .8]) { const ring = new THREE.Mesh(new THREE.TorusGeometry(R, .34, 6, 64), ringMat); ring.position.z = zz; tmp.add(ring); const inner = new THREE.Mesh(new THREE.TorusGeometry(R * .42, .2, 5, 36), ringMat); inner.position.z = zz; tmp.add(inner); }
+  for (let i = 0; i < N; i++) { const a = i / N * 6.283, c = Math.cos(a), sn = Math.sin(a);
+    for (const zz of [-.8, .8]) { const sp = rod(tmp, new V3(c * 1.2, sn * 1.2, zz * .6), new V3(c * R, sn * R, zz), .07, '#fffaf0', 4); sp.material = spokeMat; }
+    const br = rod(tmp, new V3(c * R, sn * R, -.8), new V3(c * R, sn * R, .8), .1, '#e8343a', 4); br.material = ringMat; }
+  { const hub = cyl(1.5, 1.5, 2.4, '#fffaf0', 0, 0, 0, 16); hub.rotation.x = Math.PI / 2; tmp.add(hub); const cap = cyl(.9, .9, 2.6, '#FFD91F', 0, 0, 0, 12); cap.rotation.x = Math.PI / 2; tmp.add(cap); }
+  bake(tmp, rot, { cast: false });
+  // cabin: vẽ hàng loạt (InstancedMesh), luôn giữ thẳng đứng
+  const cabGeo = rbox(1.5, 1.4, 1.5, .35, 2), roofGeo = coneG(1.0, .55, 8), winGeo = rbox(1.56, .5, 1.56, .12, 1);
+  const cabMat = new THREE.MeshToonMaterial({ color: '#ffffff', gradientMap: grad }), winMat = new THREE.MeshToonMaterial({ color: '#bfe6ff', gradientMap: grad, emissive: '#ffe2a0', emissiveIntensity: 0 });
+  const cabs = new THREE.InstancedMesh(cabGeo, cabMat, N), roofs = new THREE.InstancedMesh(roofGeo, toon('#e8343a'), N), wins = new THREE.InstancedMesh(winGeo, winMat, N), outl = new THREE.InstancedMesh(cabGeo, OUTL, N);
+  const COL = ['#FFD91F', '#fffaf0', '#7fd6c2', '#fffaf0', '#ff9fb4', '#fffaf0', '#8fb8ff', '#fffaf0'];
+  for (let i = 0; i < N; i++) cabs.setColorAt(i, new THREE.Color(COL[i % COL.length]));
+  [cabs, roofs, wins, outl].forEach(m => { m.frustumCulled = false; m.castShadow = false; gr.add(m); });
+  // bóng đèn quanh vành: 1 đám điểm sáng (1 lệnh vẽ)
+  const NB = 72, bp = new Float32Array(NB * 3), bc = new Float32Array(NB * 3);
+  for (let i = 0; i < NB; i++) { const a = i / NB * 6.283; bp.set([Math.cos(a) * (R + .45), Math.sin(a) * (R + .45), i % 2 ? .85 : -.85], i * 3); }
+  const bgeo = new THREE.BufferGeometry(); bgeo.setAttribute('position', new THREE.BufferAttribute(bp, 3)); bgeo.setAttribute('color', new THREE.BufferAttribute(bc, 3));
+  const bulbs = new THREE.Points(bgeo, new THREE.PointsMaterial({ map: TX.glow, size: 10, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true, opacity: 0 }));
+  bulbs.frustumCulled = false; rot.add(bulbs);
+  wheel = { gr, rot, cabs, roofs, wins, outl, ringMat, spokeMat, winMat, bulbs, bc, show: false, m: new THREE.Matrix4(), q: new THREE.Quaternion(), v: new V3(), one: new V3(1, 1, 1) };
+  wheelPose(0);
+}
+function wheelPose(dt) {
+  const w = wheel; if (!w) return;
+  w.rot.rotation.z += dt * .045;
+  const a0 = w.rot.rotation.z, { H, R, N } = WHEEL;
+  for (let i = 0; i < N; i++) { const a = a0 + i / N * 6.283, x = Math.cos(a) * R, y = H + Math.sin(a) * R - 1.25, sw = Math.sin(T * .8 + i) * .04;
+    w.q.setFromAxisAngle(new V3(0, 0, 1), sw);
+    w.m.compose(w.v.set(x, y, 0), w.q, w.one); w.cabs.setMatrixAt(i, w.m); w.outl.setMatrixAt(i, w.m.clone().scale(new V3(1.06, 1.06, 1.06)));
+    w.m.compose(w.v.set(x, y + .95, 0), w.q, w.one); w.roofs.setMatrixAt(i, w.m);
+    w.m.compose(w.v.set(x, y + .12, 0), w.q, w.one); w.wins.setMatrixAt(i, w.m); }
+  w.cabs.instanceMatrix.needsUpdate = w.roofs.instanceMatrix.needsUpdate = w.wins.instanceMatrix.needsUpdate = w.outl.instanceMatrix.needsUpdate = true;
+}
+function wheelLights(lit) {
+  const w = wheel; if (!w) return;
+  w.ringMat.emissiveIntensity = lit * (w.show ? .75 : .55); w.spokeMat.emissiveIntensity = lit * .35; w.winMat.emissiveIntensity = lit * .8;
+  w.bulbs.visible = lit > .02; w.bulbs.material.opacity = lit;
+  if (!w.bulbs.visible) return;
+  const ppu = (wrap.clientHeight || 640) / Math.max(1, cam.top - cam.bottom); w.bulbs.material.size = clamp(1.6 * ppu, 3, 40);
+  const n = w.bc.length / 3, c = tmpC;
+  for (let i = 0; i < n; i++) {
+    if (w.show) { const k = .5 + .5 * Math.sin(T * 5 - i * .55); c.setHSL(((T * .06) + i / n) % 1, .9, .45 + .25 * k); w.bc[i * 3] = c.r * (.4 + .6 * k); w.bc[i * 3 + 1] = c.g * (.4 + .6 * k); w.bc[i * 3 + 2] = c.b * (.4 + .6 * k); }
+    else { const k = .8 + .2 * Math.sin(T * 2 + i); w.bc[i * 3] = 1 * k; w.bc[i * 3 + 1] = .55 * k; w.bc[i * 3 + 2] = .35 * k; }
+  }
+  w.bulbs.geometry.attributes.color.needsUpdate = true;
+  if (w.show) w.ringMat.emissive.setHSL((T * .05) % 1, .85, .5); else w.ringMat.emissive.set('#ff3030');
 }
 
 /* =====================================================================
@@ -305,7 +354,7 @@ function buildHotel(st) {
   shellBegin(); const oldSeg = setSeg(1);
   const tier = TIER[clamp(st.star, 1, 5) - 1], s = st.star, F = clamp(st.floors | 0, 1, 5), open = st.open !== false;
   const tmp = new THREE.Group(), live = new THREE.Group();
-  hotel = new THREE.Group(); hotel.name = 'hotel'; shellGlows = []; roomWins = {}; doorPanels = [];
+  hotel = new THREE.Group(); hotel.name = 'hotel'; shellGlows = []; roomWins = {}; doorPanels = []; beams = []; blinkGlow = null;
   const glowAt = (p, x, y, z, sc, col) => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.glow, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, color: col || 0xffffff })); sp.position.set(x, y, z); sp.scale.setScalar(sc); p.add(sp); shellGlows.push(sp); return sp; };
   // bệ + tầng trệt (sảnh) với vách kính lớn nhìn ra phố
   tmp.add(rb(11.4, .35, 9.4, '#d9cfb8', 5, -.1, 4, .08));
@@ -320,11 +369,12 @@ function buildHotel(st) {
   // cửa kính trượt
   for (const sx of [-1, 1]) { const d = new THREE.Group(); d.position.set(DOOR_X + sx * .4, 0, 8.3); d.add(M(rbox(.78, 2.9, .08, .02), lobbyGlass, 0, 1.5, 0)); d.add(rb(.82, .1, .12, '#d4a72c', 0, 2.96, 0, .02)); d.add(rb(.06, 2.9, .12, '#d4a72c', -sx * .38, 1.5, 0, .02)); d.userData.x0 = d.position.x; d.userData.sx = sx; live.add(d); doorPanels.push(d); }
   const nameT = signTex('阿宝酒店', 'Ā Bǎo Jiǔdiàn · Khách sạn Vịnh', { w: 512, h: 150, bg: tier.trim, ss: 24 });
-  put(tmp, new THREE.Mesh(planeG(4.2, 1.23), new THREE.MeshToonMaterial({ map: nameT, gradientMap: grad, transparent: true }))).position.set(4.4, 3.45, 8.42);
+  { const nm = new THREE.MeshToonMaterial({ map: nameT, gradientMap: grad, transparent: true, emissive: '#ffffff', emissiveMap: nameT, emissiveIntensity: 0 }); if (s >= 3) nightMatsShell.push([nm, .55]);
+    put(tmp, new THREE.Mesh(planeG(4.2, 1.23), nm)).position.set(4.4, 3.45, 8.42); }
   shellMatsExtra.push(tmp.children[tmp.children.length - 1].material);
   // mái hiên trước cửa: vải sọc (1–2★) · mái kính viền vàng (3★+)
-  if (s >= 3) { tmp.add(M(rbox(3.2, .12, 2.2, .04), ownToon('#e9f6ff', { opacity: .85 }), DOOR_X, 3.25, 9.3)); tmp.add(rb(3.3, .16, .14, '#d4a72c', DOOR_X, 3.3, 10.4, .03)); for (const sx of [-1.5, 1.5]) tmp.add(cyl(.07, .07, 3.25, '#d4a72c', DOOR_X + sx, 1.62, 10.3, 8)); }
-  else { const aw = new THREE.Mesh(planeG(3.0, 1.7), new THREE.MeshToonMaterial({ map: stripeTex('#ffffff', tier.trim, 8), gradientMap: grad, side: THREE.DoubleSide, transparent: true })); aw.position.set(DOOR_X, 3.05, 9.05); aw.rotation.x = -1.0; tmp.add(aw); shellMatsExtra.push(aw.material); }
+  if (s === 3) { tmp.add(M(rbox(3.2, .12, 2.2, .04), ownToon('#e9f6ff', { opacity: .85 }), DOOR_X, 3.25, 9.3)); tmp.add(rb(3.3, .16, .14, '#d4a72c', DOOR_X, 3.3, 10.4, .03)); for (const sx of [-1.5, 1.5]) tmp.add(cyl(.07, .07, 3.25, '#d4a72c', DOOR_X + sx, 1.62, 10.3, 8)); }
+  else if (s < 3) { const aw = new THREE.Mesh(planeG(3.0, 1.7), new THREE.MeshToonMaterial({ map: stripeTex('#ffffff', tier.trim, 8), gradientMap: grad, side: THREE.DoubleSide, transparent: true })); aw.position.set(DOOR_X, 3.05, 9.05); aw.rotation.x = -1.0; tmp.add(aw); shellMatsExtra.push(aw.material); }
   if (!open) { // nhà nghỉ đang đóng cửa (chưa xong chặng 1)
     for (const r of [.5, -.5]) { const p = rb(1.9, .22, .1, '#b0814f', DOOR_X, 1.6, 8.5, .03); p.rotation.z = r; tmp.add(p); }
     const cl = new THREE.Mesh(planeG(1.9, .6), new THREE.MeshBasicMaterial({ map: signTex('暂停营业', 'zàntíng yíngyè · Tạm đóng cửa', { w: 384, h: 120, bg: '#fffaf0', fg: '#b8413a', edge: '#b8413a', sub: '#3a2c3f', zs: 46, ss: 17 }), transparent: true }));
@@ -345,7 +395,9 @@ function buildHotel(st) {
       const plaque = (st.own.gym && k === 1 && j === 0) ? ['健身房', 'jiànshēnfáng · Phòng gym'] : (st.own.meeting && k === 2 && j === 2) ? ['会议室', 'huìyìshì · Phòng họp'] : null;
       if (plaque) { const pl = new THREE.Mesh(planeG(1.8, .52), new THREE.MeshToonMaterial({ map: signTex(plaque[0], plaque[1], { w: 320, h: 92, zs: 36, ss: 14 }), gradientMap: grad, transparent: true })); pl.position.set(x, y + 1.15, 8.5); tmp.add(pl); shellMatsExtra.push(pl.material); }
     }
-    for (const zz of [2.2, 5.8]) { tmp.add(M(rbox(.08, 1.3, 1.6, .02), lobbyGlass, 10.42, y0 + 1.65, zz)); tmp.add(rb(.2, .14, 1.9, '#fffaf0', 10.46, y0 + .9, zz, .03)); }
+    if (s >= 5) { tmp.add(M(rbox(.08, FLOOR_H - .75, 7.6, .02), lobbyGlass, 10.43, y0 + 1.68, 4)); for (let i = 0; i < 5; i++) tmp.add(rb(.12, FLOOR_H - .7, .1, '#d4a72c', 10.46, y0 + 1.68, .3 + i * 1.85, .02)); }
+    else for (const zz of [2.2, 5.8]) { tmp.add(M(rbox(.08, 1.3, 1.6, .02), lobbyGlass, 10.42, y0 + 1.65, zz)); tmp.add(rb(.2, .14, 1.9, '#fffaf0', 10.46, y0 + .9, zz, .03)); }
+    if (s <= 2) for (const x of [3.37, 6.62]) { tmp.add(rb(.78, .5, .36, '#f4f4f0', x, y0 + .66, 8.62, .06)); const fan = cyl(.17, .17, .05, '#9aa3ab', x - .12, y0 + .66, 8.81, 10); fan.rotation.x = Math.PI / 2; tmp.add(fan); }
     if (st.own.lights) for (let i = 0; i < 12; i++) { const b = sph(.07, ['#ff7fa0', '#FFD91F', '#7fd6c2', '#8fb8ff'][i % 4], .2 + i * .9, y0 + .1, 8.55, 6, { emissive: ['#ff7fa0', '#FFD91F', '#7fd6c2', '#8fb8ff'][i % 4], emissiveIntensity: .8 }); tmp.add(b); }
   }
   // mái
@@ -363,28 +415,66 @@ function buildHotel(st) {
     const nm = ownToon('#ffffff', { map: nt, emissive: '#ffffff', emissiveMap: nt, emissiveIntensity: .15 }); nightMatsShell.push([nm, 1.1]);
     tmp.add(M(rbox(6.4, 1.7, .14, .05), nm, 5, yr + 2.4, 7.45)); glowAt(live, 5, yr + 2.4, 8.4, 9, '#ffd27a'); }
   if (s >= 4) for (const x of [.6, 9.4]) { tmp.add(cyl(.05, .05, 3.2, '#fffaf0', x, yr + 2.2, 7.9, 6)); const f = rb(1.2, .7, .04, x < 5 ? '#FFD91F' : '#1E5AA8', x + .62, yr + 3.4, 7.9, .02); tmp.add(f); }
-  if (s >= 5) { tmp.add(ol(cyl(1.3, 1.7, 2.2, '#d4a72c', 5, yr + 1.5, 2.6, 10, { emissive: '#8a6a10', emissiveIntensity: .2 }), .05)); tmp.add(ol(sph(1.1, '#f2c94c', 5, yr + 3.3, 2.6, 14, { emissive: '#8a6a10', emissiveIntensity: .3 }), .05));
-    const bt = new THREE.Mesh(planeG(1.3, 1.3), new THREE.MeshBasicMaterial({ map: canvasTex(128, 128, c => { c.fillStyle = '#8a5a00'; c.font = 'bold 96px ' + ZH; c.textAlign = 'center'; c.fillText('宝', 64, 98); }), transparent: true })); bt.position.set(5.75, yr + 3.35, 3.4); bt.rotation.y = Math.PI / 4; tmp.add(bt); shellMatsExtra.push(bt.material);
-    glowAt(live, 5, yr + 3.3, 2.6, 7, '#ffe08a'); }
+  if (s >= 5) { const cx = 7.7, cz = 1.9; tmp.add(ol(cyl(1.25, 1.55, 2.2, '#d4a72c', cx, yr + 1.5, cz, 10, { emissive: '#8a6a10', emissiveIntensity: .2 }), .05)); tmp.add(ol(sph(1.05, '#f2c94c', cx, yr + 3.25, cz, 14, { emissive: '#8a6a10', emissiveIntensity: .3 }), .05));
+    const bt = new THREE.Mesh(planeG(1.25, 1.25), new THREE.MeshBasicMaterial({ map: canvasTex(128, 128, c => { c.fillStyle = '#8a5a00'; c.font = 'bold 96px ' + ZH; c.textAlign = 'center'; c.fillText('宝', 64, 98); }), transparent: true })); bt.position.set(cx + .74, yr + 3.3, cz + .74); bt.rotation.y = Math.PI / 4; tmp.add(bt); shellMatsExtra.push(bt.material);
+    tmp.add(cone(.16, 2.4, '#d4a72c', cx, yr + 5.4, cz, 8)); tmp.add(sph(.15, '#ff3b3b', cx, yr + 6.65, cz, 8, { emissive: '#ff3b3b', emissiveIntensity: .6 }));
+    blinkGlow = glowAt(live, cx, yr + 6.65, cz, 2.2, '#ff5050');
+    glowAt(live, cx, yr + 3.3, cz, 7, '#ffe08a'); }
   if (st.own.lights) for (let i = 0; i < 14; i++) tmp.add(sph(.09, ['#ff7fa0', '#FFD91F', '#7fd6c2', '#8fb8ff'][i % 4], .1 + i * .77, yr + 1.05, 8.45, 6, { emissive: ['#ff7fa0', '#FFD91F', '#7fd6c2', '#8fb8ff'][i % 4], emissiveIntensity: .9 }));
   if (st.own.lantern) for (const sx of [-1.7, 1.7]) { tmp.add(cyl(.02, .02, .5, INK, DOOR_X + sx, 3.0, 9.4, 4)); const l = ol(sph(.32, '#e8343a', DOOR_X + sx, 2.55, 9.4, 12, { emissive: '#e8343a', emissiveIntensity: .3 }), .04); l.scale.y = .85; tmp.add(l); glowAt(live, DOOR_X + sx, 2.55, 9.6, 2.4, '#ff8a6a'); }
   if (s >= 4) for (const x of [.6, 3.6, 6.6, 10.6]) glowAt(live, x, .6, 8.9, 3.2, '#fff1c0');
   if (s >= 5) { const cp = rb(1.4, .04, 2.8, '#d62839', DOOR_X, .1, 10.0, .01); tmp.add(cp); tmp.add(rb(.08, .05, 2.8, '#FFD91F', DOOR_X - .66, .11, 10.0, .01)); tmp.add(rb(.08, .05, 2.8, '#FFD91F', DOOR_X + .66, .11, 10.0, .01)); }
+  // ===== v8 · mặt tiền đủ 5 hạng sao =====
+  if (s === 1) { // nhà nghỉ: dây phơi đồ trên mái
+    for (const x of [.9, 4.6]) tmp.add(cyl(.04, .04, 1.5, '#9aa3ab', x, yr + 1.15, 6.9, 5));
+    tmp.add(rb(3.7, .03, .03, '#ffffff', 2.75, yr + 1.85, 6.9, .01));
+    [['#ff9fb4', 1.5], ['#7fd6c2', 2.4], ['#FFD91F', 3.3], ['#9fc5ff', 4.0]].forEach(([c, x]) => tmp.add(rb(.55, .7, .04, c, x, yr + 1.5, 6.9, .02)));
+  }
+  if (s <= 3) for (const sx of [-1.4, 1.4]) { tmp.add(ol(cyl(.28, .22, .45, '#c98f5e', DOOR_X + sx, .28, 8.85, 10), .03)); tmp.add(sph(.4, '#5fb36a', DOOR_X + sx, .82, 8.85, 9)); if (s >= 2) tmp.add(sph(.12, '#ff7fa0', DOOR_X + sx + .15, 1.05, 9.1, 6)); }
+  if (s >= 3) { // phào trụ trắng giữa các ô cửa, bậc thềm đá
+    for (const x of [.15, 3.38, 6.62, 9.85]) tmp.add(rb(.22, yr - LOBBY_H, .16, s >= 4 ? '#fffaf0' : '#fff8e6', x, (LOBBY_H + yr) / 2, 8.47, .03));
+    tmp.add(rb(2.8, .1, .55, '#e8e2d2', DOOR_X, .1, 8.68, .03)); tmp.add(rb(2.4, .1, .3, '#f2ede2', DOOR_X, .2, 8.52, .03));
+  }
+  if (s >= 4) { // sảnh đón có mái lớn, cột vàng, đôi sư tử đá 石狮
+    const roofC = s >= 5 ? '#16365f' : tier.trim;
+    tmp.add(ol(rb(4.9, .34, 3.0, roofC, DOOR_X, 3.45, 9.8, .08), .04)); tmp.add(rb(5.0, .16, .1, '#d4a72c', DOOR_X, 3.36, 11.32, .02)); for (const sx of [-1, 1]) tmp.add(rb(.1, .16, 3.0, '#d4a72c', DOOR_X + sx * 2.48, 3.36, 9.8, .02));
+    for (const sx of [-2.2, 2.2]) tmp.add(ol(cyl(.13, .15, 3.3, '#d4a72c', DOOR_X + sx, 1.65, 11.0, 10), .03));
+    const pm = ownToon('#fff6d8', { emissive: '#ffe2a0', emissiveIntensity: 0 }); nightMatsShell.push([pm, .9]); tmp.add(M(rbox(4.2, .05, 2.3, .02), pm, DOOR_X, 3.26, 9.8)); glowAt(live, DOOR_X, 2.9, 10.2, 5, '#fff1c0');
+    const lc = s >= 5 ? '#e2b53e' : '#d9d2c3', lo = s >= 5 ? { emissive: '#8a6a10', emissiveIntensity: .25 } : {};
+    for (const sx of [-1, 1]) { const x = DOOR_X + sx * 1.22, z = 8.78;
+      tmp.add(rb(.72, .34, .72, '#cfc6b4', x, .23, z, .05)); tmp.add(ol(sph(.3, lc, x, .66, z - .04, 10, lo), .03)); tmp.add(ol(sph(.33, lc, x, 1.0, z + .02, 10, lo), .03)); tmp.add(sph(.24, lc, x, 1.02, z + .2, 10, lo));
+      tmp.add(sph(.05, INK, x - .09, 1.08, z + .42, 6)); tmp.add(sph(.05, INK, x + .09, 1.08, z + .42, 6)); tmp.add(sph(.11, '#d4a72c', x - sx * .14, .48, z + .3, 8)); }
+  }
+  if (s >= 5) { // viền đèn LED vàng, biển dọc 阿宝, đèn rọi trời
+    const led = ownToon('#ffe7a0', { emissive: '#ffcf4a', emissiveIntensity: .1 }); led.userData.e0 = .1; nightMatsShell.push([led, 1.2]);
+    for (const x of [-.53, 10.53]) tmp.add(M(rbox(.1, yr + 1, .1, .03), led, x, (yr + 1) / 2, 8.53));
+    tmp.add(M(rbox(11.2, .1, .1, .03), led, 5, yr + 1.04, 8.53)); tmp.add(M(rbox(.1, .1, 9.2, .03), led, 10.53, yr + 1.04, 4));
+    const vt = canvasTex(128, 512, c => { c.fillStyle = '#16365f'; c.beginPath(); c.roundRect(4, 4, 120, 504, 22); c.fill(); c.strokeStyle = '#FFD91F'; c.lineWidth = 8; c.stroke(); c.fillStyle = '#FFD91F'; c.font = `900 92px ${ZH}`; c.textAlign = 'center'; ['阿', '宝', '酒', '店'].forEach((ch, i) => c.fillText(ch, 64, 104 + i * 112)); });
+    const vm = ownToon('#ffffff', { map: vt, emissive: '#ffffff', emissiveMap: vt, emissiveIntensity: .1 }); vm.userData.e0 = .1; nightMatsShell.push([vm, 1.0]);
+    const blade = M(new THREE.BoxGeometry(.14, 4.6, 1.2), vm, 10.7, LOBBY_H + F * FLOOR_H * .5 + .4, 7.6); tmp.add(blade);
+    const beamTex = canvasTex(8, 128, c => { const gr = c.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, 'rgba(255,240,200,0)'); gr.addColorStop(1, 'rgba(255,240,200,.9)'); c.fillStyle = gr; c.fillRect(0, 0, 8, 128); });
+    beams = [];
+    for (const [x, ph] of [[1.4, 0], [8.8, 2.1]]) { const piv = new THREE.Group(); piv.position.set(x, yr + .9, 7.2); live.add(piv);
+      const bm = new THREE.Mesh(new THREE.CylinderGeometry(2.6, .25, 30, 14, 1, true), new THREE.MeshBasicMaterial({ map: beamTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, opacity: .3 }));
+      bm.position.y = 15; piv.add(bm); piv.userData.ph = ph; piv.visible = false; beams.push(piv); }
+  }
   // thang máy kính bên hông (mua 电梯)
   liftCab = null;
   if (st.own.lift) { tmp.add(rb(1.4, yr + 1, .12, tier.trim, 11.1, (yr + 1) / 2, .3, .03)); tmp.add(rb(1.4, yr + 1, .12, tier.trim, 11.1, (yr + 1) / 2, 1.9, .03)); tmp.add(M(rbox(.08, yr + 1, 1.5, .02), ownToon('#d7f0ff', { opacity: .55 }), 11.78, (yr + 1) / 2, 1.1));
     liftCab = new THREE.Group(); liftCab.add(ol(rb(1.2, 1.8, 1.4, '#FFD91F', 0, .9, 0, .1), .03)); liftCab.position.set(11.1, 0, 1.1); live.add(liftCab); }
-  bake(tmp, hotel); hotel.add(live);
-  shellMats = shellEnd().list.concat(shellMatsExtra.splice(0));
+  const shellVC = new THREE.MeshToonMaterial({ color: '#ffffff', vertexColors: true, gradientMap: grad, transparent: true });
+  bake(tmp, hotel, { vc: true, vcMat: shellVC }); hotel.add(live);
+  shellMats = shellEnd().list.concat(shellMatsExtra.splice(0), [shellVC]);
   live.traverse(m => { if (m.isMesh && shellMats.indexOf(m.material) < 0) shellMats.push(m.material); });
   shellMats.forEach(m => { m.transparent = true; m.userData.op0 = m.opacity != null ? m.opacity : 1; });
   world.add(hotel); setSeg(oldSeg);
   hotelBox.set(new V3(-.6, 0, -.6), new V3(10.6, yr + 2.5, 8.8));
   // khu vực ngoài toà nhà
-  extras.palms.visible = !!st.own.palm; extras.umb.visible = !!st.own.umbrella; extras.rest.visible = !!st.own.restaurant; extras.boat.visible = !!st.own.boat; if (wheel) wheel.gr.visible = !!st.own.wheel;
+  extras.palms.visible = !!st.own.palm; extras.umb.visible = !!st.own.umbrella; extras.rest.visible = !!st.own.restaurant; extras.boat.visible = !!st.own.boat; if (wheel) wheel.show = !!st.own.wheel;
   shellOpacity(-1);
 }
 const nightMatsShell = [], shellMatsExtra = [];
+let beams = [], blinkGlow = null;
 function buildExtras() {
   const pg = new THREE.Group(); for (const x of [-48, -36, -12, 2, 16, 30, 46, 60]) palm(pg, x, 18.3, 1.1); extras.palms = pg;
   const ug = new THREE.Group(); for (let i = 0; i < 6; i++) { const x = -20 + i * 7, z = 23.5 + (i % 2) * 1.6; ug.add(cyl(.05, .05, 2.4, '#ffffff', x, 1.1, z, 6)); ug.add(ol(cone(1.4, .6, i % 2 ? '#ff7fa0' : '#FFD91F', x, 2.5, z, 10), .04)); ug.add(rb(.6, .12, 1.7, '#ffffff', x + 1, .2, z + .3, .04)); } extras.umb = ug;
@@ -392,11 +482,12 @@ function buildExtras() {
   { const sg = new THREE.Mesh(planeG(4, 1.25), new THREE.MeshBasicMaterial({ map: signTex('餐厅', 'cāntīng · Nhà hàng') })); sg.position.set(-5.6, 3.4, 8.27); rg.add(sg); }
   for (let i = 0; i < 3; i++) { const x = -8.6 + i * 2.6; rg.add(cyl(.5, .5, .08, '#ffffff', x, .8, 9.9, 12)); rg.add(cyl(.05, .05, .8, '#3a2c3f', x, .4, 9.9, 6)); rg.add(cyl(.04, .04, 2.2, '#ffffff', x, 1.3, 9.9, 6)); rg.add(ol(cone(1.0, .45, '#1E5AA8', x, 2.35, 9.9, 8), .03)); }
   extras.rest = rg; tapBox(-9.5, 0, 1.5, -1.6, 4.5, 10.5, 'eat');
+  const bk = g => { const o = new THREE.Group(); bake(g, o, { vc: true }); return o; };   // gộp khối: dừa, ô, nhà hàng = vài lệnh vẽ
+  extras.palms = bk(extras.palms); extras.umb = bk(extras.umb); extras.rest = bk(extras.rest);
   const bg = new THREE.Group(); bg.add(rb(2.4, .3, 14, '#c98f5e', 14, .05, 27, .05)); for (let i = 0; i < 6; i++) bg.add(cyl(.12, .12, 2, '#9b6a43', 13 + (i % 2) * 2, -.5, 21 + Math.floor(i / 2) * 5, 6));
   const yacht = new THREE.Group(); yacht.position.set(17.6, 0, 31); yacht.add(ol(rb(2.4, .9, 7, '#ffffff', 0, .3, 0, .4), .06)); yacht.add(rb(2.0, .9, 3.4, '#e5edf6', 0, 1.2, -.4, .2)); yacht.add(M(rbox(2.04, .4, 3, .05), winA, 0, 1.3, -.4)); yacht.add(rb(2.5, .1, 7.1, '#1E5AA8', 0, .55, 0, .03)); bg.add(yacht); extras.yacht = yacht;
   extras.boat = bg;
   for (const k in extras) if (k !== 'yacht') { extras[k].visible = false; dyn.add(extras[k]); }
-  buildWheel();
 }
 let lastOp = -1;
 function shellOpacity(force) {
@@ -471,39 +562,51 @@ function checkoutVis(cb) {
 }
 // người đi đường (bản nhẹ)
 const peds = [], PED_LOOK = () => ({ skin: pick(['#f1c9a5', '#e7bb92', '#d29b72', '#f6d8c0']), hair: pick(['#1b1b1b', '#3b2a1f', '#5a3d22']), shirt: pick(['#e63946', '#2a9d8f', '#e9c46a', '#8e7dbe', '#f4a261', '#3a86ff', '#ff006e', '#06d6a0', '#ffffff']), pants: pick(['#2b2d42', '#3d405b', '#1d3557', '#495057']) });
-function spawnPed() {
-  const dir = Math.random() < .5 ? 1 : -1, prom = Math.random() < .45, z = prom ? 18.1 + rnd(-.3, .3) : 10.7 + rnd(-.2, .3);
+const SIDE_Z = 10.55, PROM_Z = 18.1;
+/** z của vỉa hè: lên cầu thì dồn vào lối đi bộ sát lan can */
+const sideZ = (x, z0) => { const a = BR.a - 3, d = BR.d + 3; const k = x <= a || x >= d ? 0 : x >= BR.a && x <= BR.d ? 1 : x < BR.a ? (x - a) / 3 : (d - x) / 3; return lerp(z0, LANE.walkBridge, k); };
+const walkY = x => x > BR.a - 1 && x < BR.d + 1 ? roadY(x) + .14 : .06;
+function spawnPed(init) {
+  const dir = Math.random() < .5 ? 1 : -1, hg = view.at.x > 105;
+  const prom = Math.random() < .42 && (hg || view.at.x < 75);
+  const lo = prom ? (hg ? 147 : -63) : ROUTE.x0 + 2, hi = prom ? (hg ? 260 : 63) : ROUTE.x1 - 2;
+  const x0 = clamp(view.at.x + (init ? rnd(-30, 30) : -dir * rnd(42, 62)), lo, hi);
   let kind = 'walk'; const r = Math.random();
   if (inH(hour, 5, 8) && r < .5) kind = 'jog'; else if (inH(hour, 6, 18) && r < .14) kind = 'vendor'; else if (inH(hour, 8, 18) && r < .32 && prom) kind = 'selfie';
-  const o = PED_LOOK(); if (kind === 'vendor') o.non = true; if (kind === 'jog') o.band = '#ffffff';
-  const c = chibi(o, people, true); c.root.position.set(dir > 0 ? -64 : 64, prom ? .1 : .06, z); c.face = dir > 0 ? Math.PI / 2 : -Math.PI / 2; c.root.rotation.y = c.face;
-  c.target = new V3(dir > 0 ? 64 : -64, 0, z); c.kind = kind; c.spd = kind === 'jog' ? 3.6 : rnd(1.3, 1.8); c.stopAt = kind === 'selfie' ? rnd(-30, 30) : null; c.stopT = 0;
-  c.root.position.y = prom ? .1 : .06; peds.push(c); taps.push({ obj: c.root, key: kind, dyn: c });
+  const o = Object.assign({}, LOOK()); if (kind === 'vendor') { o.non = true; o.hat = null; }
+  const c = mini(o, people, { legs: true, armL: true, armR: true }); if (kind === 'selfie') c.act = null;
+  c.dir = dir; c.prom = prom; c.lo = lo; c.hi = hi; c.z0 = prom ? PROM_Z + rnd(-.3, .3) : SIDE_Z + rnd(-.25, .3);
+  c.root.position.set(x0, prom ? .1 : walkY(x0), prom ? c.z0 : sideZ(x0, c.z0)); c.face = dir > 0 ? Math.PI / 2 : -Math.PI / 2; c.root.rotation.y = c.face;
+  c.kind = kind; c.spd = kind === 'jog' ? 3.6 : rnd(1.3, 1.8); c.stopAt = kind === 'selfie' ? x0 + dir * rnd(6, 24) : null; c.stopT = 0;
+  peds.push(c); taps.push({ obj: c.root, key: kind, dyn: c });
 }
 // xe cộ
 const cars = [];
 const CARCOL = ['#e63946', '#f4f1e8', '#2a2d34', '#3a86ff', '#9aa3ab', '#e9c46a', '#2a9d8f'];
-function spawnCar() {
+function spawnCar(init) {
   const dir = Math.random() < .5 ? 1 : -1, r = Math.random(), type = r < .5 ? 'moto' : r < .75 ? 'car' : r < .88 ? 'taxi' : r < .96 ? 'bus' : 'bike';
-  const g = new THREE.Group(), col = type === 'taxi' ? '#FFD91F' : pick(CARCOL), wheels = [];
-  const wheel = (x, rad) => { const w = cyl(rad, rad, .22, '#2b2233', x, rad, 0, 10); w.rotation.x = Math.PI / 2; g.add(w); wheels.push(w); };
-  if (type === 'moto' || type === 'bike') { g.add(ol(rb(1.3, .35, .3, type === 'bike' ? '#3a86ff' : col, 0, .55, 0, .1), .03)); wheel(-.55, .28); wheel(.55, .28); if (type === 'moto') g.add(rb(.6, .2, .34, '#2b2233', -.15, .8, 0, .06));
-    const rd = chibi(Object.assign(PED_LOOK(), type === 'moto' ? { helm: pick(['#e63946', '#FFD91F', '#3a86ff', '#ffffff', '#2a9d8f']) } : {}), g, true); rd.root.position.set(-.1, .35, 0); rd.root.rotation.y = Math.PI / 2; rd.sit = 1; pose(rd, 0); }
-  else if (type === 'bus') { g.add(ol(rb(6.4, 2.4, 2.1, '#2a9d8f', 0, 1.55, 0, .3), .05)); g.add(M(rbox(5.6, .8, 2.14, .05), winA, .2, 2.0, 0)); g.add(rb(6.5, .25, 2.2, '#ffffff', 0, .95, 0, .06)); wheel(-2.2, .42); wheel(2.2, .42); }
-  else { g.add(ol(rb(3.0, .8, 1.6, col, 0, .75, 0, .25), .04)); g.add(ol(rb(1.7, .7, 1.45, col, -.15, 1.45, 0, .22), .03)); g.add(M(rbox(1.75, .45, 1.5, .05), winA, -.15, 1.48, 0)); wheel(-1, .34); wheel(1, .34);
-    if (type === 'taxi') { g.add(rb(.7, .25, .4, '#ffffff', -.15, 1.9, 0, .05)); } }
-  g.rotation.y = dir > 0 ? 0 : Math.PI; g.position.set(dir > 0 ? -66 : 66, 0, dir > 0 ? 15.4 : 12.9);
+  const g = new THREE.Group(), src = new THREE.Group(), col = type === 'taxi' ? '#FFD91F' : pick(CARCOL), wheels = [];
+  const wheel = (x, rad) => { const w = cyl(rad, rad, .22, '#2b2233', x, rad, 0, 10); w.rotation.x = Math.PI / 2; src.add(w); };
+  if (type === 'moto' || type === 'bike') { src.add(ol(rb(1.3, .35, .3, type === 'bike' ? '#3a86ff' : col, 0, .55, 0, .1), .03)); wheel(-.55, .28); wheel(.55, .28); if (type === 'moto') src.add(rb(.6, .2, .34, '#2b2233', -.15, .8, 0, .06));
+    const rd = mini(Object.assign({}, LOOK(), { non: false, hat: null }, type === 'moto' ? { helm: pick(['#e63946', '#FFD91F', '#3a86ff']) } : {}), g, { sit: true }); rd.root.position.set(-.1, .35, 0); rd.root.rotation.y = Math.PI / 2; }
+  else if (type === 'bus') { src.add(ol(rb(6.4, 2.4, 2.1, '#2a9d8f', 0, 1.55, 0, .3), .05)); src.add(rb(5.6, .8, 2.14, '#bfe2f5', .2, 2.0, 0, .05)); src.add(rb(6.5, .25, 2.2, '#ffffff', 0, .95, 0, .06)); wheel(-2.2, .42); wheel(2.2, .42); }
+  else { src.add(ol(rb(3.0, .8, 1.6, col, 0, .75, 0, .25), .04)); src.add(ol(rb(1.7, .7, 1.45, col, -.15, 1.45, 0, .22), .03)); src.add(rb(1.75, .45, 1.5, '#bfe2f5', -.15, 1.48, 0, .05)); wheel(-1, .34); wheel(1, .34);
+    if (type === 'taxi') { src.add(rb(.7, .25, .4, '#ffffff', -.15, 1.9, 0, .05)); } }
+  g.add(vcMerge(src, type + col));
+  const x0 = clamp(view.at.x + (init ? rnd(-40, 40) : -dir * rnd(62, 84)), ROUTE.x0, ROUTE.x1);
+  g.rotation.y = dir > 0 ? 0 : Math.PI; g.position.set(x0, roadY(x0), dir > 0 ? LANE.east : LANE.west);
   const sp = { moto: rnd(5, 7), car: rnd(5.5, 7.5), taxi: rnd(5.5, 7), bus: 4, bike: 2.2 }[type];
   dyn.add(g); const o = { g, dir, sp, wheels, type }; cars.push(o); taps.push({ obj: g, key: type, dyn: o });
 }
 // thuyền buồm, du thuyền
 const boats = [];
 function spawnBoat(init) {
-  const dir = Math.random() < .5 ? 1 : -1, cruise = Math.random() < .35, g = new THREE.Group();
+  const dir = Math.random() < .5 ? 1 : -1, cruise = Math.random() < .35, g = new THREE.Group(), out = g;
   if (cruise) { g.add(ol(rb(10, 1.4, 3, '#ffffff', 0, .4, 0, .5), .06)); g.add(rb(7, 1.2, 2.6, '#e5edf6', -.5, 1.6, 0, .2)); g.add(M(rbox(6.8, .5, 2.64, .05), winA, -.5, 1.7, 0)); g.add(rb(4, 1, 2.2, '#ffffff', -1, 2.7, 0, .2)); g.add(rb(10.1, .2, 3.1, '#1E5AA8', 0, .7, 0, .05)); }
   else { const hull = rb(6, 1, 2, '#9b5a34', 0, .3, 0, .4); g.add(ol(hull, .06)); g.add(rb(4.5, .8, 1.7, '#c9874f', -.4, 1.1, 0, .15));
-    for (const [x, h] of [[-1.4, 5], [1.2, 6.2]]) { g.add(cyl(.08, .08, h, '#5a3d22', x, h / 2 + .8, 0, 6)); const sail = M(new THREE.PlaneGeometry(2.4, h * .8), toon('#e8593c', { side: THREE.DoubleSide }), x + .1, h * .55 + .9, 0); sail.rotation.y = .2; g.add(sail); for (let k = 1; k < 4; k++) g.add(rb(2.5, .06, .06, '#8a3a24', x + .1, h * .2 + .9 + k * h * .2, 0, .02)); } }
+    for (const [x, h] of [[-1.4, 5], [1.2, 6.2]]) { g.add(cyl(.08, .08, h, '#5a3d22', x, h / 2 + .8, 0, 6)); const sail = rb(2.4, h * .8, .05, '#e8593c', x + .1, h * .55 + .9, 0, .02); sail.rotation.y = .2; g.add(sail); for (let k = 1; k < 4; k++) g.add(rb(2.5, .06, .1, '#8a3a24', x + .1, h * .2 + .9 + k * h * .2, 0, .02)); } }
   const z = rnd(36, 70);
+  { const m = vcMerge(g, cruise ? 'cruise' : 'junk'); g.clear(); g.add(m); }
   g.position.set(init ? rnd(-60, 70) : dir > 0 ? -80 : 90, -.1, z); g.rotation.y = dir > 0 ? 0 : Math.PI; g.scale.setScalar(z > 55 ? 1.2 : 1);
   dyn.add(g); const o = { g, dir, sp: rnd(1.2, 2), ph: Math.random() * 6, key: cruise ? 'cruise' : 'junk' }; boats.push(o); taps.push({ obj: g, key: o.key, dyn: o });
 }
@@ -538,7 +641,7 @@ function dayNight() {
   nightMatsShell.forEach(([m, k]) => { m.emissiveIntensity = Math.max(m.userData.e0 || 0, lit * k); });
   lampGlows.forEach(g => { g.material.opacity = lit * .85; g.visible = lit > .02 && view.S < 70; });
   shellGlows.forEach(g => { g.material.opacity = lit * .9 * sstep(7.2, 11.5, view.S); g.visible = lit > .02; });
-  if (wheel) wheel.ringMat.emissiveIntensity = lit * .9;
+  if (poolMesh) { poolMesh.material.opacity = lit * .6; poolMesh.visible = lit > .02 && view.S < 70; }
   if (lobby) lobby.dark = d;
 }
 let rooms = [];
@@ -565,10 +668,21 @@ function applyCam() {
 function clampView() {
   const S = view.S, a = view.at;
   if (S < 9) { a.x = clamp(a.x, 1.5, 10); a.z = clamp(a.z, 1, 10.5); a.y = .8; }
-  else if (S < 55) { a.x = clamp(a.x, -95, 200); a.z = clamp(a.z, -60, 90); a.y = lerp(.8, 0, sstep(9, 20, S)); }
+  else if (S < 55) { a.x = clamp(a.x, -95, 268); a.z = clamp(a.z, -64, 90); a.y = lerp(.8, 0, sstep(9, 20, S)); }
   else { a.x = clamp(a.x, -300, 380); a.z = clamp(a.z, -150, 340); a.y = 0; }
 }
 const modeOf = S => S < 9 ? 'inside' : S < 50 ? 'street' : 'bay';
+const PLACES = [
+  { id: 'hotel', ico: '🏨', name: 'Khách sạn', zh: '酒店', py: 'jiǔdiàn', x: 8, z: 10.5, S: 15 },
+  { id: 'market', ico: '🏮', name: 'Chợ đêm', zh: '夜市', py: 'yèshì', x: -35, z: -3, S: 14 },
+  { id: 'park', ico: '🎢', name: 'Khu vui chơi', zh: '游乐园', py: 'yóulèyuán', x: -40, z: -37, S: 21 },
+  { id: 'wheel', ico: '🎡', name: 'Vòng quay', zh: '摩天轮', py: 'mótiānlún', x: 26, z: -46, S: 38 },
+  { id: 'beach', ico: '🏖️', name: 'Bãi biển', zh: '海滩', py: 'hǎitān', x: 0, z: 24, S: 15 },
+  { id: 'bridge', ico: '🌉', name: 'Cầu Bãi Cháy', zh: '大桥', py: 'dàqiáo', x: 102, z: 13, S: 34 },
+  { id: 'hgmarket', ico: '🐟', name: 'Chợ Hạ Long', zh: '市场', py: 'shìchǎng', x: 158, z: 2, S: 15 },
+  { id: 'museum', ico: '🏛️', name: 'Bảo tàng', zh: '博物馆', py: 'bówùguǎn', x: 201, z: 0, S: 17 },
+  { id: 'square', ico: '⛲', name: 'Quảng trường', zh: '广场', py: 'guǎngchǎng', x: 229, z: -1, S: 17 }
+];
 function setModeFromS() { const m = modeOf(view.S); if (m !== mode) { mode = m; if (hooks.onMode) hooks.onMode(m); } }
 /** khung bản đồ: mọi ghim chương nằm gọn trên thẻ Hành trình (màn dọc lẫn ngang) */
 function bayView() {
@@ -586,7 +700,8 @@ function flyTo(at, S, d = 1.15, cb) { fly = { a0: view.at.clone(), a1: at.clone(
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), ground = new THREE.Plane(new V3(0, 1, 0), 0), hit = new V3();
 function rayAt(cx, cy) { const r = cv.getBoundingClientRect(); ndc.set((cx - r.left) / r.width * 2 - 1, -((cy - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, cam); ray.camera = cam; return ray; }
 function groundAt(cx, cy, y = 0) { rayAt(cx, cy); ground.constant = -y; return ray.ray.intersectPlane(ground, new V3()) || view.at.clone(); }
-const ptrs = new Map(); let gest = null, vel = new V3(), lastMove = 0;
+const ptrs = new Map(); let gest = null, vel = new V3(), lastMove = 0, lastTapT = 0, lastTapX = 0, lastTapY = 0;
+const minS = (p = view.at) => Math.hypot(p.x - 5, p.z - 6.5) < 16 ? 3.8 : 9.6;
 function startGesture() {
   const ps = [...ptrs.values()];
   if (ps.length === 1) gest = { k: 1, anchor: groundAt(ps[0].x, ps[0].y, view.at.y), moved: ps[0].moved || 0 };
@@ -612,20 +727,35 @@ function bindInput() {
       if (fly) fly = null;
       const ps = [...ptrs.values()]; if (ps.length < 2) return;
       const d = Math.hypot(ps[0].x - ps[1].x, ps[0].y - ps[1].y) || 1, mx = (ps[0].x + ps[1].x) / 2, my = (ps[0].y + ps[1].y) / 2;
-      view.S = clamp(gest.S0 * gest.d0 / d, 3.8, 280); applyCam();
+      view.S = clamp(gest.S0 * gest.d0 / d, minS(), 280); applyCam();
       const g = groundAt(mx, my, view.at.y); view.at.add(gest.anchor.clone().sub(g)); clampView(); applyCam(); vel.set(0, 0, 0);
     }
   });
   const up = e => {
     const p = ptrs.get(e.pointerId); if (!p) return; ptrs.delete(e.pointerId);
     const tap = gest && gest.k === 1 && p.moved < 10 && performance.now() - p.t0 < 500 && !ptrs.size;
-    if (tap) onTap(e.clientX, e.clientY);
+    if (tap) {
+      const now = performance.now();
+      if (now - lastTapT < 330 && Math.hypot(e.clientX - lastTapX, e.clientY - lastTapY) < 40) { lastTapT = 0; const g = groundAt(e.clientX, e.clientY, 0); g.y = view.at.y; flyTo(g, clamp(view.S * .55, minS(g), 280), .45); }
+      else { lastTapT = now; lastTapX = e.clientX; lastTapY = e.clientY; onTap(e.clientX, e.clientY); }
+    }
     if (ptrs.size) startGesture(); else gest = null;
     if (performance.now() - lastMove > 90) vel.set(0, 0, 0);
   };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', e => { ptrs.delete(e.pointerId); gest = null; vel.set(0, 0, 0); });
-  cv.addEventListener('wheel', e => { e.preventDefault(); if (fly) fly = null; lastUser = performance.now(); const a = groundAt(e.clientX, e.clientY, view.at.y); view.S = clamp(view.S * Math.exp(e.deltaY * .0016), 3.8, 280); applyCam(); const g = groundAt(e.clientX, e.clientY, view.at.y); view.at.add(a.sub(g)); clampView(); applyCam(); }, { passive: false });
+  cv.addEventListener('wheel', e => { e.preventDefault(); if (fly) fly = null; lastUser = performance.now(); const a = groundAt(e.clientX, e.clientY, view.at.y); view.S = clamp(view.S * Math.exp(e.deltaY * .0016), minS(a), 280); applyCam(); const g = groundAt(e.clientX, e.clientY, view.at.y); view.at.add(a.sub(g)); clampView(); applyCam(); }, { passive: false });
   let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(resize, 120); });
+  addEventListener('keydown', e => {
+    if (!active || !ready || e.altKey || e.ctrlKey || e.metaKey || sheetOn) return;
+    const t = e.target; if (t && t.closest && t.closest('input,textarea,select,button,[contenteditable]')) return;
+    if (document.querySelector('#ov.on,.sheet-bg.on,#gate.on,#ob.on,.drawer:not([hidden])')) return;
+    const k = e.key.toLowerCase(), st = view.S * .14 * .7071; let dx = 0, dz = 0;
+    if (k === 'arrowup' || k === 'w') { dx = -st; dz = -st; } else if (k === 'arrowdown' || k === 's') { dx = st; dz = st; }
+    else if (k === 'arrowleft' || k === 'a') { dx = -st; dz = st; } else if (k === 'arrowright' || k === 'd') { dx = st; dz = -st; }
+    else if (k === '+' || k === '=') { e.preventDefault(); World.zoomBy(.75); return; } else if (k === '-' || k === '_') { e.preventDefault(); World.zoomBy(1.33); return; }
+    else return;
+    e.preventDefault(); fly = null; vel.set(0, 0, 0); lastUser = performance.now(); view.at.x += dx; view.at.z += dz; clampView(); applyCam(); if (hooks.onPan) hooks.onPan();
+  });
 }
 function resize() { const w = wrap.clientWidth, h = wrap.clientHeight; renderer.setSize(w, h, false); ov.svg.setAttribute('viewBox', `0 0 ${w} ${h}`); applyCam(); }
 function onTap(cx, cy) {
@@ -638,9 +768,11 @@ function onTap(cx, cy) {
     else if (t.obj && t.obj.visible !== false && (!t.obj.parent || t.obj.parent.visible !== false)) { const h = ray.intersectObject(t.obj, true)[0]; if (h) cand(h.distance - .3, t.key); }
   }
   for (const q of queueRef) if (q._v) { const h = ray.intersectObject(q._v.root, true)[0]; if (h) cand(h.distance - .6, 'guest'); }
+  if (life && view.S < 45) { const np = life.pick(ray); if (np) cand(np.d - .5, np.key); }
   const g = groundAt(cx, cy, 0), gd = g.distanceTo(ray.ray.origin);
   if (!best || best.d > gd + .2) {
-    if (g.x > -64 && g.x < 64) { if (g.z > 28.6) best = { key: 'bay' }; else if (g.z > 19.4) best = { key: 'beach' }; else if (g.z > 11.45 && g.z < 17) best = { key: 'road' }; else if (g.z < -16) best = { key: 'mountain' }; }
+    if (g.x > -64 && g.x < 64) { if (g.z > 28.6) best = { key: 'bay' }; else if (g.z > 19.4) best = { key: 'beach' }; else if ((g.z > 11.45 && g.z < 17) || (g.z > -11.2 && g.z < -7.2)) best = { key: 'road' }; else if (g.z < -24 && Math.hypot(g.x - 30, g.z + 44) < 30) best = { key: 'mountain' }; }
+    else if (g.x > 146 && g.x < 262 && g.z > 11.45 && g.z < 17) best = { key: 'road' };
     else if (!best) best = { key: g.z > 20 || (g.x > 66 && g.x < 140) ? 'bay' : 'mountain' };
   }
   if (!best) return;
@@ -656,6 +788,7 @@ function buildOverlay() {
   const st = document.createElement('style');
   st.textContent = `.w-ov{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
 .w-ov svg{position:absolute;inset:0;width:100%;height:100%}
+.w-ov::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 46%,rgba(0,0,0,0) 62%,rgba(18,22,48,.22) 100%)}
 .w-qt{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:2px;transition:opacity .25s}
 .w-qt b{font:800 13px/1.2 system-ui,sans-serif;background:#fff;color:#2b2233;border:2px solid #2b2233;border-radius:10px;padding:1px 6px;white-space:nowrap}
 .w-qt b:empty,.w-qt b[data-t=""]{display:none}
@@ -727,6 +860,16 @@ function overlayTick(dt) {
 /* =====================================================================
    VÒNG CẬP NHẬT
    ===================================================================== */
+let life = null, seeded = false;
+/* nắng lấp lánh trên mặt biển ban ngày (vài đốm sáng nhấp nháy quanh máy quay) */
+const glint = [];
+function glints(dt, S) {
+  if (!glint.length) for (let i = 0; i < 14; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: TX.spark, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 })); s.userData.t = Math.random() * 3; dyn.add(s); glint.push(s); }
+  const on = !REDUCED && dark < .3 && S < 60;
+  for (const s of glint) { s.visible = on; if (!on) continue; s.userData.t -= dt;
+    if (s.userData.t <= 0) { s.userData.t = 1.4 + Math.random() * 2; s.userData.a = 0; s.position.set(view.at.x + rnd(-1, 1) * S * 1.6, -.2, Math.max(30, view.at.z + rnd(4, 24) + S * .4)); const k = S / 15; s.scale.setScalar((.5 + Math.random() * .5) * Math.max(1, k)); }
+    s.userData.a += dt; s.material.opacity = Math.sin(Math.min(1, s.userData.a / 1.2) * Math.PI) * .85 * (1 - dark / .3); }
+}
 let rdt = .016, lastDN = 0, lastF = 0, raf = 0, nextFw = 0, pedT = 0, carT = 0, boatT = 0, perfAcc = 0, perfN = 0, perfBad = 0, fpsCap = 60, sheetOn = false, roomT = 0;
 function frame(now) {
   raf = 0; if (!active || document.hidden) return;
@@ -765,25 +908,33 @@ function update(dt, now) {
   for (const w of walkers) if (w.v.root.position.distanceTo(dp) < 1.7) near2 = 1;
   if (queueRef[0] && queueRef[0]._v && queueRef[0]._v.root.position.distanceTo(dp) < 1.4) near2 = 1;
   doorPanels.forEach(d => { const goal = d.userData.x0 + d.userData.sx * .7 * near2; d.position.x += (goal - d.position.x) * Math.min(1, dt * 6); });
+  if (beams.length) { const on = dark > .45 && view.S > 9; beams.forEach(b => { b.visible = on; if (on) { b.rotation.z = Math.sin(T * .35 + b.userData.ph) * .45; b.rotation.x = -.25 + Math.cos(T * .27 + b.userData.ph) * .2; } }); }
+  if (blinkGlow) blinkGlow.material.opacity = (Math.sin(T * 3.2) > .55 ? 1 : .08) * Math.max(.25, sstep(.25, .6, dark)) * sstep(7.2, 11.5, view.S);
   if (liftCab) { const goal = (Math.sin(T * .35) * .5 + .5) * (liftTop - 2); liftCab.position.y += (goal - liftCab.position.y) * Math.min(1, dt * 2); }
   // phố
   people.visible = S < 60;
   pedT -= dt; carT -= dt; boatT -= dt;
-  const pedCap = low ? 3 : 6, carCap = low ? 2 : 5, rate = inH(hour, 22.5, 5) ? .25 : 1;
+  const pedCap = low ? 4 : 9, carCap = low ? 3 : 7, rate = inH(hour, 22.5, 5) ? .25 : 1;
   if (near && pedT <= 0 && peds.length < pedCap) { pedT = rnd(1.5, 4) / rate; spawnPed(); }
   if (near && carT <= 0 && cars.length < carCap) { carT = rnd(1.6, 4.2) / rate; spawnCar(); }
   if (boatT <= 0 && boats.length < (low ? 2 : 4)) { boatT = rnd(14, 30); spawnBoat(false); }
-  for (let i = peds.length - 1; i >= 0; i--) { const c = peds[i];
-    if (c.stopAt != null && Math.abs(c.root.position.x - c.stopAt) < .3 && c.stopT === 0) { c.stopT = 3; c.act = 'phone'; }
-    if (c.stopT > 0) { c.stopT -= dt; c.speed = 0; if (c.stopT <= 0) { c.stopT = -1; c.act = null; c.target = c.target || new V3(c.face > 0 ? 64 : -64, 0, c.root.position.z); } }
-    else { const idle = walk(c, dt, c.spd, false); if (idle && c.stopT !== 3) { people.remove(c.root); peds.splice(i, 1); dropTap(c); continue; } }
-    if (near) pose(c, dt); }
-  for (let i = cars.length - 1; i >= 0; i--) { const c = cars[i]; c.g.position.x += c.dir * c.sp * dt; c.wheels.forEach(w => { w.rotation.y -= c.sp * dt * 2.5; }); if (Math.abs(c.g.position.x) > 68) { dyn.remove(c.g); cars.splice(i, 1); dropTap(c); } }
+  for (let i = peds.length - 1; i >= 0; i--) { const c = peds[i], p = c.root.position;
+    if (c.stopAt != null && c.stopT === 0 && (p.x - c.stopAt) * c.dir >= 0) { c.stopT = 3; c.act = 'phone'; }
+    if (c.stopT > 0) { c.stopT -= dt; c.speed *= .8; if (c.stopT <= 0) { c.stopT = -1; c.act = null; } }
+    else { p.x += c.dir * c.spd * dt; c.speed = c.spd; if (!c.prom) { p.z = sideZ(p.x, c.z0); p.y = walkY(p.x); } }
+    if (p.x < c.lo || p.x > c.hi || Math.abs(p.x - view.at.x) > 110 || (!near && Math.abs(p.x - view.at.x) > 40)) { people.remove(c.root); peds.splice(i, 1); dropTap(c); continue; }
+    if (near) lifePose(c, dt, T); }
+  for (let i = cars.length - 1; i >= 0; i--) { const c = cars[i], x = c.g.position.x += c.dir * c.sp * dt;
+    c.g.position.y = roadY(x); c.g.rotation.z = c.dir * Math.atan(roadSlope(x));
+    if (x < ROUTE.x0 - 2 || x > ROUTE.x1 + 2 || Math.abs(x - view.at.x) > 120) { dyn.remove(c.g); cars.splice(i, 1); dropTap(c); } }
+  if (life) life.update(dt, T, view, dark, cam);
+  if (near && !seeded) { seeded = true; for (let i = 0; i < (low ? 2 : 4); i++) { spawnPed(true); spawnCar(true); } }
   for (let i = boats.length - 1; i >= 0; i--) { const b = boats[i]; b.g.position.x += b.dir * b.sp * dt; b.g.position.y = -.22 + Math.sin(T * 1.4 + b.ph) * .08; b.g.rotation.z = Math.sin(T * 1.1 + b.ph) * .03; if (b.g.position.x < -95 || b.g.position.x > 105) { dyn.remove(b.g); boats.splice(i, 1); dropTap(b); } }
   gulls.forEach(g => { g.ph += dt * g.sp; g.s.position.set(g.cx + Math.cos(g.ph) * g.r, g.y + Math.sin(g.ph * 2) * .6, g.cz + Math.sin(g.ph) * g.r * .6); g.s.visible = S < 50 && dark < .6; });
   const ck = sstep(30, 70, S); clouds.forEach(c => { c.s.position.x += c.v * dt; if (c.s.position.x > 360) c.s.position.x = -280; c.s.material.opacity = ck * .85 * (1 - dark * .6); c.s.visible = ck > .01; });
   cableCabs.forEach(c => { c.t = (c.t + dt * .03) % 1; const t = c.t < .5 ? c.t * 2 : 2 - c.t * 2; c.c.position.lerpVectors(cableA, cableB, t); });
-  if (wheel && wheel.gr.visible) { wheel.rot.rotation.z += dt * .06; wheel.cabs.forEach(c => { c.rotation.z = -wheel.rot.rotation.z; }); if (dark > .3) wheel.ringMat.emissive.setHSL((T * .05) % 1, .8, .55); }
+  if (wheel) { const vis = S > 9 && Math.hypot(view.at.x - WHEEL.x, view.at.z - WHEEL.z) < S * 3.4 + 60; wheel.gr.visible = vis; if (vis) { wheelPose(dt); wheelLights(sstep(.25, .6, dark)); } }
+  glints(dt, S);
   if (!REDUCED && Math.random() < dt * 2) chimneys.forEach(p => sprite(TX.puff, p.x, p.y, p.z, 4, 5, new V3(1.2, 1.6, .4), { grow: 2 }));
   seaTex.offset.x = (seaTex.offset.x + dt * .003) % 1; seaTex.offset.y = (seaTex.offset.y + dt * .0015) % 1; foam.material.opacity = .45 + Math.sin(T * 1.3) * .25; foam.position.z = 28.7 + Math.sin(T * 1.3) * .25;
   if (extras.yacht && extras.boat.visible) { extras.yacht.position.y = Math.sin(T * 1.2) * .08; extras.yacht.rotation.z = Math.sin(T * .9) * .03; }
@@ -809,8 +960,10 @@ const World = {
     if (!low) { sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 80 }); sun.shadow.bias = -.0008; sun.shadow.normalBias = .04; sun.shadow.radius = 3; }
     setCoinHook(() => hooks.onCoin && hooks.onCoin());
     const tmp = new THREE.Group(); const old = setSeg(1);
-    buildTerrain(tmp); buildCity(tmp); buildLandmarks(tmp); setSeg(old);
-    bake(tmp, staticRoot);
+    buildTerrain(tmp); buildCity(tmp); buildLandmarks(tmp); buildWheel(tmp);
+    life = buildLife({ world: dyn, tapBox, lamp: lampPost, winA, winB, glassMat, nightMats, owned: id => !!ST.own[id], hour: () => hour });
+    tmp.add(life.static); setSeg(old);
+    bake(tmp, staticRoot, { vc: true }); buildLightPools();
     buildExtras(); buildSkyBits();
     lobby = buildLobby({ say, visible: () => view.S < 12 }); world.add(lobby.room);
     buildOverlay(); bindInput(); resize();
@@ -829,7 +982,7 @@ const World = {
     if (k !== sig) { sig = k; buildHotel(ST); dayNight(); }
     if (lobby) { lobby.own = (ST.furn || []).concat(ST.own.lift ? ['lift'] : []); lobby.staff = ST.staff || 0; lobby.setTier(ST.star); }
     const wantDoorman = (ST.staff || 0) >= 1 && ST.open;
-    if (wantDoorman && !doorman) { doorman = chibi({ skin: '#f6d2b0', hair: '#22242e', shirt: '#2c4a86', pants: '#2c4a86', hat: '#2c4a86', hatBand: '#FFD91F', tie: '#FFD91F' }, people); doorman.root.position.set(DOOR_X - 1.5, .06, 9.2); }
+    if (wantDoorman && !doorman) { doorman = chibi({ skin: '#f6d2b0', hair: '#22242e', shirt: '#2c4a86', pants: '#2c4a86', hat: '#2c4a86', hatBand: '#FFD91F', tie: '#FFD91F' }, people); doorman.root.position.set(DOOR_X - 2.05, .06, 9.4); }
     if (!wantDoorman && doorman) { people.remove(doorman.root); doorman = null; }
   },
   setRooms(list) { rooms = list || []; },
@@ -861,6 +1014,27 @@ const World = {
   },
   walkHero(i0, i1, cb) { const a = story.nodes[i0], b = story.nodes[i1]; if (!a || !b || !mapHero) { if (cb) cb(); return; } heroWalk = { a: new V3(a.x, 1, a.z + 2), b: new V3(b.x, 1, b.z + 2), t: 0, d: clamp(Math.hypot(b.x - a.x, b.z - a.z) / 90, 1.4, 3.2), cb }; },
   nodeScreen(i) { const n = story.nodes[i]; if (!n) return null; const r = cv.getBoundingClientRect(), s = toScr(new V3(n.x, 1, n.z)); return { x: r.left + s.x, y: r.top + s.y, vis: s.vis }; },
+  /** các khu để bay nhanh tới (nút 📍) */
+  places: PLACES,
+  goPlace(id) { const p = PLACES.find(q => q.id === id); if (!p) return; vel.set(0, 0, 0); flyTo(new V3(p.x, 0, p.z), p.S, 1.25); },
+  zoomBy(f) { vel.set(0, 0, 0); flyTo(view.at.clone(), clamp(view.S * f, minS(), 280), .35); },
+  /** ảnh chụp khách sạn ở hạng sao bất kỳ (cho màn nhắc mở thẻ: "khách sạn 3★ của bạn sẽ như thế này") */
+  preview(star) {
+    if (!ready) return null;
+    const at0 = view.at.clone(), S0 = view.S, fly0 = fly; fly = null; let url = null;
+    const F = Math.max(ST.floors || 1, Math.min(5, star)), port = (wrap.clientWidth || 1) < (wrap.clientHeight || 1);
+    try {
+      const own = Object.assign({}, ST.own, star >= 4 ? { sign: 1, lantern: 1 } : {}, star >= 5 ? { lights: 1, palm: 1, pool: 1 } : {});
+      buildHotel(Object.assign({}, ST, { star, floors: F, open: true, own }));
+      view.at.set(5.2, (LOBBY_H + F * FLOOR_H + (star >= 5 ? 5 : 2)) * .5, 4.8); view.S = port ? Math.max(10.5, 5.6 + F * 2.3) : Math.max(8.6, 4.2 + F * 1.75); applyCam();
+      for (const m of shellMats) { m.opacity = m.userData.op0 || 1; m.depthWrite = true; } hotel.visible = true; if (lobby) lobby.room.visible = false; lastOp = -1;
+      dayNight(); renderer.render(scene, cam);
+      const W = cv.width, H = cv.height, cw = port ? W : Math.min(W, H * 1.3), ch = port ? Math.min(H, W / 1.3) : H, c2 = document.createElement('canvas');
+      c2.width = 520; c2.height = 400; c2.getContext('2d').drawImage(cv, (W - cw) / 2, (H - ch) / 2, cw, ch, 0, 0, 520, 400); url = c2.toDataURL('image/jpeg', .84);
+    } catch (e) { url = null; }
+    buildHotel(ST); view.at.copy(at0); view.S = S0; fly = fly0; applyCam(); shellOpacity(-1); dayNight(); renderer.render(scene, cam);
+    return url;
+  },
   get _scene() { return scene; }, say, debug: () => ({ S: view.S, at: view.at.toArray().map(v => +v.toFixed(2)), mode, calls: renderer.info.render.calls, tris: renderer.info.render.triangles, peds: peds.length, cars: cars.length, boats: boats.length, walkers: walkers.length, fps: perfN })
 };
 window.BKWorld = World;
