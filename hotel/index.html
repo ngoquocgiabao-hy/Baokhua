@@ -10,7 +10,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Khách sạn Vịnh Ā Bǎo 阿宝 – xây khách sạn, học tiếng Trung HSK0 → HSK4</title>
 <meta name="description" content="Xây và quản lý khách sạn ở Bãi Cháy bằng tiếng Trung: đón khách, mua đồ từng món cho sảnh 3D, ra chợ mua hàng, đánh boss HSK, ôn thẻ từ mỗi ngày. Lộ trình HSK0 → HSK4 của Bảo Khựa.">
-<meta name="theme-color" content="#0b3d5c">
+<meta name="theme-color" content="#1F4E8C">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bảo Khựa 阿宝">
 <meta property="og:title" content="Khách sạn Vịnh Ā Bǎo 阿宝 – xây khách sạn bằng tiếng Trung">
@@ -370,36 +370,94 @@ body.in-on #toast{bottom:calc(120px + env(safe-area-inset-bottom))}
 .deck .dk span{font-size:16px;font-weight:800}.deck .mini small{font-size:10.5px;opacity:.8}
 .hour{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
 .hour select{font:inherit;border-radius:8px;padding:4px}
+/* ===== v6.1 · TOÀN MÀN HÌNH: cảnh phủ kín, nút quanh viền, bảng trượt lên không che khách sạn · tông Minion (vàng + xanh denim) ===== */
+:root{--mi-y:#FFD91F;--mi-y2:#FFF3A6;--mi-b:#1F4E8C;--mi-b2:#2C66B0;--mi-b3:#5E95E0;--mi-ink:#14243d;--mi-g:#c9d3de}
+html,body{height:100%;overflow:hidden;background:var(--mi-b);overscroll-behavior:none}
+body{display:block}
+#app{position:fixed;inset:0;width:auto;max-width:none;min-height:0;padding:0;display:block;gap:0}
+.scene-wrap{position:fixed;inset:0;border:0!important;border-radius:0!important;box-shadow:none!important;aspect-ratio:auto;z-index:1;overflow:hidden}
+#scene{width:100%;height:100%;touch-action:none}
+.hud{position:fixed;left:8px;right:58px;top:calc(8px + env(safe-area-inset-top));z-index:30;background:none!important;padding:0;gap:6px}
+.hud .pill{background:rgba(20,40,80,.66);border:2px solid rgba(255,217,31,.9);color:#fff;box-shadow:0 3px 0 rgba(10,20,40,.4)}
+.hud .pill.coin{background:linear-gradient(180deg,var(--mi-y2),var(--mi-y));color:var(--mi-ink);border-color:#fff;text-shadow:none}
+.hud .pill.star .mini{background:rgba(255,255,255,.25)}
+.side{position:fixed;right:8px;top:calc(8px + env(safe-area-inset-top));z-index:30;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.sbtn{position:static!important;width:42px;height:42px;border-radius:14px;border:2px solid rgba(255,255,255,.85);background:rgba(20,40,80,.66);color:#fff;font:800 17px/1 system-ui,sans-serif;display:grid;place-items:center;padding:0;box-shadow:0 3px 0 rgba(10,20,40,.4);cursor:pointer}
+.sbtn.off{opacity:.55}
+.sbtn.zoom.on{background:var(--mi-y);color:var(--mi-ink)}
+.side .clock{width:auto;height:auto;min-height:30px;padding:5px 7px;font-size:11px;border-radius:12px}
+.scene-tip{top:auto!important;left:50%!important;transform:translateX(-50%);bottom:calc(104px + env(safe-area-inset-bottom));z-index:3;white-space:nowrap}
+.evt-banner{position:fixed;left:8px;right:58px;top:calc(60px + env(safe-area-inset-top));z-index:29;width:auto;background:rgba(20,40,80,.84);border-color:var(--mi-y)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 12px));bottom:calc(6px + env(safe-area-inset-bottom));z-index:36;display:grid;grid-template-columns:1fr 1fr 1.55fr 1fr 1fr;gap:5px;align-items:end}
+.dk-btn{position:relative;border:2.5px solid var(--mi-ink);border-radius:16px;background:linear-gradient(180deg,var(--mi-y2),var(--mi-y));color:var(--mi-ink);font:inherit;padding:7px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 4px 0 var(--mi-ink);cursor:pointer;min-width:0}
+.dk-btn .di{font-size:22px;line-height:1}
+.dk-btn b{font-size:11px;font-weight:900;white-space:nowrap;line-height:1.1}
+.dk-btn small{display:none}
+.dk-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--mi-ink)}
+.dk-btn.on{background:linear-gradient(180deg,#e2ecff,#9dbdf0)}
+.dk-btn .badge{position:absolute;top:-7px;right:-3px;min-width:19px;padding:0 5px;border-radius:10px;background:#ff3b3b;color:#fff;font-size:11px;line-height:19px;font-weight:900;border:2px solid #fff}
+.dk-btn .badge[hidden]{display:none}
+.dock .serve-btn{flex-direction:column;padding:6px 4px 5px;border-radius:20px;border:2.5px solid var(--mi-ink);min-height:70px;justify-content:center;gap:1px;background:linear-gradient(180deg,var(--mi-b3),var(--mi-b2) 55%,var(--mi-b));color:#fff;box-shadow:0 5px 0 var(--mi-ink);margin:0}
+.dock .serve-btn .sv-ic{width:auto;height:auto;background:none;font-size:26px;border-radius:0}
+.dock .serve-btn .sv-t{align-items:center;text-align:center;max-width:100%}
+.dock .serve-btn b{font-size:14.5px;color:#fff;line-height:1.1}
+.dock .serve-btn small{font-size:10px;color:var(--mi-y);opacity:1;max-width:100%}
+.dock .serve-btn .sv-go{display:none}
+.dock .serve-btn.urgent{background:linear-gradient(180deg,#ffb38a,#ff7a45 55%,#e0521f)}
+.drawer{position:fixed;left:50%;width:min(600px,100%);transform:translate(-50%,0);bottom:0;z-index:35;max-height:min(62vh,580px);display:flex;flex-direction:column;background:linear-gradient(180deg,var(--mi-b2),var(--mi-b) 40%);border-top:3px solid var(--mi-y);border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);transition:transform .28s cubic-bezier(.2,.9,.3,1);padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+.drawer[hidden]{display:flex;transform:translate(-50%,115%);pointer-events:none;visibility:hidden;transition:transform .22s ease-in,visibility 0s .22s}
+.dr-head{display:flex;gap:6px;align-items:center;padding:8px 8px 6px}
+.dr-head .tabs{flex:1}
+.dr-x{width:38px;height:38px;border-radius:12px;border:2px solid rgba(255,255,255,.8);background:rgba(0,0,0,.2);color:#fff;font-size:16px;font-weight:900;cursor:pointer}
+.dr-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px 10px 10px;overscroll-behavior:contain}
+.drawer .tabs button.on{background:linear-gradient(180deg,var(--mi-y2),var(--mi-y));color:var(--mi-ink)}
+.drawer .zone,.drawer .card{background:rgba(10,25,55,.35);border-color:rgba(255,217,31,.25)}
+#toast{bottom:calc(98px + env(safe-area-inset-bottom))!important}
+.buy{background:linear-gradient(180deg,var(--mi-y2),var(--mi-y));color:var(--mi-ink)}
+#insideBtn.dk-btn{background:linear-gradient(180deg,var(--mi-y2),var(--mi-y))}
+.qz{display:flex;flex-direction:column;gap:6px;margin-top:8px}.qz .btn{width:100%}.qz .qz-ok{background:#2fbf71!important;color:#fff!important}.qz .qz-no{background:#e05353!important;color:#fff!important}.qz-q{font-size:18px;margin-top:6px}.qz-q b{font-size:26px}.qz-q i{color:#9fd8ff;font-style:normal}
+@media (max-width:400px){.hud .lock10{display:none}.hud .pill.star .top{font-size:11px}}
+@media (min-width:900px){.hud{right:auto;width:560px}.evt-banner{right:auto;width:560px}}
 </style>
 </head>
 <body>
 <div id="app">
+ <div class="scene-wrap" id="sceneWrap">
+  <canvas id="scene" aria-label="Phố Bãi Cháy bên vịnh Hạ Long và khách sạn Vịnh Ā Bǎo"></canvas>
+  <div class="scene-tip" id="sceneTip">↔ Kéo xem phố · chạm cảnh vật để học từ</div>
+ </div>
  <header class="hud">
   <div class="pill coin" id="coinPill"><span>🪙</span><b id="coinTxt">0</b></div>
   <div class="pill star"><div class="top"><span id="starTxt">★</span><span id="starNext" style="opacity:.8"></span></div><div class="mini"><i id="starBar"></i></div></div>
   <div class="pill sat" id="satPill" title="Độ hài lòng của khách"><span id="satFace">😊</span><b id="satTxt">80%</b></div>
-  <button class="pill btn-ico" id="muteBtn" type="button" aria-label="Tắt/bật tiếng">🔊</button>
  </header>
- <div class="scene-wrap" id="sceneWrap">
-  <canvas id="scene" aria-label="Phố Bãi Cháy và khách sạn Bảo Khựa"></canvas>
-  <div class="scene-tip" id="sceneTip">↔ Kéo xem phố · chạm để học từ</div>
-  <button class="zoom" id="zoomBtn" type="button" title="Phóng to / thu nhỏ">🔍</button>
-  <button class="clock" id="clockBtn" type="button" title="Đổi tốc độ thời gian">🕘 00:00</button>
+ <div class="side">
+  <button class="sbtn" id="fsBtn" type="button" aria-label="Chơi toàn màn hình" title="Toàn màn hình">⛶</button>
+  <button class="sbtn" id="musicBtn" type="button" aria-label="Bật/tắt nhạc lofi" title="Nhạc lofi chill">🎧</button>
+  <button class="sbtn" id="muteBtn" type="button" aria-label="Tắt/bật tiếng">🔊</button>
+  <button class="sbtn zoom" id="zoomBtn" type="button" title="Phóng to / thu nhỏ">🔍</button>
+  <button class="sbtn clock" id="clockBtn" type="button" title="Đổi tốc độ thời gian">🕘 00:00</button>
  </div>
  <button type="button" class="evt-banner" id="evtBanner" hidden></button>
- <button class="serve-btn pulse" id="serveBtn" type="button"><span class="sv-ic">🛎️</span><span class="sv-t"><b>Phục vụ khách</b><small id="queueTxt">khách đang tới…</small></span><span class="sv-go">▶</span></button>
- <div class="go-row">
-  <button type="button" class="go-btn" id="insideBtn"><span class="gi">🛋️</span><span><b>Vào trong khách sạn</b><small id="insideSub">Sảnh 3D · mua đồ từng món</small></span></button>
-  <button type="button" class="go-btn" id="challengeBtn"><span class="gi">⚔️</span><span><b>Thử thách</b><small>đánh boss HSK</small></span></button>
- </div>
- <nav class="tabs">
-  <button type="button" data-tab="build" class="on">🛋️ Mua đồ</button>
-  <button type="button" data-tab="review">🧠 Ôn tập<span class="badge" id="dueBadge" hidden>0</span></button>
-  <button type="button" data-tab="me" id="meTab">🏆 Thành tích</button>
+ <nav class="dock" aria-label="Điều khiển chính">
+  <button type="button" class="dk-btn" id="insideBtn"><span class="di">🛋️</span><b>Vào trong</b><small id="insideSub">Sảnh 3D</small></button>
+  <button type="button" class="dk-btn" data-tab="build"><span class="di">🛒</span><b>Mua đồ</b></button>
+  <button class="serve-btn pulse" id="serveBtn" type="button"><span class="sv-ic">🛎️</span><span class="sv-t"><b>Phục vụ</b><small id="queueTxt">khách đang tới…</small></span><span class="sv-go">▶</span></button>
+  <button type="button" class="dk-btn" data-tab="review"><span class="di">🧠</span><b>Ôn tập</b><span class="badge" id="dueBadge" hidden>0</span></button>
+  <button type="button" class="dk-btn" data-tab="me" id="meTab"><span class="di">🏆</span><b>Của tôi</b></button>
  </nav>
- <section class="panel on" id="tab-build"></section>
- <section class="panel" id="tab-review"></section>
- <section class="panel" id="tab-me"></section>
+ <div class="drawer" id="drawer" hidden role="dialog" aria-label="Bảng mua đồ, ôn tập, thành tích">
+  <div class="dr-head"><nav class="tabs">
+   <button type="button" data-tab="build" class="on">🛒 Mua đồ</button>
+   <button type="button" data-tab="review">🧠 Ôn tập</button>
+   <button type="button" data-tab="me">🏆 Của tôi</button>
+  </nav><button type="button" class="dr-x" id="drClose" aria-label="Thu gọn">✕</button></div>
+  <div class="dr-body">
+   <section class="panel on" id="tab-build"></section>
+   <section class="panel" id="tab-review"></section>
+   <section class="panel" id="tab-me"></section>
+  </div>
+ </div>
 </div>
 
 <div class="sheet-bg" id="sheet" role="dialog" aria-modal="true">
@@ -604,7 +662,10 @@ const WORDS = {
   junk:['帆船','fānchuán','Thuyền buồm'], cruise:['游船','yóuchuán','Du thuyền'], sun:['太阳','tàiyáng','Mặt trời'], moon:['月亮','yuèliang','Mặt trăng'],
   bay:['下龙湾','Xiàlóng Wān','Vịnh Hạ Long'], beach:['沙滩','shātān','Bãi cát'], palm:['椰子树','yēzishù','Cây dừa'], lamp:['路灯','lùdēng','Đèn đường'],
   road:['马路','mǎlù','Đường phố'], wheel:['摩天轮','mótiānlún','Vòng quay'], firework:['烟花','yānhuā','Pháo hoa'], pool:['游泳池','yóuyǒngchí','Bể bơi'],
-  garden:['花园','huāyuán','Vườn hoa'], staff:['服务员','fúwùyuán','Nhân viên phục vụ'], guest:['客人','kèrén','Khách']
+  garden:['花园','huāyuán','Vườn hoa'], staff:['服务员','fúwùyuán','Nhân viên phục vụ'], guest:['客人','kèrén','Khách'],
+  // v6.1 · cảnh Hạ Long: cầu Bãi Cháy, cáp treo, đảo đá vôi, hòn Gà Chọi, hải âu, mây
+  bridge:['大桥','dàqiáo','Cầu lớn (cầu Bãi Cháy)'], cablecar:['缆车','lǎnchē','Cáp treo'], island:['岛','dǎo','Đảo (đảo đá vôi)'],
+  rooster:['斗鸡石','Dòujī Shí','Hòn Gà Chọi'], gull:['海鸥','hǎi\'ōu','Hải âu'], cloud:['云','yún','Mây'], mountain:['山','shān','Núi']
 };
 
 const GUEST_TYPES = {
@@ -666,8 +727,11 @@ const FURNI = Object.fromEntries(FURN.map(f => [f.id, f]));
 const NEEDS = [
   { id: 'maojin', zh: '毛巾', py: 'máojīn', vi: 'khăn tắm', who: 'Khách phòng 102' }, { id: 'shuiguo', zh: '水果', py: 'shuǐguǒ', vi: 'hoa quả', who: 'Đoàn khách Quảng Châu' },
   { id: 'kafei', zh: '咖啡', py: 'kāfēi', vi: 'cà phê', who: 'Khách doanh nhân' }, { id: 'beizi', zh: '杯子', py: 'bēizi', vi: 'cái cốc', who: 'Nhà hàng tầng 1' },
-  { id: 'zhentou', zh: '枕头', py: 'zhěntou', vi: 'cái gối', who: 'Khách phòng 201' }, { id: 'cha', zh: '茶', py: 'chá', vi: 'trà', who: 'Khách VIP' }
+  { id: 'zhentou', zh: '枕头', py: 'zhěntou', vi: 'cái gối', who: 'Khách phòng 201' }, { id: 'cha', zh: '茶', py: 'chá', vi: 'trà', who: 'Khách VIP' },
+  { id: 'yusan', zh: '雨伞', py: 'yǔsǎn', vi: 'cái ô (dù)', who: 'Khách đi tắm biển về', storm: 1 }
 ];
+/* từ cảnh Hạ Long cho câu đố của hướng dẫn viên (chạm cảnh vật trên phố cũng học được) */
+const HALONG = ['bay', 'bridge', 'cablecar', 'island', 'rooster', 'gull', 'beach', 'junk', 'cruise', 'wheel', 'seafood', 'mountain', 'cloud', 'sun', 'moon'];
 /* thử thách đánh boss theo cấp HSK (khớp STAGES trong game.html) */
 const BOSSES = [
   { st: 0, lv: 'HSK0', name: 'Cua Thanh Điệu', ico: '🦀', star: 1, img: '../v4/vs/trainee.jpg' },
@@ -845,7 +909,7 @@ const Snd = (() => {
   /* ---------- nhạc nền chill tự soạn: lo-fi + đàn tranh ngũ cung, không cần tệp nhạc ----------
      piano điện ấm (FM nhẹ) · bass tam giác · trống lo-fi có swing · giai điệu ngũ cung kiểu đàn tranh · tiếng đĩa than
      ngày: sáng, có trống · tối: trầm hơn · khuya (23–6h): tắt trống, chỉ còn piano và đàn tranh */
-  const BPM = 72, BEAT = 60 / BPM, SIX = BEAT / 4;
+  const BPM = 68, BEAT = 60 / BPM, SIX = BEAT / 4;   // v6.1: lofi chậm hơn cho dễ tập trung
   const PROGS = [
     { ch: [[53, 57, 60, 64, 67], [52, 55, 59, 62], [50, 53, 57, 60, 64], [48, 52, 55, 59, 62]], bs: [41, 40, 38, 36] },   // Fmaj9 Em7 Dm9 Cmaj9
     { ch: [[57, 60, 64, 67], [53, 57, 60, 64, 67], [48, 52, 55, 59, 62], [55, 59, 62, 64]], bs: [45, 41, 36, 43] }        // Am7 Fmaj9 Cmaj9 G6
@@ -890,7 +954,7 @@ const Snd = (() => {
     o.connect(g); o2.connect(g2); g2.connect(g); g.connect(mLP); o.start(t); o2.start(t); o.stop(t + 1.7); o2.stop(t + 1.7);
   }
   function phrase(chord) {                // giai điệu 1 ô nhịp: 3–5 nốt ngũ cung, bám nốt của hợp âm
-    const out = {}; if (Math.random() < .4) return out;
+    const out = {}; if (Math.random() < .55) return out;   // giai điệu thưa, không giành sự chú ý
     const slots = shuffle([0, 2, 3, 6, 8, 10, 11, 14]).slice(0, 3 + ((Math.random() * 3) | 0)).sort((a, b) => a - b);
     const tones = chord.map(n => n % 12);
     let k = PENT.findIndex(n => tones.includes(n % 12)); if (k < 0) k = 2;
@@ -932,6 +996,10 @@ const Snd = (() => {
         vinyl = ctx.createBufferSource(); vinyl.buffer = mkNoise(3, true); vinyl.loop = true;
         const hp = ctx.createBiquadFilter(), vg = ctx.createGain(); hp.type = 'highpass'; hp.frequency.value = 900; vg.gain.value = .35;
         vinyl.connect(hp); hp.connect(vg); vg.connect(mBus); vinyl.start();
+        // v6.1 · tiếng sóng vịnh Hạ Long rất nhỏ, dâng hạ chậm (~11 giây một nhịp) dưới nền nhạc
+        const wv = ctx.createBufferSource(), wl = ctx.createBiquadFilter(), wg = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
+        wv.buffer = mkNoise(4, false); wv.loop = true; wl.type = 'lowpass'; wl.frequency.value = 480; wg.gain.value = .07; lfo.frequency.value = .09; lg.gain.value = .05;
+        lfo.connect(lg); lg.connect(wg.gain); wv.connect(wl); wl.connect(wg); wg.connect(mBus); wv.start(); lfo.start();
       }
       mOn = true; mStep = 0; mNext = ctx.currentTime + .15;
       mBus.gain.cancelScheduledValues(ctx.currentTime); mBus.gain.setTargetAtTime(ducked ? MUSIC_VOL * .3 : MUSIC_VOL, ctx.currentTime, .9);
@@ -1093,7 +1161,7 @@ function renderHud() {
   else { const a = STAR_PTS[st - 1], b = STAR_PTS[st]; $('starBar').style.width = Math.round((S.pts - a) / (b - a) * 100) + '%'; $('starNext').textContent = `${S.pts}/${b}`; }
   const sv = Math.round(S.sat); $('satTxt').textContent = sv + '%'; $('satFace').textContent = satFace(sv);
   $('satPill').className = 'pill sat ' + (sv >= 65 ? 'good' : sv >= 45 ? 'mid' : 'bad') + ($('satPill').classList.contains('up') ? ' up' : $('satPill').classList.contains('down') ? ' down' : '');
-  const sk = streakAlive(); $('meTab').textContent = sk ? `🏆 Thành tích 🔥${sk}` : '🏆 Thành tích';
+  const sk = streakAlive(), mb = $('meTab') && $('meTab').querySelector('b'); if (mb) mb.textContent = sk ? `Của tôi 🔥${sk}` : 'Của tôi';
   $('muteBtn').textContent = S.muted ? '🔇' : '🔊';
   queueUi();
 }
@@ -1104,13 +1172,14 @@ function renderHud() {
    chỉ vẽ người, xe, đèn, hiệu ứng → mượt trên điện thoại yếu.
    ===================================================================== */
 const WW = 640, WH = 320, VW = 360;
+const VIS_TOP = -70, VIS_BOT = 360;   // v6 · toàn màn hình: dải nhìn từ trời cao (−70) tới biển gần (360), cảnh phủ kín màn hình
 const BASE = 255, SW_Y = 262, LANE_FAR = 274, LANE_NEAR = 284, SAND_Y = 293, SEA_Y = 304;
 const HX = 190, HW = 168, LOBBY_H = 40, FLOOR_H = 30, LOBBY_W = 110;
 const DOOR_X = HX + 62;
-const FAC = ['#e9dcc3', '#efe1c2', '#eef1f4', '#f6efe2', '#fbf7ef'];
-const TRIM = ['#8a6d4b', '#2a5d9f', '#2a5d9f', '#b8902a', '#c9a227'];
-const WALL = ['#efe1c6', '#f1e3c4', '#e7edf3', '#f4ece0', '#fbf5ea'];
-const CURTAIN = ['#b85c4a', '#2a5d9f', '#2a5d9f', '#7a2e3e', '#c9a227'];
+const FAC = ['#ffe27a', '#ffdc5c', '#ffd84a', '#ffe066', '#fff0a6'];   // v6.1 · mặt tiền vàng Minion, lên sao thì sáng hơn
+const TRIM = ['#2c5aa0', '#1f4e8c', '#1f4e8c', '#16365f', '#1f4e8c'];  // viền xanh denim
+const WALL = ['#fff3c4', '#fff0b8', '#fff6d6', '#fff3c4', '#fffbe8'];
+const CURTAIN = ['#2c66b0', '#2c66b0', '#1f4e8c', '#5e95e0', '#1f4e8c'];
 const BLANKET = ['#e76f51', '#2a9d8f', '#8e7dbe', '#3a86ff', '#f4a261'];
 const UNIFORM = ['#5a6b78', '#1e5aa8', '#1e5aa8', '#16171B', '#f4f1e8'];
 const SKIN = ['#f1c9a5', '#e7bb92', '#d29b72', '#f6d8c0', '#c58c62'];
@@ -1133,11 +1202,12 @@ function mkPerson(o = {}) {
 const Scene = (() => {
   const cv = $('scene'), wrap = $('sceneWrap');
   const ctx = cv.getContext('2d');
-  let S_ = 2, Sb = 2, css = 1, cw = 2, ch = 2, dpr = 1, Z = 1;
+  let S_ = 2, Sb = 2, css = 1, cw = 2, ch = 2, dpr = 1, Z = 1, SW = 360, SH = 640;
   let camX = HX + HW / 2 - VW / 2, camY = 0, camV = 0, camGoal = null;
-  const vw = () => VW / Z, vh = () => WH / Z;
-  function clampCam() { camX = Math.max(0, Math.min(WW - vw(), camX)); camY = Math.max(0, Math.min(WH - vh(), camY)); }
-  const L = { far: null, near: null, city: null, cityN: null, lit: null, fg: null, fgN: null };
+  const vw = () => SW / (css * Z), vh = () => SH / (css * Z);   // bề rộng / bề cao đang nhìn thấy (đơn vị thế giới)
+  function clampCam() { camX = Math.max(0, Math.min(WW - vw(), camX)); const span = VIS_BOT - VIS_TOP; camY = vh() >= span ? VIS_TOP - (vh() - span) / 2 : Math.max(VIS_TOP, Math.min(VIS_BOT - vh(), camY)); }
+  const L = { bay: null, far: null, near: null, city: null, cityN: null, lit: null, fg: null, fgN: null };
+  const BAY_H = 300, BRIDGE = { x0: 18, x1: 262, deck: 177, p: [96, 188], top: 104 };   // lớp vịnh xa: y từ VIS_TOP; cầu Bãi Cháy dây văng 2 trụ
   function nightCopy(src) { const n = document.createElement('canvas'); n.width = src.width; n.height = src.height; const g = n.getContext('2d'); g.drawImage(src, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(6,12,40,.62)'; g.fillRect(0, 0, n.width, n.height); return n; }
   let low = !!S.lowPower, fpsCap = low ? 30 : 60, active = true, sheetOpen = false;
   let raf = 0, lastF = 0, perfAcc = 0, perfN = 0, perfBad = 0;
@@ -1276,9 +1346,56 @@ const Scene = (() => {
   }
 
   /* ---------- lớp nền xa / gần ---------- */
+  /** v6.1 · vịnh Hạ Long xa: 3 lớp đảo đá vôi mờ dần trong sương, cầu Bãi Cháy, hòn Gà Chọi (vẽ 1 lần, cuộn chậm) */
+  function buildBay() {
+    const c = layer(WW, BAY_H, Sb), g = c.getContext('2d'); g.translate(0, -VIS_TOP);
+    const R = seededRnd(7);
+    const karst = (x, base, w, h, col, lean = 0) => { g.fillStyle = col; g.beginPath(); g.moveTo(x - w, base);
+      g.bezierCurveTo(x - w * 1.02, base - h * .45, x - w * .7 + lean, base - h * .9, x - w * .35 + lean, base - h);
+      g.bezierCurveTo(x - w * .1 + lean, base - h * 1.04, x + w * .25 + lean, base - h * .98, x + w * .45 + lean, base - h * .82);
+      g.bezierCurveTo(x + w * .8, base - h * .55, x + w * .98, base - h * .3, x + w, base); g.closePath(); g.fill(); };
+    const ranges = [['#a9c3d8', 205, 8, 80, 165], ['#8badc6', 206, 7, 55, 120], ['#6f97b4', 207, 6, 30, 80]];
+    ranges.forEach(([col, base, n, hmin, hmax], li) => { for (let i = 0; i < 26 - li * 6; i++) { const x = R() * WW, w = 10 + R() * (26 - li * 4), h = hmin + R() * (hmax - hmin); karst(x, base, w, h, col, (R() - .5) * w * .5); } });
+    // sương chân núi
+    const mg = g.createLinearGradient(0, 120, 0, 208); mg.addColorStop(0, 'rgba(255,255,255,0)'); mg.addColorStop(1, 'rgba(240,248,255,.5)'); g.fillStyle = mg; g.fillRect(0, 120, WW, 90);
+    // hòn Gà Chọi: 2 khối đá nhỏ quay vào nhau giữa vịnh
+    g.fillStyle = '#7fa3bb';
+    g.beginPath(); g.moveTo(452, 207); g.bezierCurveTo(449, 192, 452, 178, 459, 174); g.bezierCurveTo(463, 172, 466, 177, 464, 183); g.bezierCurveTo(463, 192, 465, 200, 467, 207); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(470, 207); g.bezierCurveTo(471, 196, 471, 186, 474, 180); g.bezierCurveTo(478, 175, 484, 178, 483, 186); g.bezierCurveTo(482, 194, 485, 201, 487, 207); g.closePath(); g.fill();
+    // cầu Bãi Cháy: mặt cầu + 2 trụ chữ A + dây văng hình quạt
+    const B = BRIDGE; g.strokeStyle = '#f3f6fa'; g.lineCap = 'round';
+    g.lineWidth = 2.2; g.beginPath(); g.moveTo(B.x0, B.deck + 9); g.quadraticCurveTo((B.x0 + B.x1) / 2, B.deck - 4, B.x1, B.deck + 9); g.stroke();
+    g.lineWidth = .9; g.strokeStyle = 'rgba(120,140,160,.6)'; g.beginPath(); g.moveTo(B.x0, B.deck + 10.5); g.quadraticCurveTo((B.x0 + B.x1) / 2, B.deck - 2.5, B.x1, B.deck + 10.5); g.stroke();
+    B.p.forEach(px => {
+      g.fillStyle = '#eef2f7'; g.beginPath(); g.moveTo(px - 5, B.deck + 22); g.lineTo(px - 1, B.top); g.lineTo(px + 1, B.top); g.lineTo(px + 5, B.deck + 22); g.lineTo(px + 3.4, B.deck + 22); g.lineTo(px, B.top + 10); g.lineTo(px - 3.4, B.deck + 22); g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(245,248,252,.85)'; g.lineWidth = .35;
+      for (let k = 1; k <= 7; k++) { const yT = B.top + 4 + k * 3.5; for (const sd of [-1, 1]) { g.beginPath(); g.moveTo(px, yT); g.lineTo(px + sd * k * 6.2, B.deck + (Math.abs(px + sd * k * 6.2 - (B.x0 + B.x1) / 2) / ((B.x1 - B.x0) / 2)) * 4.5); g.stroke(); } }
+    });
+    return c;
+  }
+  function seededRnd(seed) { let v = seed * 9301 + 49297; return () => (v = (v * 9301 + 49297) % 233280) / 233280; }
+  /** vẽ lớp vịnh xa (gốc y = VIS_TOP), cuộn rất chậm */
+  function blitBay(c, par) {
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    const k = css * dpr * Z, sc = Sb, sy = camY - VIS_TOP;
+    let sh = Math.min(vh(), BAY_H - sy); if (sh <= 0) return;
+    c.drawImage(L.bay, camX * par * sc, Math.max(0, sy) * sc, vw() * sc, sh * sc, 0, Math.max(0, -sy) * k, cw, sh * k);
+  }
+  /** cáp treo Nữ Hoàng (lên đồi Ba Đèo) + thuyền buồm nâu ngoài vịnh, đèn cầu khi tối */
+  function drawLandmarks(c, t, night) {
+    wt(c, .18);
+    if (night) { const B = BRIDGE; for (let x = B.x0 + 4; x < B.x1; x += 7) { const yy = B.deck + 9 - Math.sin((x - B.x0) / (B.x1 - B.x0) * Math.PI) * 13; gl(c, x, yy, 2.4, x % 14 < 7 ? 'warm' : 'cyan', .8); } B.p.forEach(px => { gl(c, px, B.top + 2, 3.4, 'red', .7 + .3 * Math.sin(t * 3 + px)); }); }
+    wt(c, .3);
+    for (let i = 0; i < 3; i++) { const L4 = WW * .55, x = ((t * (1.4 + i * .5) + i * 140) % L4) + 30, y = 204 + i * 1.6; c.globalAlpha = night ? .5 : .9; c.fillStyle = '#6b4226'; c.fillRect(x - 3, y - .6, 6, 1.4); c.fillStyle = '#b5522f'; c.beginPath(); c.moveTo(x - 1.6, y - .6); c.lineTo(x - 1.6, y - 6.5); c.lineTo(x + 1.8, y - 1); c.closePath(); c.fill(); c.beginPath(); c.moveTo(x + .8, y - .6); c.lineTo(x + .8, y - 4.6); c.lineTo(x + 3, y - 1); c.closePath(); c.fill(); c.globalAlpha = 1; }
+    wt(c, .55);
+    const A = [612, 150], Bp = [470, 66]; c.strokeStyle = night ? 'rgba(200,210,230,.35)' : 'rgba(60,70,85,.55)'; c.lineWidth = .5; c.beginPath(); c.moveTo(A[0], A[1]); c.lineTo(Bp[0], Bp[1]); c.stroke();
+    [A, Bp].forEach(([x, y]) => { c.fillStyle = night ? '#4a5568' : '#d9dee6'; c.fillRect(x - 2, y - 1, 4, 10); });
+    for (let i = 0; i < 4; i++) { const q = ((t * .018 + i / 4) % 1), x = A[0] + (Bp[0] - A[0]) * q, y = A[1] + (Bp[1] - A[1]) * q; c.strokeStyle = night ? 'rgba(200,210,230,.4)' : '#556070'; c.lineWidth = .35; c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + 3); c.stroke();
+      rbox(c, x - 2.4, y + 3, 4.8, 4, 1, night ? '#ffd27a' : (i % 2 ? '#FFD91F' : '#2c66b0')); if (!night) box(c, x - 1.6, y + 4, 3.2, 1.4, '#cfe8ff'); }
+  }
   function buildFar() {
     const c = layer(WW, WH, Sb), g = c.getContext('2d');
-    g.fillStyle = '#9ec5d8';
+    g.fillStyle = 'rgba(158,197,216,0)';   // v6.1: núi vẽ ở lớp vịnh xa (buildBay), lớp này chỉ còn mặt nước
     g.beginPath(); g.moveTo(0, 230);
     [[0, 150], [30, 120], [55, 165], [85, 110], [120, 158], [150, 128], [185, 170], [220, 118], [260, 150], [300, 112], [340, 160], [380, 126], [420, 165], [460, 118], [500, 152], [540, 122], [580, 160], [620, 130], [640, 150]].forEach(([x, y], i) => i ? g.quadraticCurveTo(x - 15, y - 25, x, y) : g.lineTo(x, y));
     g.lineTo(640, 230); g.closePath(); g.fill();
@@ -1334,6 +1451,13 @@ const Scene = (() => {
       }
     });
     if (!lit) for (let k = 1; k <= f; k++) { const top = BASE - LOBBY_H - k * FLOOR_H; box(g, HX - 2, top + FLOOR_H - 1.2, HW + 4, 1.6, shade(trim, 10)); }
+    if (!lit) {   // v6.1 · khách sạn đẹp hơn: trụ viền xanh denim, phào mái, lan can mái sọc vàng–xanh, hoa trên ban công
+      for (const px of [HX + 1.5, HX + 56.5, HX + 110.5, HX + HW - 1.5]) { box(g, px - 1.6, roofY, 3.2, BASE - LOBBY_H - roofY, shade(trim, 22)); box(g, px - 1.6, roofY, .8, BASE - LOBBY_H - roofY, 'rgba(255,255,255,.28)'); }
+      box(g, HX - 3, roofY - 3, HW + 6, 3.4, trim); for (let x = HX - 2; x < HX + HW + 2; x += 3) box(g, x, roofY + .4, 1.4, 1.4, shade(trim, -25));
+      for (let x = HX - 3, i = 0; x < HX + HW + 3; x += 6, i++) box(g, x, roofY - 7, Math.min(6, HX + HW + 3 - x), 4, i % 2 ? '#FFD91F' : trim);
+      box(g, HX - 3, roofY - 8, HW + 6, 1.2, '#ffffff');
+      rooms.forEach((r, i) => { const by = r.y + r.h - .2; for (let k = 0; k < 7; k++) dot(g, r.x + 4 + k * (r.w - 8) / 6, by + .4, .85, '#3fa85f'); for (let k = 0; k < 6; k++) dot(g, r.x + 5 + k * (r.w - 10) / 5, by - .3, 1.05, ['#ff6b9a', '#ffd34d', '#ffffff', '#ff9f43'][(k + i) % 4]); });
+    }
     // sảnh
     const ly = BASE - LOBBY_H;
     if (!lit) {
@@ -1357,6 +1481,9 @@ const Scene = (() => {
       box(g, HX + 59, ly + 22, .8, 5, owned('desk') ? '#FFD91F' : '#555'); box(g, HX + 64.2, ly + 22, .8, 5, owned('desk') ? '#FFD91F' : '#555');
       g.fillStyle = 'rgba(255,255,255,.12)'; g.beginPath(); g.moveTo(HX + 20, ly + 7); g.lineTo(HX + 34, ly + 7); g.lineTo(HX + 16, BASE); g.lineTo(HX + 2, BASE); g.closePath(); g.fill();
       if (owned('lantern')) [HX + 6, HX + 26, HX + 46, HX + 78, HX + 100].forEach(x => { box(g, x, ly + 6, .5, 2.5, '#7a5230'); g.fillStyle = '#e63946'; g.beginPath(); g.ellipse(x + .25, ly + 11, 2.6, 3.3, 0, 0, 6.2832); g.fill(); box(g, x - 1, ly + 14, 2.5, .9, '#FFD91F'); });
+      // mái hiên sọc xanh–trắng trên cửa chính + 2 chậu cây hai bên cửa
+      for (let i = 0; i < 7; i++) { const x = HX + 48 + i * 4, col = i % 2 ? '#ffffff' : trim; box(g, x, ly + 6.4, 4, 3.6, col); g.fillStyle = col; g.beginPath(); g.arc(x + 2, ly + 10, 2, 0, Math.PI); g.fill(); }
+      [HX + 46.5, HX + 77.5].forEach(x => { rbox(g, x - 2.8, BASE - 5.5, 5.6, 5.5, 1.2, trim); dot(g, x, BASE - 8, 3.2, '#2fa36b'); dot(g, x - 1.5, BASE - 10, 2.1, '#3fbf7f'); dot(g, x + 1.1, BASE - 9.6, 1.1, '#ff6b9a'); });
     }
     // nhà hàng / chỗ cho thuê
     const rx = HX + LOBBY_W;
@@ -1493,13 +1620,14 @@ const Scene = (() => {
 
   /* ---------- dựng lại khi mua đồ / đổi kích thước ---------- */
   function rebuild(newKey) {
+    if (!newKey || !L.bay) L.bay = buildBay();
     if (!towerWins.length) initTower();
     L.far = buildFar(); L.near = buildNear(); L.city = buildCity(false); L.lit = buildCity(true); L.fg = buildFg();
     L.fgN = nightCopy(L.fg); L.cityN = nightCopy(L.city);
     if (newKey) {
       const p = keyPos(newKey);
       camGoal = Math.max(0, Math.min(WW - vw(), p.x - vw() / 2));
-      if (Z > 1) camY = Math.max(0, Math.min(WH - vh(), p.y - vh() / 2));
+      if (Z > 1) { camY = p.y - vh() / 2; clampCam(); }
       for (let i = 0; i < 26; i++) parts.push({ x: p.x + rnd(-14, 14), y: p.y + rnd(-6, 6), vx: rnd(-30, 30), vy: rnd(-40, -5), life: rnd(.6, 1.1), col: pick(['#d6c3a3', '#FFD91F', '#ffffff', '#c9a227']), r: rnd(.8, 1.8), g: 60 });
       flashBox = { ...p, t: .8 };
     }
@@ -1518,11 +1646,14 @@ const Scene = (() => {
   /* ---------- kích thước ---------- */
   function resize() {
     const r = wrap.getBoundingClientRect();
-    const w = Math.max(200, r.width || 360);
+    const w = Math.max(200, r.width || 360), h = Math.max(200, r.height || 640);
     dpr = Math.min(window.devicePixelRatio || 1, low ? 1 : 2);
-    css = w / VW; cw = Math.round(w * dpr); ch = Math.round(w * WH / VW * dpr);
+    // v6 · toàn màn hình: dọc vừa trọn dải trời → biển, ngang không hở mép phố (màn dọc thấy khách sạn to, kéo ngang xem phố)
+    css = Math.max(h / (VIS_BOT - VIS_TOP), w / WW); SW = w; SH = h;
+    cw = Math.round(w * dpr); ch = Math.round(h * dpr);
     cv.width = cw; cv.height = ch;
-    Sb = css * dpr; S_ = Math.min(css * dpr * Z, low ? 1.8 : 3);
+    Sb = Math.min(css * dpr, 3); S_ = Math.min(css * dpr * Z, low ? 1.8 : 3);
+    camY = VIS_BOT - vh();
     rebuild(); clampCam();
   }
 
@@ -1711,7 +1842,13 @@ const Scene = (() => {
      Thứ tự: trời → núi → phố + người TRONG nhà → màn đêm → đèn trong nhà
              → người/xe NGOÀI đường (tự pha tối) → đèn đường, đèn xe → bờ biển, biển, thuyền → hiệu ứng */
   function wt(c, par = 1) { const k = css * dpr * Z; c.setTransform(k, 0, 0, k, -camX * par * k, -camY * k); }
-  function blitLayer(c, img, sc, par) { c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(img, camX * par * sc, camY * sc, vw() * sc, vh() * sc, 0, 0, cw, ch); }
+  function blitLayer(c, img, sc, par) {   // lớp vẽ sẵn chỉ cao 0..WH: phần trời phía trên (y < 0) để trống cho bầu trời
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    const k = css * dpr * Z; let sy = camY, sh = vh(), dy = 0;
+    if (sy < 0) { dy = -sy * k; sh += sy; sy = 0; }
+    if (sy + sh > WH) sh = WH - sy;
+    if (sh > 0) c.drawImage(img, camX * par * sc, sy * sc, vw() * sc, sh * sc, 0, dy, cw, sh * k);
+  }
   let sunPos = null, moonPos = null;
   function draw(t) {
     const c = ctx;
@@ -1719,17 +1856,24 @@ const Scene = (() => {
     const [top, bot] = skyAt(hour);
     const sg = c.createLinearGradient(0, 0, 0, ch * .7); sg.addColorStop(0, top); sg.addColorStop(1, bot);
     c.fillStyle = sg; c.fillRect(0, 0, cw, ch);
-    c.setTransform(css * dpr, 0, 0, css * dpr, 0, 0);
-    if (dark > .2) { c.fillStyle = '#fff'; stars.forEach((s, i) => { c.globalAlpha = Math.min(1, (dark - .2) * 2.4) * (.5 + .5 * Math.sin(t * 1.5 + i)); c.fillRect(s[0], s[1], s[2], s[2]); }); c.globalAlpha = 1; }
+    wt(c, 0);   // trời: x theo màn hình, y theo thế giới (mặt trời mọc từ mặt biển)
+    if (dark > .2) { c.fillStyle = '#fff'; stars.forEach((s, i) => { c.globalAlpha = Math.min(1, (dark - .2) * 2.4) * (.5 + .5 * Math.sin(t * 1.5 + i)); c.fillRect(s[0] * vw(), s[1], s[2], s[2]); }); c.globalAlpha = 1; }
     const sky0 = 160 / Math.sqrt(Z);
-    if (hour >= 5.8 && hour <= 18.4) { const k = (hour - 5.8) / 12.6, sx = 20 + k * 320, sy = sky0 - Math.sin(k * Math.PI) * 135; const warm = hour < 7 || hour > 17; gl(c, sx, sy, 26, warm ? 'rgb(255,170,90)' : 'white', .8); dot(c, sx, sy, 8, warm ? '#ffb36b' : '#fff6c9'); sunPos = [sx, sy]; } else sunPos = null;
-    if (hour >= 18.6 || hour < 6) { const k = ((hour - 18.6 + 24) % 24) / 11.4, mx = 20 + k * 320, my = sky0 - 10 - Math.sin(k * Math.PI) * 115; gl(c, mx, my, 18, 'white', .35); dot(c, mx, my, 6, '#f6f1cf'); dot(c, mx + 2.6, my - 1.8, 5.2, top); moonPos = [mx, my]; } else moonPos = null;
+    if (hour >= 5.8 && hour <= 18.4) { const k = (hour - 5.8) / 12.6, sx = vw() * (.1 + .8 * k), sy = 192 - Math.sin(k * Math.PI) * 236; const warm = hour < 7 || hour > 17; gl(c, sx, sy, 26, warm ? 'rgb(255,170,90)' : 'white', .8); dot(c, sx, sy, 8, warm ? '#ffb36b' : '#fff6c9'); sunPos = [sx * Z, (sy - camY) * Z]; } else sunPos = null;
+    if (hour >= 18.6 || hour < 6) { const k = ((hour - 18.6 + 24) % 24) / 11.4, mx = vw() * (.1 + .8 * k), my = 186 - Math.sin(k * Math.PI) * 220; gl(c, mx, my, 18, 'white', .35); dot(c, mx, my, 6, '#f6f1cf'); dot(c, mx + 2.6, my - 1.8, 5.2, top); moonPos = [mx * Z, (my - camY) * Z]; } else moonPos = null;
     c.fillStyle = dark > .3 ? 'rgba(160,170,200,.35)' : hour > 16.5 && hour < 19 ? 'rgba(255,214,190,.85)' : 'rgba(255,255,255,.88)';
-    clouds.forEach(k => { const x = ((k.x + t * k.v - camX * .1) % 460 + 460) % 460 - 50; c.beginPath(); c.ellipse(x, k.y, k.w, k.w * .32, 0, 0, 6.2832); c.ellipse(x + k.w * .5, k.y - k.w * .18, k.w * .55, k.w * .3, 0, 0, 6.2832); c.fill(); });
+    clouds.forEach(k => { const L2 = vw() + 140, x = ((k.x + t * k.v - camX * .1) % L2 + L2) % L2 - 70; c.beginPath(); c.ellipse(x, k.y, k.w, k.w * .32, 0, 0, 6.2832); c.ellipse(x + k.w * .5, k.y - k.w * .18, k.w * .55, k.w * .3, 0, 0, 6.2832); c.fill(); });
+    // hải âu bay ngang trời (ban ngày)
+    if (dark < .45 && !low) { c.strokeStyle = 'rgba(40,52,72,.55)'; c.lineWidth = .8; c.lineCap = 'round';
+      for (let i = 0; i < 6; i++) { const L3 = vw() + 90, bx = ((t * (5 + i * 1.3) + i * 83) % L3) - 45, by = -38 + i * 17 + Math.sin(t * .7 + i) * 7, fl = Math.sin(t * 5.5 + i * 2.1) * 1.8;
+        c.beginPath(); c.moveTo(bx - 4.5, by - fl); c.quadraticCurveTo(bx - 2, by - 2.2 - fl * .3, bx, by); c.quadraticCurveTo(bx + 2, by - 2.2 - fl * .3, bx + 4.5, by - fl); c.stroke(); } }
+    blitBay(c, .18);
     blitLayer(c, L.far, Sb, .3);
     blitLayer(c, L.near, Sb, .55);
     const night = dark > .12;
+    drawLandmarks(c, t, false);
     if (dark > 0) { c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = `rgba(6,12,40,${dark})`; c.fillRect(0, 0, cw, ch); }
+    if (night) drawLandmarks(c, t, true);
     if (owned('wheel')) { wt(c, .55); NK = dark; drawWheel(c, t, false); NK = 0; if (night && (inHours(hour, 17.8, 24) || inHours(hour, 0, 1))) drawWheel(c, t, true); }
     // phố: bản ngày + bản đêm pha theo độ tối (không phủ đen lần 2 lên trời)
     blitLayer(c, L.city, S_, 1);
@@ -1898,10 +2042,10 @@ const Scene = (() => {
   }
   function drawSea(c, t) {
     const x0 = camX - 2, w = vw() + 4;
-    const g = c.createLinearGradient(0, SEA_Y, 0, WH); g.addColorStop(0, nc('#3aa6cf')); g.addColorStop(1, nc('#1d6f93'));
-    c.fillStyle = g; c.fillRect(x0, SEA_Y, w, WH - SEA_Y);
+    const g = c.createLinearGradient(0, SEA_Y, 0, VIS_BOT); g.addColorStop(0, nc('#3aa6cf')); g.addColorStop(.45, nc('#2387b3')); g.addColorStop(1, nc('#155c86'));
+    c.fillStyle = g; c.fillRect(x0, SEA_Y, w, VIS_BOT + 30 - SEA_Y);
     c.fillStyle = dark > .3 ? 'rgba(200,220,255,.25)' : 'rgba(255,255,255,.55)';
-    for (let i = 0; i < 16; i++) { const x = camX + ((i * 37 + t * 8) % (vw() + 40)) - 20, y = SEA_Y + 2 + (i * 5) % 14; c.fillRect(x, y, 7 + (i % 3) * 3, .7); }
+    for (let i = 0; i < 30; i++) { const x = camX + ((i * 37 + t * (6 + i % 4 * 2)) % (vw() + 40)) - 20, y = SEA_Y + 2 + (i * 7) % 52 + Math.sin(t * 1.3 + i) * .8; c.fillRect(x, y, 7 + (i % 3) * 3 + (y - SEA_Y) * .08, .7 + (y - SEA_Y) * .012); }
     c.fillStyle = dark > .3 ? 'rgba(200,220,255,.35)' : 'rgba(255,255,255,.8)'; c.fillRect(x0, SEA_Y - .4, w, .8);
     boats.forEach(b => {
       const by = SEA_Y + 9 + Math.sin(t * 1.4 + b.ph) * .8;
@@ -2019,7 +2163,7 @@ const Scene = (() => {
     const dx = e.clientX - lastX, dy = e.clientY - lastY; moved += Math.abs(dx) + (Z > 1 ? Math.abs(dy) : 0);
     const ax = Math.abs(e.clientX - downX), ay = Math.abs(e.clientY - downY);
     if (!drag && (ax > 8 && ax > ay || (Z > 1 && ay > 8))) { drag = true; try { cv.setPointerCapture(pid); } catch (er) {} hideTip(); }
-    if (drag) { const now = performance.now(), k = css * Z; camX -= dx / k; if (Z > 1) camY -= dy / k; clampCam(); camV = dx / k / Math.max(.008, (now - lastT) / 1000); lastT = now; }
+    if (drag) { const now = performance.now(), k = css * Z; camX -= dx / k; camY -= dy / k; clampCam(); camV = dx / k / Math.max(.008, (now - lastT) / 1000); lastT = now; }
     lastX = e.clientX; lastY = e.clientY;
   });
   const up = e => { if (pid !== e.pointerId) return; pid = null; if (!drag && moved < 10) tap(e.clientX, e.clientY); drag = false; };
@@ -2053,7 +2197,11 @@ const Scene = (() => {
     for (const b of boats) if (hit(x, y, b.x - 28, SEA_Y - 30, 56, 40)) return word('junk', cx, cy);
     if (owned('wheel') && Math.hypot(camX * .55 + sx / Z - 120, y - 150) < 50) return word('wheel', cx, cy);
     if (fw.length && y < 120) return word('firework', cx, cy);
+    if (y < 40 && dark < .45) return word(y < -10 ? 'gull' : 'cloud', cx, cy);
+    if (y < 150 && y >= 40) return word('island', cx, cy);
     if (owned('palm') && y > 240 && y < SAND_Y) for (const px of [58, 172, 372, 470, 560]) if (Math.abs(x - px) < 12) return word('palm', cx, cy);
+    { const bx = camX * .18 + sx / Z, B = BRIDGE; if (bx > B.x0 && bx < B.x1 && y > B.top - 4 && y < B.deck + 14) return word('bridge', cx, cy); if (bx > 446 && bx < 490 && y > 170 && y < 208) return word('rooster', cx, cy); }
+    { const nx = camX * .55 + sx / Z; if (nx > 466 && nx < 616 && Math.abs(y - (150 + (nx - 612) * (84 / 142))) < 9) return word('cablecar', cx, cy); }
     if (y >= SEA_Y) return word('bay', cx, cy);
     if (y >= SAND_Y - 4) return word('beach', cx, cy);
     if (y >= SW_Y + 2 && y < SW_Y + 25) return word('road', cx, cy);
@@ -2075,8 +2223,8 @@ const Scene = (() => {
 
   /* ---------- khởi động ---------- */
   function init() {
-    stars = Array.from({ length: 46 }, () => [rnd(0, VW), rnd(0, 150), Math.random() < .2 ? 1.2 : .7]);
-    clouds = Array.from({ length: 4 }, (_, i) => ({ x: i * 120 + rnd(0, 60), y: rnd(25, 85), w: rnd(16, 28), v: rnd(2, 5) }));
+    stars = Array.from({ length: 70 }, () => [Math.random(), rnd(VIS_TOP, 150), Math.random() < .2 ? 1.2 : .7]);
+    clouds = Array.from({ length: 7 }, (_, i) => ({ x: i * 70 + rnd(0, 50), y: rnd(-58, 105), w: rnd(16, 34), v: rnd(1.5, 4.5) }));
     resize();
     // lấp sẵn khoảng nửa số phòng để khách sạn trông có người ở
     freeRooms().forEach(r => { if (Math.random() < .55) { const g = mkPerson(); r.guest = g; newStay(g, rnd(1, 6)); } });
@@ -2100,7 +2248,7 @@ const Scene = (() => {
       Z = z; resize();
       camX = cx - vw() / 2;
       const roofY = BASE - LOBBY_H - floors() * FLOOR_H;
-      camY = Z > 1 ? Math.min(cy - vh() / 2, (roofY + SW_Y) / 2 - vh() / 2 + 20) : 0;
+      camY = Z > 1 ? Math.min(cy - vh() / 2, (roofY + SW_Y) / 2 - vh() / 2 + 20) : VIS_BOT - vh();
       if (Z > 1) camY = Math.max(camY, (roofY + SW_Y) / 2 - vh() / 2);
       clampCam(); cv.style.touchAction = Z > 1 ? 'none' : 'pan-y';
     },
@@ -2468,7 +2616,7 @@ function resolve(ok, el) {
     if (ok) {
       combo++; S.correct++; S.bestCombo = Math.max(S.bestCombo, combo);
       const fast = secs <= (Q.fast || FAST_SECONDS), vip = S.vipDay !== localDay(0);
-      const earn = Math.round(fare() * (1 + .1 * Math.min(10, combo - 1)) * (fast ? 1.5 : 1) * (vip ? 3 : 1));
+      const earn = Math.round(fare() * (1 + .1 * Math.min(10, combo - 1)) * (fast ? 1.5 : 1) * (vip ? 3 : 1) * Ev.mul());
       if (vip) S.vipDay = localDay(0);
       markToday();
       g.done++; g.mood = Math.min(100, g.mood + (fast ? 8 : 3));
@@ -2548,10 +2696,10 @@ function starUp(s) {
   showOv('⭐'.repeat(Math.min(s, 5)), `Khách sạn đạt ${s} sao!`,
     `<p>Khách sạn lên <b>${s}★ · ${HSK_OF_STAR[s]}</b>: Ā Bǎo được đồng phục mới, giá phòng tăng, khách mới nói câu của bài học mới. Mở khoá:</p>
      <div class="unlock-list">${un.map(i => `<span>${i.ico} ${esc(i.zh)} · ${esc(i.vi)}</span>`).join('')}${ZONES.filter(Z => Z.star === s).map(Z => `<span>${Z.ico} Khu ${esc(Z.name)}</span>`).join('')}${COURSE.filter(u => unitStar(u) === s).map(u => `<span>📚 Bài ${COURSE.indexOf(u) + 1} · ${esc(u.title)}</span>`).join('')}</div>
-     ${BOSSES[s - 1] ? `<button type="button" class="btn" id="ovBoss">⚔️ Thử thách mới: ${esc(BOSSES[s - 1].name)} (${BOSSES[s - 1].lv})</button>` : ''}
+     ${BOSSES[s - 1] ? `<p class="note">⚔️ Cẩn thận: ${esc(BOSSES[s - 1].name)} (${BOSSES[s - 1].lv}) sắp lạc vào khách sạn…</p>` : ''}
      ${s >= 3 ? `<p>Bạn đã phục vụ được khách thật rồi đấy. Muốn nói trôi chảy ở quầy lễ tân thật?</p><a class="btn zalo" href="${ZALO_LINK}" target="_blank" rel="noopener">💬 Vào nhóm Zalo học cùng Bảo</a><button type="button" class="btn dark" id="ovPerks">👑 Xem đặc quyền hội viên năm</button>` : `<p class="note">Lên ${s + 1}★ để mở thêm công trình. Đích đến: 10★ 👑</p>`}`, 'Tiếp tục xây');
   if ($('ovPerks')) $('ovPerks').onclick = () => memberPitch('star' + s);
-  if ($('ovBoss')) $('ovBoss').onclick = () => { $('ov').classList.remove('on'); ovOpen = false; Ev.boss(BOSSES[s - 1]); };
+  if (BOSSES[s - 1]) { S.ev.bossDue = s - 1; S.ev.cnt = Math.max(S.ev.cnt || 0, (S.ev.nextAt || 4) - 2); save(); }   // boss chỉ đến như sự kiện, sau khoảng 2 khách
   const r = rectOf($('ovBig')); if (r) setTimeout(() => burstAt(r.left + r.width / 2, r.top + r.height / 2, 30, 150), 300);
 }
 /* ===== HỘI VIÊN NĂM (câu dẫn) ===== */
@@ -2669,7 +2817,7 @@ const Inside = (() => {
   });
   function show(placeId) {
     if (!open) {
-      open = true; $('inside').hidden = false; document.body.classList.add('in-on');
+      open = true; $('inside').hidden = false; document.body.classList.add('in-on'); if (!$('drawer').hidden) closeDrawer();
       Scene.setActive(false); mount(); send({ bk: 'resume' });
       if (!placeId) send(state());
     }
@@ -2755,32 +2903,76 @@ const Ev = (() => {
     if (S.ev.pend && S.ev.pend.fid && FURNI[S.ev.pend.fid] && !hasF(S.ev.pend.fid)) { const f = FURNI[S.ev.pend.fid]; S.ev.pend = null; S.coins += f.price; save(); }   // đi chợ dở dang → hoàn xu
     S.ev.pend = null; save();
   }
-  /* sự kiện bất ngờ: sau vài khách thì có khách cần đồ gấp */
+  /* v6.1 · SỰ KIỆN: cứ 4–6 khách lại có 1 sự kiện, xoay vòng nhiều kiểu (boss chỉ đến bằng sự kiện, không tự chọn đánh)
+     need  khách cần đồ gấp → đi chợ (bản đồ)      storm mưa giông, khách cần ô → đi chợ
+     boss  quái lạc vào khách sạn → đuổi quái (sân đấu)   tour đoàn khách du lịch: 3 khách tới ×1,5 xu
+     vip   khách VIP: khách sau ×2 xu                     fest lễ hội Carnaval Hạ Long: 3 phút ×1,3 xu
+     quiz  hướng dẫn viên đố từ cảnh Hạ Long (+xu, +hài lòng, thẻ từ mới) */
+  const DECK = ['need', 'quiz', 'tour', 'boss', 'storm', 'vip', 'need', 'fest', 'quiz', 'boss'];
   function afterGuest() {
-    if (Tut.active || S.ev.need || cur) return;
+    if (S.ev.tour > 0) S.ev.tour--;
+    if (S.ev.vip2) S.ev.vip2 = 0;
+    if (Tut.active || S.ev.need || S.ev.offer || cur) { save(); return; }
     S.ev.cnt = (S.ev.cnt || 0) + 1;
-    if (S.ev.cnt < (S.ev.nextAt || 5)) { save(); return; }
-    S.ev.cnt = 0; S.ev.nextAt = 5 + Math.floor(Math.random() * 4);
-    const n = NEEDS[Math.floor(Math.random() * NEEDS.length)];
-    S.ev.need = { id: n.id, until: Date.now() + 4 * 60e3 }; save(); banner();
-    Snd.play('ui'); toast(`📦 Sự kiện bất ngờ: ${n.who} cần ${n.zh} (${n.py}) gấp!`);
+    if (S.ev.cnt < (S.ev.nextAt || 4)) { save(); return; }
+    S.ev.cnt = 0; S.ev.nextAt = 4 + Math.floor(Math.random() * 3);
+    const kind = S.ev.bossDue != null ? 'boss' : DECK[(S.ev.di = ((S.ev.di || 0) + 1) % DECK.length)];
+    fire(kind);
+  }
+  const mul = () => (S.ev.tour > 0 ? 1.5 : 1) * (S.ev.vip2 ? 2 : 1) * (S.ev.fest && Date.now() < S.ev.fest ? 1.3 : 1);
+  function fire(kind) {
+    const until = Date.now() + 4 * 60e3;
+    if (kind === 'need' || kind === 'storm') {
+      const pool = NEEDS.filter(n => kind === 'storm' ? n.storm : !n.storm), n = pool[Math.floor(Math.random() * pool.length)];
+      S.ev.need = { id: n.id, until }; save(); banner(); Snd.play('ui');
+      toast(kind === 'storm' ? `🌧️ Mưa giông ở Bãi Cháy! ${n.who} cần ${n.zh} (${n.py}) gấp` : `📦 Sự kiện bất ngờ: ${n.who} cần ${n.zh} (${n.py}) gấp!`);
+    } else if (kind === 'boss') {
+      const st = S.ev.bossDue != null ? S.ev.bossDue : Math.max(0, Math.min(4, star() - 1)); S.ev.bossDue = null;
+      S.ev.offer = { k: 'boss', st, until }; save(); banner(); Snd.play('hurt'); toast(`⚔️ ${BOSSES[st].name} lạc vào khách sạn! Bấm để đuổi quái`);
+    } else if (kind === 'tour') {
+      S.ev.tour = 3; save(); Snd.starUp();
+      showOv('🚌', 'Đoàn khách du lịch tới!', `<p>Đoàn khách Quảng Tây vừa tới Bãi Cháy: <b lang="zh-CN">旅游团</b> (lǚyóutuán · đoàn du lịch).</p><p>3 khách tới: trả lời đúng được <b>×1,5 xu</b>.</p>`, 'Đón khách ▶', null);
+    } else if (kind === 'vip') {
+      S.ev.vip2 = 1; save(); Snd.starUp();
+      showOv('👑', 'Khách VIP sắp tới!', `<p>Một <b lang="zh-CN">贵宾</b> (guìbīn · khách quý) đặt phòng hướng biển.</p><p>Khách tới tiếp theo: trả lời đúng được <b>×2 xu</b>. Phục vụ chu đáo nhé!</p>`, 'Sẵn sàng ▶', null);
+    } else if (kind === 'fest') {
+      S.ev.fest = Date.now() + 3 * 60e3; save(); Snd.starUp(); const r = rectOf($('serveBtn')); if (r) burstAt(r.left + r.width / 2, r.top, 40, 180);
+      showOv('🎉', 'Lễ hội Carnaval Hạ Long!', `<p>Phố Bãi Cháy mở hội: <b lang="zh-CN">狂欢节</b> (kuánghuānjié · lễ hội Carnaval).</p><p>3 phút tới mọi câu trả lời đúng được <b>×1,3 xu</b>.</p>`, 'Vào hội ▶', null);
+    } else quiz();
+  }
+  /** hướng dẫn viên đố nhanh 1 từ cảnh Hạ Long (3 lựa chọn) */
+  function quiz() {
+    const keys = HALONG.filter(k => WORDS[k]), k = keys[Math.floor(Math.random() * keys.length)], w = WORDS[k];
+    const opts = shuffle([k, ...shuffle(keys.filter(x => x !== k && WORDS[x][2] !== w[2])).slice(0, 2)]);
+    showOv('🧭', 'Hướng dẫn viên hỏi nhanh', `<p>Đoàn khách đang ngắm vịnh. Hướng dẫn viên chỉ tay và hỏi:</p><p class="qz-q"><b lang="zh-CN">${esc(w[0])}</b> <i>${esc(w[1])}</i> nghĩa là gì?</p><div class="qz">${opts.map(o => `<button type="button" class="btn ghost" data-qz="${o}">${esc(WORDS[o][2])}</button>`).join('')}</div>`, 'Để sau', null);
+    speak(w[0], true);
+    let done = false;
+    document.querySelectorAll('[data-qz]').forEach(b => b.onclick = () => {
+      if (done) return; done = true; const ok = b.dataset.qz === k;
+      document.querySelectorAll('[data-qz]').forEach(x => { x.disabled = true; if (x.dataset.qz === k) x.classList.add('qz-ok'); });
+      if (!ok) b.classList.add('qz-no');
+      if (ok) { const got = fare(); S.coins += got; S.sat = Math.min(100, S.sat + 3); S.found[k] = 1; Snd.coin(3); toast(`✓ ${w[0]} ${w[1]} = ${w[2]} · +${got} 🪙 · hài lòng +3%`); }
+      else { Snd.play('hurt'); toast(`${w[0]} ${w[1]} = ${w[2]}`); }
+      Learn.add('w-' + k); save(); renderHud(); $('ovBtn').textContent = 'Tiếp tục';
+    });
   }
   function banner() {
-    const b = $('evtBanner'), nd = S.ev.need && Date.now() < S.ev.need.until ? NEEDS.find(x => x.id === S.ev.need.id) : null;
+    const b = $('evtBanner');
+    if (S.ev.offer && Date.now() < S.ev.offer.until && S.ev.offer.k === 'boss') {
+      const bo = BOSSES[S.ev.offer.st] || BOSSES[0]; b.hidden = false;
+      b.innerHTML = `<span class="ic">${bo.ico}</span><span class="t"><b>${esc(bo.name)} lạc vào khách sạn!</b> ${bo.lv} · đánh đuổi để nhận thưởng</span><span class="go">Đuổi quái ▶</span><span class="x" role="button" aria-label="Bỏ qua" id="evtX">✕</span>`;
+      b.onclick = e => { const o = S.ev.offer; S.ev.offer = null; save(); banner(); if (e.target.id === 'evtX') return; boss(BOSSES[o.st] || BOSSES[0]); };
+      return;
+    }
+    if (S.ev.offer && Date.now() >= S.ev.offer.until) { S.ev.offer = null; save(); }
+    const nd = S.ev.need && Date.now() < S.ev.need.until ? NEEDS.find(x => x.id === S.ev.need.id) : null;
     if (!nd) { b.hidden = true; if (S.ev.need) { S.ev.need = null; save(); } return; }
     b.hidden = false;
-    b.innerHTML = `<span class="ic">📦</span><span class="t"><b>${esc(nd.who)} cần gấp:</b> <span lang="zh-CN">${esc(nd.zh)}</span> ${esc(nd.py)} · ${esc(nd.vi)}</span><span class="go">Đi chợ ▶</span><span class="x" role="button" aria-label="Bỏ qua" id="evtX">✕</span>`;
+    b.innerHTML = `<span class="ic">${nd.storm ? '🌧️' : '📦'}</span><span class="t"><b>${esc(nd.who)} cần gấp:</b> <span lang="zh-CN">${esc(nd.zh)}</span> ${esc(nd.py)} · ${esc(nd.vi)}</span><span class="go">Đi chợ ▶</span><span class="x" role="button" aria-label="Bỏ qua" id="evtX">✕</span>`;
     b.onclick = e => { if (e.target.id === 'evtX') { S.ev.need = null; save(); banner(); return; } need(nd); };
   }
-  return { errandFor, need, boss, close, pickup, afterGuest, banner, get on() { return !!cur; } };
+  return { errandFor, need, boss, close, pickup, afterGuest, banner, fire, mul, get on() { return !!cur; } };
 })();
-function openChallenge() {
-  const rows = BOSSES.map(b => { const lock = star() < b.star, won = S.ev.boss[b.st];
-    return `<div class="boss-row${lock ? ' lock' : ''}"><img src="${b.img}" alt="" loading="lazy"><span class="t"><b>${b.ico} ${esc(b.name)}</b><small>${b.lv}${won ? ` · ✓ đã hạ ${won} lần` : ''}</small></span>
-      <button type="button" class="buy" data-boss="${b.st}" ${lock ? 'disabled' : ''}>${lock ? `🔒 ${b.star}★` : won ? 'Đấu lại' : '⚔️ Đấu'}</button></div>`; }).join('');
-  showOv('⚔️', 'Thử thách đánh boss', `<p class="note" style="margin-bottom:8px">Quái lạc vào khách sạn! Hạ boss theo cấp HSK để nhận xu và điểm sao. Lên sao là mở boss mới.</p><div class="boss-list">${rows}</div>`, 'Để sau', null);
-  document.querySelectorAll('[data-boss]').forEach(b => b.onclick = () => { $('ov').classList.remove('on'); ovOpen = false; Ev.boss(BOSSES[+b.dataset.boss]); });
-}
 
 /* ===== GIÁO TRÌNH + ÔN THẺ KIỂU ANKI (SM-2 rút gọn) + NHẮC ÔN =====
    Thẻ vào Bộ thẻ khi: khách nói câu có từ của bài đang học (đúng/sai đều vào), mua đồ (tên món), xong việc đi chợ.
@@ -2791,6 +2983,7 @@ const Learn = (() => {
   COURSE.forEach((u, i) => u.cards.forEach(c => { C[c.id] = Object.assign({ src: 'course', ui: i }, c); }));
   FURN.forEach(f => { C['f-' + f.id] = { id: 'f-' + f.id, zh: f.zh, py: f.py, vi: f.vi, ico: f.ico, src: 'furn' }; });
   NEEDS.forEach(n => { C['n-' + n.id] = { id: 'n-' + n.id, zh: n.zh, py: n.py, vi: n.vi, src: 'need' }; });
+  HALONG.forEach(k => { if (WORDS[k]) C['w-' + k] = { id: 'w-' + k, zh: WORDS[k][0], py: WORDS[k][1], vi: WORDS[k][2], src: 'halong' }; });
   function dayStart(t = Date.now()) { const d = new Date(t); d.setHours(4, 0, 0, 0); if (t < d.getTime()) d.setDate(d.getDate() - 1); return d.getTime(); }
   const dueList = () => Object.keys(S.cards).filter(id => C[id] && S.cards[id].due < dayStart() + DAY).sort((a, b) => S.cards[a].due - S.cards[b].due);
   const dueNow = () => dueList().filter(id => S.cards[id].due <= Date.now());
@@ -2830,7 +3023,7 @@ const Learn = (() => {
   const hl = (s, w) => { const i = s.indexOf(w); return i < 0 ? esc(s) : esc(s.slice(0, i)) + '<b class="key">' + esc(w) + '</b>' + esc(s.slice(i + w.length)); };
   let curId = null;
   function cardFace(c) {
-    const tag = c.src === 'course' ? `Bài ${c.ui + 1} · ${COURSE[c.ui].lv}` : c.src === 'furn' ? 'Đồ trong khách sạn' : 'Đi chợ';
+    const tag = c.src === 'course' ? `Bài ${c.ui + 1} · ${COURSE[c.ui].lv}` : c.src === 'furn' ? 'Đồ trong khách sạn' : c.src === 'halong' ? 'Cảnh Hạ Long' : 'Đi chợ';
     return `<div class="flip" id="flip"><div class="in">
       <div class="face f"><span class="lv">${tag}</span><button type="button" class="spk" data-say="1" aria-label="Nghe">🔊</button><div class="hz" lang="zh-CN">${esc(c.zh)}</div><span class="tap">Nhớ nghĩa rồi chạm để lật thẻ</span></div>
       <div class="face b"><button type="button" class="spk" data-say="1" aria-label="Nghe">🔊</button><div class="hz" lang="zh-CN" style="font-size:34px">${esc(c.zh)}</div><div class="py">${esc(c.py)}</div><div class="vi">${esc(c.vi)}</div>
@@ -2976,9 +3169,9 @@ function renderMe() {
     <div class="card setlist"><label class="toggle"><span>🎵 Nhạc nền chill (lo-fi + đàn tranh)</span><input type="checkbox" id="musicChk" ${S.music ? 'checked' : ''}></label>
       <label class="toggle"><span>🔋 Chế độ mượt cho máy yếu (30 khung hình/giây, ít người xe hơn)</span><input type="checkbox" id="lowChk" ${Scene.low ? 'checked' : ''}></label>
       <button type="button" class="btn ghost" id="tutBtn">📖 Xem lại hướng dẫn chơi</button></div>
-    <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button><button type="button" class="btn ghost" id="meBoss">⚔️ Thử thách đánh boss</button></div>
+    <div class="row-btns"><button type="button" class="btn ghost" id="shareBtn">📤 Khoe khách sạn</button></div>
     ${EMBED ? '' : '<a class="btn ghost" href="../">🏠 Trang giới thiệu Bảo Khựa</a>'}`;
-  $('shareBtn').onclick = share; if ($('meBoss')) $('meBoss').onclick = openChallenge;
+  $('shareBtn').onclick = share;
   $('lowChk').onchange = e => Scene.setLow(e.target.checked);
   $('musicChk').onchange = e => { Snd.setMusic(e.target.checked); save(); toast(e.target.checked ? '🎵 Đã bật nhạc nền' : 'Đã tắt nhạc nền'); };
   $('tutBtn').onclick = () => { switchTab('build'); Tut.start(); };
@@ -2988,8 +3181,20 @@ async function share() {
   try { if (navigator.share) { await navigator.share({ title: 'Khách sạn Bảo Khựa 阿宝', text, url: GAME_URL }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
   try { await navigator.clipboard.writeText(text); toast('Đã copy – dán vào Zalo/Facebook nhé'); } catch (e) { toast(GAME_URL); }
 }
+function openDrawer() { const d = $('drawer'); if (d.hidden) { d.hidden = false; } document.body.classList.add('dr-on'); }
+function closeDrawer() { $('drawer').hidden = true; document.body.classList.remove('dr-on'); document.querySelectorAll('.dk-btn[data-tab]').forEach(b => b.classList.remove('on')); Snd.play('ui'); }
+function toggleFull() {
+  const d = document, el = d.documentElement;
+  if (d.fullscreenElement || d.webkitFullscreenElement) { try { (d.exitFullscreen || d.webkitExitFullscreen).call(d); } catch (e) {} return; }
+  const rq = el.requestFullscreen || el.webkitRequestFullscreen;
+  const tip = () => toast('📲 iPhone: bấm Chia sẻ → "Thêm vào MH chính" để chơi toàn màn hình như app');
+  if (!rq) return tip();
+  try { const pr = rq.call(el, { navigationUI: 'hide' }); if (pr && pr.catch) pr.catch(tip); } catch (e) { tip(); }
+}
+function musicUi() { const b = $('musicBtn'); if (b) b.classList.toggle('off', !S.music || S.muted); }
 function switchTab(t) {
-  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  openDrawer();
+  document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'tab-' + t));
   if (t === 'review') renderReview(); if (t === 'me') renderMe(); if (t === 'build') renderBuild();
   Snd.play('ui');
@@ -3029,9 +3234,11 @@ function init() {
     else { S.clock = 'real'; toast('🕐 Thời gian thật theo đồng hồ của bạn'); }
     save(); Snd.play('ui');
   };
-  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  $('drClose').onclick = () => closeDrawer();
+  $('fsBtn').onclick = toggleFull; if (EMBED) $('fsBtn').hidden = true;
+  $('musicBtn').onclick = () => { Snd.unlock(); Snd.setMusic(!S.music); save(); musicUi(); toast(S.music ? '🎧 Nhạc lofi chill: bật' : 'Đã tắt nhạc nền'); }; musicUi();
   $('insideBtn').onclick = () => { Snd.unlock(); Snd.play('ui'); Inside.show(); };
-  $('challengeBtn').onclick = () => { Snd.unlock(); Snd.play('ui'); openChallenge(); };
   $('inBack').onclick = () => Inside.close();
   $('evtClose').onclick = () => { if (S.ev.pend && S.ev.pend.fid && FURNI[S.ev.pend.fid]) { S.coins += FURNI[S.ev.pend.fid].price; toast(`Đã quay về · hoàn ${FURNI[S.ev.pend.fid].price} 🪙`); } S.ev.pend = null; save(); Ev.close(); };
   $('insideSub').textContent = zoneBadge();

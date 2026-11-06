@@ -2,7 +2,7 @@
    1) Hướng dẫn người mới đi trọn các bước (có bước mua 桌子 và bước "bên trong khách sạn")
    2) Mua cái bàn → sảnh 3D mở, món mới hiện ra, thẻ từ f-table vào Bộ thẻ
    3) Sự kiện khách cần đồ gấp → bản đồ đi chợ (game.html?ev=errand) → mua đúng món, bê về → cộng xu
-   4) Thử thách đánh boss HSK0 (game.html?ev=boss) → thắng → về khách sạn nhận thưởng
+   4) Sự kiện "Cua Thanh Điệu lạc vào khách sạn" (game.html?ev=boss) → thắng → về khách sạn nhận thưởng; không có nút tự chọn đánh boss
    Không lỗi console, không gọi máy chủ ngoài (trừ phông Google đã có). Cần máy chủ tĩnh 127.0.0.1:8765 (hoặc BASE=...). */
 const BASE = process.env.BASE || 'http://127.0.0.1:8765';
 const { chromium } = require('playwright');
@@ -54,7 +54,10 @@ const path = require('path'), OUT = process.argv[2] || path.join(__dirname, 'out
   if (t3.evt || t3.coins <= c0) bad.push('đi chợ chưa xong / chưa cộng xu: ' + JSON.stringify(t3) + ' trước ' + c0);
   await p.evaluate(() => { document.getElementById('ov').classList.remove('on'); });
   // 4) thử thách đánh boss HSK0
-  await click('#challengeBtn'); await p.waitForTimeout(400); await click('[data-boss="0"]'); await p.waitForTimeout(4500);
+  // boss chỉ đến bằng sự kiện (không còn nút tự chọn đánh): bày sự kiện "quái lạc vào khách sạn" rồi bấm thanh sự kiện
+  if (await p.evaluate(() => !!document.getElementById('challengeBtn'))) bad.push('vẫn còn nút tự chọn đánh boss');
+  await p.evaluate(() => { __hotel.S.ev.need = null; __hotel.S.ev.offer = null; __hotel.S.ev.bossDue = 0; __hotel.Ev.fire('boss'); }); await p.waitForTimeout(400);
+  await click('#evtBanner .go'); await p.waitForTimeout(4500);
   const fb = p.frames().find(f => f.url().includes('ev=boss'));
   if (!fb) bad.push('không mở được trận thử thách');
   else {

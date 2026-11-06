@@ -24,6 +24,7 @@ Cập nhật: 05/11/2026 · Người soạn: Xưởng Game & Web (Claude) · Ch�
   - **Sự kiện:** hết hàng hoặc khách cần đồ gấp thì Ā Bǎo ra chợ (bản đồ phố của game Đánh Boss, `game.html?ev=errand`); Thử thách đánh boss theo cấp HSK (`game.html?ev=boss`). Nhân vật giữ nguyên tranh vẽ của game Đánh Boss.
   - Sao = cấp HSK (1★ HSK0 → 5★ HSK4). Giáo trình 6 bài, khách nói câu có từ của bài đang học; ôn thẻ kiểu Anki, nhắc ôn, cài như app.
 - Boss HSK0/HSK1 không còn là lễ tân: thay bằng quái **Cua Thanh Điệu** và **Vali Khổng Lồ**; tranh lễ tân cũ thành nhân viên thuê (người tốt) trong khách sạn.
+- **Bản 6.1 (06/11 khuya, theo góp ý của Bảo trước khi đăng):** chơi toàn màn hình, các nút mua/chơi nằm quanh viền không che cảnh; cảnh Hạ Long đẹp hơn (đảo đá vôi nhiều lớp, cầu Bãi Cháy, cáp treo, hòn Gà Chọi, thuyền buồm, hải âu); khách sạn vàng Minion viền xanh denim, mái hiên, hoa ban công; boss **chỉ đến bằng sự kiện**; thêm sự kiện đoàn khách, khách VIP, mưa giông, lễ hội Carnaval, hướng dẫn viên đố từ; nhạc lofi chậm + tiếng sóng; sảnh 3D tông Minion, cửa sổ nhìn ra cầu Bãi Cháy và vòng quay. Tiếng Trung mới do Claude tự rà 2 lần, không qua Gemini nữa.
 - Kế hoạch: `docs/khachsan/KE_HOACH_CHUYEN_MINH.md` (mục 16, bản 2.0). Cách cải tiến: `docs/khachsan/KAIZEN.md`.
 - `khachsan.html` v5 và `game.html` vẫn chạy trên baokhua.com cho đến khi Bảo gõ "duyệt đăng" bản hợp nhất.
 

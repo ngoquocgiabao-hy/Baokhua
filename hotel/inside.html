@@ -115,11 +115,11 @@ floor.rotation.x = -Math.PI / 2; floor.position.set(ROOM.w / 2, 0, ROOM.d / 2); 
 room.add(rb(ROOM.w + .4, .34, ROOM.d + .4, '#c98f5e', ROOM.w / 2, -.18, ROOM.d / 2, .12));
 room.add(rb(ROOM.w + .6, .2, ROOM.d + .6, '#a8714a', ROOM.w / 2, -.4, ROOM.d / 2, .08));
 const WALL_H = 3.2;
-room.add(rb(ROOM.w, WALL_H, .24, '#fff1de', ROOM.w / 2, WALL_H / 2, -.12, .05));
-room.add(rb(.24, WALL_H, ROOM.d, '#ffe7d1', -.12, WALL_H / 2, ROOM.d / 2, .05));
-room.add(rb(ROOM.w, 1.0, .1, '#8fd8c6', ROOM.w / 2, .5, .02, .03)); room.add(rb(.1, 1.0, ROOM.d, '#8fd8c6', .02, .5, ROOM.d / 2, .03));   // ốp chân tường xanh bạc hà
+room.add(rb(ROOM.w, WALL_H, .24, '#fff2b0', ROOM.w / 2, WALL_H / 2, -.12, .05));
+room.add(rb(.24, WALL_H, ROOM.d, '#ffe98f', -.12, WALL_H / 2, ROOM.d / 2, .05));
+room.add(rb(ROOM.w, 1.0, .1, '#3f78c6', ROOM.w / 2, .5, .02, .03)); room.add(rb(.1, 1.0, ROOM.d, '#3f78c6', .02, .5, ROOM.d / 2, .03));   // ốp chân tường xanh bạc hà
 room.add(rb(ROOM.w, .1, .16, '#fffaf0', ROOM.w / 2, 1.02, .06, .04)); room.add(rb(.16, .1, ROOM.d, '#fffaf0', .06, 1.02, ROOM.d / 2, .04));
-room.add(rb(ROOM.w, .16, .22, '#f6c98e', ROOM.w / 2, WALL_H - .08, .05, .06)); room.add(rb(.22, .16, ROOM.d, '#f6c98e', .05, WALL_H - .08, ROOM.d / 2, .06));
+room.add(rb(ROOM.w, .16, .22, '#2c66b0', ROOM.w / 2, WALL_H - .08, .05, .06)); room.add(rb(.22, .16, ROOM.d, '#2c66b0', .05, WALL_H - .08, ROOM.d / 2, .06));
 // cửa sổ nhìn ra vịnh: vẽ lại liên tục (mây trôi, sóng, thuyền nhấp nhô)
 const bay = canvasTex(256, 160, () => {});
 function drawBay(t) {
@@ -134,6 +134,12 @@ function drawBay(t) {
   const bx = ((t * 7) % (w + 60)) - 30, by = sea + 22 + Math.sin(t * 2.2) * 2;
   g.fillStyle = '#9b5a34'; g.beginPath(); g.moveTo(bx - 16, by); g.lineTo(bx + 16, by); g.lineTo(bx + 11, by + 7); g.lineTo(bx - 11, by + 7); g.fill();
   g.fillStyle = '#e8593c'; g.beginPath(); g.moveTo(bx - 2, by); g.lineTo(bx - 2, by - 24); g.quadraticCurveTo(bx + 12, by - 14, bx + 10, by - 2); g.fill();
+  // cầu Bãi Cháy (dây văng) + vòng quay Mặt Trời trên đồi: cửa sổ nhìn ra đúng Hạ Long
+  g.strokeStyle = '#f4f7fb'; g.lineWidth = 2; g.beginPath(); g.moveTo(-4, sea - 9); g.quadraticCurveTo(70, sea - 17, 150, sea - 9); g.stroke();
+  for (const px of [45, 105]) { g.fillStyle = '#eef2f7'; g.fillRect(px - 1.5, sea - 46, 3, 38); g.strokeStyle = 'rgba(240,244,250,.9)'; g.lineWidth = .6; for (let k = 1; k <= 6; k++) for (const sd of [-1, 1]) { g.beginPath(); g.moveTo(px, sea - 44 + k * 3); g.lineTo(px + sd * k * 5, sea - 14); g.stroke(); } }
+  const wx = 214, wy = sea - 40, wr = 24; g.strokeStyle = '#ffffff'; g.lineWidth = 1.6; g.beginPath(); g.arc(wx, wy, wr, 0, 7); g.stroke(); g.lineWidth = .7;
+  for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283 + t * .2; g.beginPath(); g.moveTo(wx, wy); g.lineTo(wx + Math.cos(a) * wr, wy + Math.sin(a) * wr); g.stroke(); g.fillStyle = ['#FFD91F', '#2c66b0', '#ff7fa0'][i % 3]; g.fillRect(wx + Math.cos(a) * wr - 2, wy + Math.sin(a) * wr - 2, 4, 4); }
+  g.strokeStyle = '#d9dee6'; g.lineWidth = 2; g.beginPath(); g.moveTo(wx - 10, sea + 1); g.lineTo(wx, wy); g.lineTo(wx + 10, sea + 1); g.stroke();
   bay.needsUpdate = true;
 }
 drawBay(0);
@@ -142,7 +148,7 @@ for (const x of [2.3, 4.55]) {
   put(room, new THREE.Mesh(new THREE.PlaneGeometry(1.86, 1.72), winMat)).position.set(x, 1.95, .02);
   const fr = new THREE.Group(); fr.position.set(x, 1.95, .05); room.add(fr);
   fr.add(rb(2.06, .14, .14, '#ffffff', 0, .93, 0, .05)); fr.add(rb(2.06, .16, .2, '#ffffff', 0, -.93, .02, .05)); fr.add(rb(.14, 2.0, .14, '#ffffff', -.98, 0, 0, .05)); fr.add(rb(.14, 2.0, .14, '#ffffff', .98, 0, 0, .05)); fr.add(rb(.07, 1.8, .08, '#ffffff', 0, 0, 0, .03));
-  for (const s of [-1, 1]) { const cu = rb(.34, 2.2, .12, '#ffb38a', s * 1.18, .05, .08, .06); fr.add(cu); for (let i = 0; i < 3; i++) fr.add(rb(.06, 2.1, .14, '#ff9f7a', s * 1.18 + (i - 1) * .1, .05, .1, .03)); }
+  for (const s of [-1, 1]) { const cu = rb(.34, 2.2, .12, '#2c66b0', s * 1.18, .05, .08, .06); fr.add(cu); for (let i = 0; i < 3; i++) fr.add(rb(.06, 2.1, .14, '#1f4e8c', s * 1.18 + (i - 1) * .1, .05, .1, .03)); }
   put(fr, cyl(.035, .035, 2.9, '#c98f5e', 0, 1.1, .08, 8)).rotation.z = Math.PI / 2;
 }
 // tia nắng chiếu xiên qua cửa sổ + bụi sáng
@@ -183,10 +189,10 @@ art.add(rb(1.4, 1.05, .06, '#c98f5e', 0, 0, 0, .04)); put(art, new THREE.Mesh(ne
 /* ---------- đồ đạc ---------- */
 const desk = new THREE.Group(); desk.position.set(7.4, 0, 1.75); room.add(desk);
 const deskBody = new THREE.Group(); desk.add(deskBody);   // quầy (mua 前台) · máy tính, chuông, cây nhỏ, mèo thần tài là món riêng
-deskBody.add(ol(rb(3.3, 1.0, .82, '#ffb38a', 0, .5, 0, .14)));
+deskBody.add(ol(rb(3.3, 1.0, .82, '#FFD91F', 0, .5, 0, .14)));
 deskBody.add(ol(rb(3.5, .12, 1.0, '#fff7e8', 0, 1.06, 0, .05)));
-deskBody.add(rb(3.0, .62, .04, '#ff9f7a', 0, .5, .42, .03));
-for (let i = 0; i < 5; i++) deskBody.add(rb(.05, .62, .05, '#ffd2b5', -1.2 + i * .6, .5, .44, .02));
+deskBody.add(rb(3.0, .62, .04, '#1f4e8c', 0, .5, .42, .03));
+for (let i = 0; i < 5; i++) deskBody.add(rb(.05, .62, .05, '#ffe97a', -1.2 + i * .6, .5, .44, .02));
 const plate = new THREE.Mesh(new THREE.PlaneGeometry(1.1, .28), new THREE.MeshBasicMaterial({ map: canvasTex(256, 64, (g, w, h) => { g.fillStyle = '#FFD91F'; g.beginPath(); g.roundRect(2, 2, w - 4, h - 4, 18); g.fill(); g.strokeStyle = '#3a2c3f'; g.lineWidth = 4; g.stroke(); g.fillStyle = '#3a2c3f'; g.textAlign = 'center'; g.font = 'bold 30px ' + ZH; g.fillText('前台 qiántái · Lễ tân', w / 2, 43); }), transparent: true }));
 plate.position.set(0, .66, .47); deskBody.add(plate);
 const bell = new THREE.Group(); bell.position.set(-.8, 1.12, .2); desk.add(bell);
@@ -197,13 +203,13 @@ deskBody.add(rb(.4, .05, .3, '#e8593c', -.1, 1.14, .1, .02)); deskBody.add(rb(.3
 const deskPlant = new THREE.Group(); deskPlant.position.set(-1.35, 1.12, -.1); desk.add(deskPlant);
 deskPlant.add(cyl(.12, .09, .2, '#ffffff', 0, .1, 0, 14)); for (let i = 0; i < 5; i++) { const a = i / 5 * 6.28; deskPlant.add(sph(.09, '#5fc27a', Math.cos(a) * .08, .3 + (i % 2) * .05, Math.sin(a) * .08, 10)); }
 // sofa, bàn trà, thảm
-const rugTex = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#ff9fb4'; g.beginPath(); g.arc(128, 128, 126, 0, 7); g.fill(); g.strokeStyle = '#fff2c4'; g.lineWidth = 12; g.beginPath(); g.arc(128, 128, 104, 0, 7); g.stroke(); g.lineWidth = 5; g.beginPath(); g.arc(128, 128, 76, 0, 7); g.stroke(); g.fillStyle = '#fff2c4'; for (let i = 0; i < 12; i++) { const a = i / 12 * 6.28; g.beginPath(); g.arc(128 + Math.cos(a) * 90, 128 + Math.sin(a) * 90, 6, 0, 7); g.fill(); } });
+const rugTex = canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#3f78c6'; g.beginPath(); g.arc(128, 128, 126, 0, 7); g.fill(); g.strokeStyle = '#fff2c4'; g.lineWidth = 12; g.beginPath(); g.arc(128, 128, 104, 0, 7); g.stroke(); g.lineWidth = 5; g.beginPath(); g.arc(128, 128, 76, 0, 7); g.stroke(); g.fillStyle = '#fff2c4'; for (let i = 0; i < 12; i++) { const a = i / 12 * 6.28; g.beginPath(); g.arc(128 + Math.cos(a) * 90, 128 + Math.sin(a) * 90, 6, 0, 7); g.fill(); } });
 const rug = new THREE.Mesh(new THREE.CircleGeometry(1.45, 40), new THREE.MeshToonMaterial({ map: rugTex, transparent: true, gradientMap: grad }));
 rug.rotation.x = -Math.PI / 2; rug.position.set(2.2, .012, 5.7); rug.receiveShadow = true; room.add(rug);
 const sofa = new THREE.Group(); sofa.position.set(.95, 0, 5.7); room.add(sofa);
-sofa.add(ol(rb(.95, .46, 2.3, '#7fd6c2', 0, .27, 0, .16))); sofa.add(ol(rb(.36, .86, 2.3, '#6cc8b3', -.32, .55, 0, .16)));
-sofa.add(ol(rb(.95, .66, .3, '#6cc8b3', 0, .36, 1.18, .14))); sofa.add(ol(rb(.95, .66, .3, '#6cc8b3', 0, .36, -1.18, .14)));
-sofa.add(rb(.66, .18, .98, '#a5e8d8', .08, .56, .5, .08)); sofa.add(rb(.66, .18, .98, '#a5e8d8', .08, .56, -.5, .08));
+sofa.add(ol(rb(.95, .46, 2.3, '#2c66b0', 0, .27, 0, .16))); sofa.add(ol(rb(.36, .86, 2.3, '#1f4e8c', -.32, .55, 0, .16)));
+sofa.add(ol(rb(.95, .66, .3, '#1f4e8c', 0, .36, 1.18, .14))); sofa.add(ol(rb(.95, .66, .3, '#1f4e8c', 0, .36, -1.18, .14)));
+sofa.add(rb(.66, .18, .98, '#5e95e0', .08, .56, .5, .08)); sofa.add(rb(.66, .18, .98, '#5e95e0', .08, .56, -.5, .08));
 sofa.add(ol(rb(.16, .44, .44, '#FFD91F', -.08, .82, .5, .12))); sofa.add(ol(rb(.16, .44, .44, '#ff9fb4', -.08, .82, -.5, .12)));
 for (const z of [-1.0, 1.0]) for (const x of [-.35, .35]) sofa.add(cyl(.04, .03, .08, '#c98f5e', x, .04, z, 8));
 const table = new THREE.Group(); table.position.set(2.5, 0, 5.7); room.add(table);
@@ -238,7 +244,7 @@ for (const sx of [-.47, .47]) cart.add(cyl(.032, .032, 1.5, '#d4a72c', sx, .95, 
 cart.add(ol(rb(.56, .62, .34, '#e8593c', -.18, .55, 0, .07))); cart.add(ol(rb(.42, .44, .3, '#8fb8ff', .25, .46, .04, .07))); cart.add(ol(rb(.36, .32, .26, '#FFD91F', .2, .99, 0, .07)));
 for (const [x, z] of [[-.42, -.26], [.42, -.26], [-.42, .26], [.42, .26]]) cart.add(sph(.07, '#3a2c3f', x, .08, z, 10));
 // thảm cửa
-room.add(rb(1.5, .03, 1.0, '#7fd6c2', 9.2, .015, 7.35, .015)); room.add(rb(1.2, .035, .7, '#a5e8d8', 9.2, .02, 7.35, .015));
+room.add(rb(1.5, .03, 1.0, '#1f4e8c', 9.2, .015, 7.35, .015)); room.add(rb(1.2, .035, .7, '#FFD91F', 9.2, .02, 7.35, .015));
 
 /* ---------- đồ mở khoá theo sao (lên sao → đồ mới hiện ra) ---------- */
 const UNLOCK = {};
@@ -361,8 +367,8 @@ function stepFx(dt) {
    ===================================================================== */
 const chairs = new THREE.Group(); room.add(chairs);
 for (const z of [5.0, 6.4]) { const c = new THREE.Group(); c.position.set(3.75, 0, z); c.rotation.y = -Math.PI / 2; chairs.add(c);
-  c.add(ol(rb(.74, .26, .7, '#ffb38a', 0, .42, 0, .1))); c.add(ol(rb(.74, .62, .18, '#ff9f7a', 0, .72, -.3, .08)));
-  for (const s of [-1, 1]) c.add(ol(rb(.14, .34, .66, '#ff9f7a', s * .36, .6, 0, .06)));
+  c.add(ol(rb(.74, .26, .7, '#FFD91F', 0, .42, 0, .1))); c.add(ol(rb(.74, .62, .18, '#f2c200', 0, .72, -.3, .08)));
+  for (const s of [-1, 1]) c.add(ol(rb(.14, .34, .66, '#2c66b0', s * .36, .6, 0, .06)));
   c.add(rb(.56, .1, .5, '#fff3c4', 0, .58, .04, .05));
   for (const [x, zz] of [[-.28, -.26], [.28, -.26], [-.28, .26], [.28, .26]]) c.add(cyl(.035, .03, .3, '#c98f5e', x, .15, zz, 8)); }
 const vase = new THREE.Group(); vase.position.set(-.28, .55, .26); table.add(vase);
