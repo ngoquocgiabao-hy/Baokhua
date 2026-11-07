@@ -55,3 +55,10 @@ Bản này làm thành phố sống động hơn, sửa cầu, nâng mặt tiề
 - Đường dẫn sâu: `hotel/#the` mở ô nhập mã; `hotel/#market`, `#park`, `#wheel`, `#bridge`… bay tới khu đó.
 - `sw.js`: lấy mạng trước (cập nhật là người chơi nhận ngay), lưu sẵn tệp chính để chơi khi mạng yếu, nhắc ôn thẻ.
 - Chuyển trang mượt giữa trang chủ, game và trang thẻ (View Transitions).
+
+## 9. Bản 8.2 (07/11/2026) – nối mượt với trang chủ
+- **Màn chào** con dấu 宝 + "下龙湾 Xiàlóng Wān · vịnh Hạ Long · Đang dựng phố Bãi Cháy…" che lúc thế giới 3D đang dựng, tắt sau 2 khung hình đầu (chậm nhất 8 giây, hoặc ngay khi máy không mở được 3D). Không chặn bấm (`pointer-events:none`).
+- Trình duyệt có View Transitions: con dấu 宝 ở thanh trên trang chủ bay xuống giữa màn chào (`bk-seal`); thẻ/ảnh game vừa bấm ở trang chủ phóng to thành màn game (`bk-game` = `#sceneWrap`).
+- **Thẻ "Bạn vừa bay tới"** khi mở đường dẫn sâu `hotel/#market`, `#bridge`…: chữ Hán + pinyin + tên khu, hiện 4 giây.
+- **Nút 🏠** về trang chủ đầu cột nút bên phải; tự ẩn khi game chạy trong khung điện thoại ở trang chủ.
+- `sw.js`: đổi bộ nhớ đệm sang `bk-hotel-v8-2`.

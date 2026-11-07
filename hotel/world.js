@@ -870,6 +870,7 @@ function glints(dt, S) {
     if (s.userData.t <= 0) { s.userData.t = 1.4 + Math.random() * 2; s.userData.a = 0; s.position.set(view.at.x + rnd(-1, 1) * S * 1.6, -.2, Math.max(30, view.at.z + rnd(4, 24) + S * .4)); const k = S / 15; s.scale.setScalar((.5 + Math.random() * .5) * Math.max(1, k)); }
     s.userData.a += dt; s.material.opacity = Math.sin(Math.min(1, s.userData.a / 1.2) * Math.PI) * .85 * (1 - dark / .3); }
 }
+let filmNow = 0;
 let rdt = .016, lastDN = 0, lastF = 0, raf = 0, nextFw = 0, pedT = 0, carT = 0, boatT = 0, perfAcc = 0, perfN = 0, perfBad = 0, fpsCap = 60, sheetOn = false, roomT = 0;
 function frame(now) {
   raf = 0; if (!active || document.hidden) return;
@@ -1034,6 +1035,15 @@ const World = {
     } catch (e) { url = null; }
     buildHotel(ST); view.at.copy(at0); view.S = S0; fly = fly0; applyCam(); shellOpacity(-1); dayNight(); renderer.render(scene, cam);
     return url;
+  },
+  /** quay phim (dựng video / chuỗi khung cho trang chủ): dừng vòng lặp thật, tự bước từng khung với máy quay đặt sẵn */
+  _film(on) { if (on) { active = false; if (raf) { cancelAnimationFrame(raf); raf = 0; } filmNow = performance.now(); } else World.setActive(true); },
+  _frame(dt, at, S, o = {}) {
+    fly = null; vel.set(0, 0, 0); if (at) view.at.set(at[0], at[1] || 0, at[2]); if (S) view.S = S;
+    if (o.hour != null) hooks.hour = () => o.hour;
+    filmNow += dt * 1000; rdt = dt; if (o.dn) lastDN = 0;
+    update(dt, filmNow); if (o.view) { if (o.view.at) view.at.set(...o.view.at); if (o.view.S) view.S = o.view.S; applyCam(); shellOpacity(-1); }
+    if (!o.skip) renderer.render(scene, cam);
   },
   get _scene() { return scene; }, say, debug: () => ({ S: view.S, at: view.at.toArray().map(v => +v.toFixed(2)), mode, calls: renderer.info.render.calls, tris: renderer.info.render.triangles, peds: peds.length, cars: cars.length, boats: boats.length, walkers: walkers.length, fps: perfN })
 };
