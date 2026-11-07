@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#000}#w{position:fixed;inset:0}#c{width:100%;height:100%;display:block}.w-ov{display:none!important}</style></head>
+<body><div id="w"><canvas id="c"></canvas></div>
+<script type="importmap">{ "imports": { "three": "../../hotel/lib/three.module.min.js" } }</script>
+<script type="module">
+import '../../hotel/world.js';
+const W = window.BKWorld;
+const P = new URLSearchParams(location.search), star = +(P.get('star') || 5);
+W.init({ canvas: document.getElementById('c'), wrap: document.getElementById('w'), hooks: { hour: () => 17 } });
+W.queue = [{ here: true, wait: 0, pat: 60, bub: '', bagC: '#ff9a3d' }, { here: true, wait: 0, pat: 60, bub: '', bagC: '#3a86ff' }, { here: true, wait: 0, pat: 60, bub: '', bagC: '#e63946' }];
+W.setState({ star, floors: Math.max(1, Math.min(5, star)), own: { floor: 5, palm: 1, umbrella: 1, sign: star >= 2 ? 1 : 0, lantern: star >= 2 ? 1 : 0, lights: star >= 3 ? 1 : 0, lift: star >= 3 ? 1 : 0, pool: star >= 4 ? 1 : 0, garden: star >= 4 ? 1 : 0, staff: 1, wheel: 1, restaurant: 1, boat: star >= 4 ? 1 : 0, fireworks: 1 }, furn: ['table','flower','chair','rug','sofa','desk','computer','bell'], staff: 1, open: true });
+W.setRooms([{ idx: 3, occ: true }, { idx: 4, occ: true }, { idx: 7, occ: true }, { idx: 9, occ: true }, { idx: 12, occ: true }]);
+W._film(true);
+window.W = W; window.__ready = true;
+</script></body></html>
