@@ -147,9 +147,9 @@ const City: React.FC = () => {
       <AbsoluteFill style={{ opacity: life(f, 0, 82, 10), background: 'linear-gradient(180deg,rgba(6,16,32,.92) 0%,rgba(6,16,32,.78) 30%,rgba(6,16,32,0) 52%)' }} />
       <Bug />
       <div style={{ position: 'absolute', left: 70, right: 70, top: 230, fontFamily: VN, color: '#fff', opacity: life(f, 4, 74, 12), textShadow: '0 4px 24px rgba(0,0,0,.5)' }}>
-        <div style={{ fontWeight: 800, fontSize: 30, letterSpacing: 6, color: SUN }}>GAME 3D · CHƠI TRÊN WEB</div>
-        <div style={{ fontWeight: 800, fontSize: 84, lineHeight: 1.08, marginTop: 14, translate: `0px ${k(f, 4, 26, 40, 0)}px` }}>Mình dựng cả phố Bãi Cháy</div>
-        <div style={{ fontFamily: PF, fontWeight: 800, fontSize: 84, lineHeight: 1.08, color: SUN, translate: `0px ${k(f, 10, 32, 40, 0)}px`, opacity: k(f, 10, 26) }}>thành game học tiếng Trung.</div>
+        <div style={{ fontWeight: 800, fontSize: 30, letterSpacing: 6, color: SUN }}>HỌC TIẾNG TRUNG · CHƠI TRÊN WEB</div>
+        <div style={{ fontWeight: 800, fontSize: 88, lineHeight: 1.08, marginTop: 14, translate: `0px ${k(f, 4, 26, 40, 0)}px` }}>Mình dựng cả<br />phố Bãi Cháy</div>
+        <div style={{ fontFamily: PF, fontWeight: 800, fontSize: 92, lineHeight: 1.1, color: SUN, translate: `0px ${k(f, 10, 32, 40, 0)}px`, opacity: k(f, 10, 26) }}>thành game 3D.</div>
       </div>
       <div style={{ position: 'absolute', left: 90, right: 90, top: 1200, height: 372, borderRadius: 34, background: 'rgba(8,16,30,.66)', border: '2px solid rgba(255,217,31,.45)', boxShadow: '0 40px 80px -30px rgba(0,0,0,.8)', opacity: k(f, 50, 60), scale: interpolate(f, [50, 62], [0.92, 1], cl) }} />
       {STOPS.map((s, i) => {
