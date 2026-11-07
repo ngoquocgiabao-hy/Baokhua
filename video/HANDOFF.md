@@ -114,6 +114,14 @@ Nguồn: giáo trình 6 bài HSK0 → HSK4 trong game mới (mảng `COURSE` tro
 Quy trình mỗi tập (khoảng 20 phút người + 10 phút máy): viết `giaotrinh/gtNN.json` → Gemini kiểm (`tools/gemini_check.py`) → `snapshot` soát bố cục → dựng → Bảo lồng tiếng theo `out/gtNN/vo.md` trong CapCut (giọng thật của thầy, không dùng giọng máy cho bài phát âm: giọng máy Gemini đã thử 06/11, đọc sai thanh chữ 麻) → đăng.
 Nâng cấp hình sau này: cảnh mở đầu bằng video AI (Google Flow / Veo, Seedance) khi Bảo cấp quyền; phần chữ, biểu đồ, quân bài vẫn dựng bằng HyperFrames để đúng nội dung.
 
+### Lồng giọng thật và cân âm lượng (miễn phí)
+`python3 tools/long_tieng.py --video out/X_master.mp4 --voice <ghi âm> [--split --marks 0,4.5,14] [--music <bài của Bảo>] --out out/X_long_tieng.mp4`
+- Làm sạch giọng (cắt ù dưới 85 Hz, giảm ồn, bớt chói "s", nén nhẹ), đưa về −16 LUFS, cân đều từng câu (±8 dB).
+- `--split`: tách câu theo khoảng nghỉ ≥ 0,55 giây, đặt câu thứ n vào mốc thứ n. `--measure`: chỉ in độ dài từng câu.
+- Nhạc nền (của video, hoặc `--music` bài Bảo tự đàn hát, tự cắt vừa và mờ đầu cuối) để ở −20 LUFS, tự hạ 10 dB khi có giọng (`--duck`), lên lại sau 0,4 giây.
+- Cả bài về −14 LUFS, đỉnh dưới −1,5 dBTP. Xuất thêm `_giong.wav` và `_nhac.wav` để kéo vào CapCut, cả 2 để 100%.
+- Đã thử 07/11 bằng giọng Bảo cắt từ raw, hạ còn −30 LUFS như ghi điện thoại: ra −14,3 LUFS, đỉnh −1,8 dBTP, nhạc thấp hơn giọng khoảng 9–10 dB khi nói.
+
 ## 5. Luật bắt buộc
 - Repo công khai: ảnh cá nhân, kịch bản đời tư, tập dữ liệu F1/F2 để ngoài git (`.gitignore` đã có sẵn). Bản sao để trên Drive.
 - Ảnh đưa vào video phải che: số CCCD hoặc định danh, ngày sinh, số hiệu chứng chỉ, số thẻ. Làm mờ màn hình tài liệu nội bộ.
@@ -125,7 +133,7 @@ Nâng cấp hình sau này: cảnh mở đầu bằng video AI (Google Flow / Ve
 - Không né cơ chế chống bot của nền tảng. Video TikTok cũ thì Bảo lưu từ máy hoặc từ ứng dụng rồi gửi lại.
 
 ## 6. Việc còn mở
-1. F9: GT01 v2 đã chốt hình. Lồng tiếng: cần ElevenLabs (gói Starter trở lên để nhân bản giọng từ raw của Bảo, khoá API đặt qua cài đặt môi trường, không dán vào chat). Phần đọc mẫu chữ Hán vẫn dùng giọng thật của Bảo hoặc giọng nhân bản đã kiểm thanh điệu bằng máy đo cao độ. Duyệt giọng xong thì dựng GT02 → GT12 theo bảng mục 4.
+1. Lồng tiếng: Bảo tự ghi âm (07/11 bỏ hẳn ElevenLabs và mọi dịch vụ trả phí). Bảo tải tệp vào Drive `07_TU_LIEU_VIDEO/09_GHI_AM_BAO/01_loi_doc`, nhạc tự sáng tác vào `02_nhac_tu_sang_tac`; hướng dẫn và bảng đọc GT01 ở tài liệu `00_HUONG_DAN_GHI_AM_07-11` cùng thư mục. Dựng theo nguyên tắc "giọng trước, hình theo giọng": đo độ dài từng câu (`tools/long_tieng.py --split --measure`), chỉnh thời lượng các đoạn trong `giaotrinh/gtNN.json` cho khớp, dựng lại, rồi lồng tiếng. Duyệt giọng GT01 xong thì làm GT02 → GT12.
 2. Game mới "Khách sạn Vịnh Ā Bǎo" đang hoàn thiện, chưa đẩy. F9, F10 hiện chỉ kêu gọi học online; khi game được "duyệt đăng" thì thêm thẻ game vào kêu gọi.
 3. F11: Bảo duyệt Bơi 02 và bấm đúp thử MO_TRONG_CAPCUT.command trên Mac. Bơi 01 (F10 comic) Bảo chưa ưng, để ở 03_CAN_LAM_LAI.
 4. Trailer F5: quay lại đoạn game (14–22 giây) bằng game mới, sau khi game được duyệt.

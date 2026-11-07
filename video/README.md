@@ -7,7 +7,7 @@ Máy tự dựng video dọc 9:16 (1080×1920, 30 khung hình/giây) bằng Hype
 | Thư mục | Có gì | Trong git |
 |---|---|---|
 | `assets/fonts/` | Phông viết tay Patrick Hand (OFL) cho F11 | Có |
-| `tools/` | `engine3d.js` (quân bài, tấm ảnh 3D, pháo giấy, vòng sáng), `gemini_check.py` (Gemini kiểm pinyin và nghĩa), `capcut_kit.cjs`, `capcut_cutkit.py` (xuất dự án CapCut để Bảo tự sửa), `capcut_mac.py` (tệp bấm đúp mở dự án trên Mac) | Có |
+| `tools/` | `engine3d.js` (quân bài, tấm ảnh 3D, pháo giấy, vòng sáng), `gemini_check.py` (Gemini kiểm pinyin và nghĩa), `capcut_kit.cjs`, `capcut_cutkit.py` (xuất dự án CapCut để Bảo tự sửa), `capcut_mac.py` (tệp bấm đúp mở dự án trên Mac), `long_tieng.py` (lồng giọng thật, nhạc tự hạ khi nói, cân về −14 LUFS) | Có |
 | `series/` | Khuôn dựng từng thể loại: `giaotrinh3d.mjs` (F9), `comic_reel.mjs` (F10), `nhatky.mjs` (F11), `cauthat.mjs` (F8), `chuthat.mjs` (F2), nhạc `music_bed.py`, `music_series.py` | Có |
 | `giaotrinh/` | Dữ liệu tập F9 lấy từ giáo trình HSK0 → HSK4 của game mới (`gt01.json`…) | Có |
 | `debut/` | Trailer thương hiệu, nhạc, bản 16:9 / 4:5 (`platforms.cjs`) | Có |
