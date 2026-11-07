@@ -1,0 +1,8 @@
+{"fps":30,"size":[1080,1920],"bpm":120,"curve":"s","beats":4,
+ "clips":[
+  {"file":"clips/w01.mp4","flash":"warm","move":"Descend","prompt":"Toàn vịnh Hạ Long → hạ xuống cầu Bãi Cháy, xoay trái nhẹ"},
+  {"file":"clips/w02.mp4","pan":-1,"move":"Truck left","prompt":"Cầu Bãi Cháy → trượt dọc bờ biển tới khách sạn, xoay phải"},
+  {"file":"clips/w03.mp4","move":"Arc left","prompt":"Khách sạn → vòng trái sang chợ đêm"},
+  {"file":"clips/w04.mp4","pan":-1,"move":"Pull-out","prompt":"Chợ đêm → lùi lên đồi Ba Đèo, vòng quay Mặt Trời lên đèn"},
+  {"file":"clips/w05.mp4","move":"Push-in","prompt":"Vòng quay → đẩy vào khách sạn 5 sao về đêm, đèn rọi trời"}
+ ]}

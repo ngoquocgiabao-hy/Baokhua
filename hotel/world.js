@@ -22,7 +22,7 @@ const S_IN = 5.4, S_STREET = 15, S_BAY = 125;
 
 let renderer, scene, cam, wrap, cv, hooks = {}, low = false, active = true, ready = false;
 const world = new THREE.Group(), staticRoot = new THREE.Group(), dyn = new THREE.Group(), people = new THREE.Group();
-const camDir = new V3(1, .95, 1).normalize();
+const camDir = new V3(1, .95, 1).normalize(), camDir0 = camDir.clone();   // camDir0: hướng gốc (quay phim có thể xoay quanh trục đứng)
 const view = { at: new V3(8, .6, 10.5), S: S_STREET };
 let fly = null, lastUser = -9e9, mode = 'street', dark = 0, hour = 12, T = 0;
 const taps = [];        // { box: Box3 } | { obj } + key
@@ -1042,6 +1042,8 @@ const World = {
     fly = null; vel.set(0, 0, 0); if (at) view.at.set(at[0], at[1] || 0, at[2]); if (S) view.S = S;
     if (o.hour != null) hooks.hour = () => o.hour;
     filmNow += dt * 1000; rdt = dt; if (o.dn) lastDN = 0;
+    camDir.copy(camDir0).applyAxisAngle(new V3(0, 1, 0), o.yaw || 0);   // yaw (radian): xoay máy quanh điểm nhìn – động tác arc trái/phải
+    if (o.tilt) { const h = Math.hypot(camDir.x, camDir.z), el = Math.atan2(camDir.y, h) + o.tilt; camDir.set(camDir.x / h * Math.cos(el), Math.sin(el), camDir.z / h * Math.cos(el)); }
     update(dt, filmNow); if (o.view) { if (o.view.at) view.at.set(...o.view.at); if (o.view.S) view.S = o.view.S; applyCam(); shellOpacity(-1); }
     if (!o.skip) renderer.render(scene, cam);
   },

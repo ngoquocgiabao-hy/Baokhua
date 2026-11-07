@@ -1,0 +1,6 @@
+{"fps":30,"size":[1080,1920],"bpm":120,"curve":"s","beats":4,
+ "clips":[
+  {"file":"clips/swim-a.mp4","curve":"hero","beats":4,"move":"Real · Bảo bơi giữa vịnh"},
+  {"file":"clips/swim-c.mp4","curve":"whip","beats":2,"pan":-1,"move":"Real · núi đá vôi"},
+  {"file":"clips/swim-b.mp4","curve":"s-soft","beats":2,"move":"Real · mặt vịnh"}
+ ]}

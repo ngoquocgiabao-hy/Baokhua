@@ -1,0 +1,6 @@
+{"fps":30,"size":[1080,1920],"bpm":120,"curve":"s","beats":4,
+ "clips":[
+  {"file":"clips/swim-c.mp4","curve":"s-soft","beats":4},
+  {"file":"clips/swim-b.mp4","curve":"s-soft","beats":4,"pan":-1},
+  {"file":"clips/swim-a.mp4","curve":"s-soft","beats":4,"in":0,"out":1.6}
+ ]}
