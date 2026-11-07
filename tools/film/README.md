@@ -11,5 +11,7 @@ Cần: máy chủ tĩnh ở gốc repo cổng 8766, có hỗ trợ Range (GitHub
 Hook quay phim trong `world.js`: `World._film(true)` dừng vòng lặp tự chạy; `World._frame(dt, at, S, { hour, view, skip })` bước 1 khung.
 
 Phim trên trang chủ (`v4/home/city-tour-*`): khung 1920² → cắt
-- 16:9: `crop=1920:1080:0:420,scale=1152:648`, h264 `-g 10` (khoá hình dày để tua theo cuộn mượt) + webm dự phòng;
-- 9:16: `crop=1080:1920:420:0,scale=540:960`, h264 + webm.
+- 16:9: `crop=1920:1080:0:420,scale=1600:900`, h264 `-crf 28 -g 10` (khoá hình dày để tua theo cuộn mượt) + webm VP9 `-crf 41 -g 10` dự phòng (khoảng 7 MB);
+- 9:16: `crop=1080:1920:420:0,scale=810:1440`, h264 `-crf 28` + webm VP9 `-crf 40` (khoảng 3,3 MB).
+- Ảnh chờ: khung đầu, cắt như trên, jpg chất lượng 82.
+(08/11: tăng từ 1152×648 / 540×960 vì trên máy tính và điện thoại màn nét bị mờ.)
