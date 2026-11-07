@@ -20,6 +20,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+SC:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="v4/home/hero-swim-9x16.jpg" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="v4/home/hero-swim-16x9.jpg" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
 <link rel="preload" as="image" href="v4/home/bao-portrait.webp" type="image/webp">
 <script type="speculationrules">{"prefetch":[{"source":"list","urls":["membership.html","hotel/"]}]}</script>
 <script>document.documentElement.classList.add('js')</script>
@@ -222,7 +224,7 @@ h1 .line>span{display:block}
 .sale-pill b{color:var(--sun)}
 .sale-pill__tag{font-family:var(--disp);font-weight:800;font-size:13px;padding:5px 10px;border-radius:999px;background:linear-gradient(90deg,#ff5a3c,var(--amber));color:#fff;animation:salePulse 1.6s var(--ease-io) infinite}
 .sale-left{font-variant-numeric:tabular-nums;white-space:nowrap}
-@keyframes salePulse{50%{transform:scale(1.08);box-shadow:0 0 0 6px rgba(255,90,60,.2)}}
+@keyframes salePulse{50%{transform:scale(1.08)}}
 @media (prefers-reduced-motion:reduce){.sale-pill__tag{animation:none}}
 .chip{font-size:14px;font-weight:500;padding:9px 16px;border-radius:999px;border:1.5px solid var(--line)}
 
@@ -471,8 +473,9 @@ section[id]{scroll-margin-top:64px} #pho-3d{scroll-margin-top:0}
 .nav__act{display:flex;align-items:center;gap:10px}
 .nav__play{display:none;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:999px;border:1px solid color-mix(in srgb,currentColor 40%,transparent);font-weight:600;font-size:14px;white-space:nowrap;transition:background .3s,border-color .3s}
 .nav__play:hover{border-color:currentColor;background:color-mix(in srgb,currentColor 10%,transparent)}
-.nav__dot{width:8px;height:8px;border-radius:50%;background:#2fd47a;animation:live 2s var(--ease-io) infinite}
-@keyframes live{0%{box-shadow:0 0 0 0 rgba(47,212,122,.55)}70%,100%{box-shadow:0 0 0 9px rgba(47,212,122,0)}}
+.nav__dot{position:relative;width:8px;height:8px;border-radius:50%;background:#2fd47a}
+.nav__dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(47,212,122,.55);animation:live 2s var(--ease-out) infinite}
+@keyframes live{from{transform:scale(1);opacity:1}70%,to{transform:scale(3.2);opacity:0}}
 .nav__menu{width:44px;height:44px;border-radius:50%;display:grid;place-content:center;gap:6px;border:1px solid color-mix(in srgb,currentColor 35%,transparent)}
 .nav__menu i{display:block;width:18px;height:2px;border-radius:2px;background:currentColor;transition:transform .45s var(--ease-out)}
 .nav__menu[aria-expanded="true"] i:first-child{transform:translateY(4px) rotate(45deg)}
@@ -670,6 +673,34 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 .foot__bar a:hover{color:var(--sun)}
 @media (min-width:900px){.foot{padding-bottom:40px}.foot__grid{grid-template-columns:1.5fr 1fr 1fr 1fr}.foot__brand{grid-column:auto}}
 
+
+/* ---------- v3.1 · mượt hơn ----------
+   Hiệu ứng gắn với vị trí cuộn chạy bằng CSS animation-timeline (ngoài luồng chính) ở trình duyệt hỗ trợ; trình duyệt cũ dùng JS.
+   Dùng thuộc tính translate/scale riêng để không đè hiệu ứng rê chuột (transform) của thẻ. */
+@media (prefers-reduced-motion:no-preference){@supports (animation-timeline:scroll()){
+  .progress{transform:none;scale:0 1;animation:sdaGrow linear both;animation-timeline:scroll(root)}
+  @keyframes sdaGrow{to{scale:1 1}}
+  .scrub{transform:none;opacity:1;will-change:auto;animation:sdaRise linear both;animation-timeline:view();animation-range:entry 0% entry 100%}
+  @keyframes sdaRise{from{opacity:.12;translate:0 64px;scale:.94}to{opacity:1;translate:0 0;scale:1}}
+  .tl{view-timeline:--tl block}
+  .tl__fill{transform:none;scale:1 0;animation:sdaFill linear both;animation-timeline:--tl;animation-range:cover 20% cover 65%}
+  @keyframes sdaFill{to{scale:1 1}}
+  .bg-han{transform:rotate(var(--r,-8deg));animation:sdaHan linear both;animation-timeline:view()}
+  @keyframes sdaHan{from{translate:0 16vh}to{translate:0 -16vh}}
+  .hero__media{animation:sdaHeroBg linear both;animation-timeline:scroll(root);animation-range:0px 100vh}
+  @keyframes sdaHeroBg{to{translate:0 30vh}}
+  .hero__grid{animation:sdaHeroFg linear both;animation-timeline:scroll(root);animation-range:0px 110vh}
+  @keyframes sdaHeroFg{to{opacity:0;translate:0 -9vh}}
+}}
+/* màn cảm ứng: kính mờ (backdrop-filter) đè lên phim rất tốn card đồ hoạ điện thoại → thay bằng nền đặc hơn, chỉ giữ ở thanh trên */
+@media (hover:none){
+  .gcard,.hero .sale-pill,.city__now,.btn--glass,.hero__cap,.reel figcaption,.svc,.city__stops a{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .gcard{background:rgba(10,16,28,.84)}
+  .hero .sale-pill{background:rgba(10,16,28,.62)}
+  .city__now{background:rgba(8,16,30,.82)}
+  .btn--glass{background:rgba(255,255,255,.16)}
+  .hero__cap{background:rgba(0,0,0,.45)}
+}
 @media (prefers-reduced-motion:reduce){
   .hero__media{transform:none}
   .mnav,.mnav.is-open{transition:none}
@@ -1204,20 +1235,25 @@ const CONFIG = {
   }), { threshold: .14, rootMargin: '0px 0px -6% 0px' });
   $$('.reveal, .door').forEach(el => io.observe(el));
 
-  /* ---- cuộn: nav, tiến độ, dock, timeline, nghiêng 3D theo vị trí cuộn ---- */
-  const nav = $('#nav'), bar = $('#progress'), dock = $('#dock'), tl = $('#tl'), scrubs = reduce ? [] : $$('.scrub');
-  let ticking = false;
+  /* ---- cuộn: nav, tiến độ, dock, timeline, thẻ trồi lên theo vị trí cuộn ----
+     Trình duyệt có "scroll-driven animations" (CSS animation-timeline): thanh tiến độ, timeline, thẻ trồi lên do CSS chạy
+     ngoài luồng chính, JS chỉ bật/tắt class khi trạng thái đổi. Trình duyệt cũ: JS tính như trước nhưng ĐỌC hết rồi mới GHI
+     (không bắt trình duyệt tính lại bố cục nhiều lần trong 1 khung hình). */
+  const SDA = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
+  const nav = $('#nav'), bar = $('#progress'), dock = $('#dock'), tl = $('#tl'), scrubs = reduce || SDA ? [] : $$('.scrub');
+  let ticking = false, stuck = null, dockOn = null;
   const onScroll = () => {
     const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
-    nav.classList.toggle('is-stuck', y > 20);
-    dock.classList.toggle('is-on', y > vh * .7 && y < max - 500);
-    bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-    if (tl) { const r = tl.getBoundingClientRect(); tl.style.setProperty('--p', Math.min(1, Math.max(0, (vh * .75 - r.top) / r.height)).toFixed(3)); }
-    for (const el of scrubs) {                      // 0 khi vừa ló ở đáy màn hình, 1 khi lên tới 72% chiều cao
-      const t = el.getBoundingClientRect().top;
-      if (t > vh * 1.2 || t < -vh) continue;
+    const tr = !SDA && tl ? tl.getBoundingClientRect() : null, tops = scrubs.map(el => el.getBoundingClientRect().top);   // đọc
+    const st = y > 20, dk = y > vh * .7 && y < max - 500;                                                                 // ghi
+    if (st !== stuck) { stuck = st; nav.classList.toggle('is-stuck', st); }
+    if (dk !== dockOn) { dockOn = dk; dock.classList.toggle('is-on', dk); }
+    if (!SDA) bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+    if (tr) tl.style.setProperty('--p', Math.min(1, Math.max(0, (vh * .75 - tr.top) / tr.height)).toFixed(3));
+    scrubs.forEach((el, i) => {                     // 0 khi vừa ló ở đáy màn hình, 1 khi lên tới 72% chiều cao
+      const t = tops[i]; if (t > vh * 1.2 || t < -vh) return;
       el.style.setProperty('--sp', Math.min(1, Math.max(0, (vh - t) / (vh * .28))).toFixed(3));
-    }
+    });
     ticking = false;
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
@@ -1344,15 +1380,18 @@ const CONFIG = {
   $$('.flip').forEach(b => b.addEventListener('click', () => { if (b.dataset.cf) return; b.dataset.cf = '1'; const r = b.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2); }));
 
   /* ---- chữ Hán nền trôi chậm theo cuộn ---- */
-  const bgs = reduce ? [] : $$('.bg-han');
+  const SDA = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
+  $$('.bg-han').forEach(el => el.style.setProperty('--r', (el.dataset.rot || -8) + 'deg'));
+  const bgs = reduce || SDA ? [] : $$('.bg-han');     // có SDA thì CSS tự trôi chữ nền
   if (bgs.length) {
     let tk = false;
     const par = () => {
       const vh = innerHeight;
-      for (const el of bgs) {
-        const r = el.parentElement.getBoundingClientRect(); if (r.bottom < -300 || r.top > vh + 300) continue;
+      const rs = bgs.map(el => el.parentElement.getBoundingClientRect());
+      bgs.forEach((el, i) => {
+        const r = rs[i]; if (r.bottom < -300 || r.top > vh + 300) return;
         el.style.transform = `translate3d(0,${((r.top + r.height / 2 - vh / 2) * -(+el.dataset.speed || .12)).toFixed(1)}px,0) rotate(${el.dataset.rot || -8}deg)`;
-      }
+      });
       tk = false;
     };
     addEventListener('scroll', () => { if (!tk) { tk = true; requestAnimationFrame(par); } }, { passive: true }); par();
@@ -1443,18 +1482,24 @@ const CONFIG = {
   }
 
   /* ---- thanh điều hướng: tối khi nằm trên nền tối, ẩn khi cuộn xuống, hiện lại khi cuộn lên ---- */
+  const SDA = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
   const nav = $('#nav'), darks = $$('.hero,.s-ink,.sea,.city,.s-game,.s-denim,.foot');
-  let lastY = scrollY, menuOpen = false, tk = false;
+  let lastY = scrollY, menuOpen = false, tk = false, zones = [], dark = null, hidden = false;
+  const measure = () => { const y = scrollY; zones = darks.map(z => { const r = z.getBoundingClientRect(); return [r.top + y, r.bottom + y]; }); dark = null; };
+  measure(); addEventListener('load', measure); addEventListener('resize', measure);
+  if (window.ResizeObserver) new ResizeObserver(measure).observe(document.body);   // ảnh/phông tải xong làm trang cao lên → đo lại
+  const setHidden = v => { if (v !== hidden) { hidden = v; nav.classList.toggle('is-hidden', v); } };
   const onScroll = () => {
     const y = scrollY, vh = innerHeight;
     if (nav) {
-      nav.classList.toggle('on-dark', darks.some(z => { const r = z.getBoundingClientRect(); return r.top < 34 && r.bottom > 34; }));
-      if (y < 320 || menuOpen) nav.classList.remove('is-hidden');
-      else if (y > lastY + 6) nav.classList.add('is-hidden');
-      else if (y < lastY - 6) nav.classList.remove('is-hidden');
+      const d = zones.some(([a, b]) => a < y + 34 && b > y + 34);
+      if (d !== dark) { dark = d; nav.classList.toggle('on-dark', d); }
+      if (y < 320 || menuOpen) setHidden(false);
+      else if (y > lastY + 6) setHidden(true);
+      else if (y < lastY - 6) setHidden(false);
     }
     lastY = y;
-    if (!reduce && hm && hg && y < vh * 1.3) {           // phim trôi chậm hơn chữ, chữ mờ dần khi cuộn qua
+    if (!reduce && !SDA && hm && hg && y < vh * 1.3) {   // (trình duyệt cũ) phim trôi chậm hơn chữ, chữ mờ dần khi cuộn qua
       hm.style.setProperty('--hy', (y * .3).toFixed(1) + 'px');
       hg.style.transform = `translate3d(0,${(-y * .08).toFixed(1)}px,0)`;
       hg.style.opacity = Math.max(0, 1 - y / (vh * 1.1)).toFixed(3);
@@ -1464,6 +1509,32 @@ const CONFIG = {
   addEventListener('scroll', () => { if (!tk) { tk = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
 
+  /* ---- cuộn quán tính khi lăn chuột (chỉ máy có chuột; tắt khi giảm chuyển động). EASE: độ trôi, nhỏ hơn = trôi lâu hơn ---- */
+  if (!reduce && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const EASE = .16; let tgt = scrollY, cur = scrollY, set = -1, run = false, sraf = 0;
+    const maxY = () => document.documentElement.scrollHeight - innerHeight;
+    const stop = () => { run = false; set = -1; };
+    const glide = () => {
+      if (!run) { sraf = 0; return; }
+      cur += (tgt - cur) * EASE; if (Math.abs(tgt - cur) < .5) { cur = tgt; run = false; }
+      set = cur; scrollTo({ top: cur, behavior: 'instant' }); sraf = run ? requestAnimationFrame(glide) : 0;
+    };
+    addEventListener('wheel', e => {
+      if (e.ctrlKey || e.defaultPrevented || Math.abs(e.deltaX) > Math.abs(e.deltaY) || menuOpen) return;
+      if (e.target.closest && e.target.closest('iframe,.mnav,[data-native-scroll]')) return;
+      e.preventDefault();
+      const dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+      if (!run) { cur = tgt = scrollY; }
+      tgt = Math.max(0, Math.min(maxY(), tgt + dy)); run = true;
+      if (!sraf) sraf = requestAnimationFrame(glide);
+    }, { passive: false });
+    // có cú cuộn khác (bấm link mục lục, phím, kéo thanh cuộn, trang tự cuộn) → bỏ đà đang trôi, không giành lại vị trí
+    addEventListener('scroll', () => { if (!run) cur = tgt = scrollY; else if (set >= 0 && Math.abs(scrollY - set) > 3 && Math.abs(scrollY - cur) > 3) stop(); }, { passive: true });
+    addEventListener('pointerdown', stop, { passive: true });
+    addEventListener('keydown', stop);
+    document.addEventListener('click', e => { if (e.target.closest && e.target.closest('a[href^="#"]')) stop(); });
+  }
+
   /* ---- menu điện thoại ---- */
   const mb = $('#menuBtn'), mn = $('#mnav');
   if (mb && mn) {
@@ -1471,7 +1542,7 @@ const CONFIG = {
     const setMenu = on => {
       menuOpen = on; mn.classList.toggle('is-open', on); mn.inert = !on; mn.setAttribute('aria-hidden', String(!on));
       mb.setAttribute('aria-expanded', String(on)); mb.setAttribute('aria-label', on ? 'Đóng menu' : 'Mở menu');
-      document.body.classList.toggle('menu-open', on); if (on && nav) nav.classList.remove('is-hidden');
+      document.body.classList.toggle('menu-open', on); if (on && nav) setHidden(false);
     };
     mb.addEventListener('click', () => setMenu(!menuOpen));
     mn.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
