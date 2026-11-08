@@ -1,0 +1,6 @@
+{"fps":30,"size":[1080,1920],"bpm":120,"curve":"s","beats":4,
+ "clips":[
+  {"file":"clips/bao_bay.mp4","curve":"s-soft","beats":4},
+  {"file":"clips/boats2.mp4","curve":"s-soft","beats":4,"pan":-1,"in":0.5,"out":4.5},
+  {"file":"clips/bao_sun.mp4","curve":"s-soft","beats":4,"in":0.3,"out":3.3}
+ ]}

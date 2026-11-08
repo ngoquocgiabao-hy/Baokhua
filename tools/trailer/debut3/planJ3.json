@@ -1,0 +1,6 @@
+{"fps":30,"size":[1080,1920],"bpm":120,"curve":"s","beats":4,
+ "clips":[
+  {"file":"clips/cliff_house.mp4","curve":"s","beats":4,"flash":"warm","move":"Real · vách đá, nhà bè"},
+  {"file":"clips/bao_cliff.mp4","curve":"whip","beats":2,"pan":-1,"move":"Real · Bảo bơi sát vách"},
+  {"file":"clips/sunrise.mp4","curve":"s-soft","beats":2,"move":"Real · bình minh"}
+ ]}

@@ -1,0 +1,6 @@
+{"fps":30,"size":[1080,1920],"bpm":120,"curve":"s","beats":4,
+ "clips":[
+  {"file":"clips/bao_gold.mp4","curve":"hero","beats":4,"move":"Real · Bảo nói giữa vịnh"},
+  {"file":"clips/boats.mp4","curve":"whip","beats":2,"pan":-1,"move":"Real · thuyền chài"},
+  {"file":"clips/islands.mp4","curve":"s-soft","beats":2,"move":"Real · đảo đá"}
+ ]}

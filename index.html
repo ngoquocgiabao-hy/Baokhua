@@ -20,8 +20,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+SC:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="v4/home/hero-swim-9x16.jpg" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
-<link rel="preload" as="image" href="v4/home/hero-swim-16x9.jpg" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="v4/home/hero-bay-9x16.jpg" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="v4/home/hero-bay-16x9.jpg" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
 <link rel="preload" as="image" href="v4/home/bao-portrait.webp" type="image/webp">
 <script type="speculationrules">{"prefetch":[{"source":"list","urls":["membership.html","hotel/"]}]}</script>
 <script>document.documentElement.classList.add('js')</script>
@@ -506,10 +506,10 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 /* ---------- hero: phim thật ở vịnh ---------- */
 .hero{--fg:#FFF7D6;--mut:rgba(255,247,214,.8);--acc:var(--sun);--btn:var(--sun);--btn-fg:var(--ink);
   position:relative;isolation:isolate;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;padding:max(34svh,220px) 0 56px;background:#0b2a40;color:var(--fg)}
-.hero__media{position:absolute;inset:-4% 0 0;z-index:-3;background:#0b2a40 url(v4/home/hero-swim-9x16.jpg) 50% 30%/cover no-repeat;transform:translate3d(0,var(--hy,0px),0) scale(1.04);will-change:transform}
-.hero__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;opacity:0;transition:opacity 1.4s var(--ease-out)}
+.hero__media{position:absolute;inset:-4% 0 0;z-index:-3;background:#0b2a40 url(v4/home/hero-bay-9x16.jpg) 50% 50%/cover no-repeat;transform:translate3d(0,var(--hy,0px),0) scale(1.04);will-change:transform}
+.hero__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;opacity:0;transition:opacity 1.4s var(--ease-out)}
 .hero__media video.is-on{opacity:1}
-@media (min-aspect-ratio:1/1){.hero__media{background-image:url(v4/home/hero-swim-16x9.jpg);background-position:70% 40%}.hero__media video{object-position:70% 40%}}
+@media (min-aspect-ratio:1/1){.hero__media{background-image:url(v4/home/hero-bay-16x9.jpg);background-position:50% 50%}.hero__media video{object-position:50% 50%}}
 .hero__shade{position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(180deg,rgba(7,13,24,.6) 0%,rgba(7,13,24,0) 20%),linear-gradient(0deg,rgba(7,13,24,.94) 0%,rgba(7,13,24,.62) 42%,rgba(7,13,24,0) 72%)}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.16;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .hero__grid{display:grid;gap:26px;align-items:end;will-change:transform,opacity}
@@ -747,7 +747,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 </div>
 
 <main id="top">
-<!-- HERO: thước phim thật của Bảo ở vịnh Hạ Long (v4/home/hero-swim-*) -->
+<!-- HERO: thước phim 2K thật từ chuyến bơi qua vịnh Hạ Long của Bảo (v4/home/hero-bay-*): thuyền chài, vách đá và nhà bè, đảo đá, bình minh -->
 <section class="hero" id="hero">
   <div class="hero__media" aria-hidden="true"><video id="heroVid" muted loop playsinline preload="none" disablepictureinpicture></video></div>
   <div class="hero__shade" aria-hidden="true"></div>
@@ -841,8 +841,8 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 <section class="sea" id="ha-long">
   <div class="wrap sea__grid">
     <div class="sea__media">
-      <figure class="reel reel--a reveal"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-boats.jpg" data-src-webm="v4/home/halong-boats.webm" data-src-mp4="v4/home/halong-boats.mp4" aria-label="Thuyền đánh cá giữa các đảo đá vôi trên vịnh Hạ Long"></video><figcaption><b lang="zh-CN">下龙湾</b> Xiàlóng Wān · vịnh Hạ Long</figcaption></figure>
-      <figure class="reel reel--b reveal" style="--i:1"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-dawn.jpg" data-src-webm="v4/home/halong-dawn.webm" data-src-mp4="v4/home/halong-dawn.mp4" aria-label="Bình minh trên mặt nước vịnh Hạ Long"></video><figcaption><b lang="zh-CN">早上好</b> zǎoshang hǎo · chào buổi sáng</figcaption></figure>
+      <figure class="reel reel--a reveal"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-boats-2k.jpg" data-src-mp4="v4/home/halong-boats-2k.mp4" aria-label="Thuyền đánh cá giữa các đảo đá vôi trên vịnh Hạ Long"></video><figcaption><b lang="zh-CN">下龙湾</b> Xiàlóng Wān · vịnh Hạ Long</figcaption></figure>
+      <figure class="reel reel--b reveal" style="--i:1"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-sunrise.jpg" data-src-mp4="v4/home/halong-sunrise.mp4" aria-label="Bình minh trên mặt nước vịnh Hạ Long"></video><figcaption><b lang="zh-CN">早上好</b> zǎoshang hǎo · chào buổi sáng</figcaption></figure>
     </div>
     <div>
       <span class="eyebrow reveal">Dạy từ Hạ Long</span>
@@ -1401,7 +1401,7 @@ const CONFIG = {
   /* ---- video vịnh: chỉ tải và chạy khi ở gần màn hình (nhẹ cho điện thoại) ---- */
   const vids = $$('video.lazyvid');
   const vidOn = v => {
-    if (!v.dataset.ready) { v.dataset.ready = 1; const w = document.createElement('source'); w.src = v.dataset.srcWebm; w.type = 'video/webm'; const m = document.createElement('source'); m.src = v.dataset.srcMp4; m.type = 'video/mp4'; v.append(w, m); v.load(); }
+    if (!v.dataset.ready) { v.dataset.ready = 1; if (v.dataset.srcWebm) { const w = document.createElement('source'); w.src = v.dataset.srcWebm; w.type = 'video/webm'; v.append(w); } const m = document.createElement('source'); m.src = v.dataset.srcMp4; m.type = 'video/mp4'; v.append(m); v.load(); }
     if (!reduce) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
   };
   const vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) vidOn(e.target); else if (e.target.dataset.ready) e.target.pause(); }), { rootMargin: '200px 0px' });
@@ -1460,7 +1460,7 @@ const CONFIG = {
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const portrait = () => innerWidth / innerHeight < 1;
   const play = v => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
-  /* gắn nguồn phim (webm trước, mp4 sau); base không có đuôi, ví dụ 'v4/home/hero-swim-9x16' */
+  /* gắn nguồn phim (webm trước nếu có, mp4 sau); base không có đuôi, ví dụ 'v4/home/hero-bay-9x16' */
   const feed = (v, base, webm, mp4First) => {           // mp4First: phim tua theo cuộn ưu tiên mp4 (nhẹ hơn), webm dự phòng
     if (v.dataset.base === base) return; v.dataset.base = base;
     v.textContent = ''; v.poster = base + '.jpg';
@@ -1474,7 +1474,7 @@ const CONFIG = {
   if (hero && hv) {
     let seen = true, pw = portrait();
     hv.addEventListener('playing', () => hv.classList.add('is-on'));
-    const go = () => { if (reduce || lite) return; feed(hv, 'v4/home/hero-swim-' + (portrait() ? '9x16' : '16x9'), true); if (seen && !document.hidden) play(hv); };
+    const go = () => { if (reduce || lite) return; feed(hv, 'v4/home/hero-bay-' + (portrait() ? '9x16' : '16x9'), false); if (seen && !document.hidden) play(hv); };
     go();
     new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen) go(); else hv.pause(); }).observe(hero);
     document.addEventListener('visibilitychange', () => { if (document.hidden) hv.pause(); else if (seen) go(); });
