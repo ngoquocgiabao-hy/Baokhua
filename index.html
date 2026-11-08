@@ -21,7 +21,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+SC:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="v4/home/hero-swim-9x16.jpg" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
-<link rel="preload" as="image" href="v4/home/hero-ambient-16x9.jpg" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
 <link rel="preload" as="image" href="v4/home/trophy.webp" type="image/webp" media="(min-width: 900px)">
 <link rel="preload" as="image" href="v4/home/bao-portrait.webp" type="image/webp">
 <script type="speculationrules">{"prefetch":[{"source":"list","urls":["membership.html","hotel/"]}]}</script>
@@ -510,7 +509,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 .hero__media{position:absolute;inset:-4% 0 0;z-index:-3;background:#0b2a40 url(v4/home/hero-swim-9x16.jpg) 50% 30%/cover no-repeat;transform:translate3d(0,var(--hy,0px),0) scale(1.04);will-change:transform}
 .hero__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;opacity:0;transition:opacity 1.4s var(--ease-out)}
 .hero__media video.is-on{opacity:1}
-@media (min-aspect-ratio:1/1){.hero__media{background-image:url(v4/home/hero-ambient-16x9.jpg);background-position:50% 50%}.hero__media video{object-position:50% 50%}}
+@media (min-aspect-ratio:1/1){.hero__media{background:radial-gradient(60% 70% at 78% 46%,rgba(36,120,150,.55),rgba(36,120,150,0) 70%),radial-gradient(45% 55% at 12% 92%,rgba(255,217,31,.12),rgba(255,217,31,0) 70%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='60'%3E%3Cpath d='M0 30 Q30 18 60 30 T120 30 T180 30 T240 30' fill='none' stroke='%23ffffff' stroke-opacity='.05' stroke-width='1.5'/%3E%3C/svg%3E") 0 0/240px 60px,linear-gradient(160deg,#0d2a40 0%,#0a1a2c 55%,#070d18 100%)}.hero__media video{display:none}}   /* máy tính: nền biển vẽ bằng CSS (nét mọi màn); phim nét nằm trong thẻ 3D. Khi có bản gốc 4K sẽ đặt lại phim thật */
 .hero__shade{position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(180deg,rgba(7,13,24,.6) 0%,rgba(7,13,24,0) 20%),linear-gradient(0deg,rgba(7,13,24,.94) 0%,rgba(7,13,24,.62) 42%,rgba(7,13,24,0) 72%)}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.16;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .hero__grid{display:grid;gap:26px;align-items:end;will-change:transform,opacity}
@@ -820,7 +819,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
         <span class="orb__spark" style="left:38%;top:42%" aria-hidden="true"></span><span class="orb__spark" style="left:61%;top:47%;animation-delay:1.1s" aria-hidden="true"></span><span class="orb__spark" style="left:47%;top:33%;animation-delay:1.9s" aria-hidden="true"></span>
         <figure class="orb__card"><picture><source srcset="v4/home/engineer.webp" type="image/webp"><img src="v4/home/engineer.jpg" alt="" width="600" height="800" loading="lazy" decoding="async"></picture><figcaption><b lang="zh-CN">工程师</b><i>gōngchéngshī</i>Kỹ sư</figcaption></figure>
         <figure class="orb__card"><picture><source srcset="v4/home/interpreter.webp" type="image/webp"><img src="v4/home/interpreter.jpg" alt="" width="600" height="800" loading="lazy" decoding="async"></picture><figcaption><b lang="zh-CN">翻译</b><i>fānyì</i>Phiên dịch</figcaption></figure>
-        <figure class="orb__card"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/swim-card.jpg" data-src-webm="v4/home/swim-card.webm" data-src-mp4="v4/home/swim-card.mp4" aria-hidden="true"></video><figcaption><b lang="zh-CN">游泳</b><i>yóuyǒng</i>Bơi vịnh Hạ Long</figcaption></figure>
+        <figure class="orb__card"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/swim-card.jpg" data-src-webm="v4/home/swim-card.webm" data-src-mp4="v4/home/swim-card.mp4" aria-hidden="true"></video><figcaption><b lang="zh-CN">小岛</b><i>xiǎodǎo</i>Bơi tới đảo nhỏ</figcaption></figure>
         <figure class="orb__card"><picture><source srcset="v4/home/factory.webp" type="image/webp"><img src="v4/home/factory.jpg" alt="" width="600" height="800" loading="lazy" decoding="async"></picture><figcaption><b lang="zh-CN">工厂</b><i>gōngchǎng</i>Nhà máy TCL</figcaption></figure>
         <figure class="orb__card"><picture><source srcset="v4/home/guide.webp" type="image/webp"><img src="v4/home/guide.jpg" alt="" width="600" height="800" loading="lazy" decoding="async"></picture><figcaption><b lang="zh-CN">导游</b><i>dǎoyóu</i>Hướng dẫn viên</figcaption></figure>
         <figure class="orb__card"><picture><source srcset="v4/home/stage-tall.webp" type="image/webp"><img src="v4/home/stage-tall.jpg" alt="" width="640" height="1016" loading="lazy" decoding="async" style="object-position:50% 12%"></picture><figcaption><b lang="zh-CN">大使</b><i>dàshǐ</i>Đại sứ</figcaption></figure>
@@ -1521,12 +1520,12 @@ const CONFIG = {
     v.load();
   };
 
-  /* ---- hero: thước phim bơi ở vịnh 1080×1920 cho điện thoại; máy tính dùng nền mờ, ảnh nét ở sân khấu 3D ---- */
+  /* ---- hero: thước phim bơi ở vịnh 1080×1920 cho điện thoại; máy tính dùng nền biển CSS, ảnh và phim nét ở sân khấu 3D ---- */
   const hero = $('#hero'), hv = $('#heroVid'), hm = $('.hero__media'), hg = $('.hero__grid');
   if (hero && hv) {
     let seen = true, pw = portrait();
     hv.addEventListener('playing', () => hv.classList.add('is-on'));
-    const go = () => { if (reduce || lite) return; feed(hv, 'v4/home/hero-' + (portrait() ? 'swim-9x16' : 'ambient-16x9'), true); if (seen && !document.hidden) play(hv); };   // máy tính: nền mờ dựng sẵn (nhẹ, không vỡ), phim nét nằm trong thẻ 3D
+    const go = () => { if (reduce || lite) return; if (!portrait()) { hv.pause(); return; } feed(hv, 'v4/home/hero-swim-9x16', true); if (seen && !document.hidden) play(hv); };   // máy tính: không tải phim nền (nền biển CSS), phim nét nằm trong thẻ 3D
     go();
     new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen) go(); else hv.pause(); }).observe(hero);
     document.addEventListener('visibilitychange', () => { if (document.hidden) hv.pause(); else if (seen) go(); });
