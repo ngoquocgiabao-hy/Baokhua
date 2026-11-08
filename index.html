@@ -6,7 +6,7 @@
 <title>Bảo Khựa 阿宝 · China-ready — Tiếng Trung để đi làm</title>
 <meta name="description" content="Bảo Khựa 阿宝 · China-ready: tiếng Trung cho người đi làm và luyện HSK, cùng dịch vụ web, hình ảnh, đào tạo tiếng Trung cho khách sạn và lữ hành.">
 <meta property="og:title" content="Bảo Khựa 阿宝 · China-ready">
-<meta property="og:description" content="Tiếng Trung đã cho mình một cái nghề. Giờ mình chỉ lại cho bạn. Bài mới mỗi tuần, học thử qua Zoom.">
+<meta property="og:description" content="Tiếng Trung đã cho mình một cái nghề. Giờ mình chỉ lại cho bạn. Bài mới mỗi tuần trong nhóm Zalo, game 3D luyện mỗi ngày.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bảo Khựa 阿宝">
 <meta property="og:url" content="https://baokhua.com/">
@@ -20,8 +20,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+SC:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="v4/home/hero-swim-9x16.jpg" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
-<link rel="preload" as="image" href="v4/home/hero-swim-16x9.jpg" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="v4/home/hero-bay-9x16.jpg" media="(max-aspect-ratio: 1/1)" fetchpriority="high">
+<link rel="preload" as="image" href="v4/home/hero-bay-16x9.jpg" media="(min-aspect-ratio: 1/1)" fetchpriority="high">
 <link rel="preload" as="image" href="v4/home/bao-portrait.webp" type="image/webp">
 <script type="speculationrules">{"prefetch":[{"source":"list","urls":["membership.html","hotel/"]}]}</script>
 <script>document.documentElement.classList.add('js')</script>
@@ -506,10 +506,10 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 /* ---------- hero: phim thật ở vịnh ---------- */
 .hero{--fg:#FFF7D6;--mut:rgba(255,247,214,.8);--acc:var(--sun);--btn:var(--sun);--btn-fg:var(--ink);
   position:relative;isolation:isolate;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;padding:max(34svh,220px) 0 56px;background:#0b2a40;color:var(--fg)}
-.hero__media{position:absolute;inset:-4% 0 0;z-index:-3;background:#0b2a40 url(v4/home/hero-swim-9x16.jpg) 50% 30%/cover no-repeat;transform:translate3d(0,var(--hy,0px),0) scale(1.04);will-change:transform}
-.hero__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;opacity:0;transition:opacity 1.4s var(--ease-out)}
+.hero__media{position:absolute;inset:-4% 0 0;z-index:-3;background:#0b2a40 url(v4/home/hero-bay-9x16.jpg) 50% 50%/cover no-repeat;transform:translate3d(0,var(--hy,0px),0) scale(1.04);will-change:transform}
+.hero__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;opacity:0;transition:opacity 1.4s var(--ease-out)}
 .hero__media video.is-on{opacity:1}
-@media (min-aspect-ratio:1/1){.hero__media{background-image:url(v4/home/hero-swim-16x9.jpg);background-position:70% 40%}.hero__media video{object-position:70% 40%}}
+@media (min-aspect-ratio:1/1){.hero__media{background-image:url(v4/home/hero-bay-16x9.jpg);background-position:50% 50%}.hero__media video{object-position:50% 50%}}
 .hero__shade{position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(180deg,rgba(7,13,24,.6) 0%,rgba(7,13,24,0) 20%),linear-gradient(0deg,rgba(7,13,24,.94) 0%,rgba(7,13,24,.62) 42%,rgba(7,13,24,0) 72%)}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.16;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .hero__grid{display:grid;gap:26px;align-items:end;will-change:transform,opacity}
@@ -747,7 +747,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 </div>
 
 <main id="top">
-<!-- HERO: thước phim thật của Bảo ở vịnh Hạ Long (v4/home/hero-swim-*) -->
+<!-- HERO: thước phim 2K thật từ chuyến bơi qua vịnh Hạ Long của Bảo (v4/home/hero-bay-*): thuyền chài, vách đá và nhà bè, đảo đá, bình minh -->
 <section class="hero" id="hero">
   <div class="hero__media" aria-hidden="true"><video id="heroVid" muted loop playsinline preload="none" disablepictureinpicture></video></div>
   <div class="hero__shade" aria-hidden="true"></div>
@@ -841,8 +841,8 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 <section class="sea" id="ha-long">
   <div class="wrap sea__grid">
     <div class="sea__media">
-      <figure class="reel reel--a reveal"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-boats.jpg" data-src-webm="v4/home/halong-boats.webm" data-src-mp4="v4/home/halong-boats.mp4" aria-label="Thuyền đánh cá giữa các đảo đá vôi trên vịnh Hạ Long"></video><figcaption><b lang="zh-CN">下龙湾</b> Xiàlóng Wān · vịnh Hạ Long</figcaption></figure>
-      <figure class="reel reel--b reveal" style="--i:1"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-dawn.jpg" data-src-webm="v4/home/halong-dawn.webm" data-src-mp4="v4/home/halong-dawn.mp4" aria-label="Bình minh trên mặt nước vịnh Hạ Long"></video><figcaption><b lang="zh-CN">早上好</b> zǎoshang hǎo · chào buổi sáng</figcaption></figure>
+      <figure class="reel reel--a reveal"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-boats-2k.jpg" data-src-mp4="v4/home/halong-boats-2k.mp4" aria-label="Thuyền đánh cá giữa các đảo đá vôi trên vịnh Hạ Long"></video><figcaption><b lang="zh-CN">下龙湾</b> Xiàlóng Wān · vịnh Hạ Long</figcaption></figure>
+      <figure class="reel reel--b reveal" style="--i:1"><video class="lazyvid" muted loop playsinline preload="none" poster="v4/home/halong-sunrise.jpg" data-src-mp4="v4/home/halong-sunrise.mp4" aria-label="Bình minh trên mặt nước vịnh Hạ Long"></video><figcaption><b lang="zh-CN">早上好</b> zǎoshang hǎo · chào buổi sáng</figcaption></figure>
     </div>
     <div>
       <span class="eyebrow reveal">Dạy từ Hạ Long</span>
@@ -905,7 +905,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
         <span class="door__tag">Cho người học</span>
         <h3>China-ready cho bạn</h3>
         <p>Tiếng Trung theo nghề, học xong hôm nay thì mai dùng được.</p>
-        <ul><li>Bài mới mỗi tuần trong nhóm Zalo</li><li>Nhóm Zoom 5–10 người cho người đi làm</li><li>Nhóm luyện HSK</li><li>Kèm một một, mình trực tiếp dạy</li></ul>
+        <ul><li>Bài mới mỗi tuần trong nhóm Zalo</li><li>Game 3D Khách sạn Vịnh Ā Bǎo để luyện mỗi ngày</li><li>Nhóm luyện HSK</li><li>Kèm một một, mình trực tiếp dạy</li></ul>
         <a class="btn btn--main" data-link="zaloGroup" href="#lien-he">Vào nhóm Zalo học cùng Bảo</a>
       </article>
       <article class="door door--b tilt" style="--swing:-38deg;--hinge:100%">
@@ -1034,8 +1034,8 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
     <div class="steps">
       <div class="step scrub"><h3>Xem video ngắn</h3><p>Mỗi video một tình huống thật: ở quầy lễ tân, trên xe đoàn, trong nhà máy.</p></div>
       <div class="step scrub"><h3>Nhận bài trong nhóm Zalo</h3><p>Mỗi tuần 2–3 bài đầy đủ, có phiên âm và file nghe. Học trước, thấy hợp rồi hẵng tính.</p></div>
-      <div class="step scrub"><h3>Học thử một buổi Zoom</h3><p>Mỗi tuần một buổi Zoom mở. Bạn nói, mình sửa trực tiếp.</p></div>
-      <div class="step scrub"><h3>Vào lớp nhóm hoặc kèm riêng</h3><p>Nhóm 5–10 người theo nghề hoặc theo cấp HSK. Kèm một một thì mình đứng lớp.</p></div>
+      <div class="step scrub"><h3>Chơi game 3D, luyện mỗi ngày</h3><p>Khách Trung hỏi, bạn trả lời. Sai câu nào thì game cho ôn lại câu đó.</p></div>
+      <div class="step scrub"><h3>Thấy hợp thì chọn thẻ tự học</h3><p>Thẻ gồm game, tài liệu và nhóm Zalo bài giảng theo lộ trình HSK0 → HSK4. Lớp nhóm và kèm riêng mình báo trong nhóm Zalo khi chốt lịch.</p></div>
     </div>
   </div>
 </section>
@@ -1043,12 +1043,12 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
 <!-- LỚP HỌC -->
 <section class="s-sun" id="lop">
   <div class="wrap">
-    <span class="eyebrow reveal">Lớp học</span>
+    <span class="eyebrow reveal">Lớp học · lịch chưa chốt, Bảo báo trong nhóm Zalo khi mở</span>
     <h2 class="reveal" style="--i:1">Ba cách học, <em>một người dạy.</em></h2>
     <div class="classes">
-      <article class="class scrub"><div class="class__no han" aria-hidden="true">一</div><h3>Tiếng Trung cho người đi làm</h3><p>Du lịch, khách sạn, nhà máy, buôn bán. Học theo tình huống của đúng nghề bạn.</p><dl><dt>Hình thức</dt><dd>Zoom, nhóm 5–10 người</dd><dt>Hợp với</dt><dd>Người đã đi làm</dd></dl></article>
-      <article class="class scrub"><div class="class__no han" aria-hidden="true">二</div><h3>Luyện thi HSK (luyện tập, không phải đề chính thức)</h3><p>Ôn theo cấp, có lộ trình từ vựng và ngữ pháp, luyện đề và chữa bài trong nhóm.</p><dl><dt>Hình thức</dt><dd>Zoom, nhóm 5–10 người</dd><dt>Hợp với</dt><dd>Người cần chứng chỉ</dd></dl></article>
-      <article class="class scrub"><div class="class__no han" aria-hidden="true">三</div><h3>Kèm một một</h3><p>Lộ trình riêng theo mục tiêu của bạn: phỏng vấn, đón đoàn, đàm phán, sửa phát âm.</p><dl><dt>Hình thức</dt><dd>Zoom, một thầy một trò</dd><dt>Người dạy</dt><dd>Bảo trực tiếp đứng lớp</dd></dl></article>
+      <article class="class scrub"><div class="class__no han" aria-hidden="true">一</div><h3>Tiếng Trung cho người đi làm</h3><p>Du lịch, khách sạn, nhà máy, buôn bán. Học theo tình huống của đúng nghề bạn.</p><dl><dt>Hình thức</dt><dd>Nhóm 5–10 người</dd><dt>Hợp với</dt><dd>Người đã đi làm</dd></dl></article>
+      <article class="class scrub"><div class="class__no han" aria-hidden="true">二</div><h3>Luyện thi HSK (luyện tập, không phải đề chính thức)</h3><p>Ôn theo cấp, có lộ trình từ vựng và ngữ pháp, luyện đề và chữa bài trong nhóm.</p><dl><dt>Hình thức</dt><dd>Nhóm 5–10 người</dd><dt>Hợp với</dt><dd>Người cần chứng chỉ</dd></dl></article>
+      <article class="class scrub"><div class="class__no han" aria-hidden="true">三</div><h3>Kèm một một</h3><p>Lộ trình riêng theo mục tiêu của bạn: phỏng vấn, đón đoàn, đàm phán, sửa phát âm.</p><dl><dt>Hình thức</dt><dd>Một thầy một trò</dd><dt>Người dạy</dt><dd>Bảo trực tiếp đứng lớp</dd></dl></article>
     </div>
   </div>
 </section>
@@ -1106,7 +1106,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
       <article class="svc scrub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 21h8M12 18v3"/></svg><h3>Website đa ngôn ngữ</h3><p>Việt – Trung – Anh, liên hệ ưu tiên WeChat, tải nhanh trên điện thoại.</p></article>
       <article class="svc scrub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><h3>Ảnh, video, flycam</h3><p>Bộ hình ảnh để bên lữ hành nhìn vào là muốn đưa đoàn về.</p></article>
       <article class="svc scrub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h9M8.5 3v2M6 5c0 4 3 7 6 8M11 5c0 4-3 7-7 8M13 21l4-10 4 10M14.5 17.5h5"/></svg><h3>Nội dung tiếng Trung</h3><p>Dịch và viết đúng thuật ngữ ngành, do người làm nghề viết, không dịch máy.</p></article>
-      <article class="svc scrub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.5a3 3 0 010 5M18 14.5c1.8.8 3 2.9 3 5.5"/></svg><h3>Đào tạo nhân viên</h3><p>Lớp tiếng Trung cho lễ tân, buồng phòng, nhà hàng. Học tại chỗ hoặc qua Zoom.</p></article>
+      <article class="svc scrub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.5a3 3 0 010 5M18 14.5c1.8.8 3 2.9 3 5.5"/></svg><h3>Đào tạo nhân viên</h3><p>Lớp tiếng Trung cho lễ tân, buồng phòng, nhà hàng. Học tại chỗ hoặc trực tuyến.</p></article>
     </div>
     <div class="case reveal">
       <div><small>Dự án đã làm</small><h3>Jayden Hotel Hạ Long</h3><p>Website đa ngôn ngữ, bộ ảnh và video, nội dung tiếng Trung cho khách sạn.</p></div>
@@ -1149,11 +1149,11 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
     <span class="eyebrow reveal">Hỏi thật, đáp thật</span>
     <h2 class="reveal" style="--i:1">Mấy câu bạn <em>hay hỏi mình</em></h2>
     <div class="faq">
-      <details class="reveal"><summary>Mình mất gốc, có theo được không?</summary><p>Được. Người mới bắt đầu từ phát âm và những câu dùng hằng ngày. Bạn cứ vào học thử một buổi, không hợp thì thôi, mình không nài.</p></details>
-      <details class="reveal"><summary>Đi làm cả ngày thì học lúc nào?</summary><p>Lớp học buổi tối qua Zoom. Bài trong nhóm Zalo ngắn, bạn tranh thủ 10–15 phút là xong một bài.</p></details>
-      <details class="reveal"><summary>Học phí bao nhiêu?</summary><p>Bài trong nhóm Zalo và buổi học thử không mất tiền. Học phí lớp nhóm và kèm riêng mình báo rõ trong nhóm trước khi mở đăng ký.</p></details>
+      <details class="reveal"><summary>Mình mất gốc, có theo được không?</summary><p>Được. Người mới bắt đầu từ phát âm và những câu dùng hằng ngày. Bạn cứ xem bài trong nhóm và chơi thử game, không hợp thì thôi, mình không nài.</p></details>
+      <details class="reveal"><summary>Đi làm cả ngày thì học lúc nào?</summary><p>Bài trong nhóm Zalo ngắn, bạn tranh thủ 10–15 phút là xong một bài. Game 3D chơi lúc nào cũng được, mỗi lượt vài phút.</p></details>
+      <details class="reveal"><summary>Học phí bao nhiêu?</summary><p>Giá thẻ tự học ghi rõ ở trang <a href="membership.html" style="text-decoration:underline">Thẻ tự học</a>. Học phí lớp nhóm và kèm riêng mình báo rõ trong nhóm trước khi mở đăng ký.</p></details>
       <details class="reveal"><summary>Mình không làm du lịch thì học có hợp không?</summary><p>Hợp. Lớp mở đầu là du lịch, khách sạn vì đó là nghề mình làm lâu nhất. Nhóm cho người làm nhà máy, buôn bán và luyện HSK mình mở khi đủ người đăng ký.</p></details>
-      <details class="reveal"><summary>Ai là người dạy?</summary><p>Mình trực tiếp dạy các buổi Zoom và các buổi kèm riêng. Video ngắn trên TikTok chỉ là phần giới thiệu.</p></details>
+      <details class="reveal"><summary>Ai là người dạy?</summary><p>Mình trực tiếp soạn bài giảng, game và dạy kèm riêng. Video ngắn trên TikTok chỉ là phần giới thiệu.</p></details>
     </div>
   </div>
 </section>
@@ -1163,8 +1163,8 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
   <div class="wrap">
     <div class="final__han" aria-hidden="true"><span>宝</span></div>
     <span class="eyebrow reveal">Bắt đầu từ bài trong nhóm</span>
-    <h2 class="reveal" style="--i:1">Vào nhóm, học thử, <em>rồi tự quyết.</em></h2>
-    <p class="lead reveal" style="--i:2">Mỗi tuần có bài mới và một buổi Zoom học thử. Bạn có người quen cũng đang cần tiếng Trung thì gửi trang này cho họ nhé.</p>
+    <h2 class="reveal" style="--i:1">Vào nhóm, chơi thử, <em>rồi tự quyết.</em></h2>
+    <p class="lead reveal" style="--i:2">Mỗi tuần có bài mới trong nhóm Zalo, và game 3D để luyện mỗi ngày. Bạn có người quen cũng đang cần tiếng Trung thì gửi trang này cho họ nhé.</p>
     <div class="final__cta reveal" style="--i:3">
       <a class="btn btn--main magnet" data-link="zaloGroup" href="#lien-he">Vào nhóm Zalo học cùng Bảo</a>
       <a class="btn btn--ghost" data-link="zaloGroup" href="#lien-he">Vào nhóm Zalo</a>
@@ -1180,7 +1180,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
   <div class="wrap foot__grid">
     <div class="foot__brand">
       <a class="foot__logo" href="#top"><span class="foot__seal" aria-hidden="true">宝</span><span>Bảo Khựa <span class="han">阿宝</span><small>China-ready</small></span></a>
-      <p>Tiếng Trung để đi làm, dạy từ Hạ Long. Bài mới mỗi tuần trong nhóm Zalo, học thử qua Zoom.</p>
+      <p>Tiếng Trung để đi làm, dạy từ Hạ Long. Bài mới mỗi tuần trong nhóm Zalo, game 3D luyện mỗi ngày.</p>
     </div>
     <nav class="foot__col" aria-label="Học cùng Bảo"><b>Học cùng Bảo</b><a data-link="zaloGroup" href="#lien-he">Nhóm Zalo</a><a href="#cau">Học thử 4 câu</a><a href="#hsk">Lộ trình HSK0 → HSK4</a><a href="membership.html">Thẻ tự học</a></nav>
     <nav class="foot__col" aria-label="Game"><b>Game</b><a href="hotel/">Khách sạn Vịnh Ā Bǎo 3D</a><a href="hotel/#market">Chợ đêm Bãi Cháy</a><a href="hotel/#bridge">Cầu Bãi Cháy</a><a href="hotel/#the">Nhập mã thẻ</a><a href="game.html">Game Đánh Boss</a></nav>
@@ -1401,7 +1401,7 @@ const CONFIG = {
   /* ---- video vịnh: chỉ tải và chạy khi ở gần màn hình (nhẹ cho điện thoại) ---- */
   const vids = $$('video.lazyvid');
   const vidOn = v => {
-    if (!v.dataset.ready) { v.dataset.ready = 1; const w = document.createElement('source'); w.src = v.dataset.srcWebm; w.type = 'video/webm'; const m = document.createElement('source'); m.src = v.dataset.srcMp4; m.type = 'video/mp4'; v.append(w, m); v.load(); }
+    if (!v.dataset.ready) { v.dataset.ready = 1; if (v.dataset.srcWebm) { const w = document.createElement('source'); w.src = v.dataset.srcWebm; w.type = 'video/webm'; v.append(w); } const m = document.createElement('source'); m.src = v.dataset.srcMp4; m.type = 'video/mp4'; v.append(m); v.load(); }
     if (!reduce) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
   };
   const vio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) vidOn(e.target); else if (e.target.dataset.ready) e.target.pause(); }), { rootMargin: '200px 0px' });
@@ -1460,7 +1460,7 @@ const CONFIG = {
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const portrait = () => innerWidth / innerHeight < 1;
   const play = v => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
-  /* gắn nguồn phim (webm trước, mp4 sau); base không có đuôi, ví dụ 'v4/home/hero-swim-9x16' */
+  /* gắn nguồn phim (webm trước nếu có, mp4 sau); base không có đuôi, ví dụ 'v4/home/hero-bay-9x16' */
   const feed = (v, base, webm, mp4First) => {           // mp4First: phim tua theo cuộn ưu tiên mp4 (nhẹ hơn), webm dự phòng
     if (v.dataset.base === base) return; v.dataset.base = base;
     v.textContent = ''; v.poster = base + '.jpg';
@@ -1474,7 +1474,7 @@ const CONFIG = {
   if (hero && hv) {
     let seen = true, pw = portrait();
     hv.addEventListener('playing', () => hv.classList.add('is-on'));
-    const go = () => { if (reduce || lite) return; feed(hv, 'v4/home/hero-swim-' + (portrait() ? '9x16' : '16x9'), true); if (seen && !document.hidden) play(hv); };
+    const go = () => { if (reduce || lite) return; feed(hv, 'v4/home/hero-bay-' + (portrait() ? '9x16' : '16x9'), false); if (seen && !document.hidden) play(hv); };
     go();
     new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen) go(); else hv.pause(); }).observe(hero);
     document.addEventListener('visibilitychange', () => { if (document.hidden) hv.pause(); else if (seen) go(); });
