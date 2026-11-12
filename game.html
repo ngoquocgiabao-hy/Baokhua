@@ -123,19 +123,11 @@ const ACT_DIFF = [
    Giáp vàng: boss còn 50% máu thì bật giáp, đòn thường chỉ còn 35% sát thương tới khi bị tuyệt chiêu phá.
    Đòn thường không hạ được boss dưới 8% máu → phải kết liễu bằng tuyệt chiêu (trả lời đúng câu hỏi). */
 const ACT_HERO = { cd: { a: .55, b: 1.5, d: .8 }, k: { a: .024, b: .055 }, ult: [.2, .22, .25, .3], en: { a: 11, b: 18, dodge: 6, perfect: 14, break: 12, perSec: 3 } };
-const INVITE_BLURB = 'Thẻ tự học: 1 năm 299k (ưu đãi 11.11 đến 23:59 ngày 11/11) · 3 tháng 99k. Đã gồm game, tài liệu và nhóm Zalo bài giảng. Không gồm Zoom.';
-const INVITE_SHARE_LINE = '11.11: thẻ tự học 1 năm 299k đến 23:59 ngày 11/11 · không gồm Zoom';
-const OFFER_HOLD = '🔥 11.11 đại giảm giá: thẻ 1 năm 299k, đến 23:59 thứ Tư 11/11';
-const OFFER_REFERRAL = '🎁 Rủ bạn: bạn mua thẻ trước 23:59 ngày 11/11 → bạn được cộng thêm 7 ngày.';
-const OFFER_MINIGAME = '🎯 Mini game Zalo đoán nghĩa → giảm đến 20k';
-const SALE_END = Date.parse('2026-11-11T16:59:59Z'); // 23:59:59 thứ Tư 11/11/2026 giờ Việt Nam
-function holdSeatExpired() {
-  return Date.now() >= SALE_END;
-}
-function applyHoldSeatVisibility() {
-  const exp = holdSeatExpired();
-  document.querySelectorAll('[data-offer-hold],[data-offer-referral]').forEach(el => { el.hidden = exp; });
-}
+const INVITE_BLURB = 'Thẻ tự học: 3 tháng 99k · 1 năm 299k. Đã gồm game, tài liệu và nhóm Zalo bài giảng. Không gồm Zoom.';
+const INVITE_SHARE_LINE = 'Thẻ năm tự học 299k – game + tài liệu + nhóm Zalo bài giảng';
+/* Ưu đãi có hạn đã kết thúc (12/11/2026): giá thường 99k/3 tháng · 299k/năm. Giữ 2 hàm để chỗ gọi cũ không lỗi. */
+function holdSeatExpired() { return true; }
+function applyHoldSeatVisibility() {}
 function withUtm(url, qs) {
   if (!url || /THAY_/.test(url)) return url;
   return url + (url.includes('?') ? '&' : '?') + qs;
@@ -911,7 +903,7 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
   </div>
   <button class="btn" type="button" id="btnEnterStage">▶ Vào trận</button>
   <div class="station-card" id="stationCard" aria-live="polite"></div>
-  <a class="map-cta" id="mapCta" href="membership.html" target="_blank" rel="noopener" data-offer-hold>🔥 11.11 · Thẻ tự học 1 năm 299k, đến 23:59 ngày 11/11 →</a>
+  <a class="map-cta" id="mapCta" href="membership.html" target="_blank" rel="noopener">🎫 Thẻ tự học · 3 tháng 99k · 1 năm 299k →</a>
   <button class="btn alt" type="button" id="btnMapBack">← Menu</button>
   <p class="hsk-note">Câu hỏi là luyện tập theo khung HSK, không phải đề thi chính thức. Mốc thời gian là lộ trình gợi ý, tính từ ngày bạn bắt đầu học.</p>
 </div>
@@ -990,11 +982,6 @@ body.ingame .mute-btn,body[data-scr=sMap] .mute-btn,body[data-scr=sEnd] .mute-bt
    <h3>🎓 Học tiếp với Bảo Khựa 阿宝</h3>
    <p class="price" id="invitePrice"></p>
    <p id="inviteShareLine" style="font-size:13px;margin:0 0 10px;opacity:.85"></p>
-   <div class="offers" id="inviteOffers">
-    <p data-offer-hold>🔥 11.11 đại giảm giá: thẻ 1 năm 299k, đến 23:59 thứ Tư 11/11.</p>
-    <p data-offer-referral>🎁 Rủ bạn: bạn mua thẻ trước 23:59 ngày 11/11 → bạn được cộng thêm 7 ngày.</p>
-    <p>🎯 Mini game đoán nghĩa trong nhóm Zalo: đoán đúng → giảm đến 20k khi mua thẻ.</p>
-   </div>
    <div class="row-btns">
     <a class="btn form" id="formBtn" target="_blank" rel="noopener">📝 Đăng ký thẻ</a>
     <a class="btn zalo" id="zaloBtn" target="_blank" rel="noopener">💬 Vào nhóm Zalo</a>
@@ -6385,9 +6372,7 @@ function buildShareCard() {
   g.font = 'bold 32px ' + UIF;
   wrapText(g, INVITE_SHARE_LINE, W/2, 1195, W - 220, 44);
   g.font = 'bold 26px ' + UIF;
-  if (!holdSeatExpired()) wrapText(g, OFFER_HOLD, W/2, 1285, W - 220, 34);
-  if (!holdSeatExpired()) wrapText(g, OFFER_REFERRAL, W/2, 1360, W - 220, 34);
-  wrapText(g, OFFER_MINIGAME, W/2, 1445, W - 220, 34);
+  wrapText(g, 'Thẻ 3 tháng 99k · thẻ 1 năm 299k · không gồm lớp Zoom', W/2, 1330, W - 220, 34);
   g.font = '24px ' + UIF;
   // v16: link biểu mẫu dài không có dấu cách sẽ tràn khung – ghi lời dẫn ngắn, link đầy đủ nằm trong phần chữ chia sẻ
   g.fillText('Đăng ký thẻ hội viên tại baokhua.com', W/2, 1500);
@@ -6422,8 +6407,6 @@ $('shareBtn').onclick = async () => {
   const text = `Mình đang leo hành trình HSK0 → HSK4 của Bảo Khựa: qua ${doneN}/${STAGES.length} trạm${got}! 🏅
 👉 Bắt đầu từ con số 0, thử xem bạn lên tới trạm nào: ${GAME_URL}
 ${INVITE_SHARE_LINE}
-${holdSeatExpired() ? "" : (OFFER_HOLD + "\n")}${holdSeatExpired() ? "" : OFFER_REFERRAL}
-${OFFER_MINIGAME}
 ${/THAY_/.test(formUrl) ? '' : formUrl}`.trim();
   const canvas = buildShareCard();
   try {
