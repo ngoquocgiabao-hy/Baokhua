@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thanh điệu 10 giây · Bảo Khựa 阿宝</title>
+<meta name="description" content="Mini-game nghe nhìn thanh điệu tiếng Trung: 12 chữ, mỗi chữ 10 giây.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#16171B">
+<link rel="icon" href="/favicon.ico">
+<!--
+  DỮ LIỆU CHỮ: CHỜ GEMINI – không đưa main khi chưa ĐẠT (LENH_13-11 Việc 4, mục 25–27).
+  Mỗi mục: zh (chữ Hán), py (pinyin có dấu, đáp án), vi (nghĩa Việt).
+  Ba bộ × 4 chữ, giữ đúng thứ tự thanh 1–2–3–4 trong từng bộ; lúc chơi được xáo trộn.
+-->
+<script type="application/json" id="tone-data">
+[
+  [
+    {"zh": "妈", "py": "mā", "vi": "mẹ"},
+    {"zh": "麻", "py": "má", "vi": "tê"},
+    {"zh": "马", "py": "mǎ", "vi": "ngựa"},
+    {"zh": "骂", "py": "mà", "vi": "mắng"}
+  ],
+  [
+    {"zh": "汤", "py": "tāng", "vi": "canh"},
+    {"zh": "糖", "py": "táng", "vi": "đường"},
+    {"zh": "躺", "py": "tǎng", "vi": "nằm"},
+    {"zh": "烫", "py": "tàng", "vi": "nóng, bỏng"}
+  ],
+  [
+    {"zh": "八", "py": "bā", "vi": "tám"},
+    {"zh": "拔", "py": "bá", "vi": "nhổ"},
+    {"zh": "把", "py": "bǎ", "vi": "cầm; lượng từ cái"},
+    {"zh": "爸", "py": "bà", "vi": "bố"}
+  ]
+]
+</script>
+<style>
+:root{
+  --sun:#FFD91F;--ink:#16171B;--paper:#FFF8D6;--denim:#1E5AA8;--ok:#1F9D55;--bad:#D64545;--mute:#6B6A60;
+  --UIF:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --ZHF:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Source Han Sans SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--sun);color:var(--ink);font:500 17px/1.5 var(--UIF);-webkit-tap-highlight-color:transparent}
+[lang^="zh"]{font-family:var(--ZHF)}
+.app{max-width:480px;min-height:100%;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.seal{width:40px;height:40px;border-radius:11px;background:var(--ink);color:var(--sun);display:grid;place-items:center;font:900 24px/1 var(--ZHF);transform:rotate(-6deg);flex:none;text-decoration:none}
+.title{font-weight:800;font-size:18px;flex:1}
+.count{font-weight:800;font-variant-numeric:tabular-nums}
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:22px;box-shadow:6px 6px 0 var(--ink);padding:18px 16px}
+.screen[hidden]{display:none}
+.intro h1{font-size:26px;line-height:1.2;margin-bottom:8px}
+.intro p{margin-bottom:10px}
+.tones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.tones div{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 4px;text-align:center;font-size:13px;line-height:1.3}
+.tones b{display:block;font-size:24px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;padding:0 18px;border:3px solid var(--ink);border-radius:999px;background:var(--ink);color:var(--sun);font:800 18px var(--UIF);cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:active{transform:translateY(2px)}
+.row{display:flex;gap:10px;margin-top:10px}
+.row .btn{flex:1}
+.timer{height:12px;border:2px solid var(--ink);border-radius:99px;background:#fff;overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--denim);transform-origin:left;transition:background .2s}
+.timer i.low{background:var(--bad)}
+.secs{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;font-size:14px;margin-top:4px}
+.q{text-align:center}
+.hz{font-size:min(34vw,150px);line-height:1.1;font-weight:700}
+.hint{font-size:22px;font-weight:700;margin-top:4px}
+.hint .vi{color:var(--mute);font-weight:600}
+.reveal{min-height:56px;margin-top:8px;font-size:17px}
+.reveal .ok{color:var(--ok);font-weight:800}
+.reveal .bad{color:var(--bad);font-weight:800}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{min-height:76px;border:3px solid var(--ink);border-radius:18px;background:#fff;color:var(--ink);font:800 32px var(--UIF);cursor:pointer;box-shadow:4px 4px 0 var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.opt small{font-size:12px;font-weight:600;color:var(--mute)}
+.opt:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--ok);color:#fff}
+.opt.right small{color:#E8FFE8}
+.opt.wrong{background:var(--bad);color:#fff}
+.opt.wrong small{color:#FFE8E8}
+.end{text-align:center}
+.score{font-size:64px;font-weight:900;line-height:1}
+.score span{font-size:28px}
+.msg{font-weight:800;font-size:20px;margin:8px 0 2px}
+.list{list-style:none;padding:0;margin:14px 0 4px;text-align:left;display:grid;gap:6px}
+.list li{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 10px;font-size:15px}
+.list .z{font-size:24px;font-weight:700;width:30px;text-align:center}
+.list .m{flex:1}
+.list .r{font-weight:900}
+.list .r.ok{color:var(--ok)}.list .r.bad{color:var(--bad)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--sun);padding:10px 18px;border-radius:99px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="seal" href="/" aria-label="Về trang chủ" lang="zh-CN">宝</a>
+    <div class="title">Thanh điệu 10 giây</div>
+    <div class="count" id="count" aria-live="polite"></div>
+  </header>
+
+  <section class="screen intro card" id="s-intro">
+    <h1>12 chữ · mỗi chữ 10 giây</h1>
+    <p>Nhìn chữ Hán, nghĩa và pinyin chưa có dấu, rồi chọn đúng thanh điệu.</p>
+    <div class="tones" aria-label="Bốn thanh điệu">
+      <div><b>ā</b>thanh 1<br>ngang, cao</div>
+      <div><b>á</b>thanh 2<br>đi lên</div>
+      <div><b>ǎ</b>thanh 3<br>xuống rồi lên</div>
+      <div><b>à</b>thanh 4<br>đi xuống</div>
+    </div>
+    <p><span lang="zh-CN">妈 马 骂</span> · mā mǎ mà · mẹ, ngựa, mắng – cùng âm “ma”, khác dấu là khác nghĩa.</p>
+    <button class="btn" id="start" type="button">Bắt đầu</button>
+  </section>
+
+  <section class="screen" id="s-play" hidden>
+    <div>
+      <div class="timer"><i id="bar"></i></div>
+      <div class="secs" id="secs">10</div>
+    </div>
+    <div class="card q">
+      <div class="hz" id="hz" lang="zh-CN"></div>
+      <div class="hint"><span id="base"></span> – <span class="vi" id="vi"></span></div>
+      <div class="reveal" id="reveal" aria-live="polite"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <section class="screen end card" id="s-end" hidden>
+    <div class="score" id="score"></div>
+    <p class="msg">Luyện mỗi ngày 10 phút</p>
+    <p><span lang="zh-CN">每天十分钟，慢慢来。</span><br>Měitiān shí fēnzhōng, mànmàn lái. – Mỗi ngày mười phút, cứ từ từ.</p>
+    <ul class="list" id="list"></ul>
+    <div class="row">
+      <button class="btn" id="share" type="button">Chia sẻ điểm</button>
+    </div>
+    <div class="row">
+      <button class="btn ghost" id="again" type="button">Chơi lại</button>
+      <a class="btn ghost" href="/hotel/">Vào game Khách sạn</a>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  'use strict';
+  var SECS = 10;          // giây cho mỗi chữ
+  var NEXT_MS = 1400;     // dừng xem đáp án trước khi sang chữ tiếp
+  var SETS = JSON.parse(document.getElementById('tone-data').textContent);
+  var WORDS = [].concat.apply([], SETS);
+
+  // Bảng nguyên âm có dấu: [không dấu, thanh1, thanh2, thanh3, thanh4]
+  var V = ['aāáǎà', 'eēéěè', 'iīíǐì', 'oōóǒò', 'uūúǔù', 'üǖǘǚǜ'];
+  function parse(py) {
+    for (var i = 0; i < py.length; i++) {
+      for (var k = 0; k < V.length; k++) {
+        var t = V[k].indexOf(py[i]);
+        if (t > 0) return { pos: i, vowel: V[k], tone: t, base: py.slice(0, i) + V[k][0] + py.slice(i + 1) };
+      }
+    }
+    return { pos: -1, vowel: null, tone: 0, base: py };
+  }
+  function variant(p, t) { return p.base.slice(0, p.pos) + p.vowel[t] + p.base.slice(p.pos + 1); }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var order = [], idx = 0, results = [], t0 = 0, raf = 0, timer = 0, locked = false;
+
+  function show(id) {
+    ['s-intro', 's-play', 's-end'].forEach(function (s) { $(s).hidden = s !== id; });
+  }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; }
+    return a;
+  }
+
+  var zhVoice = null;
+  function pickVoice() {
+    if (!('speechSynthesis' in window)) return;
+    var vs = speechSynthesis.getVoices();
+    zhVoice = vs.filter(function (v) { return /^zh(-|_)?(CN|Hans)?/i.test(v.lang); })[0] || null;
+  }
+  if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  function say(text) {
+    try {
+      if (!zhVoice) return;
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.voice = zhVoice; u.lang = zhVoice.lang; u.rate = 0.8; u.volume = 1;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  function start() {
+    order = shuffle(WORDS); idx = 0; results = [];
+    show('s-play'); ask();
+  }
+
+  function ask() {
+    var w = order[idx], p = parse(w.py);
+    locked = false;
+    $('count').textContent = (idx + 1) + '/' + order.length;
+    $('hz').textContent = w.zh;
+    $('base').textContent = p.base;
+    $('vi').textContent = w.vi;
+    $('reveal').innerHTML = '';
+    var box = $('opts'); box.innerHTML = '';
+    for (var t = 1; t <= 4; t++) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'opt'; b.dataset.t = t;
+      b.innerHTML = variant(p, t) + '<small>thanh ' + t + '</small>';
+      b.addEventListener('click', onPick);
+      box.appendChild(b);
+    }
+    t0 = performance.now();
+    cancelAnimationFrame(raf); tick();
+  }
+
+  function tick() {
+    var left = Math.max(0, SECS - (performance.now() - t0) / 1000);
+    var bar = $('bar');
+    bar.style.transform = 'scaleX(' + (left / SECS) + ')';
+    bar.className = left <= 3 ? 'low' : '';
+    $('secs').textContent = Math.ceil(left);
+    if (left <= 0) { answer(0); return; }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function onPick(e) { if (!locked) answer(+e.currentTarget.dataset.t); }
+
+  function answer(t) {
+    locked = true; cancelAnimationFrame(raf);
+    var w = order[idx], p = parse(w.py), ok = t === p.tone;
+    results.push({ w: w, ok: ok, pick: t });
+    [].forEach.call($('opts').children, function (b) {
+      b.disabled = true;
+      var bt = +b.dataset.t;
+      if (bt === p.tone) b.classList.add('right');
+      else if (bt === t) b.classList.add('wrong');
+    });
+    var head = ok ? '<span class="ok">Đúng!</span> ' : (t ? '<span class="bad">Chưa đúng.</span> ' : '<span class="bad">Hết giờ.</span> ');
+    $('reveal').innerHTML = head + '<span lang="zh-CN">' + w.zh + '</span> · <b>' + w.py + '</b> · ' + w.vi;
+    say(w.zh);
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      idx++;
+      if (idx < order.length) ask(); else end();
+    }, NEXT_MS);
+  }
+
+  function end() {
+    var n = results.filter(function (r) { return r.ok; }).length;
+    $('count').textContent = '';
+    $('score').innerHTML = n + '<span>/' + results.length + '</span>';
+    var ul = $('list'); ul.innerHTML = '';
+    WORDS.forEach(function (w) {
+      var r = results.filter(function (x) { return x.w === w; })[0];
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="z" lang="zh-CN">' + w.zh + '</span><span class="m"><b>' + w.py + '</b> – ' + w.vi + '</span>' +
+        '<span class="r ' + (r && r.ok ? 'ok">✓' : 'bad">✗') + '</span>';
+      ul.appendChild(li);
+    });
+    show('s-end');
+    $('share').dataset.n = n;
+  }
+
+  function toast(msg) {
+    var el = $('toast'); el.textContent = msg; el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); }, 1800);
+  }
+
+  function share() {
+    var n = $('share').dataset.n || 0;
+    var url = location.origin + location.pathname;
+    var text = 'Mình được ' + n + '/12 ở "Thanh điệu 10 giây" – mā má mǎ mà, bạn phân biệt được không?';
+    if (navigator.share) {
+      navigator.share({ title: 'Thanh điệu 10 giây', text: text, url: url }).catch(function () {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text + ' ' + url).then(function () { toast('Đã chép, dán vào Zalo nhé'); }, function () { toast(url); });
+    } else {
+      toast(url);
+    }
+  }
+
+  $('start').addEventListener('click', start);
+  $('again').addEventListener('click', start);
+  $('share').addEventListener('click', share);
+  document.addEventListener('keydown', function (e) {
+    if ($('s-play').hidden || locked) return;
+    var k = +e.key;
+    if (k >= 1 && k <= 4) answer(k);
+  });
+})();
+</script>
+</body>
+</html>
