@@ -14,7 +14,7 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 ## 2. Danh mục thể loại (để tìm "long mạch")
 | Mã | Thể loại | Khuôn dựng | Dữ liệu | Trạng thái |
 |---|---|---|---|---|
-| F1 | Chuyện thật (cảm xúc, hành trình) | `story/build_story*.mjs` (ngoài git) | Ảnh và lời của Bảo | 2 bản, đã chốt bản 2 |
+| F1 | Chuyện thật · Hồ sơ thật (giá trị và uy tín: 5 chương nghề, mỗi chương ảnh chứng thực + một câu tiếng Trung đi làm, kết bằng chơi thử game 3D tại baokhua.com) | `story/build_story3.mjs` + `story/platforms_story3.cjs` (ngoài git) | Ảnh và video thật của Bảo | Bản 3 dựng 15/11, chờ duyệt. Bản 2 (kể chuyện bắt đầu từ số 0) Bảo chưa duyệt, không đăng |
 | F2 | Chữ thật · ảnh thật (phóng kính lúp vào chữ Hán trong ảnh thật) | `series/chuthat.mjs` | `story/episodes/*.json` (ngoài git) | Tập 1–2 đã dựng |
 | F3, F4 | Từ vựng và câu đố trên nền game cũ | `_luu_tru/game-cu/` | `khachsan.html` | **Đã bỏ 06/11/2026** vì đã có game mới. Không đăng 24 video này |
 | F5 | Trailer thương hiệu | `debut/build_debut.mjs` | Dữ kiện công khai trên trang chủ | Đoạn 14–22 giây là game cũ: quay lại bằng game mới trước khi đăng |
