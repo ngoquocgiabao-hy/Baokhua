@@ -5,6 +5,7 @@ story/photos/
 story/build_story*.mjs
 story/CAPTIONS_*.md
 story/thumbs_story.cjs
+story/platforms_story*.cjs
 __pycache__/
 story/episodes/
 story/raw/
