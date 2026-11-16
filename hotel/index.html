@@ -105,12 +105,15 @@ a.sbtn{text-decoration:none}
 .zoom-pad{position:fixed;right:8px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:30;display:flex;flex-direction:column;gap:6px}
 .zoom-pad .sbtn{font-size:22px}
 body[data-mode=inside] .zoom-pad,body.st-on .zoom-pad,body.dr-on .zoom-pad{display:none}
-.place-menu{position:fixed;right:58px;top:calc(8px + env(safe-area-inset-top));z-index:31;background:rgba(20,40,80,.92);border:2px solid #FFD91F;border-radius:16px;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;width:min(300px,calc(100vw - 76px));box-shadow:0 6px 0 rgba(10,20,40,.4)}
+.place-menu{position:fixed;right:58px;top:calc(8px + env(safe-area-inset-top));z-index:31;background:rgba(20,40,80,.92);border:2px solid #FFD91F;border-radius:16px;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;width:min(300px,calc(100vw - 76px));box-shadow:0 6px 0 rgba(10,20,40,.4);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
 .place-menu[hidden]{display:none}
 .place-menu b{grid-column:1/-1;color:#FFD91F;font:900 13px/1.2 system-ui,sans-serif;padding:2px 4px}
 .place-menu button{display:flex;align-items:center;gap:6px;text-align:left;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;padding:6px 7px;font:800 12.5px/1.2 system-ui,sans-serif;cursor:pointer}
 .place-menu button .pi{font-size:19px;flex:none}.place-menu button .pn{min-width:0}.place-menu button small{display:block;color:#FFE97A;font-weight:700;font-size:10.5px}
-.place-menu button:active{transform:scale(.97)}
+.place-menu button:active,.place-menu .pm-wide:active{transform:scale(.97)}
+.place-menu .pm-wide{grid-column:1/-1;display:flex;align-items:center;gap:6px;text-decoration:none;border:2px solid #FFD91F;background:rgba(255,217,31,.16);color:#fff;border-radius:12px;padding:6px 7px;font:800 12.5px/1.2 system-ui,sans-serif}
+.place-menu .pm-wide .pi{font-size:19px;flex:none}.place-menu .pm-wide small{display:block;color:#FFE97A;font-weight:700;font-size:10.5px}
+.place-menu .pm-note{grid-column:1/-1;color:#FFE97A;font:700 11.5px/1.3 system-ui,sans-serif;padding:0 4px}
 .pill.star .top{display:flex;justify-content:space-between;font-size:12px}
 #starTxt{color:#FFD91F;letter-spacing:1px;font-size:14px}
 .mini{height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden}
@@ -3087,9 +3090,11 @@ function init() {
   const pm = $('placeMenu');
   const placeClose = () => { pm.hidden = true; $('placeBtn').setAttribute('aria-expanded', 'false'); };
   $('placeBtn').onclick = e => {
-    e.stopPropagation(); Snd.unlock(); Snd.play('ui'); const W = Scene.W; if (!W || !W.places) { toast('Máy chưa mở được hình 3D'); return; }
+    e.stopPropagation(); Snd.unlock(); Snd.play('ui'); const W = Scene.W, has3d = !!(W && W.places);
     if (!pm.hidden) return placeClose();
-    pm.innerHTML = '<b>📍 Đi tới</b>' + W.places.map(p => `<button type="button" role="menuitem" data-pl="${p.id}"><span class="pi">${p.ico}</span><span class="pn">${esc(p.name)}<small lang="zh-CN">${p.zh} ${p.py}</small></span></button>`).join('');
+    // Mini-game Thanh điệu 10 giây (tone10s.html) luôn ở đầu menu, kể cả khi máy không mở được hình 3D
+    const tone = `<a class="pm-wide" role="menuitem" href="../tone10s.html"${EMBED ? ' target="_top"' : ''}><span class="pi">🎵</span><span class="pn">Thanh điệu 10 giây<small><span lang="zh-CN">声调 shēngdiào</span> · thanh điệu</small></span></a>`;
+    pm.innerHTML = '<b>📍 Đi tới</b>' + tone + (has3d ? W.places.map(p => `<button type="button" role="menuitem" data-pl="${p.id}"><span class="pi">${p.ico}</span><span class="pn">${esc(p.name)}<small lang="zh-CN">${p.zh} ${p.py}</small></span></button>`).join('') : '<small class="pm-note">Máy chưa mở được hình 3D</small>');
     pm.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const p = W.places.find(x => x.id === b.dataset.pl); placeClose(); Snd.play('ui'); if (Inside.open) Inside.close(); W.goPlace(p.id); speak(p.zh); toast(`${p.ico} ${p.name} · ${p.zh} ${p.py}`); hideTipNow(); });
     pm.hidden = false; $('placeBtn').setAttribute('aria-expanded', 'true');
   };
