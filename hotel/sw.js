@@ -4,8 +4,8 @@
    - Nhắc ôn khi app đóng: trang ghi lịch ôn vào Cache 'bk-srs' (./__srs); đến giờ nhắc mà còn thẻ đến hạn thì hiện thông báo
      "Hôm nay có N thẻ cần ôn" (mỗi ngày 1 lần). Chạy qua periodicsync (Chrome Android đã cài app) hoặc khi trang gửi 'remind'.
    Đổi V khi muốn xoá bộ nhớ đệm cũ. */
-const V = 'bk-hotel-v8-2';
-const SHELL = ['./', './index.html', './world.js', './w-kit.js', './w-life.js', './w-lobby.js', './lib/three.module.min.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const V = 'bk-hotel-v8-3';
+const SHELL = ['./', './index.html', './world.js', './w-kit.js', './w-life.js', './w-lobby.js', './lib/three.module.min.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './xiao.html', './xiao-core.js', './xiao-words.js'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => (k.startsWith('bk-hotel-') || k.startsWith('bk-hub-')) && k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {

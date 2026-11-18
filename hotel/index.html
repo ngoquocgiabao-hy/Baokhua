@@ -160,6 +160,8 @@ body[data-mode=inside] .zoom-pad,body.st-on .zoom-pad,body.dr-on .zoom-pad{displ
 .stats b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
 .btn{border:0;border-radius:14px;padding:13px;font-size:16px;font-weight:800;background:#FFD91F;color:#3a2600;box-shadow:0 4px 0 #b8901c;text-align:center;text-decoration:none;display:block;cursor:pointer}
 .btn.ghost{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.btn.xiao-rv{margin:0 0 10px;background:linear-gradient(90deg,#FF7FB6,#9A63FF);color:#fff;box-shadow:0 4px 0 #5B2DBF}
+.btn.xiao-rv small{display:block;font-size:11.5px;font-weight:700;opacity:.92;margin-top:3px}
 .btn.zalo{background:#0068ff;color:#fff;box-shadow:0 4px 0 #0040a0}
 .btn.dark{background:#16171B;color:#FFD91F;box-shadow:0 4px 0 #000}
 .row-btns{display:flex;gap:8px}.row-btns .btn{flex:1}
@@ -2378,7 +2380,7 @@ const Ev = (() => {
      boss  quái lạc vào khách sạn → đuổi quái (sân đấu)   tour đoàn khách du lịch: 3 khách tới ×1,5 xu
      vip   khách VIP: khách sau ×2 xu                     fest lễ hội Carnaval Hạ Long: 3 phút ×1,3 xu
      quiz  hướng dẫn viên đố từ cảnh Hạ Long (+xu, +hài lòng, thẻ từ mới) */
-  const DECK = ['need', 'quiz', 'tour', 'boss', 'storm', 'vip', 'need', 'fest', 'quiz', 'boss'];
+  const DECK = ['need', 'xiao', 'quiz', 'tour', 'boss', 'storm', 'vip', 'need', 'xiao', 'fest', 'quiz', 'boss'];
   function afterGuest() {
     if (S.ev.tour > 0) S.ev.tour--;
     if (S.ev.vip2) S.ev.vip2 = 0;
@@ -2409,6 +2411,11 @@ const Ev = (() => {
     } else if (kind === 'fest') {
       S.ev.fest = Date.now() + 3 * 60e3; save(); Snd.starUp(); const r = rectOf($('serveBtn')); if (r) burstAt(r.left + r.width / 2, r.top, 40, 180);
       showOv('🎉', 'Lễ hội Carnaval Hạ Long!', `<p>Phố Bãi Cháy mở hội: <b lang="zh-CN">狂欢节</b> (kuánghuānjié · lễ hội Carnaval).</p><p>3 phút tới mọi câu trả lời đúng được <b>×1,3 xu</b>.</p>`, 'Vào hội ▶', null);
+    } else if (kind === 'xiao') {
+      Snd.play('ui');
+      showOv('🧹', 'Phòng 203 bừa bộn quá!', `<p>Đoàn khách vừa trả phòng, đồ đạc lộn xộn. Cần <b lang="zh-CN">打扫房间</b> (dǎsǎo fángjiān · dọn phòng) ngay!</p><p>Ghép 3 dọn phòng thật nhanh: xu cộng thẳng vào khách sạn, khách hài lòng <b>+4%</b>. Hết giờ thì trả lời 1 câu tiếng Trung để chơi tiếp.</p>`,
+        '🧹 Dọn phòng ▶', () => Xiao.show('&lv=next', 'clean'), '<button type="button" class="btn ghost" id="xiaoLater">Để sau</button>');
+      const l = $('xiaoLater'); if (l) l.onclick = e => { e.stopPropagation(); $('ov').classList.remove('on'); ovOpen = false; Snd.play('ui'); };
     } else quiz();
   }
   /** hướng dẫn viên đố nhanh 1 từ cảnh Hạ Long (3 lựa chọn) */
@@ -2874,7 +2881,8 @@ const Learn = (() => {
   }
   function html() {
     const due = dueList(), now = dueNow(), have = Object.keys(S.cards).filter(id => C[id]).length, total = Object.keys(C).length;
-    let h = `<div class="card learn-top"><div class="lt-n"><b>${due.length}</b><small>thẻ cần ôn hôm nay</small></div><div class="lt-n"><b>${have}/${total}</b><small>thẻ đã có</small></div><div class="lt-n"><b>${star()}★</b><small>${HSK_OF_STAR[star()]}</small></div></div>`;
+    let h = `<div class="card learn-top"><div class="lt-n"><b>${due.length}</b><small>thẻ cần ôn hôm nay</small></div><div class="lt-n"><b>${have}/${total}</b><small>thẻ đã có</small></div><div class="lt-n"><b>${star()}★</b><small>${HSK_OF_STAR[star()]}</small></div></div>
+      <button type="button" class="btn xiao-rv" id="xiaoRv">✨ ${due.length ? `Ôn ${due.length} thẻ bằng trò ghép 3` : 'Chơi ghép 3 ôn từ'} <span lang="zh-CN">消消乐</span><small>Hết giờ thì trả lời 1 câu: thẻ đến hạn hỏi trước · xu cộng vào khách sạn</small></button>`;
     if (now.length) { curId = now[0]; const c = C[curId], sc = S.cards[curId];
       h += `<div class="card review">${cardFace(c)}<div class="grades" id="grades" hidden>${['Lại', 'Khó', 'Được', 'Dễ'].map((t, g) => `<button type="button" class="g${g}" data-g="${g}">${t}<small>${ivlLabel(nextIvl(sc, g))}</small></button>`).join('')}</div>
         <p class="note">Chấm thật lòng: quên thì bấm "Lại", thẻ quay lại sau 10 phút. Ôn đúng lịch giúp nhớ lâu (ôn ngắt quãng như Anki).</p></div>`; }
@@ -2896,13 +2904,80 @@ const Learn = (() => {
       root.querySelectorAll('[data-g]').forEach(b => b.onclick = () => { const g = +b.dataset.g; grade(curId, g); if (g) { S.pts += 2; S.coins += 1; save(); renderHud(); Snd.coin(1); } else Snd.play('hurt'); renderReview(); }); }
     root.querySelectorAll('[data-card]').forEach(b => b.onclick = () => { const c = C[b.dataset.card]; speak(c.zh, true); toast(`${c.zh} · ${c.py} · ${c.vi}`); });
     $('rmHour').onchange = e => { S.hour = +e.target.value; save(); syncSW(); };
+    const xb = root.querySelector('#xiaoRv'); if (xb) xb.onclick = () => { Snd.unlock(); Snd.play('ui'); Xiao.show('&lv=next'); };
     $('rmOn').onclick = enableNotify; $('rmIcs').onclick = downloadICS; if ($('rmInstall')) $('rmInstall').onclick = () => { installEvt.prompt(); installEvt = null; renderReview(); };
   }
   function badge() {
     const n = dueList().length, b = $('dueBadge'); if (b) { b.textContent = n; b.hidden = !n; }
     try { if (navigator.setAppBadge) (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(() => {}); } catch (e) {}
   }
-  return { C, add, met, grade, dueList, dueNow, courseQuestion, html, bind, badge, dayStart };
+  /** v8.3 · danh mục thẻ cho mini-game Ā Bǎo 消消乐 (xiao.html): [mã thẻ, chữ Hán, pinyin, nghĩa, mức HSK] */
+  function exportCat() {
+    const lvOf = c => c.src === 'course' ? (+String(COURSE[c.ui].lv).replace(/\D/g, '') || 0)
+      : c.src === 'furn' ? Math.max(0, ((ZONES[(FURNI[c.id.slice(2)] || {}).z] || {}).star || 1) - 1)
+      : c.src === 'story' ? Math.max(0, (STORY.find(x => c.id.startsWith('s-' + x.id + '-')) || {}).part || 0)
+      : c.src === 'need' ? 1 : 0;
+    try { localStorage.setItem('bk_words_v1', JSON.stringify({ v: 1, at: Date.now(), cards: Object.values(C).filter(c => c.zh && c.vi).map(c => [c.id, c.zh, c.py || '', c.vi, lvOf(c)]) })); } catch (e) {}
+  }
+  return { C, add, met, grade, dueList, dueNow, courseQuestion, html, bind, badge, dayStart, exportCat, has: id => !!C[id] };
+})();
+/* ===== v8.3 · MINI-GAME Ā Bǎo 消消乐 (xiāoxiāolè · ghép 3 ôn từ, hotel/xiao.html) =====
+   Mở trong khung sự kiện (#evt): mini-game gửi postMessage { type: 'bk-xiao', kind }:
+     ready  → game gửi lại xu, sao, thẻ ôn (bk-xiao-state)    learn → ghi Sổ ôn ngay (Learn.met: đến hạn thì chấm, sai thì học lại)
+     done   → cộng xu + điểm sao của 1 phòng vừa dọn xong      close → đóng khung, báo tổng thu hoạch
+   Mở riêng (xiao.html ngoài game): kết quả nằm ở hộp thư bk_xiao_inbox; game nhận khi mở lại hoặc quay lại tab.
+   Chỉ game Khách sạn ghi vào bk_hotel_v3 (mini-game chỉ đọc) nên không bao giờ ghi đè tiến độ của nhau. */
+const Xiao = (() => {
+  const INBOX = 'bk_xiao_inbox', COIN_CAP = 120, PTS_CAP = 10;
+  let open = false, task = '', got = { coins: 0, learn: 0, rooms: 0 };
+  const pub = () => ({ coins: S.coins, star: star(), card: S.card || null, cards: S.cards, muted: !!S.muted, pts: S.pts });
+  function send() { try { const w = $('evtFrame').contentWindow; if (w) w.postMessage({ type: 'bk-xiao-state', hs: pub() }, location.origin); } catch (e) {} }
+  function show(q, t) {
+    if (open) return; Learn.exportCat(); open = true; task = t || ''; got = { coins: 0, learn: 0, rooms: 0 };
+    $('evtTitle').innerHTML = '✨ Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ'; $('evt').hidden = false; document.body.classList.add('ev-on');
+    Scene.setActive(false); if (Inside.open) Inside.send({ bk: 'pause' }); Snd.suspend(); Voice.stop(); hideTipNow();
+    $('evtFrame').src = 'xiao.html?in=1' + (q || '');
+  }
+  function close() {
+    if (!open) return; open = false; $('evt').hidden = true; $('evtFrame').src = 'about:blank'; document.body.classList.remove('ev-on');
+    Scene.setActive(true); Snd.resume(); renderHud(); renderBuild(); if (Inside.open) Inside.card();
+    report(got);
+  }
+  function report(g) {
+    if (!g.coins && !g.learn) return;
+    if (g.coins) { Snd.coin(Math.min(6, 2 + g.rooms)); const r = rectOf($('serveBtn')); if (r) burstAt(r.left + r.width / 2, r.top, 30, 160); }
+    toast(`✨ 消消乐 xiāoxiāolè: ${g.rooms ? `dọn ${g.rooms} phòng · +${g.coins} 🪙` : 'chưa dọn xong phòng'}${g.learn ? ` · ôn ${g.learn} thẻ` : ''}`);
+  }
+  function learn(id, ok) { if (!Learn.has(id)) return; Learn.met(id, !!ok); got.learn++; }
+  function room(coins, pts) {
+    const c = Math.max(0, Math.min(COIN_CAP, coins | 0)), p = Math.max(0, Math.min(PTS_CAP, pts | 0));
+    S.coins += c; S.pts += p; got.coins += c; got.rooms++;
+    S.xiao = S.xiao || { rooms: 0, coins: 0 }; S.xiao.rooms++; S.xiao.coins += c;
+    if (task === 'clean') { S.sat = Math.min(100, S.sat + 4); task = ''; }
+    const after = star(), before = S.star || 1; S.star = after; save(); renderHud(); renderBuild();
+    if (after > before) setTimeout(() => starUp(after), 600);
+  }
+  addEventListener('message', e => {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'bk-xiao' || !open) return;
+    if (e.source !== $('evtFrame').contentWindow) return;
+    const d = e.data;
+    if (d.kind === 'ready') send();
+    else if (d.kind === 'learn') { learn(d.id, d.ok); save(); }
+    else if (d.kind === 'done') { room(d.coins, d.pts); send(); }
+    else if (d.kind === 'close') close();
+  });
+  /** chơi riêng ở xiao.html rồi quay về: nhận hộp thư (giới hạn xu theo số phòng để tránh số lạ) */
+  function pickup() {
+    let b = null; try { b = JSON.parse(localStorage.getItem(INBOX) || 'null'); localStorage.removeItem(INBOX); } catch (e) { b = null; }
+    if (!b || typeof b !== 'object') return;
+    const rooms = Math.max(0, Math.min(50, b.rooms | 0)), g = { coins: 0, learn: 0, rooms };
+    g.coins = Math.max(0, Math.min(rooms * COIN_CAP, b.coins | 0)); const pts = Math.max(0, Math.min(rooms * PTS_CAP, b.pts | 0));
+    (Array.isArray(b.learn) ? b.learn.slice(-400) : []).forEach(x => { if (Array.isArray(x) && Learn.has(x[0])) { Learn.met(x[0], !!x[1]); g.learn++; } });
+    if (g.coins || pts) { S.coins += g.coins; S.pts += pts; S.xiao = S.xiao || { rooms: 0, coins: 0 }; S.xiao.rooms += rooms; S.xiao.coins += g.coins; const after = star(), before = S.star || 1; S.star = after; if (after > before) setTimeout(() => starUp(after), 1800); }
+    save(); renderHud(); renderBuild(); Learn.badge();
+    setTimeout(() => report(g), 1200);
+  }
+  return { show, close, pickup, get open() { return open; } };
 })();
 /* --- nhắc ôn: thông báo (sw.js), lịch .ics, cài app --- */
 let installEvt = null, swReg = null;
@@ -3094,7 +3169,9 @@ function init() {
     if (!pm.hidden) return placeClose();
     // Mini-game Thanh điệu 10 giây (tone10s.html) luôn ở đầu menu, kể cả khi máy không mở được hình 3D
     const tone = `<a class="pm-wide" role="menuitem" href="../tone10s.html"${EMBED ? ' target="_top"' : ''}><span class="pi">🎵</span><span class="pn">Thanh điệu 10 giây<small><span lang="zh-CN">声调 shēngdiào</span> · thanh điệu</small></span></a>`;
-    pm.innerHTML = '<b>📍 Đi tới</b>' + tone + (has3d ? W.places.map(p => `<button type="button" role="menuitem" data-pl="${p.id}"><span class="pi">${p.ico}</span><span class="pn">${esc(p.name)}<small lang="zh-CN">${p.zh} ${p.py}</small></span></button>`).join('') : '<small class="pm-note">Máy chưa mở được hình 3D</small>');
+    const xiao = `<button type="button" class="pm-wide" role="menuitem" id="pmXiao"><span class="pi">✨</span><span class="pn">Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ<small><span lang="zh-CN">xiāoxiāolè</span> · dọn phòng, kiếm xu</small></span></button>`;
+    pm.innerHTML = '<b>📍 Đi tới</b>' + xiao + tone + (has3d ? W.places.map(p => `<button type="button" role="menuitem" data-pl="${p.id}"><span class="pi">${p.ico}</span><span class="pn">${esc(p.name)}<small lang="zh-CN">${p.zh} ${p.py}</small></span></button>`).join('') : '<small class="pm-note">Máy chưa mở được hình 3D</small>');
+    $('pmXiao').onclick = () => { placeClose(); Snd.play('ui'); if (Inside.open) Inside.close(); Xiao.show('&lv=next'); };
     pm.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const p = W.places.find(x => x.id === b.dataset.pl); placeClose(); Snd.play('ui'); if (Inside.open) Inside.close(); W.goPlace(p.id); speak(p.zh); toast(`${p.ico} ${p.name} · ${p.zh} ${p.py}`); hideTipNow(); });
     pm.hidden = false; $('placeBtn').setAttribute('aria-expanded', 'true');
   };
@@ -3102,15 +3179,18 @@ function init() {
   $('zinBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(.7); };
   $('zoutBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(1.42); };
   $('insideBtn').onclick = () => { Snd.unlock(); Snd.play('ui'); if (Inside.open) Inside.close(); else Inside.show(); };
-  $('evtClose').onclick = () => { if (S.ev.pend && S.ev.pend.fid && FURNI[S.ev.pend.fid]) { S.coins += FURNI[S.ev.pend.fid].price; toast(`Đã quay về · hoàn ${FURNI[S.ev.pend.fid].price} 🪙`); } S.ev.pend = null; save(); Ev.close(); };
+  $('evtClose').onclick = () => { if (Xiao.open) return Xiao.close(); if (S.ev.pend && S.ev.pend.fid && FURNI[S.ev.pend.fid]) { S.coins += FURNI[S.ev.pend.fid].price; toast(`Đã quay về · hoàn ${FURNI[S.ev.pend.fid].price} 🪙`); } S.ev.pend = null; save(); Ev.close(); };
   $('insideSub').textContent = zoneBadge();
   Ev.pickup(); Ev.banner(); setInterval(() => Ev.banner(), 15000); Learn.badge();
+  Learn.exportCat(); Xiao.pickup();
+  addEventListener('storage', e => { if (e.key === 'bk_xiao_inbox' && e.newValue) Xiao.pickup(); });
+  addEventListener('pageshow', e => { if (e.persisted) Xiao.pickup(); });
   if (location.hash === '#on-tap') setTimeout(() => switchTab('review'), 400);
   else setTimeout(() => { const n = Learn.dueList().length; if (n && !ovOpen && !Tut.active) toast(`🧠 Hôm nay có ${n} thẻ từ cần ôn · mở tab Ôn tập`); }, 2500);
   document.body.addEventListener('pointerdown', () => { Snd.unlock(); Voice.warm(); }, { passive: true });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { hiddenAt = Date.now(); save(); Voice.stop(); Snd.suspend(); Scene.setActive(false); return; }
-    Snd.resume(); Scene.setActive(true);
+    Snd.resume(); Scene.setActive(true); Xiao.pickup();
     const got = awayEarnings(hiddenAt); hiddenAt = 0;
     if (got > 0) { S.coins += got; save(); renderHud(); renderBuild(); toast(`🧑‍💼 Nhân viên thu được +${got} 🪙 khi bạn vắng`); }
   });
@@ -3150,6 +3230,7 @@ function arrive(p) {
   let n = 0; const t = setInterval(() => {
     n++; const busy = ovOpen || document.querySelector('.onb:not([hidden])') || Journey.open || Tut.active;
     if (H === 'the') { if (S.lv != null && !busy) { clearInterval(t); Gate.code(); } }
+    else if (H === 'xiao') { if (S.lv != null && !busy) { clearInterval(t); Xiao.show('&lv=next'); } }
     else { const W = Scene.W; if (W && W.places && !busy) { clearInterval(t); const p = W.places.find(q => q.id === H); if (p) { W.goPlace(H); arrive(p); } } }
     if (n > 240) clearInterval(t);
   }, 700);
@@ -3158,7 +3239,7 @@ function arrive(p) {
 /* hook kiểm thử (không ảnh hưởng chơi) */
 window.__hotel = {
   get S() { return S; }, get Q() { return Q; }, get queue() { return Scene.queue; }, ITEMS, QUESTIONS, star, fare, Scene, setHour, Journey, Onboard, STORY, guestLv, hotelOpen, gameHour, Voice, Tut, Snd,
-  openServe, Gate, Mkt, BossQ, BOSSES, openBuy: id => openBuy(ITEM[id]), openFurnBuy: id => openFurnBuy(FURNI[id]), furnGot: id => furnGot(FURNI[id]), FURN, ZONES, Inside, Ev, Learn, nextFurn, furnLock, zonesDone,
+  openServe, Gate, Mkt, BossQ, BOSSES, openBuy: id => openBuy(ITEM[id]), openFurnBuy: id => openFurnBuy(FURNI[id]), furnGot: id => furnGot(FURNI[id]), FURN, ZONES, Inside, Ev, Learn, Xiao, nextFurn, furnLock, zonesDone,
   answer(correct) {
     if (!Q || Q.locked) return false;
     const q = Q.q;
