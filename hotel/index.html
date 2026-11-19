@@ -3007,10 +3007,12 @@ const Xiao = (() => {
     const rooms = Math.max(0, Math.min(50, b.rooms | 0)), g = { coins: 0, learn: 0, rooms };
     g.coins = Math.max(0, Math.min(rooms * COIN_CAP, b.coins | 0)); const pts = Math.max(0, Math.min(rooms * PTS_CAP, b.pts | 0));
     (Array.isArray(b.learn) ? b.learn.slice(-400) : []).forEach(x => { if (Array.isArray(x) && Learn.has(x[0])) { Learn.met(x[0], !!x[1]); g.learn++; } });
-    if (g.coins || pts) { S.coins += g.coins; S.pts += pts; S.xiao = S.xiao || { rooms: 0, coins: 0 }; S.xiao.rooms += rooms; S.xiao.coins += g.coins; const after = star(), before = S.star || 1; S.star = after; if (after > before) setTimeout(() => starUp(after), 1800); }
+    if (g.coins || pts) { S.coins += g.coins; S.pts += pts; S.xiao = S.xiao || { rooms: 0, coins: 0 }; S.xiao.rooms += rooms; S.xiao.coins += g.coins; const after = star(), before = S.star || 1; S.star = after; if (after > before) afterBoot(() => setTimeout(() => starUp(after), 1500)); }
     save(); renderHud(); renderBuild(); Learn.badge();
-    setTimeout(() => report(g), 1200);
+    afterBoot(() => report(g));
   }
+  /** đợi màn chờ dựng phố xong mới báo (để người chơi thấy "+X 🪙" thay vì báo dưới màn chờ hay bị lời nhắc ôn đè) */
+  function afterBoot(f, n = 0) { const b = document.getElementById('boot'); if (!b || b.classList.contains('done') || n > 120) setTimeout(f, Math.max(700, 3300 - performance.now())); else setTimeout(() => afterBoot(f, n + 1), 300); }   // sau lời nhắc ôn (2,5 giây) để không bị đè
   return { show, close, pickup, get open() { return open; } };
 })();
 /* --- nhắc ôn: thông báo (sw.js), lịch .ics, cài app --- */
