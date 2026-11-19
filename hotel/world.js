@@ -22,7 +22,7 @@ const S_IN = 5.4, S_STREET = 15, S_BAY = 125;
 
 let renderer, scene, cam, wrap, cv, hooks = {}, low = false, active = true, ready = false;
 const world = new THREE.Group(), staticRoot = new THREE.Group(), dyn = new THREE.Group(), people = new THREE.Group();
-const camDir = new V3(1, .95, 1).normalize();
+const camDir = new V3(1, .95, 1).normalize(), camDir0 = camDir.clone();   // camDir0: hướng gốc (quay phim có thể xoay quanh trục đứng)
 const view = { at: new V3(8, .6, 10.5), S: S_STREET };
 let fly = null, lastUser = -9e9, mode = 'street', dark = 0, hour = 12, T = 0;
 const taps = [];        // { box: Box3 } | { obj } + key
@@ -949,7 +949,9 @@ function update(dt, now) {
    ===================================================================== */
 const World = {
   get ready() { return ready; },
-  init(o) {
+  /** dựng thế giới theo từng bước (generator): init() chạy liền một mạch (tools/film),
+      initAsync() nhả luồng chính giữa các bước để màn chờ cập nhật tiến độ và trang không đứng hình (v8.3). */
+  *build(o) {
     cv = o.canvas; wrap = o.wrap; hooks = o.hooks || {}; low = !!o.low;
     renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !low, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(low ? 1 : 2, devicePixelRatio || 1));
@@ -961,20 +963,34 @@ const World = {
     if (!low) { sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 80 }); sun.shadow.bias = -.0008; sun.shadow.normalBias = .04; sun.shadow.radius = 3; }
     setCoinHook(() => hooks.onCoin && hooks.onCoin());
     const tmp = new THREE.Group(); const old = setSeg(1);
-    buildTerrain(tmp); buildCity(tmp); buildLandmarks(tmp); buildWheel(tmp);
+    yield ['terrain', .08]; buildTerrain(tmp);
+    yield ['city', .22]; buildCity(tmp);
+    yield ['landmarks', .38]; buildLandmarks(tmp);
+    yield ['wheel', .48]; buildWheel(tmp);
+    yield ['life', .56];
     life = buildLife({ world: dyn, tapBox, lamp: lampPost, winA, winB, glassMat, nightMats, owned: id => !!ST.own[id], hour: () => hour });
     tmp.add(life.static); setSeg(old);
-    bake(tmp, staticRoot, { vc: true }); buildLightPools();
+    yield ['bake', .68]; bake(tmp, staticRoot, { vc: true }); buildLightPools();
     buildExtras(); buildSkyBits();
-    lobby = buildLobby({ say, visible: () => view.S < 12 }); world.add(lobby.room);
+    yield ['lobby', .8]; lobby = buildLobby({ say, visible: () => view.S < 12 }); world.add(lobby.room);
     buildOverlay(); bindInput(); resize();
     for (let i = 0; i < 3; i++) spawnBoat(true);
     buildHotel(ST); dayNight();
+    yield ['compile', .9];
     // biên dịch sẵn mọi vật liệu (kể cả sảnh, đồ chưa mua) → lần đầu vào trong không bị khựng
     try { const hid = []; scene.traverse(m => { if (!m.visible) { hid.push(m); m.visible = true; } }); renderer.compile(scene, cam); hid.forEach(m => { m.visible = false; }); } catch (e) {}
     shellOpacity(-1);
     ready = true; World.setActive(true);
     return true;
+  },
+  init(o) { const g = World.build(o); while (!g.next().done); return true; },
+  /** onStep(khoá bước, tỉ lệ 0–1) gọi trước mỗi bước; trả về Promise xong khi dựng xong */
+  initAsync(o, onStep) {
+    const g = World.build(o);
+    return new Promise((res, rej) => {
+      const step = () => { let r; try { r = g.next(); } catch (e) { rej(e); return; } if (r.done) { res(true); return; } try { if (onStep) onStep(r.value[0], r.value[1]); } catch (e) {} setTimeout(step, 16); };
+      step();
+    });
   },
   /** trạng thái khách sạn: sao, tầng, công trình, nội thất, nhân viên, mở cửa chưa */
   setState(st) {
@@ -1042,6 +1058,8 @@ const World = {
     fly = null; vel.set(0, 0, 0); if (at) view.at.set(at[0], at[1] || 0, at[2]); if (S) view.S = S;
     if (o.hour != null) hooks.hour = () => o.hour;
     filmNow += dt * 1000; rdt = dt; if (o.dn) lastDN = 0;
+    camDir.copy(camDir0).applyAxisAngle(new V3(0, 1, 0), o.yaw || 0);   // yaw (radian): xoay máy quanh điểm nhìn – động tác arc trái/phải
+    if (o.tilt) { const h = Math.hypot(camDir.x, camDir.z), el = Math.atan2(camDir.y, h) + o.tilt; camDir.set(camDir.x / h * Math.cos(el), Math.sin(el), camDir.z / h * Math.cos(el)); }
     update(dt, filmNow); if (o.view) { if (o.view.at) view.at.set(...o.view.at); if (o.view.S) view.S = o.view.S; applyCam(); shellOpacity(-1); }
     if (!o.skip) renderer.render(scene, cam);
   },

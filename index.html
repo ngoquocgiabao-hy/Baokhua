@@ -374,6 +374,16 @@ section>.wrap{position:relative;z-index:1}
 .feats i{grid-row:span 2;font-style:normal;font-size:26px;width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(255,217,31,.3),rgba(255,217,31,.06));border:1px solid rgba(255,217,31,.4)}
 .feats b{font-size:17px;line-height:1.3}.feats span{color:var(--mut);font-size:14.5px;line-height:1.45}
 .game__cta{display:flex;flex-wrap:wrap;gap:12px}
+/* 18/11 · thẻ mini-game Ā Bǎo 消消乐 (ghép 3 ôn từ, tải tức thì) */
+.xcard{display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:center;margin-top:20px;padding:12px;border-radius:22px;background:linear-gradient(135deg,rgba(255,127,182,.2),rgba(154,99,255,.26));border:1px solid rgba(255,255,255,.2);color:#fff;text-decoration:none;transition:transform .25s cubic-bezier(.2,1.4,.4,1),box-shadow .25s}
+.xcard:hover{transform:translateY(-3px);box-shadow:0 16px 36px -16px rgba(154,99,255,.75)}
+.xcard img{width:132px;height:132px;object-fit:cover;border-radius:16px;display:block;background:#2B1E5C}
+.xcard em{font-style:normal;font-size:11.5px;font-weight:800;color:#FFD91F;letter-spacing:.4px;text-transform:uppercase}
+.xcard b{display:block;font-size:21px;line-height:1.2;margin:3px 0 5px}
+.xcard b span{color:#FFD91F}
+.xcard small{display:block;font-size:13.5px;line-height:1.5;opacity:.9}
+.xcard i{display:inline-block;margin-top:8px;font-style:normal;font-weight:800;font-size:14px;color:#FFD91F}
+@media (max-width:420px){.xcard{grid-template-columns:92px 1fr;gap:12px}.xcard img{width:92px;height:92px;border-radius:13px}.xcard b{font-size:18px}.xcard small{font-size:12.5px}}
 .phone-wrap{position:relative;display:grid;place-items:center;perspective:1400px;margin-inline:-12px}
 .phone{--ph:min(716px,calc(100vh - 110px));position:relative;width:100%;max-width:384px;padding:7px;border-radius:38px;background:linear-gradient(145deg,#2e3340,#0b0c10);box-shadow:inset 0 0 0 2px #3c4250,0 40px 80px -28px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06),0 0 90px -20px rgba(255,217,31,.35);transform:rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .7s var(--ease-out)}
 .phone__screen{position:relative;border-radius:31px;overflow:hidden;background:#0b3d5c;height:var(--ph);isolation:isolate}
@@ -774,7 +784,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
     <a href="#pho-3d" style="--i:2"><small>03</small>Phố Bãi Cháy 3D</a>
     <a href="#game" style="--i:3"><small>04</small>Game Khách sạn</a>
     <a href="#hsk" style="--i:4"><small>05</small>Lộ trình HSK0 → HSK4</a>
-    <a href="#khai-giang" style="--i:5"><small>06</small>Thẻ tự học · 11.11</a>
+    <a href="#khai-giang" style="--i:5"><small>06</small>Thẻ tự học</a>
     <a href="#doanh-nghiep" style="--i:6"><small>07</small>Cho doanh nghiệp</a>
   </nav>
   <div class="mnav__foot">
@@ -810,7 +820,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
         <picture><source srcset="v4/home/bao-portrait.webp" type="image/webp"><img class="trust__av" src="v4/home/bao-portrait.jpg" alt="Bảo cầm cúp Á quân 2025" width="540" height="720" fetchpriority="high" decoding="async"></picture>
         <p><b>Bảo · <span class="han" lang="zh-CN">阿宝</span> Ā Bǎo</b><span>Á quân Đại sứ Du lịch Biên giới Trung – Việt 2025 · Hướng dẫn viên quốc tế</span></p>
       </div>
-      <a class="sale-pill fade" style="--dl:1.35s" href="#khai-giang" data-offer><span class="sale-pill__tag">11.11</span><span>Thẻ 1 năm <b>299k</b> · còn <b class="sale-left" data-sale-left>…</b></span></a>
+      <a class="sale-pill fade" style="--dl:1.35s" href="#khai-giang"><span class="sale-pill__tag">Thẻ tự học</span><span>1 năm <b>299k</b> · 3 tháng <b>99k</b></span></a>
     </div>
     <aside class="hero__side fade" style="--dl:1.5s" aria-label="Game Khách sạn Vịnh Ā Bǎo">
       <a class="gcard" id="gcard" href="hotel/" data-warm>
@@ -1033,6 +1043,10 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
         <a class="btn btn--ghost" href="game.html">⚔️ Chế độ Đánh Boss</a>
         <a class="btn btn--ghost" href="hotel/#the" data-warm>🎫 Có mã thẻ? Nhập tại đây</a>
       </div>
+      <a class="xcard reveal" style="--i:5" href="hotel/xiao.html" data-warm>
+        <img src="v4/home/xiao-card.webp" alt="Bàn ghép 3 Ā Bǎo 消消乐: viên ngọc mang chữ Hán 茶 trà, 灯 đèn, 贝 vỏ sò, 星 ngôi sao" width="264" height="264" loading="lazy" decoding="async">
+        <span><em>Mới · chơi nhanh 1 phút</em><b>Ā Bǎo <span lang="zh-CN">消消乐</span></b><small><span lang="zh-CN">xiāoxiāolè</span> · ghép 3 ôn từ. Đồng hồ chạy rất nhanh: hết giờ thì trả lời đúng 1 câu tiếng Trung để chơi tiếp. Xu kiếm được mang về khách sạn của bạn.</small><i>⚡ Chơi ngay, tải tức thì →</i></span>
+      </a>
     </div>
     <div class="phone-wrap reveal" style="--i:2">
       <div class="phone" id="phone">
@@ -1124,23 +1138,17 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
   </div>
 </section>
 
-<!-- ƯU ĐÃI 11.11 -->
+<!-- THẺ TỰ HỌC -->
 <section class="launch s-ink" id="khai-giang">
   <div class="wrap">
-    <span class="eyebrow reveal">Ưu đãi 11.11</span>
-    <h2 class="reveal" style="--i:1" id="launchTitle">Thẻ tự học 1 năm <em>chỉ 299k</em></h2>
-    <p class="lead reveal" style="--i:2" id="launchLead">Đại giảm giá đến 23:59 thứ Tư 11/11. Thẻ đã gồm game, tài liệu và nhóm Zalo bài giảng theo lộ trình gợi ý HSK0 → HSK4. Không gồm lớp Zoom.</p>
-    <div class="count reveal" style="--i:2" id="count" role="timer" aria-label="Thời gian còn lại của ưu đãi 11.11">
-      <div class="count__box"><span class="count__num" data-u="d">00</span><span class="count__lab">Ngày</span></div>
-      <div class="count__box"><span class="count__num" data-u="h">00</span><span class="count__lab">Giờ</span></div>
-      <div class="count__box"><span class="count__num" data-u="m">00</span><span class="count__lab">Phút</span></div>
-      <div class="count__box"><span class="count__num" data-u="s">00</span><span class="count__lab">Giây</span></div>
-    </div>
+    <span class="eyebrow reveal">Thẻ tự học</span>
+    <h2 class="reveal" style="--i:1" id="launchTitle">Thẻ 1 năm <em>299k</em><br>Thẻ 3 tháng 99k</h2>
+    <p class="lead reveal" style="--i:2" id="launchLead">Thẻ tự học đã gồm game, tài liệu và nhóm Zalo bài giảng theo lộ trình gợi ý HSK0 → HSK4. Không gồm lớp Zoom.</p>
     <div class="chips reveal" style="--i:3">
-      <span class="chip chip--hot" data-offer>🔥 Đến 23:59 thứ Tư 11/11</span><span class="chip">Lộ trình HSK0 → HSK4</span><span class="chip">Game + tài liệu + Zalo bài giảng</span><span class="chip">Không gồm Zoom</span>
+      <span class="chip">Lộ trình HSK0 → HSK4</span><span class="chip">Game + tài liệu + Zalo bài giảng</span><span class="chip">Không gồm Zoom</span>
     </div>
     <ol class="codesteps reveal" style="--i:3"><li>Chọn thẻ 3 tháng hoặc 1 năm</li><li>Chuyển khoản theo QR</li><li>Bảo gửi mã qua Zalo</li><li>Nhập mã trong game là mở 3★ → 5★</li></ol>
-    <a class="btn btn--main magnet reveal" style="--i:4;margin-top:22px" href="membership.html" id="saleBtn">Xem thẻ 299k</a>
+    <a class="btn btn--main magnet reveal" style="--i:4;margin-top:22px" href="membership.html" id="saleBtn">Xem 2 gói thẻ</a>
     <a class="btn btn--ghost reveal" style="--i:5;margin:12px 6px 0;--fg:var(--sun)" data-link="zaloGroup" href="#lien-he">Hỏi Bảo qua Zalo</a>
     <a class="btn btn--ghost reveal" style="--i:5;margin:12px 6px 0;--fg:var(--sun)" href="hotel/#the" data-warm>🎫 Đã có mã? Nhập trong game</a>
   </div>
@@ -1233,8 +1241,8 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
       <p>Tiếng Trung để đi làm, dạy từ Hạ Long. Bài mới mỗi tuần trong nhóm Zalo, game 3D luyện mỗi ngày.</p>
     </div>
     <nav class="foot__col" aria-label="Học cùng Bảo"><b>Học cùng Bảo</b><a data-link="zaloGroup" href="#lien-he">Nhóm Zalo</a><a href="#cau">Học thử 4 câu</a><a href="#hsk">Lộ trình HSK0 → HSK4</a><a href="membership.html">Thẻ tự học</a></nav>
-    <nav class="foot__col" aria-label="Game"><b>Game</b><a href="hotel/">Khách sạn Vịnh Ā Bǎo 3D</a><a href="hotel/#market">Chợ đêm Bãi Cháy</a><a href="hotel/#bridge">Cầu Bãi Cháy</a><a href="hotel/#the">Nhập mã thẻ</a><a href="game.html">Game Đánh Boss</a></nav>
-    <nav class="foot__col" aria-label="Kết nối"><b>Kết nối</b><a data-link="zaloGroup" href="#lien-he">Zalo</a><a data-link="tiktok" href="#lien-he">TikTok @baokhuaa</a><a href="#doanh-nghiep">Cho doanh nghiệp</a><span>Hạ Long, Quảng Ninh</span></nav>
+    <nav class="foot__col" aria-label="Game"><b>Game</b><a href="hotel/">Khách sạn Vịnh Ā Bǎo 3D</a><a href="hotel/#market">Chợ đêm Bãi Cháy</a><a href="hotel/#bridge">Cầu Bãi Cháy</a><a href="hotel/xiao.html">Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ</a><a href="hotel/#the">Nhập mã thẻ</a><a href="game.html">Game Đánh Boss</a></nav>
+    <nav class="foot__col" aria-label="Kết nối"><b>Kết nối</b><a data-link="zaloGroup" href="#lien-he">Zalo</a><a data-link="tiktok" href="#lien-he">TikTok @baokhua</a><a href="#doanh-nghiep">Cho doanh nghiệp</a><span>Hạ Long, Quảng Ninh</span></nav>
   </div>
   <div class="wrap foot__bar"><span>© 2026 Bảo Khựa <span class="han">阿宝</span> · China-ready · baokhua.com</span><a href="#top">Lên đầu trang ↑</a></div>
 </footer>
@@ -1251,8 +1259,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
    ========================================================= */
 const CONFIG = {
   zaloGroup:    "https://zalo.me/g/16yx8ptwane8ggwrnyxl",   // link nhóm Zalo, dạng "https://zalo.me/g/16yx8ptwane8ggwrnyxl"
-  tiktok:       "https://www.tiktok.com/@baokhuaa",   // dạng "https://www.tiktok.com/@ten_kenh"
-  saleEnd:      "2026-11-11T23:59:59+07:00"  // hết ưu đãi 11.11 (thẻ 1 năm 299k). Lịch học chưa chốt nên trang không ghi ngày khai giảng
+  tiktok:       "https://www.tiktok.com/@baokhua",   // dạng "https://www.tiktok.com/@ten_kenh"
 };
 
 (() => {
@@ -1341,25 +1348,6 @@ const CONFIG = {
     });
   }
 
-  /* ---- đếm ngược ưu đãi 11.11 ---- */
-  const target = new Date(CONFIG.saleEnd).getTime(), nums = {}, p2 = n => String(n).padStart(2, '0');
-  $$('.count__num').forEach(n => nums[n.dataset.u] = n);
-  const left = $$('[data-sale-left]');
-  const tick = () => {
-    const s = Math.floor((target - Date.now()) / 1000);
-    if (s <= 0) {
-      $('#count').hidden = true; $$('[data-offer]').forEach(el => { el.hidden = true; });
-      $('#launchTitle').textContent = 'Ưu đãi 11.11 đã kết thúc.';
-      $('#launchLead').textContent = 'Ưu đãi 11.11 đã hết. Thẻ là tự học: game, tài liệu và nhóm Zalo bài giảng, không gồm Zoom. Nhắn Bảo để hỏi giá hiện tại.';
-      const sb = $('#saleBtn'); if (sb) sb.textContent = 'Xem thẻ hội viên';
-      clearInterval(timer); return;
-    }
-    const v = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
-    for (const k in v) { const t = p2(v[k]); if (nums[k].textContent !== t) { nums[k].textContent = t; if (!reduce) { nums[k].classList.remove('is-flip'); void nums[k].offsetWidth; nums[k].classList.add('is-flip'); } } }
-    const short = v.d > 0 ? `${v.d} ngày ${v.h} giờ` : `${p2(v.h)}:${p2(v.m)}:${p2(v.s)}`;
-    left.forEach(el => { if (el.textContent !== short) el.textContent = short; });
-  };
-  const timer = setInterval(tick, 1000); tick();
 
 })();
 </script>
@@ -1460,7 +1448,10 @@ const CONFIG = {
 
   /* ---- bấm sang game: tải trước thư viện 3D khi người dùng rê chuột / chạm vào nút game (mở game nhanh hơn) ---- */
   let warmed = false;
-  const warm = () => { if (warmed) return; warmed = true; ['hotel/', 'hotel/lib/three.module.min.js', 'hotel/world.js', 'hotel/w-kit.js', 'hotel/w-life.js', 'hotel/w-lobby.js'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
+  const warm = () => { if (warmed) return; warmed = true; ['hotel/', 'hotel/lib/three.module.min.js', 'hotel/world.js', 'hotel/w-kit.js', 'hotel/w-life.js', 'hotel/w-lobby.js', 'hotel/xiao.html', 'hotel/xiao-core.js', 'hotel/xiao-words.js'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
+  // 18/11: tải trước game khi trang đã rảnh (không đợi người dùng chạm nút), trừ máy bật tiết kiệm dữ liệu hoặc mạng 2G
+  const cn = navigator.connection, thrifty = !!(cn && (cn.saveData || /2g/.test(cn.effectiveType || '')));
+  if (!thrifty) { const idle = () => (window.requestIdleCallback || (f => setTimeout(f, 200)))(warm, { timeout: 5000 }); if (document.readyState === 'complete') setTimeout(idle, 2500); else addEventListener('load', () => setTimeout(idle, 2500), { once: true }); }
   $$('[data-warm], #playHere').forEach(a => { a.addEventListener('pointerenter', warm, { once: true }); a.addEventListener('touchstart', warm, { once: true, passive: true }); a.addEventListener('focus', warm, { once: true }); });
   const gameSec = $('#game'); if (gameSec) new IntersectionObserver(([e], o) => { if (e.isIntersecting) { warm(); o.disconnect(); } }, { rootMargin: '400px 0px' }).observe(gameSec);
 
