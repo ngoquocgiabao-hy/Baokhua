@@ -64,6 +64,15 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .boot small{font-size:13.5px;opacity:.82}
 .boot__bar{width:160px;height:4px;margin-top:12px;border-radius:4px;background:rgba(255,255,255,.16);overflow:hidden}
 .boot__bar i{display:block;width:40%;height:100%;border-radius:inherit;background:#FFD91F;animation:bootRun 1.1s ease-in-out infinite}
+.boot__bar i.det{animation:none;transform:none;transition:width .35s cubic-bezier(.16,1,.3,1)}
+.boot__word{min-height:58px;margin-top:14px;display:grid;justify-items:center;gap:3px;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.boot__word.on{opacity:1;transform:none}
+.boot__word b{font:900 32px/1.1 "Noto Serif SC","Songti SC",serif;color:#FFD91F}
+.boot__word i{font-style:normal;font-size:13.5px;opacity:.92}
+.boot__slow{margin-top:14px;display:grid;gap:8px;width:min(300px,82vw);pointer-events:auto}
+.boot__slow[hidden]{display:none}
+.boot__slow small{font-size:12.5px;opacity:.85}
+.boot__slow .btn{font-size:15px;padding:11px}
 @keyframes bootRun{from{transform:translateX(-110%)}to{transform:translateX(260%)}}
 .arrive{position:fixed;left:50%;top:calc(66px + env(safe-area-inset-top));z-index:86;display:grid;justify-items:center;gap:2px;padding:10px 20px 11px;border-radius:18px;text-align:center;color:#fff;pointer-events:none;background:linear-gradient(180deg,rgba(12,34,56,.95),rgba(5,18,32,.95));border:1px solid rgba(255,217,31,.5);box-shadow:0 14px 30px -10px rgba(0,0,0,.6);opacity:0;transform:translate(-50%,-14px);transition:opacity .45s,transform .6s cubic-bezier(.16,1,.3,1)}
 .arrive.on{opacity:1;transform:translate(-50%,0)}
@@ -384,7 +393,7 @@ body.embed{overscroll-behavior-y:auto}
 .in-word{position:absolute;left:50%;top:76px;transform:translateX(-50%);z-index:3;background:#fff;color:#2b2233;border:2.5px solid #2b2233;border-radius:16px;box-shadow:0 4px 0 #2b2233;padding:8px 14px;display:flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap;animation:tipPop .3s cubic-bezier(.2,1.4,.4,1)}
 .in-word[hidden]{display:none}
 .in-word .ic{font-size:24px}.in-word b{font-size:22px}.in-word i{font-style:normal;color:#1E5AA8;font-weight:800}
-.evt{position:fixed;inset:0;z-index:60;background:#0b3d5c;display:flex;flex-direction:column}
+.evt{position:fixed;inset:0;z-index:78;background:#0b3d5c;display:flex;flex-direction:column}
 .evt[hidden]{display:none}
 .evt-top{display:flex;align-items:center;gap:8px;padding:calc(6px + env(safe-area-inset-top)) 10px 6px;background:#16171B;color:#FFD91F;font-size:13.5px}
 .evt-top b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -574,7 +583,12 @@ body.st-on .dock,body.st-on .jcard,body.onb-on .dock,body.onb-on .hud,body.onb-o
 <script type="module" src="world.js"></script>
 </head>
 <body>
-<div class="boot" id="boot" aria-hidden="true"><div class="boot__in"><span class="boot__seal">宝</span><b>Khách sạn Vịnh Ā Bǎo</b><small><span lang="zh-CN">下龙湾</span> Xiàlóng Wān · vịnh Hạ Long</small><small>Đang dựng phố Bãi Cháy…</small><span class="boot__bar"><i></i></span></div></div>
+<div class="boot" id="boot"><div class="boot__in"><span class="boot__seal" aria-hidden="true">宝</span><b>Khách sạn Vịnh Ā Bǎo</b><small><span lang="zh-CN">下龙湾</span> Xiàlóng Wān · vịnh Hạ Long</small><small id="bootMsg" aria-live="polite">Đang tải phố Bãi Cháy…</small><span class="boot__bar" id="bootBar"><i></i></span>
+  <span class="boot__word" id="bootWord" aria-live="polite"></span>
+  <div class="boot__slow" id="bootSlow" hidden><small>Mạng hoặc máy hơi chậm, phố 3D vẫn đang dựng tiếp.</small><a class="btn" id="bootXiao" href="xiao.html">⚡ Chơi Ā Bǎo <span lang="zh-CN">消消乐</span> trong lúc chờ</a><button type="button" class="btn ghost" id="bootSkip" hidden>Vào game luôn ▶</button></div></div></div>
+<script>/* màn chờ: quá 6 giây chưa dựng xong phố (mạng/máy chậm) thì hiện lối chơi trong lúc chờ. Chạy ngay khi trang bắt đầu tải, không đợi mã game.
+   Mã game chưa tải xong thì nút mở xiao.html riêng (xu vẫn về khách sạn qua hộp thư); tải xong thì mở trong khung. */
+(function c(n){setTimeout(function(){var b=document.getElementById('boot'),s=document.getElementById('bootSlow');if(!b||!s||b.classList.contains('done'))return;if((window.__bootFrac||0)<.85||n>3)s.hidden=false;else c(n+1)},n?2000:6000)})(0);</script>
 <div class="arrive" id="arrive" aria-live="polite"></div>
 <div id="app">
  <div class="scene-wrap" id="sceneWrap">
@@ -674,6 +688,7 @@ const EMBED = (() => { try { return window.top !== window.self; } catch (e) { re
 const ZALO_LINK = 'https://zalo.me/g/16yx8ptwane8ggwrnyxl';
 const GOOGLE_FORM_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLScj8_vHO1PIhhjjy1wsuISmVK2IGsK4h0FK6N1RAnBUr1A_Sw/viewform';
 const FORM_UTM = 'utm_source=game_khachsan&utm_campaign=lop_0211';
+const TONE10S = false;   // nút mini-game Thanh điệu 10 giây (tone10s.html) trong menu 📍: bật khi Bảo "duyệt đăng" (dữ liệu chờ Gemini soát)
 const SAVE_KEY = 'bk_hotel_v3';                 // game hợp nhất (bản cũ khachsan.html: 'baokhua_hotel_v1', tự chuyển sang khi mở lần đầu)
 const FAST_SECONDS = 8;                        // trả lời trong ngần này giây → boa thêm 50%
 const FAST_BONUS = { listen: 3, order: 4, situ: 2 }; // dạng câu dài/nghe được thêm giây
@@ -1415,7 +1430,18 @@ function coinFly(x, y, amount, onDone) {
 }
 /* v8.2 · màn chào: tắt sau 2 khung hình đầu của cảnh 3D (hoặc khi máy không mở được 3D, chậm nhất 8 giây) */
 function bootDone() { const b = document.getElementById('boot'); if (!b || b.classList.contains('done')) return; requestAnimationFrame(() => requestAnimationFrame(() => { b.classList.add('done'); setTimeout(() => b.remove(), 900); })); }
-setTimeout(bootDone, 8000);
+/* v8.3 · màn chờ: thanh tiến độ theo từng bước dựng phố, mỗi bước 1 từ tiếng Trung để học trong lúc chờ.
+   Quá 6 giây chưa xong (mạng hoặc máy chậm): hiện nút chơi 消消乐 trong lúc chờ hoặc vào game luôn (phố 3D dựng tiếp phía sau). */
+const BOOT_STEP = { terrain: ['vịnh và đảo đá', '岛', 'dǎo', 'đảo'], city: ['phố Bãi Cháy', '街', 'jiē', 'phố'], landmarks: ['cầu Bãi Cháy', '大桥', 'dàqiáo', 'cầu lớn'], wheel: ['vòng quay Mặt Trời', '摩天轮', 'mótiānlún', 'vòng quay'],
+  life: ['người dân, xe cộ', '人', 'rén', 'người'], bake: ['đèn phố', '路灯', 'lùdēng', 'đèn đường'], lobby: ['sảnh khách sạn', '大堂', 'dàtáng', 'sảnh'], compile: ['sắp xong', '快好了', 'kuài hǎo le', 'sắp xong rồi'] };
+function bootStep(k, f) {
+  window.__bootFrac = f; const b = document.getElementById('boot'); if (!b || b.classList.contains('done')) return;
+  const bar = document.querySelector('#bootBar i'); if (bar) { bar.classList.add('det'); bar.style.width = Math.max(6, Math.round(f * 100)) + '%'; }
+  const st = BOOT_STEP[k], m = document.getElementById('bootMsg'), w = document.getElementById('bootWord');
+  if (st && m) m.textContent = k === 'compile' ? 'Sắp xong rồi…' : `Đang dựng ${st[0]}…`;
+  if (st && w) w.innerHTML = `<b lang="zh-CN">${st[1]}</b><i>${st[2]} · ${st[3]}</i>`, w.classList.add('on');
+}
+setTimeout(bootDone, 30000);
 if (window.top !== window) { const h = document.getElementById('homeBtn'); if (h) h.remove(); }   // đang chơi trong khung điện thoại ở trang chủ thì không cần nút về
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2400); }
 
@@ -1544,11 +1570,12 @@ const Scene = (() => {
     if (W) return W.toScreen(what);
     const r = $('sceneWrap').getBoundingClientRect(); return { x: r.left + r.width * .55, y: r.top + r.height * .45, vis: true };
   }
+  let attaching = false;
   function attach() {
-    if (W || !window.BKWorld) return;
+    if (W || attaching || !window.BKWorld) return;
     try {
       const w = window.BKWorld;
-      w.init({ canvas: $('scene'), wrap: $('sceneWrap'), low, hooks: {
+      const opts = { canvas: $('scene'), wrap: $('sceneWrap'), low, hooks: {
         hour: gameHour, tick,
         onWord: (k, x, y) => wordAt(k, x, y),
         onHotel: () => { Snd.unlock(); if (!hotelOpen()) { toast('🔒 Nhà nghỉ của bà còn đóng cửa · đi hết Chặng 1 trên bản đồ Hành trình để mở cửa'); return; } Snd.play('ui'); Inside.show(); },
@@ -1558,10 +1585,16 @@ const Scene = (() => {
         onBoom: () => Snd.boom(),
         onSlow: () => setLow(true, true),
         onPan: () => hideTip()
-      } });
-      W = w; W.queue = queue; sync(); W.jump(S.lv == null || !hotelOpen() ? 'bay' : 'street'); Journey.refresh();
-      bootDone();
-    } catch (e) { W = null; console.warn(e); noGL(); }
+      } };
+      attaching = true;
+      // v8.3: dựng theo từng bước, nhả luồng chính giữa các bước (màn chờ có tiến độ, trang không đứng hình)
+      const go = w.initAsync && !window.__syncInit ? w.initAsync(opts, bootStep) : new Promise(r => r(w.init(opts)));
+      go.then(() => {
+        attaching = false; W = w; W.queue = queue; sync(); W.jump(S.lv == null || !hotelOpen() ? 'bay' : 'street'); Journey.refresh();
+        if (!active) W.setActive(false);
+        bootDone();
+      }).catch(e => { attaching = false; W = null; console.warn(e); noGL(); });
+    } catch (e) { attaching = false; W = null; console.warn(e); noGL(); }
   }
   function noGL() { bootDone(); const t = $('sceneTip'); if (t) { t.textContent = 'Máy chưa mở được hình 3D – vẫn chơi được: bấm 🛎️ Phục vụ'; t.style.opacity = '1'; } }
   function hideTip() { const t = $('sceneTip'); if (t) t.style.opacity = '0'; }
@@ -1570,7 +1603,7 @@ const Scene = (() => {
     buildRooms();
     freeRooms().forEach(r => { if (Math.random() < .55 && hotelOpen()) { const g = {}; r.guest = g; newStay(g, rnd(1, 6)); } });
     refill();
-    if (window.BKWorld) attach(); else { addEventListener('bkworld', attach, { once: true }); setTimeout(() => { if (!W) noGL(); }, 9000); }
+    if (window.BKWorld) attach(); else { addEventListener('bkworld', attach, { once: true }); setTimeout(() => { if (!W && !attaching) noGL(); }, 15000); }
   }
   return {
     init, queue, served, leave, refill, toScreen, sync, tick,
@@ -2929,7 +2962,7 @@ const Learn = (() => {
    Chỉ game Khách sạn ghi vào bk_hotel_v3 (mini-game chỉ đọc) nên không bao giờ ghi đè tiến độ của nhau. */
 const Xiao = (() => {
   const INBOX = 'bk_xiao_inbox', COIN_CAP = 120, PTS_CAP = 10;
-  let open = false, task = '', got = { coins: 0, learn: 0, rooms: 0 };
+  let open = false, task = '', got = { coins: 0, learn: 0, rooms: 0 }, starTo = 0;
   const pub = () => ({ coins: S.coins, star: star(), card: S.card || null, cards: S.cards, muted: !!S.muted, pts: S.pts });
   function send() { try { const w = $('evtFrame').contentWindow; if (w) w.postMessage({ type: 'bk-xiao-state', hs: pub() }, location.origin); } catch (e) {} }
   function show(q, t) {
@@ -2942,6 +2975,7 @@ const Xiao = (() => {
     if (!open) return; open = false; $('evt').hidden = true; $('evtFrame').src = 'about:blank'; document.body.classList.remove('ev-on');
     Scene.setActive(true); Snd.resume(); renderHud(); renderBuild(); if (Inside.open) Inside.card();
     report(got);
+    if (starTo) { const s = starTo; starTo = 0; setTimeout(() => starUp(s), 900); }   // lên sao: báo sau khi đóng khung (không bị khung che)
   }
   function report(g) {
     if (!g.coins && !g.learn) return;
@@ -2955,7 +2989,7 @@ const Xiao = (() => {
     S.xiao = S.xiao || { rooms: 0, coins: 0 }; S.xiao.rooms++; S.xiao.coins += c;
     if (task === 'clean') { S.sat = Math.min(100, S.sat + 4); task = ''; }
     const after = star(), before = S.star || 1; S.star = after; save(); renderHud(); renderBuild();
-    if (after > before) setTimeout(() => starUp(after), 600);
+    if (after > before) starTo = after;
   }
   addEventListener('message', e => {
     if (e.origin !== location.origin || !e.data || e.data.type !== 'bk-xiao' || !open) return;
@@ -3168,7 +3202,7 @@ function init() {
     e.stopPropagation(); Snd.unlock(); Snd.play('ui'); const W = Scene.W, has3d = !!(W && W.places);
     if (!pm.hidden) return placeClose();
     // Mini-game Thanh điệu 10 giây (tone10s.html) luôn ở đầu menu, kể cả khi máy không mở được hình 3D
-    const tone = `<a class="pm-wide" role="menuitem" href="../tone10s.html"${EMBED ? ' target="_top"' : ''}><span class="pi">🎵</span><span class="pn">Thanh điệu 10 giây<small><span lang="zh-CN">声调 shēngdiào</span> · thanh điệu</small></span></a>`;
+    const tone = !TONE10S ? '' : `<a class="pm-wide" role="menuitem" href="../tone10s.html"${EMBED ? ' target="_top"' : ''}><span class="pi">🎵</span><span class="pn">Thanh điệu 10 giây<small><span lang="zh-CN">声调 shēngdiào</span> · thanh điệu</small></span></a>`;
     const xiao = `<button type="button" class="pm-wide" role="menuitem" id="pmXiao"><span class="pi">✨</span><span class="pn">Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ<small><span lang="zh-CN">xiāoxiāolè</span> · dọn phòng, kiếm xu</small></span></button>`;
     pm.innerHTML = '<b>📍 Đi tới</b>' + xiao + tone + (has3d ? W.places.map(p => `<button type="button" role="menuitem" data-pl="${p.id}"><span class="pi">${p.ico}</span><span class="pn">${esc(p.name)}<small lang="zh-CN">${p.zh} ${p.py}</small></span></button>`).join('') : '<small class="pm-note">Máy chưa mở được hình 3D</small>');
     $('pmXiao').onclick = () => { placeClose(); Snd.play('ui'); if (Inside.open) Inside.close(); Xiao.show('&lv=next'); };
@@ -3179,6 +3213,8 @@ function init() {
   $('zinBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(.7); };
   $('zoutBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(1.42); };
   $('insideBtn').onclick = () => { Snd.unlock(); Snd.play('ui'); if (Inside.open) Inside.close(); else Inside.show(); };
+  $('bootSkip').hidden = false; $('bootSkip').onclick = () => { Snd.unlock(); bootDone(); };
+  $('bootXiao').onclick = e => { e.preventDefault(); Snd.unlock(); bootDone(); Xiao.show('&lv=next'); };
   $('evtClose').onclick = () => { if (Xiao.open) return Xiao.close(); if (S.ev.pend && S.ev.pend.fid && FURNI[S.ev.pend.fid]) { S.coins += FURNI[S.ev.pend.fid].price; toast(`Đã quay về · hoàn ${FURNI[S.ev.pend.fid].price} 🪙`); } S.ev.pend = null; save(); Ev.close(); };
   $('insideSub').textContent = zoneBadge();
   Ev.pickup(); Ev.banner(); setInterval(() => Ev.banner(), 15000); Learn.badge();

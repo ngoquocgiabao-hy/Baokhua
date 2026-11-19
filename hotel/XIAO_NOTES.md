@@ -1,6 +1,6 @@
 # Ā Bǎo 消消乐 (xiāoxiāolè · ghép 3 ôn từ) – mini-game của game Khách sạn Vịnh Ā Bǎo
 
-Bản v8.3, 18/11/2026, trên nhánh `game-dev`. Chưa lên trang thật, chờ Bảo gõ "duyệt đăng".
+Bản v8.3. Làm 18/11/2026, đăng baokhua.com 19/11/2026 (Bảo duyệt, chốt tên Ā Bǎo 消消乐). Trang chủ có thẻ giới thiệu trong mục `#game`; màn chờ game Khách sạn có nút chơi 消消乐 khi mạng/máy chậm.
 
 ## Ý tưởng
 
@@ -10,7 +10,7 @@ Trò ghép 3 (cùng thể loại với các game ghép 3 phổ biến). Chạm, 
 - Bom 💣 (炸弹 zhàdàn · nổ 3×3), búa 🔨 (锤子 chuízi · đập 1 ô, cả thùng và khoá) và xáo bàn 🔀 (洗牌 xǐpái) đều phải trả lời đúng 1 câu mới dùng được.
 - Câu hỏi lấy từ **Sổ ôn** của game Khách sạn: thẻ đến hạn hỏi trước, từ vừa trả lời sai hỏi lại sau 2 câu, rồi mới tới từ mới đúng mức tầng.
 
-Tên, hình và màn chơi đều do Bảo Khựa tự làm. Không dùng tên "Crush", hình kẹo, nhân vật hay màn chơi của game khác.
+Tên, hình và màn chơi đều do Bảo Khựa tự làm. Không dùng tên "Crush", hình kẹo, nhân vật hay màn chơi của game khác. Điện thoại xoay ngang (màn thấp ≤ 560 px): bố cục 2 cột, bảng điều khiển trái, bàn chơi phải.
 
 ## Luật ghép
 

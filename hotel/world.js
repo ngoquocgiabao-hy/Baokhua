@@ -949,7 +949,9 @@ function update(dt, now) {
    ===================================================================== */
 const World = {
   get ready() { return ready; },
-  init(o) {
+  /** dựng thế giới theo từng bước (generator): init() chạy liền một mạch (tools/film),
+      initAsync() nhả luồng chính giữa các bước để màn chờ cập nhật tiến độ và trang không đứng hình (v8.3). */
+  *build(o) {
     cv = o.canvas; wrap = o.wrap; hooks = o.hooks || {}; low = !!o.low;
     renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !low, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(low ? 1 : 2, devicePixelRatio || 1));
@@ -961,20 +963,34 @@ const World = {
     if (!low) { sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 80 }); sun.shadow.bias = -.0008; sun.shadow.normalBias = .04; sun.shadow.radius = 3; }
     setCoinHook(() => hooks.onCoin && hooks.onCoin());
     const tmp = new THREE.Group(); const old = setSeg(1);
-    buildTerrain(tmp); buildCity(tmp); buildLandmarks(tmp); buildWheel(tmp);
+    yield ['terrain', .08]; buildTerrain(tmp);
+    yield ['city', .22]; buildCity(tmp);
+    yield ['landmarks', .38]; buildLandmarks(tmp);
+    yield ['wheel', .48]; buildWheel(tmp);
+    yield ['life', .56];
     life = buildLife({ world: dyn, tapBox, lamp: lampPost, winA, winB, glassMat, nightMats, owned: id => !!ST.own[id], hour: () => hour });
     tmp.add(life.static); setSeg(old);
-    bake(tmp, staticRoot, { vc: true }); buildLightPools();
+    yield ['bake', .68]; bake(tmp, staticRoot, { vc: true }); buildLightPools();
     buildExtras(); buildSkyBits();
-    lobby = buildLobby({ say, visible: () => view.S < 12 }); world.add(lobby.room);
+    yield ['lobby', .8]; lobby = buildLobby({ say, visible: () => view.S < 12 }); world.add(lobby.room);
     buildOverlay(); bindInput(); resize();
     for (let i = 0; i < 3; i++) spawnBoat(true);
     buildHotel(ST); dayNight();
+    yield ['compile', .9];
     // biên dịch sẵn mọi vật liệu (kể cả sảnh, đồ chưa mua) → lần đầu vào trong không bị khựng
     try { const hid = []; scene.traverse(m => { if (!m.visible) { hid.push(m); m.visible = true; } }); renderer.compile(scene, cam); hid.forEach(m => { m.visible = false; }); } catch (e) {}
     shellOpacity(-1);
     ready = true; World.setActive(true);
     return true;
+  },
+  init(o) { const g = World.build(o); while (!g.next().done); return true; },
+  /** onStep(khoá bước, tỉ lệ 0–1) gọi trước mỗi bước; trả về Promise xong khi dựng xong */
+  initAsync(o, onStep) {
+    const g = World.build(o);
+    return new Promise((res, rej) => {
+      const step = () => { let r; try { r = g.next(); } catch (e) { rej(e); return; } if (r.done) { res(true); return; } try { if (onStep) onStep(r.value[0], r.value[1]); } catch (e) {} setTimeout(step, 16); };
+      step();
+    });
   },
   /** trạng thái khách sạn: sao, tầng, công trình, nội thất, nhân viên, mở cửa chưa */
   setState(st) {

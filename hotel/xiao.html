@@ -151,6 +151,15 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .how{font:600 12.5px/1.45 var(--UIF);color:#5A4A7A}
 .how b{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.door.cur,.tbar.low,.boost button.armed{animation:none}}
+/* điện thoại xoay ngang / màn thấp: 2 cột (bảng điều khiển trái, bàn chơi phải) để bàn không đè lên thanh giờ */
+@media (orientation:landscape) and (max-height:560px){
+  #play:not([hidden]){display:grid;grid-template-columns:minmax(230px,42%) 1fr;grid-template-rows:auto auto 1fr;grid-template-areas:"hud stage" "legend stage" "boost stage";align-items:start;column-gap:6px}
+  #play .hud{grid-area:hud;max-width:none;width:auto}
+  #play .legend{grid-area:legend;justify-content:flex-start}
+  #play .boost{grid-area:boost;max-width:none;width:auto;align-self:end}
+  #play .stage{grid-area:stage;height:100%;min-height:0;align-self:stretch}
+  .toast{bottom:calc(12px + env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body>
