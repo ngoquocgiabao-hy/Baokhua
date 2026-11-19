@@ -14,7 +14,7 @@ Máy tự dựng video dọc 9:16 (TikTok, Reels, Shorts, Zalo) và bản 16:9, 
 ## 2. Danh mục thể loại (để tìm "long mạch")
 | Mã | Thể loại | Khuôn dựng | Dữ liệu | Trạng thái |
 |---|---|---|---|---|
-| F1 | Chuyện thật · Hồ sơ thật (giá trị và uy tín: 5 chương nghề, mỗi chương ảnh chứng thực + một câu tiếng Trung đi làm, kết bằng chơi thử game 3D tại baokhua.com) | `story/build_story3.mjs` + `story/platforms_story3.cjs` (ngoài git) | Ảnh và video thật của Bảo | Bản 3 dựng 15/11, chờ duyệt. Bản 2 (kể chuyện bắt đầu từ số 0) Bảo chưa duyệt, không đăng |
+| F1 | Chuyện thật · Hồ sơ thật. **Bản 4 (19/11, Bảo tự lồng tiếng):** sự thật trần trụi (đường cong quên lãng Ebbinghaus, quên ~2/3 sau 1 ngày) → 2 mẹo (ôn đúng lúc sắp quên 温故而知新; học cả câu) → giới thiệu Bảo (ảnh nghề, Á quân) → game 3D (khách sạn, Sổ ôn tự nhắc, Ā Bǎo 消消乐, chợ đêm, boss) → chơi thử ở baokhua.com. 91 giây, phụ đề = lời thoại, nhạc vinahouse 132 BPM tự soạn | `story/build_story4.mjs` + `story/platforms_story4.cjs` (ngoài git), nhạc `story/music_v4.py`, cảnh game `tools/game_shots.cjs` + `tools/xiao_film.cjs` | Ảnh thật của Bảo, cảnh quay từ game | Bản 4 chờ Bảo ghi âm và duyệt (bảng lời thoại có mốc giây: `out/story4/loi_thoai.md`, bản trên Drive). Bản 3 (15/11) Bảo chê nhanh, nhạc chán; bản 2 không đăng |
 | F2 | Chữ thật · ảnh thật (phóng kính lúp vào chữ Hán trong ảnh thật) | `series/chuthat.mjs` | `story/episodes/*.json` (ngoài git) | Tập 1–2 đã dựng |
 | F3, F4 | Từ vựng và câu đố trên nền game cũ | `_luu_tru/game-cu/` | `khachsan.html` | **Đã bỏ 06/11/2026** vì đã có game mới. Không đăng 24 video này |
 | F5 | Trailer thương hiệu | `debut/build_debut.mjs` | Dữ kiện công khai trên trang chủ | Đoạn 14–22 giây là game cũ: quay lại bằng game mới trước khi đăng |
@@ -140,3 +140,4 @@ Nâng cấp hình sau này: cảnh mở đầu bằng video AI (Google Flow / Ve
 5. Tải video lớn lên Drive: dùng mã OAuth tạm (hết hạn sau khoảng 1 giờ) qua ô nhập bảo mật, tải lên bằng API resumable. Không có mã thì Bảo kéo thả theo bảng `00_DANH_MUC_VIDEO`.
 6. Sổ `SO_LONG_MACH_14_NGAY`: đổi các khung 11:30 từ F3/F4 sang F9/F10 (cần bật connector Google Sheets để Claude sửa thẳng vào tệp).
 7. Bảo chụp 10 biển hiệu tiếng Trung quanh Bãi Cháy để làm F6.
+8. F1 bản 4: Bảo đọc 14 câu theo bảng lời thoại (nghỉ ~1 giây giữa các câu), rồi ghép: `python3 tools/long_tieng.py --video out/BAOKHUA_HO_SO_THAT_V4_9x16_master.mp4 --voice <ghi âm> --split --marks <mốc trong loi_thoai.md> --out ...`. Sửa lời hay đổi tốc độ đọc thì sửa `LINES`/`SPS` trong `build_story4.mjs` rồi dựng lại (nhạc tự khớp mốc mới). Muốn thay nhạc tự đàn hát: thêm `--music <tệp>`.
