@@ -1,4 +1,4 @@
-// "CÂU THẬT" khuôn mới (22/11) – thay series/cauthat.mjs. 40–50 giây, Bảo tự lồng tiếng, nhạc vinahouse kiểu Hoa bass nặng.
+// "CÂU THẬT" khuôn mới (22/11) – thay series/cauthat.mjs. 40–50 giây, Bảo tự lồng tiếng, nhạc vinahouse chất Thái Hoàng trộn nhạc Hoa (story/music_th.py).
 // Bảo góp ý bản cũ: hình nhỏ giữa 2 dải đen, chữ nhỏ, 4 khối ngữ pháp → ngợp; bản dài 63 giây quá lâu, bản short 24 giây quá nhanh.
 // Khuôn mới: mỗi câu thoại = 1 cảnh; ảnh/clip raw cắt bỏ phần chữ in sẵn (dưới dòng `cut`) rồi đặt thành thẻ ảnh trên nền mờ của chính nó;
 // 1 thẻ chữ Hán lớn (chữ + pinyin + nghĩa) mỗi cảnh; 1 điểm giảng chính (explain); 1 câu "đi làm nói luôn"; kết: chơi thử game ở baokhua.com.
@@ -259,6 +259,6 @@ fs.writeFileSync(path.join(OUTDIR, 'loi_thoai.md'), ['# Lời thoại Câu thậ
   `Video dài ${DUR.toFixed(1)} giây, nhạc ${BPM} BPM. Tốc độ khoảng ${SPS} chữ mỗi giây (như nói chuyện thong thả). Đọc từng câu, nghỉ khoảng 1 giây giữa các câu; máy tự cắt và đặt vào đúng mốc.`, '',
   '| Câu | Từ giây | Đến giây | Đọc | Cách đọc |', '|---|---|---|---|---|', ...LINES.map(l => `| ${l.id} | ${mmss(l.t0)} | ${mmss(l.t1)} | ${l.say} | ${l.tip || ''} |`), '',
   'Ghép giọng: `python3 tools/long_tieng.py --video out/BAOKHUA_CAU_THAT_' + EP.id.toUpperCase() + '_9x16.mp4 --voice <ghi âm> --split --marks ' + LINES.map(l => l.t0).join(',') + ' --out out/BAOKHUA_CAU_THAT_' + EP.id.toUpperCase() + '_LONG_TIENG_9x16.mp4`', ''].join('\n'));
-execFileSync('python3', [path.join(V, 'story/music_cn.py'), path.join(OUTDIR, 'markers.json'), path.join(OUTDIR, 'music.wav'), 'heavy'], { stdio: 'inherit' });
+execFileSync('python3', [path.join(V, 'story/music_th.py'), path.join(OUTDIR, 'markers.json'), path.join(OUTDIR, 'music.wav')], { stdio: 'inherit' });
 console.log('Đã sinh', OUTDIR, 'dài', DUR, 's,', nclip, 'cảnh');
 console.log(LINES.map(l => `${l.id} ${l.t0}-${l.t1} (${l.n} âm tiết)`).join('\n'));
