@@ -57,6 +57,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#14123a;color:#fff;fon
   <div class="row"><button type="button" class="btn" id="go">Bắt đầu ngâm ▶</button></div></div></div>
 <div class="done" id="done" hidden><div class="box" id="doneBox"></div></div>
 
+<script src="bk-audio.js"></script>
 <script src="xiao-words.js"></script>
 <script src="mini.js"></script>
 <script>
@@ -74,22 +75,30 @@ let W = 0, H = 0, DPR = 1, water = 0;
 function resize() { DPR = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; water = H * .5; }
 addEventListener('resize', resize); resize();
 
-/* ---------- nhạc thư giãn tự tổng hợp (pad + giọt nước) ---------- */
+/* ---------- nhạc thư giãn tự tổng hợp (bộ nhạc cụ chung bk-audio.js) ----------
+   v8.5: lofi không trống – đàn bầu, tiêu 箫 xiāo, đàn tranh, sáo trúc trên piano điện ấm, chuông gió thoảng; chạm đúng = gảy đàn tranh + chuông. */
 const Sfx = (() => {
-  let ac = null, out = null, padT = 0, on = false;
-  function ctx() { if (SV.mute) return null; if (!ac) { try { const A = window.AudioContext || window.webkitAudioContext; ac = new A(); out = ac.createGain(); out.gain.value = .5; out.connect(ac.destination); } catch (e) { return null; } } if (ac.state === 'suspended') ac.resume().catch(() => {}); return ac; }
-  function note(f, d, type, vol, at, att) { const a = ctx(); if (!a) return; const t = a.currentTime + (at || 0), o = a.createOscillator(), gn = a.createGain(); o.type = type; o.frequency.value = f; gn.gain.setValueAtTime(0, t); gn.gain.linearRampToValueAtTime(vol, t + (att || .02)); gn.gain.exponentialRampToValueAtTime(.0005, t + d); o.connect(gn); gn.connect(out); o.start(t); o.stop(t + d + .05); }
-  const CH = [[220, 277.18, 329.63, 415.3], [196, 246.94, 293.66, 369.99], [174.61, 220, 261.63, 329.63], [196, 246.94, 293.66, 392]];   // A-maj7 → G → F → G: hiền, thư giãn
-  let ci = 0;
+  let ac = null, E = null, M = null, on = false;
+  function ctx() {
+    if (SV.mute || !window.BKAudio) return null;
+    if (!ac) { try { const A = window.AudioContext || window.webkitAudioContext; ac = new A(); const m = ac.createGain(); m.gain.value = .9; m.connect(ac.destination); E = BKAudio.engine(ac, m); M = E.music({ vol: .55, drums: false, mood: () => 'eve', ids: ['trang', 'dem', 'song'] }); } catch (e) { ac = null; E = null; return null; } }
+    if (ac.state === 'suspended') ac.resume().catch(() => {});
+    return ac;
+  }
+  const go = f => { if (ctx()) try { f(E, ac.currentTime + .005, E.sfx); } catch (e) {} };
   return {
-    start() { on = true; ctx(); },
-    tick(t) { if (!on || SV.mute || REDUCE) return; if (t - padT > 4) { padT = t; const c = CH[ci++ % CH.length]; c.forEach((f, i) => note(f, 4.6, 'sine', .035, i * .05, 1.2)); note(c[0] / 2, 4.6, 'triangle', .03, 0, 1.4); } },
-    drip() { note(1200 + Math.random() * 600, .25, 'sine', .04, 0, .005); },
-    pop(k) { const f = [659.25, 783.99, 880, 1046.5, 1174.66][k % 5]; note(f, .5, 'triangle', .11); note(f * 2, .3, 'sine', .05, .03); },
-    soft() { note(330, .35, 'sine', .06); note(311, .4, 'sine', .05, .08); },
-    fin() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => note(f, .9, 'triangle', .1, i * .12)); },
+    get musicOn() { return !!(M && M.on); }, get state() { return ac ? ac.state : 'none'; },
+    start() { on = true; if (ctx() && !M.on) M.start(); },
+    mute(m) { if (m) { if (M) M.stop(); } else if (on) this.start(); },
+    pause(p) { if (!ac) return; try { const pr = p ? ac.suspend() : SV.mute ? null : ac.resume(); if (pr && pr.catch) pr.catch(() => {}); } catch (e) {} },
+    tick() {},   // nhạc tự chạy theo đồng hồ âm thanh; giữ hàm cho vòng vẽ
+    drip() { go((E, t, o) => E.blip(o, 900 + Math.random() * 500, 1900 + Math.random() * 600, t, .06, .022)); },
+    pop(k) { go((E, t, o) => { const m = E.PENT[2 + (k % 5)]; E.tranh(o, m, t, .1, .7); E.chime(o, m + 12, t + .03, .035, 1.2); }); },
+    soft() { go((E, t, o) => E.bau(o, 64, t, .45, .06, { from: 67, uon: false })); },
+    fin() { go((E, t, o) => { E.gliss(o, [72, 74, 76, 79, 81, 84], t, .08, .09, 1.6); E.chime(o, 91, t + .6, .045, 2.4); E.sao(o, 84, t + .7, 1.4, .07); }); },
   };
 })();
+document.addEventListener('visibilitychange', () => Sfx.pause(document.hidden));
 
 /* ---------- bong bóng ---------- */
 let target = null, bubbles = [], parts = [], ripples = [], found = 0, wrongs = 0, learned = [], state = 'start', t0 = performance.now();
@@ -143,7 +152,7 @@ function finish() {
 }
 function back() { if (QS.get('from') === 'arcade') location.href = 'arcade.html' + (IN_FRAME ? '?in=1' : ''); else Bridge.close(); }
 $('back').onclick = back;
-$('mute').onclick = () => { SV.mute = !SV.mute; Voice.mute = SV.mute; save(); $('mute').textContent = SV.mute ? '🔇' : '🔊'; };
+$('mute').onclick = () => { SV.mute = !SV.mute; Voice.mute = SV.mute; save(); Sfx.mute(SV.mute); $('mute').textContent = SV.mute ? '🔇' : '🔊'; };
 $('mute').textContent = SV.mute ? '🔇' : '🔊';
 $('go').onclick = () => { Sfx.start(); $('start').hidden = true; state = 'play'; newRound(); };
 
@@ -188,7 +197,7 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 if (IN_FRAME) Bridge.post({ kind: 'ready' });
-window.__chill = { get state() { return state; }, get found() { return found; }, hitRight() { const b = bubbles.find(b => b.w === target && !b.pop && b.y < H); if (b) tap(b.cx || b.x, b.y); return !!b; }, hitWrong() { const b = bubbles.find(b => b.w !== target && !b.pop && b.y < H); if (b) tap(b.cx || b.x, b.y); return !!b; } };
+window.__chill = { Sfx, get state() { return state; }, get found() { return found; }, hitRight() { const b = bubbles.find(b => b.w === target && !b.pop && b.y < H); if (b) tap(b.cx || b.x, b.y); return !!b; }, hitWrong() { const b = bubbles.find(b => b.w !== target && !b.pop && b.y < H); if (b) tap(b.cx || b.x, b.y); return !!b; } };
 })();
 </script>
 </body>

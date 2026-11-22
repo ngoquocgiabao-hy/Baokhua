@@ -1448,7 +1448,7 @@ const CONFIG = {
 
   /* ---- bấm sang game: tải trước thư viện 3D khi người dùng rê chuột / chạm vào nút game (mở game nhanh hơn) ---- */
   let warmed = false;
-  const warm = () => { if (warmed) return; warmed = true; ['hotel/', 'hotel/lib/three.module.min.js', 'hotel/world.js', 'hotel/w-kit.js', 'hotel/w-life.js', 'hotel/w-lobby.js', 'hotel/xiao.html', 'hotel/xiao-core.js', 'hotel/xiao-words.js', 'hotel/arcade.html', 'hotel/mini.js'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
+  const warm = () => { if (warmed) return; warmed = true; ['hotel/', 'hotel/lib/three.module.min.js', 'hotel/world.js', 'hotel/w-kit.js', 'hotel/w-life.js', 'hotel/w-lobby.js', 'hotel/xiao.html', 'hotel/xiao-core.js', 'hotel/xiao-words.js', 'hotel/arcade.html', 'hotel/mini.js', 'hotel/bk-audio.js'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
   // 18/11: tải trước game khi trang đã rảnh (không đợi người dùng chạm nút), trừ máy bật tiết kiệm dữ liệu hoặc mạng 2G
   const cn = navigator.connection, thrifty = !!(cn && (cn.saveData || /2g/.test(cn.effectiveType || '')));
   if (!thrifty) { const idle = () => (window.requestIdleCallback || (f => setTimeout(f, 200)))(warm, { timeout: 5000 }); if (document.readyState === 'complete') setTimeout(idle, 2500); else addEventListener('load', () => setTimeout(idle, 2500), { once: true }); }

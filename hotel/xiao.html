@@ -232,6 +232,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 <div class="cutin" id="cutin" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status"></div>
 
+<script src="bk-audio.js"></script>
 <script src="xiao-core.js"></script>
 <script src="xiao-words.js"></script>
 <script>
@@ -355,54 +356,55 @@ const Words = (() => {
   return { load, make, result, reset, dueIds, get size() { return CAT.length; } };
 })();
 
-/* ===== ÂM THANH (tự tổng hợp, không tải tệp) ===== */
+/* ===== ÂM THANH (tự tổng hợp, không tải tệp) · bộ nhạc cụ chung bk-audio.js =====
+   v8.5: hết sóng vuông/răng cưa; ghép viên = gảy đàn tranh theo ngũ cung (dây chuyền càng dài nốt càng cao) + chuông nhỏ;
+   đồng hồ sắp hết = mõ gỗ; nổ = tiếng trầm êm + gió lướt; sai = đàn bầu trượt xuống. Nhạc lofi rất nhỏ dưới nền (đàn tranh, sáo, đàn nhị).
+   Trước v8.5 hai hàm cùng tên "unlock" đè nhau nên mỗi lần chạm bàn đều kêu "bíp" sóng vuông – đã tách: wake() mở âm thanh, unlock() tiếng mở khoá. */
 const Sfx = (() => {
-  let ac = null, master = null;
-  const NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98, 1760, 2093];   // thang ngũ cung: dây chuyền càng dài nốt càng cao
+  let ac = null, E = null, M = null, ducked = false;
+  const NOTES = [72, 74, 76, 79, 81, 84, 86, 88, 91, 93, 96];   // thang ngũ cung C D E G A: dây chuyền càng dài nốt càng cao
   function ctx() {
-    if (SV.mute) return null;
-    if (!ac) { try { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ac = new A(); master = ac.createGain(); master.gain.value = .55; master.connect(ac.destination); } catch (e) { return null; } }
+    if (SV.mute || !window.BKAudio) return null;
+    if (!ac) {
+      try {
+        const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
+        ac = new A(); const m = ac.createGain(); m.gain.value = .9; m.connect(ac.destination);
+        E = BKAudio.engine(ac, m); M = E.music({ vol: .26, ids: ['chieu', 'tra', 'song'] });
+      } catch (e) { ac = null; E = null; return null; }
+    }
     if (ac.state === 'suspended') ac.resume().catch(() => {});
     return ac;
   }
-  function tone(f, d, type, vol, at, to) {
-    const a = ctx(); if (!a) return; const t = a.currentTime + (at || 0), o = a.createOscillator(), g = a.createGain();
-    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol || .12, t + .008); g.gain.exponentialRampToValueAtTime(.0005, t + d);
-    o.connect(g); g.connect(master); o.start(t); o.stop(t + d + .02);
-  }
-  function noise(d, f0, f1, vol, at, q) {
-    const a = ctx(); if (!a) return; const t = a.currentTime + (at || 0), n = Math.floor(a.sampleRate * d), b = a.createBuffer(1, n, a.sampleRate), ch = b.getChannelData(0);
-    for (let i = 0; i < n; i++) ch[i] = Math.random() * 2 - 1;
-    const s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(); s.buffer = b; fl.type = 'bandpass'; fl.Q.value = q || 1.2;
-    fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(f1, t + d);
-    g.gain.setValueAtTime(vol || .2, t); g.gain.exponentialRampToValueAtTime(.001, t + d);
-    s.connect(fl); fl.connect(g); g.connect(master); s.start(t); s.stop(t + d);
-  }
+  const go = f => { if (ctx()) try { f(E, ac.currentTime + .005, E.sfx); } catch (e) {} };
+  function boom() { go((E, t, o) => { E.thump(o, t, .22, 120, 38, .5); E.whoosh(o, t, .42, .09, 1000, 130, .7); }); }
+  function pearl() { go((E, t, o) => { E.gliss(o, [76, 79, 81, 84, 86, 88, 91, 93], t, .07, .045, .9); [96, 100].forEach((m, k) => E.chime(o, m, t + .38 + k * .1, .035, 1.4)); }); }
   return {
-    unlock() { ctx(); },
-    swap() { tone(620, .07, 'sine', .07); tone(930, .06, 'sine', .05, .03); },
-    bad() { tone(240, .1, 'triangle', .08); tone(180, .12, 'triangle', .07, .08); },
-    match(chain, big) { const i = Math.min(NOTES.length - 1, chain - 1 + (big ? 1 : 0)), f = NOTES[i]; tone(f, .18, 'triangle', .13); tone(f * 1.5, .14, 'sine', .06, .02); tone(f * 2, .1, 'sine', .04, .05); },
-    made() { [0, 4, 7, 12].forEach((s, k) => tone(784 * Math.pow(2, s / 12), .16, 'sine', .07, k * .04)); },
-    beam() { noise(.32, 600, 4000, .16, 0, 2); tone(900, .25, 'sawtooth', .025, 0, 2400); },
-    boom() { noise(.4, 900, 120, .32, 0, .8); tone(110, .35, 'sine', .22, 0, 40); },
-    pearl() { for (let k = 0; k < 8; k++) tone(NOTES[k + 2], .16, 'sine', .06, k * .045); noise(.5, 3000, 9000, .05, 0, 3); },
-    nova() { this.boom(); this.pearl(); tone(65, .7, 'sine', .25, 0, 30); },
-    sand() { noise(.12, 2500, 1200, .06, 0, 1); },
-    crate() { noise(.15, 500, 200, .14, 0, 2); tone(160, .08, 'square', .04); },
-    unlock() { tone(1400, .05, 'square', .04); tone(1900, .07, 'square', .04, .05); },
-    lug() { tone(784, .18, 'sine', .1); tone(988, .18, 'sine', .1, .12); tone(1319, .3, 'sine', .1, .24); },
-    tick(n) { tone(n <= 3 ? 1500 : 1100, .05, 'square', .035); },
-    timeup() { tone(880, .15, 'square', .06); tone(660, .15, 'square', .06, .16); tone(440, .3, 'square', .06, .32); },
-    ok() { tone(880, .12, 'sine', .12); tone(1320, .2, 'sine', .12, .09); tone(1760, .25, 'sine', .06, .18); },
-    no() { tone(220, .18, 'square', .06); tone(170, .25, 'square', .06, .14); },
-    coin() { tone(1568, .08, 'square', .045); tone(2093, .14, 'square', .045, .07); },
-    win() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, k) => tone(f, k > 4 ? .5 : .16, 'triangle', .11, k * .12)); },
-    lose() { [523, 494, 466, 440].forEach((f, k) => tone(f, .28, 'triangle', .08, k * .2)); },
-    ui() { tone(700, .05, 'sine', .06); },
-    fever() { [523, 659, 784, 1047, 1319, 1568, 2093].forEach((f, k) => tone(f, .22, 'square', .05, k * .06)); noise(.6, 400, 6000, .12, 0, 1.5); },
-    cut() { noise(.35, 300, 5000, .14, 0, 1.2); tone(220, .3, 'sawtooth', .04, 0, 880); },
+    get musicOn() { return !!(M && M.on); }, get state() { return ac ? ac.state : 'none'; },
+    wake() { if (ctx() && !M.on && !(HS && HS.music === false)) { M.start(); if (ducked) M.duck(true); } },   // tắt nhạc nền trong game Khách sạn thì ở đây cũng không phát nhạc
+    mute(m) { if (m) { if (M) M.stop(); } else this.wake(); },
+    duck(d) { ducked = d; if (M) M.duck(d); },
+    pause(p) { if (!ac) return; try { const pr = p ? ac.suspend() : SV.mute ? null : ac.resume(); if (pr && pr.catch) pr.catch(() => {}); } catch (e) {} },
+    swap() { go((E, t, o) => E.blip(o, 660, 990, t, .08, .045)); },
+    bad() { go((E, t, o) => E.bau(o, 62, t, .3, .07, { from: 65, uon: false })); },
+    match(chain, big) { go((E, t, o) => { const m = NOTES[Math.min(NOTES.length - 1, chain - 1 + (big ? 1 : 0))]; E.tranh(o, m, t, .1, .45); E.chime(o, m + 12, t + .015, .03, .6); }); },
+    made() { go((E, t, o) => [79, 84, 88, 91].forEach((m, k) => E.chime(o, m, t + k * .04, .04, .8))); },
+    beam() { go((E, t, o) => { E.whoosh(o, t, .34, .09, 500, 3800, 1.4); E.chime(o, 91, t + .05, .035, .5); }); },
+    boom, pearl,
+    nova() { boom(); pearl(); go((E, t, o) => E.thump(o, t, .2, 70, 30, .8)); },
+    sand() { go((E, t, o) => E.whoosh(o, t, .14, .045, 2200, 1100, 1)); },
+    crate() { go((E, t, o) => { E.mo(o, t, .09, 480); E.mo(o, t + .05, .05, 620); }); },
+    unlock() { go((E, t, o) => { E.chime(o, 88, t, .05, .5); E.chime(o, 93, t + .06, .05, .7); }); },
+    lug() { go((E, t, o) => [79, 84, 88].forEach((m, k) => E.tranh(o, m, t + k * .12, .09, .6))); },
+    tick(n) { go((E, t, o) => E.mo(o, t, n <= 3 ? .09 : .065, n <= 3 ? 1500 : 1100)); },
+    timeup() { go((E, t, o) => [76, 72, 69].forEach((m, k) => E.bau(o, m, t + k * .17, .22, .08, { uon: false }))); },
+    ok() { go((E, t, o) => { E.tranh(o, 81, t, .1, .5); E.tranh(o, 88, t + .09, .1, .6); E.chime(o, 93, t + .18, .035, 1); }); },
+    no() { go((E, t, o) => E.bau(o, 57, t, .45, .09, { from: 60, uon: false })); },
+    coin() { go((E, t, o) => { E.chime(o, 91, t, .05, .5); E.chime(o, 96, t + .07, .045, .8); }); },
+    win() { go((E, t, o) => { [72, 76, 79, 84, 79, 84, 88].forEach((m, k) => E.tranh(o, m, t + k * .12, .09, k > 4 ? 1.2 : .5)); E.chime(o, 96, t + .85, .04, 1.8); }); },
+    lose() { go((E, t, o) => [72, 69, 67, 64].forEach((m, k) => E.tieu(o, m, t + k * .22, .26, .09))); },
+    ui() { go((E, t, o) => E.mo(o, t, .04, 1500)); },
+    fever() { go((E, t, o) => { E.gliss(o, [72, 74, 76, 79, 81, 84, 86, 88, 91], t, .08, .05, 1); E.whoosh(o, t, .6, .05, 400, 5000, 1.2); [96, 100].forEach((m, k) => E.chime(o, m, t + .5 + k * .1, .04, 1.4)); }); },
+    cut() { go((E, t, o) => { E.whoosh(o, t, .35, .07, 300, 4200, 1.1); E.mo(o, t + .02, .06, 900); E.mo(o, t + .1, .06, 1300); }); },
   };
 })();
 /* giọng đọc tiếng Trung có sẵn trên máy (không gọi máy chủ ngoài) */
@@ -704,14 +706,14 @@ function intro() {
   modal(`<h2>${esc(L.name)} cần dọn!</h2><p class="sub">⏱ ${L.time} giây · đồng hồ chạy nhanh lắm đó</p><div class="gl">${gl}</div>${L.tip ? `<p class="tip">💡 ${L.tip.replace(/([一-鿿]+)/g, '<span lang="zh-CN">$1</span>')}</p>` : ''}
     <p class="how"><b>Hết giờ?</b> Trả lời đúng 1 câu tiếng Trung để được <b>+${RESCUE_SEC} giây</b>. Sai thì mất 1 phao 🛟 (có ${PHAO} phao). Bom, búa, xáo bàn cũng phải trả lời đúng 1 câu mới dùng được.</p>
     <div class="row"><button type="button" class="big" id="goPlay">Bắt đầu ▶</button></div>`);
-  $('goPlay').onclick = () => { Sfx.unlock(); Sfx.ui(); closeModal(); paused = false; idleAt = performance.now(); startAt = Date.now(); renderTime(); };
+  $('goPlay').onclick = () => { Sfx.wake(); Sfx.ui(); closeModal(); paused = false; idleAt = performance.now(); startAt = Date.now(); renderTime(); };
 }
 
 /* đổi chỗ bằng kéo hoặc chạm 2 ô */
 let down = null;
 function cellAt(e) { const b = cv.getBoundingClientRect(), q = Math.floor((e.clientX - b.left) / CELL), r = Math.floor((e.clientY - b.top) / CELL); return r >= 0 && q >= 0 && r < G.R && q < G.C ? [r, q] : null; }
 cv.addEventListener('pointerdown', e => {
-  if (state !== 'play' || paused || busy) return; Sfx.unlock(); const p = cellAt(e); if (!p) return; idleAt = performance.now(); hintMv = null;
+  if (state !== 'play' || paused || busy) return; Sfx.wake(); const p = cellAt(e); if (!p) return; idleAt = performance.now(); hintMv = null;
   if (armed) { useArmed(p); return; }
   down = { p, x: e.clientX, y: e.clientY, moved: false }; try { cv.setPointerCapture(e.pointerId); } catch (er) {}
 });
@@ -794,6 +796,7 @@ function show(ev) {
 
 /* ===== HẾT GIỜ → CÂU HỎI · QUYỀN TRỢ GIÚP → CÂU HỎI ===== */
 function ask(why, hsk) {
+  Sfx.duck(true);
   return new Promise(done => {
     const q = Words.make(hsk), c = q.c; let left = ASK_SEC, fin = false; const t0 = performance.now();
     const head = q.fmt === 'zh2vi'
@@ -900,7 +903,7 @@ function bindWords() { const seen = new Set(), ws = askedWords.filter(w => !seen
 
 /* ===== HỘP THOẠI ===== */
 function modal(html, keep) { $('modBox').innerHTML = html; $('mod').hidden = false; $('mod').dataset.keep = keep ? '1' : ''; }
-function closeModal() { $('mod').hidden = true; $('modBox').innerHTML = ''; }
+function closeModal() { $('mod').hidden = true; $('modBox').innerHTML = ''; Sfx.duck(false); }
 $('backBtn').onclick = () => {
   if (state !== 'play' || busy) { if (state === 'end') showMap(); return; }
   const was = paused; paused = true; Sfx.ui();
@@ -925,21 +928,21 @@ function showMap() {
       const b = SV.best[id], open = roomOpen(id), st = b ? b.stars : 0;
       return `<button type="button" class="door${id === cur && open ? ' cur' : ''}${open ? '' : ' lock'}" data-room="${id}" aria-label="Phòng ${LEVELS[id - 1].name}">${open ? LEVELS[id - 1].name.replace('Phòng ', '') : '🔒'}<i class="${st ? '' : 'e'}">${'★'.repeat(st)}${'☆'.repeat(3 - st)}</i></button>`; }).join('')}</div>
       ${locked ? `<p class="lockmsg">Tầng ${f.n} (${f.hsk}) dùng thẻ tự học · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE}. <a href="${CARD_URL}" target="_top">🎫 Xem thẻ tự học</a></p>` : ''}</div>`; }).join('');
-  $('tower').querySelectorAll('[data-room]').forEach(b => b.onclick = () => { const id = +b.dataset.room; Sfx.unlock(); if (!roomOpen(id)) { Sfx.bad(); toast(id > FREE_ROOMS && !hasCard() ? 'Tầng 3–4 dùng thẻ tự học 🎫' : 'Dọn xong phòng trước để mở phòng này'); return; } Sfx.ui(); startLevel(id); });
+  $('tower').querySelectorAll('[data-room]').forEach(b => b.onclick = () => { const id = +b.dataset.room; Sfx.wake(); if (!roomOpen(id)) { Sfx.bad(); toast(id > FREE_ROOMS && !hasCard() ? 'Tầng 3–4 dùng thẻ tự học 🎫' : 'Dọn xong phòng trước để mở phòng này'); return; } Sfx.ui(); startLevel(id); });
   $('goBtn').textContent = SV.best[1] ? '▶ Chơi tiếp' : '▶ Chơi ngay';
   const vb = $('vipBtn'), used = SV.vipDay === dayKey(); vb.classList.toggle('used', used);
   vb.innerHTML = `👑<span>Phòng VIP hôm nay<small>Cả nhà chơi cùng một bàn · thắng lần đầu trong ngày: xu ×2</small></span><i>${used ? 'Đã nhận ×2 ✓' : 'Vào ▶'}</i>`;
   const fl = $('fl' + Math.ceil(cur / 5)); if (fl) fl.scrollIntoView({ block: 'center' });
 }
-$('vipBtn').onclick = () => { Sfx.unlock(); Sfx.ui(); startLevel(0, { vip: true }); };
-$('goBtn').onclick = () => { Sfx.unlock(); Sfx.ui(); const c = curRoom(); startLevel(roomOpen(c) ? c : Math.min(c, FREE_ROOMS)); };
+$('vipBtn').onclick = () => { Sfx.wake(); Sfx.ui(); startLevel(0, { vip: true }); };
+$('goBtn').onclick = () => { Sfx.wake(); Sfx.ui(); const c = curRoom(); startLevel(roomOpen(c) ? c : Math.min(c, FREE_ROOMS)); };
 $('homeBtn').onclick = e => { e.preventDefault(); Sfx.ui(); Bridge.close(); };
 function syncMute() { $('muteM').textContent = $('muteP').textContent = SV.mute ? '🔇' : '🔊'; }
-$('muteM').onclick = $('muteP').onclick = () => { SV.mute = !SV.mute; save(); syncMute(); if (!SV.mute) Sfx.ui(); };
+$('muteM').onclick = $('muteP').onclick = () => { SV.mute = !SV.mute; save(); syncMute(); Sfx.mute(SV.mute); if (!SV.mute) Sfx.ui(); };
 syncMute();
 
 addEventListener('resize', () => { if (state === 'play' || state === 'end') { resize(); } });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { idleAt = performance.now(); } });
+document.addEventListener('visibilitychange', () => { Sfx.pause(document.hidden); if (!document.hidden) { idleAt = performance.now(); } });
 addEventListener('storage', e => { if (e.key === HOTEL_KEY || e.key === WORDS_KEY) { HS = hotel(); Words.load(); if (state === 'map') renderWallet(); } });
 
 /* ===== KHỞI ĐỘNG ===== */
@@ -952,7 +955,7 @@ if (FROM_ARC) $('homeBtn').innerHTML = '♨️ Khu trò chơi';
 
 /* móc kiểm thử (tools/test/xiao.js) */
 window.__xiao = {
-  get G() { return G; }, get state() { return state; }, get busy() { return busy; }, get paused() { return paused; }, get time() { return timeLeft; }, get phao() { return phao; },
+  Sfx, get G() { return G; }, get state() { return state; }, get busy() { return busy; }, get paused() { return paused; }, get time() { return timeLeft; }, get phao() { return phao; },
   speed(k) { SPEED = k; }, setTime(s) { timeLeft = s; renderTime(); },
   async move() { const m = G.bestMove(); if (m) await trySwap(m.a, m.b); return !!m; },
   answer(ok) { const q = window.__xiaoQ; if (!q) return false; const k = ok ? q.answer : (q.answer + 1) % q.opts.length; const b = document.querySelector(`.opt[data-k="${k}"]`); if (b) b.click(); return !!b; },

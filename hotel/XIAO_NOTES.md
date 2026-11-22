@@ -99,3 +99,9 @@ Vật cản trên bàn:
   - bàn chơi lấy hạt giống theo ngày, nên mọi người (cùng loại thẻ) chơi cùng một bàn;
   - thắng lần đầu trong ngày được xu ×2 và +3 điểm sao.
 - **Khu trò chơi Suối nóng** (`arcade.html`): mở 消消乐 bằng `?from=arcade`, chơi xong nút "♨️ Khu trò chơi" đưa về khu trò chơi. Thắng phòng và mỗi câu trả lời đúng đều cộng vào nhiệm vụ suối nóng (`bk_arcade_v1`).
+
+## v8.5 (22/11) · âm thanh trong trẻo
+
+- Dùng bộ âm thanh chung `hotel/bk-audio.js` (xem `hotel/AUDIO_NOTES.md`): ghép viên = gảy đàn tranh theo ngũ cung, 5 giây cuối = mõ gỗ, sai = đàn bầu trượt xuống, sôi sục = lướt dây + chuông gió. Không còn sóng vuông/răng cưa.
+- Nhạc lofi rất nhỏ dưới nền, tự hạ khi hiện câu hỏi; tắt nhạc nền trong game Khách sạn thì ở đây cũng không phát.
+- Sửa lỗi: hai hàm cùng tên `unlock` đè nhau nên mỗi lần chạm bàn đều kêu "bíp". Nay `Sfx.wake()` mở âm thanh, `Sfx.unlock()` là tiếng mở khoá.

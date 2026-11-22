@@ -693,6 +693,7 @@ body.st-on .dock,body.st-on .jcard,body.onb-on .dock,body.onb-on .hud,body.onb-o
 <div class="toast" id="toast"></div>
 <div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
 
+<script src="bk-audio.js"></script>
 <script>
 (() => {
 'use strict';
@@ -735,7 +736,7 @@ const HAPPY_AT = 60;             // tâm trạng từ mức này trở lên = kh
 const SAT_START = 80;            // chỉ số hài lòng khi mới mở khách sạn (%)
 const MUSIC_VOL = .7;            // âm lượng nhạc nền chill (0–1)
 /* Nhạc có giấy phép: chỉ thêm bài đã được tác giả cho phép dùng (hoặc nhạc không bản quyền), đặt tệp vào hotel/music/.
-   Ví dụ: { src: 'music/ha-long-lofi.mp3', name: 'Tên bài', by: 'Tác giả · giấy phép' }. Để trống thì game phát 3 bài lofi tự soạn. */
+   Ví dụ: { src: 'music/ha-long-lofi.mp3', name: 'Tên bài', by: 'Tác giả · giấy phép' }. Để trống thì game phát 5 bài lofi tự soạn (bk-audio.js: sáo trúc, đàn tranh, đàn bầu, đàn nhị, tỳ bà, tiêu). */
 const MUSIC_FILES = [];
 
 /* ===== NGÂN HÀNG CÂU HỎI (dùng chung với game Đánh Boss) ===== */
@@ -1117,209 +1118,60 @@ function skyAt(h) {
 }
 function shade(hex, d) { const n = parseInt(hex.slice(1), 16); const c = v => Math.max(0, Math.min(255, v + d)); return '#' + ((c(n >> 16) << 16) | (c((n >> 8) & 255) << 8) | c(n & 255)).toString(16).padStart(6, '0'); }
 
-/* ===== âm thanh (Web Audio, không CDN) ===== */
+/* ===== âm thanh (Web Audio tự tổng hợp, không tệp, không CDN) · bộ nhạc cụ chung ở bk-audio.js =====
+   v8.5 (22/11): trong trẻo hơn, bỏ tiếng đĩa than rè và sóng vuông/răng cưa, có vang và chặn đỉnh chống vỡ tiếng.
+   Nhạc cụ Việt: sáo trúc, đàn tranh, đàn bầu, mõ, chuông gió · Trung Hoa: 二胡 èrhú (đàn nhị), 琵琶 pípá (tỳ bà), 箫 xiāo (tiêu).
+   5 bài lofi tự soạn (BKAudio.TRACKS); ngày sáng có trống mềm · tối dịu hơn · khuya (23–6h) tắt trống. Máy bật tiết kiệm pin thì bỏ vang. */
 const Snd = (() => {
-  let ctx = null, master = null, loading = null;
-  const buf = {};
-  const FILES = { hit:'hit.ogg', ui:'ui.ogg', win:'win.ogg', hurt:'hurt.ogg' };
-  const VOL = { hit:.45, ui:.35, win:.6, hurt:.45 };
-  const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+  let ctx = null, master = null, E = null, M = null, FG = null, onTrack = null, mOn = false, ducked = false;
+  const HAS = !!window.BKAudio, T0 = HAS ? Math.floor(Math.random() * BKAudio.TRACKS.length) : 0;
+  function mood() { const h = gameHour(); return inHours(h, 23, 6) ? 'late' : inHours(h, 18, 23) ? 'eve' : 'day'; }
   function ens() {
     if (ctx) return ctx;
-    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
-    try { ctx = new AC(); master = ctx.createGain(); master.gain.value = S.muted ? 0 : 1; master.connect(ctx.destination); } catch (e) { ctx = null; }
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC || !HAS) return null;
+    try {
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = S.muted ? 0 : 1; master.connect(ctx.destination);
+      E = BKAudio.engine(ctx, master, { lite: !!S.lowPower });
+      M = E.music({ vol: MUSIC_VOL, mood, sea: true, track: T0, onTrack: t => { if (onTrack) onTrack(t); } });
+      if (ducked) M.duck(true);
+    } catch (e) { ctx = null; E = null; M = null; }
     return ctx;
   }
-  function decode(ab) { return new Promise((res, rej) => { try { const p = ctx.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); } catch (e) { rej(e); } }); }
-  function load() {
-    if (loading || !ens()) return loading;
-    loading = Promise.all(Object.keys(FILES).map(async k => { try { const r = await fetch('../v4/audio/' + FILES[k]); buf[k] = await decode(await r.arrayBuffer()); } catch (e) { buf[k] = null; } }));
-    return loading;
-  }
-  function tone(type, f0, f1, dur, vol, when = 0) {
-    const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = type; o.frequency.setValueAtTime(f0, t);
-    if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
-    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
-  }
-  const SYN = {
-    hit: r => tone('square', 520 * r, 200 * r, .09, .14),
-    ui: r => tone('sine', 880 * r, 880 * r, .06, .1),
-    win: r => [523, 659, 784, 1047].forEach((f, i) => tone('triangle', f * r, f * r, .16, .18, i * .09)),
-    hurt: r => tone('sawtooth', 240 * r, 80 * r, .2, .16)
-  };
   function ok() { if (S.muted || !ens()) return false; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } return true; }
-  function play(n, rate = 1) {
-    if (!ok()) return;
-    try {
-      if (buf[n]) { const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = buf[n]; s.playbackRate.value = rate; g.gain.value = VOL[n] || .4; s.connect(g); g.connect(master); s.start(); }
-      else if (SYN[n]) SYN[n](rate);
-    } catch (e) {}
-  }
-  function coin(n = 1) { if (!ok()) return; try { const semi = PENTA[Math.min(PENTA.length - 1, Math.max(0, n - 1))]; const f = 988 * Math.pow(2, semi / 12); tone('triangle', f, f, .09, .13); tone('triangle', f * 1.335, f * 1.335, .2, .12, .07); } catch (e) {} }
-  function build() { if (!ok()) return; try { tone('square', 140, 90, .12, .14); tone('square', 160, 100, .12, .12, .14); [659, 784, 988, 1319].forEach((f, i) => tone('triangle', f, f, .14, .14, .3 + i * .08)); } catch (e) {} }
-  function starUp() { if (!ok()) return; try { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone('triangle', f, f * 1.01, .22, .16, i * .1)); } catch (e) {} }
-  function discover() { if (!ok()) return; try { [1047, 1319, 1568].forEach((f, i) => tone('sine', f, f, .12, .1, i * .06)); } catch (e) {} }
-  function click() { if (!ok()) return; try { tone('square', 1800, 1200, .03, .05); } catch (e) {} }
-  function boom() { if (!ok()) return; try { tone('sine', 120, 40, .5, .18); } catch (e) {} }
-  /* ---------- nhạc nền chill tự soạn: lo-fi + đàn tranh ngũ cung, không cần tệp nhạc ----------
-     piano điện ấm (FM nhẹ) · bass tam giác · trống lo-fi có swing · giai điệu ngũ cung kiểu đàn tranh · tiếng đĩa than
-     ngày: sáng, có trống · tối: trầm hơn · khuya (23–6h): tắt trống, chỉ còn piano và đàn tranh */
-  /* v8 · 3 bài lofi tự soạn (giai điệu riêng, ngũ cung kiểu Việt), mỗi bài 8 ô nhịp × 4 vòng rồi chuyển bài:
-     vòng 1 giai điệu chính · vòng 2 thêm bè · vòng 3 nghỉ (ứng tác thưa) · vòng 4 giai điệu chính đổi nhạc cụ.
-     Nốt: [vị trí 0–15 trong ô nhịp, MIDI, độ dài tính bằng nốt móc kép] */
-  const TRACKS = [
-    { name: 'Sóng Bãi Cháy', zh: '海浪', py: 'hǎilàng', bpm: 72, lead: 'tranh', alt: 'sao',
-      ch: [[53, 57, 60, 64, 67], [50, 53, 57, 60, 64], [55, 58, 62, 65, 69], [48, 55, 58, 62, 65]], bs: [41, 38, 43, 36],
-      mel: [[[0, 72, 3], [3, 74, 3], [6, 77, 4], [12, 74, 4]], [[0, 72, 6], [6, 69, 2], [8, 72, 8]], [[0, 74, 4], [4, 72, 2], [6, 69, 2], [8, 67, 8]], [[0, 69, 3], [3, 67, 3], [6, 65, 10]],
-        [[0, 77, 3], [3, 79, 3], [6, 81, 4], [10, 79, 2], [12, 77, 4]], [[0, 74, 6], [6, 77, 2], [8, 74, 4], [12, 72, 4]], [[0, 69, 4], [4, 72, 4], [8, 74, 3], [11, 72, 2], [13, 69, 3]], [[0, 67, 6], [6, 69, 2], [8, 65, 8]]] },
-    { name: 'Chiều Hòn Gai', zh: '黄昏', py: 'huánghūn', bpm: 80, lead: 'sao', alt: 'tranh',
-      ch: [[57, 60, 64, 67, 71], [53, 57, 60, 64], [48, 52, 55, 59, 62], [55, 59, 62, 64]], bs: [45, 41, 36, 43],
-      mel: [[[0, 76, 4], [4, 74, 2], [6, 72, 2], [8, 69, 8]], [[0, 72, 3], [3, 74, 3], [6, 76, 6], [12, 79, 4]], [[0, 76, 8], [8, 74, 4], [12, 72, 4]], [[0, 74, 6], [6, 72, 2], [8, 67, 8]],
-        [[0, 69, 2], [2, 72, 2], [4, 76, 4], [8, 81, 6], [14, 79, 2]], [[0, 76, 4], [4, 79, 4], [8, 76, 4], [12, 74, 4]], [[0, 72, 6], [6, 74, 2], [8, 76, 4], [12, 74, 4]], [[0, 72, 4], [4, 69, 12]]] },
-    { name: 'Đêm Tuần Châu', zh: '夜晚', py: 'yèwǎn', bpm: 64, lead: 'tranh', alt: 'ep',
-      ch: [[50, 53, 57, 60, 64], [58, 62, 65, 69], [55, 58, 62, 65], [57, 62, 64, 67]], bs: [38, 46, 43, 45],
-      mel: [[[0, 74, 4], [4, 77, 4], [8, 79, 4], [12, 77, 4]], [[0, 74, 10], [10, 72, 2], [12, 69, 4]], [[0, 67, 4], [4, 69, 4], [8, 72, 4], [12, 74, 4]], [[0, 69, 12], [12, 72, 4]],
-        [[0, 81, 4], [4, 79, 2], [6, 77, 2], [8, 79, 8]], [[0, 77, 4], [4, 74, 4], [8, 72, 8]], [[0, 74, 3], [3, 72, 3], [6, 69, 4], [10, 67, 2], [12, 69, 4]], [[0, 62, 4], [4, 65, 4], [8, 74, 8]]] }
-  ];
-  let mTrack = Math.floor(Math.random() * TRACKS.length), mLoop = 0, onTrack = null;
-  const sixOf = () => 60 / TRACKS[mTrack].bpm / 4;
-  const PENT = [72, 74, 76, 79, 81, 84, 86, 88];   // C D E G A – ngũ cung
-  const hz = m => 440 * Math.pow(2, (m - 69) / 12);
-  let mBus = null, mLP = null, mOn = false, mTimer = 0, mNext = 0, mStep = 0, noise = null, vinyl = null, mel = {}, ducked = false;
-  function mood() { const h = gameHour(); return inHours(h, 23, 6) ? 'late' : inHours(h, 18, 23) ? 'eve' : 'day'; }
-  function mkNoise(sec, crackle) {
-    const n = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
-    if (!crackle) { for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; return b; }
-    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * .012;
-    for (let k = 0; k < sec * 9; k++) { const at = Math.floor(Math.random() * (n - 200)), a = (Math.random() < .5 ? -1 : 1) * (.15 + Math.random() * .5); for (let j = 0; j < 60; j++) d[at + j] += a * Math.exp(-j / 9); }
-    return b;
-  }
-  function ep(m, t, dur, v) {             // piano điện
-    const f = hz(m), c = ctx.createOscillator(), mo = ctx.createOscillator(), mg = ctx.createGain(), g = ctx.createGain();
-    c.frequency.value = f; mo.frequency.value = f;
-    mg.gain.setValueAtTime(f * .9, t); mg.gain.exponentialRampToValueAtTime(f * .04, t + .7);
-    mo.connect(mg); mg.connect(c.frequency);
-    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .02); g.gain.exponentialRampToValueAtTime(v * .3, t + 1.1); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    c.connect(g); g.connect(mLP); c.start(t); mo.start(t); c.stop(t + dur + .05); mo.stop(t + dur + .05);
-  }
-  function bass(m, t, dur, v) {
-    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'triangle'; o.frequency.value = hz(m);
-    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .04); g.gain.exponentialRampToValueAtTime(v * .45, t + dur * .6); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    o.connect(g); g.connect(mLP); o.start(t); o.stop(t + dur + .05);
-  }
-  function kick(t, v) {
-    const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(105, t); o.frequency.exponentialRampToValueAtTime(42, t + .13);
-    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3); o.connect(g); g.connect(mBus); o.start(t); o.stop(t + .32);
-  }
-  function hiss(t, v, type, f, dur) {
-    const src = ctx.createBufferSource(), fl = ctx.createBiquadFilter(), g = ctx.createGain(); src.buffer = noise; fl.type = type; fl.frequency.value = f; fl.Q.value = .8;
-    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); src.connect(fl); fl.connect(g); g.connect(mLP); src.start(t, Math.random() * .6, dur + .05);
-  }
-  function pluck(m, t, v, dur = 1.6) {    // đàn tranh: gảy, luyến nhẹ lên nốt, rung cuối nốt
-    const f = hz(m), o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain(), vb = ctx.createOscillator(), vg = ctx.createGain();
-    o.type = 'triangle'; o.frequency.setValueAtTime(f * .97, t); o.frequency.exponentialRampToValueAtTime(f, t + .07);
-    vb.frequency.value = 5.2; vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * .006, t + Math.min(.9, dur * .7)); vb.connect(vg); vg.connect(o.frequency);
-    o2.frequency.value = f * 2; g2.gain.value = .3;
-    const end = Math.max(1.2, dur + .5);
-    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .005); g.gain.exponentialRampToValueAtTime(v * .35, t + .35); g.gain.exponentialRampToValueAtTime(.0001, t + end);
-    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(mLP); [o, o2, vb].forEach(x => { x.start(t); x.stop(t + end + .05); });
-  }
-  function flute(m, t, dur, v) {          // sáo trúc: hơi thổi, luyến từ dưới lên, rung hơi
-    const f = hz(m), o = ctx.createOscillator(), g = ctx.createGain(), vb = ctx.createOscillator(), vg = ctx.createGain();
-    o.type = 'sine'; o.frequency.setValueAtTime(f * .944, t); o.frequency.exponentialRampToValueAtTime(f, t + .09);
-    vb.frequency.value = 5.6; vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * .008, t + Math.min(.6, dur * .6)); vb.connect(vg); vg.connect(o.frequency);
-    const end = dur + .18;
-    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .07); g.gain.setValueAtTime(v * .85, t + Math.max(.08, dur * .7)); g.gain.exponentialRampToValueAtTime(.0001, t + end);
-    o.connect(g); g.connect(mLP); o.start(t); vb.start(t); o.stop(t + end + .05); vb.stop(t + end + .05);
-    const br = ctx.createBufferSource(), bf = ctx.createBiquadFilter(), bg = ctx.createGain(); br.buffer = noise; bf.type = 'bandpass'; bf.frequency.value = f * 2; bf.Q.value = 2;
-    bg.gain.setValueAtTime(v * .25, t); bg.gain.exponentialRampToValueAtTime(.0001, t + .25); br.connect(bf); bf.connect(bg); bg.connect(mLP); br.start(t, Math.random() * .5, .3);
-  }
-  function voice(kind, m, t, dur, k = 1) {
-    if (kind === 'sao') flute(m, t, dur, .085 * k); else if (kind === 'ep') ep(m, t, Math.max(.6, dur * 1.4), .075 * k); else pluck(m, t, .12 * k, dur);
-  }
-  function phrase(chord) {                // ứng tác thưa ở vòng nghỉ: 3–5 nốt ngũ cung bám hợp âm
-    const out = {}; if (Math.random() < .45) return out;
-    const slots = shuffle([0, 2, 3, 6, 8, 10, 11, 14]).slice(0, 3 + ((Math.random() * 3) | 0)).sort((a, b) => a - b);
-    const tones = chord.map(n => n % 12);
-    let k = PENT.findIndex(n => tones.includes(n % 12)); if (k < 0) k = 2;
-    k = Math.min(PENT.length - 1, k + ((Math.random() * 3) | 0));
-    slots.forEach(sl => { out[sl] = PENT[k]; k = Math.max(0, Math.min(PENT.length - 1, k + pick([-2, -1, -1, 1, 1, 2]))); });
-    return out;
-  }
-  function step(n, t) {
-    let pos = n % 16, bar = Math.floor(n / 16);
-    if (pos === 0 && bar > 0 && bar % 8 === 0) { mLoop++; if (mLoop >= 4) { mLoop = 0; mTrack = (mTrack + 1) % TRACKS.length; mStep = 0; bar = 0; if (onTrack) setTimeout(() => onTrack(TRACKS[mTrack]), Math.max(0, (t - ctx.currentTime) * 1000)); } }
-    const TR = TRACKS[mTrack], SIX = sixOf(), BEAT = SIX * 4, ci = bar % 4, ch = TR.ch[ci], md = mood();
-    const sw = pos % 4 === 2 ? SIX * .3 : 0, tt = t + sw, drums = md !== 'late' && mLoop !== 2, soft = md === 'day' ? 1 : .75;
-    if (pos === 0) {
-      mel = mLoop === 2 ? phrase(ch) : {};
-      ch.forEach((m, i) => ep(m, t + i * .014, BEAT * 4.2, .07 * soft));
-      bass(TR.bs[ci], t, BEAT * 1.9, .17);
-      if (mLP) mLP.frequency.setTargetAtTime(md === 'day' ? 2600 : md === 'eve' ? 1800 : 1250, t, 1.5);
-    }
-    if (pos === 6 && Math.random() < .6) bass(TR.bs[ci] + (Math.random() < .5 ? 7 : 12), tt, BEAT * .9, .09);
-    if (pos === 8) { bass(TR.bs[ci], t, BEAT * 1.4, .13); if (Math.random() < .5) ch.slice(-3).forEach(m => ep(m, t, BEAT * 2, .03 * soft)); }
-    if (drums) {
-      if (pos === 0 || pos === 8 || (pos === 10 && Math.random() < .35)) kick(tt, pos === 0 ? .42 * soft : .32 * soft);
-      if (pos === 4 || pos === 12) hiss(tt, .07 * soft, 'bandpass', 1700, .16);
-      if (pos % 2 === 0 && Math.random() < .85) hiss(tt, (pos % 4 ? .016 : .022) * soft, 'highpass', 7000, .045);
-    }
-    if (mLoop === 2) { if (mel[pos]) pluck(mel[pos], tt, md === 'late' ? .07 : .09); return; }
-    const notes = TR.mel[bar % 8], lead = mLoop === 3 ? TR.alt : TR.lead, k = md === 'late' ? .75 : 1;
-    for (const [p0, m, len] of notes) if (p0 === pos) { voice(lead, m, tt, len * SIX, k); if (mLoop === 1) voice(lead === 'sao' ? 'tranh' : 'sao', m - 12, tt + SIX * .5, len * SIX, .45 * k); }
-  }
-  function mTick() {
-    if (!mOn || !ctx || ctx.state !== 'running') return;
-    const now = ctx.currentTime;
-    if (mNext < now) mNext = now + .08;
-    while (mNext < now + .5) { try { step(mStep, mNext); } catch (e) {} mStep++; mNext += sixOf(); }
-  }
+  const fx = f => { if (ok()) try { f(E.fx); } catch (e) {} };
+  const SYN = {
+    hit: r => E.tranh(E.sfx, 79 + Math.round(12 * Math.log2(r || 1)), ctx.currentTime + .005, .09, .35),   // gảy đàn tranh ngắn
+    ui: () => E.fx.ui(),        // tiếng mõ gỗ nhỏ
+    win: () => E.fx.win(),      // lướt dây đàn tranh + chuông
+    hurt: () => E.fx.no()       // đàn bầu trượt xuống nhẹ, không chói
+  };
+  function play(n, rate = 1) { if (!ok()) return; try { if (SYN[n]) SYN[n](rate); } catch (e) {} }
+  const coin = (n = 1) => fx(F => F.coin(n)), build = () => fx(F => F.build()), starUp = () => fx(F => F.star()), discover = () => fx(F => F.discover()), click = () => fx(F => F.tap()), boom = () => fx(F => F.boom());
   /* bài nhạc có giấy phép (tệp mp3 thật): thêm vào MUSIC_FILES là game phát các tệp này thay cho nhạc tự soạn */
   let mEl = null, mElSrc = null, mFi = 0;
   function playFile() {
     try {
-      if (!mEl) { mEl = new Audio(); mEl.preload = 'auto'; mEl.onended = () => { mFi = (mFi + 1) % MUSIC_FILES.length; playFile(); }; mElSrc = ctx.createMediaElementSource(mEl); mElSrc.connect(mBus); }
+      if (!mEl) { mEl = new Audio(); mEl.preload = 'auto'; mEl.onended = () => { mFi = (mFi + 1) % MUSIC_FILES.length; playFile(); }; FG = E.group(0); mElSrc = ctx.createMediaElementSource(mEl); mElSrc.connect(FG.dIn); }
+      FG.set(ducked ? MUSIC_VOL * .3 : MUSIC_VOL, .9);
       const f = MUSIC_FILES[mFi % MUSIC_FILES.length]; mEl.src = f.src; const pr = mEl.play(); if (pr && pr.catch) pr.catch(() => {});
       if (onTrack) onTrack({ name: f.name, by: f.by });
     } catch (e) {}
   }
   function startMusic() {
     if (S.muted || !S.music || mOn || !ens()) return;
-    try {
-      if (!mBus) {
-        mBus = ctx.createGain(); mBus.gain.value = 0; mLP = ctx.createBiquadFilter(); mLP.type = 'lowpass'; mLP.frequency.value = 1700; mLP.Q.value = .5;
-        mLP.connect(mBus); mBus.connect(master);
-        noise = mkNoise(1.2, false);
-        vinyl = ctx.createBufferSource(); vinyl.buffer = mkNoise(3, true); vinyl.loop = true;
-        const hp = ctx.createBiquadFilter(), vg = ctx.createGain(); hp.type = 'highpass'; hp.frequency.value = 900; vg.gain.value = .35;
-        vinyl.connect(hp); hp.connect(vg); vg.connect(mBus); vinyl.start();
-        // v6.1 · tiếng sóng vịnh Hạ Long rất nhỏ, dâng hạ chậm (~11 giây một nhịp) dưới nền nhạc
-        const wv = ctx.createBufferSource(), wl = ctx.createBiquadFilter(), wg = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
-        wv.buffer = mkNoise(4, false); wv.loop = true; wl.type = 'lowpass'; wl.frequency.value = 480; wg.gain.value = .07; lfo.frequency.value = .09; lg.gain.value = .05;
-        lfo.connect(lg); lg.connect(wg.gain); wv.connect(wl); wl.connect(wg); wg.connect(mBus); wv.start(); lfo.start();
-      }
-      mOn = true; mStep = 0; mLoop = 0; mNext = ctx.currentTime + .15;
-      mBus.gain.cancelScheduledValues(ctx.currentTime); mBus.gain.setTargetAtTime(ducked ? MUSIC_VOL * .3 : MUSIC_VOL, ctx.currentTime, .9);
-      if (MUSIC_FILES.length) { playFile(); return; }
-      clearInterval(mTimer); mTimer = setInterval(mTick, 110); mTick();
-      if (onTrack) onTrack(TRACKS[mTrack]);
-    } catch (e) { mOn = false; }
+    try { mOn = true; if (MUSIC_FILES.length) playFile(); else M.start(); } catch (e) { mOn = false; }
   }
-  function stopMusic() {
-    mOn = false; clearInterval(mTimer); if (mEl) try { mEl.pause(); } catch (e) {}
-    if (mBus && ctx) try { mBus.gain.cancelScheduledValues(ctx.currentTime); mBus.gain.setTargetAtTime(0, ctx.currentTime, .3); } catch (e) {}
-  }
+  function stopMusic() { mOn = false; if (mEl) try { mEl.pause(); } catch (e) {} try { if (FG) FG.set(0, .3); if (M) M.stop(); } catch (e) {} }
   function setMusic(on) { S.music = on; if (on) { unlock(); startMusic(); } else stopMusic(); }
   function setMuted(m) { if (master && ctx) { try { master.gain.setTargetAtTime(m ? 0 : 1, ctx.currentTime, .02); } catch (e) { master.gain.value = m ? 0 : 1; } } if (m) stopMusic(); else startMusic(); }
-  function unlock() { if (!ens()) return; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } load(); startMusic(); }
+  function unlock() { if (!ens()) return; if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} } startMusic(); }
   // hạ nhạc nền khi đang đọc tiếng Trung cho rõ chữ
-  function duck(on) { ducked = on; if (!ctx || !mBus || !mOn) return; try { mBus.gain.setTargetAtTime(on ? MUSIC_VOL * .3 : MUSIC_VOL, ctx.currentTime, .12); } catch (e) {} }
+  function duck(on) { ducked = on; try { if (M) M.duck(on); if (FG && mOn) FG.set(on ? MUSIC_VOL * .3 : MUSIC_VOL, .12); } catch (e) {} }
   function suspend() { if (ctx && ctx.state === 'running') try { ctx.suspend(); } catch (e) {} }
   function resume() { if (ctx && ctx.state === 'suspended') try { ctx.resume(); } catch (e) {} }
-  function nextTrack() { if (MUSIC_FILES.length) { mFi = (mFi + 1) % MUSIC_FILES.length; if (mOn) playFile(); return; } mTrack = (mTrack + 1) % TRACKS.length; mLoop = 0; mStep = 0; if (mOn && ctx) { mNext = ctx.currentTime + .2; if (onTrack) onTrack(TRACKS[mTrack]); } }
-  return { play, coin, build, starUp, discover, click, boom, unlock, setMuted, setMusic, suspend, resume, duck, nextTrack, set onTrack(f) { onTrack = f; }, get track() { return MUSIC_FILES.length ? MUSIC_FILES[mFi % MUSIC_FILES.length] : TRACKS[mTrack]; }, get musicOn() { return mOn; } };
+  function nextTrack() { if (MUSIC_FILES.length) { mFi = (mFi + 1) % MUSIC_FILES.length; if (mOn) playFile(); return; } if (ens()) M.next(); }
+  return { play, coin, build, starUp, discover, click, boom, unlock, setMuted, setMusic, suspend, resume, duck, nextTrack, set onTrack(f) { onTrack = f; },
+    get track() { return MUSIC_FILES.length ? MUSIC_FILES[mFi % MUSIC_FILES.length] : M ? M.track : HAS ? BKAudio.TRACKS[T0] : { name: '—' }; }, get musicOn() { return mOn; } };
 })();
 /* ===== giọng đọc tiếng Trung: luôn đọc trọn câu =====
    - không cắt câu khi bảng đóng; câu mới chỉ thay câu cũ khi người chơi chủ động bấm nghe/hỏi tiếp
@@ -3139,7 +2991,7 @@ function renderMe() {
       <div><b>${satFace(S.sat)} ${Math.round(S.sat)}%</b>độ hài lòng</div><div><b>${S.happy || 0}</b>khách hài lòng</div><div><b>${S.left || 0}</b>khách bỏ đi</div>
       <div><b>${built}/${total}</b>công trình</div><div><b>${FURN.filter(f => hasF(f.id)).length}/${FURN.length}</b>món nội thất</div><div><b>${STORY.filter(c => Journey.isDone(c)).length}/${STORY.length}</b>chương Hành trình</div><div><b>${Object.keys(S.ev.boss).filter(k => +k >= 3).length}/2</b>boss HSK3–4</div><div><b>🔥${streakAlive()}</b>ngày liên tiếp</div><div><b>${S.checkouts || 0}</b>lượt trả phòng</div></div>
     ${Gate.me()}
-    <div class="card setlist"><label class="toggle"><span>🎵 Nhạc nền lofi tự soạn (đàn tranh, sáo trúc, sóng biển)</span><input type="checkbox" id="musicChk" ${S.music ? 'checked' : ''}></label>
+    <div class="card setlist"><label class="toggle"><span>🎵 Nhạc nền lofi tự soạn (sáo trúc, đàn tranh, đàn bầu, đàn nhị <span lang="zh-CN">二胡</span> èrhú, tỳ bà <span lang="zh-CN">琵琶</span> pípá, sóng biển)</span><input type="checkbox" id="musicChk" ${S.music ? 'checked' : ''}></label>
       <button type="button" class="btn ghost" id="trackBtn">⏭️ Đổi bài · đang: ${esc(Snd.track.name)}</button>
       <label class="toggle"><span>🔋 Chế độ mượt cho máy yếu (30 khung hình/giây, ít người xe hơn)</span><input type="checkbox" id="lowChk" ${Scene.low ? 'checked' : ''}></label>
       <button type="button" class="btn ghost" id="lvBtn">🎚️ Đổi trình độ (đang: ${S.lv == null ? 'chưa chọn' : ['HSK0', 'HSK1', 'HSK2', 'HSK3', 'HSK4+'][S.lv]})</button>
@@ -3218,7 +3070,7 @@ function init() {
   $('drClose').onclick = () => closeDrawer();
   $('fsBtn').onclick = toggleFull; if (EMBED) $('fsBtn').hidden = true;
   let lastTrackToast = 0;
-  Snd.onTrack = t => { if (!S.music || S.muted || document.hidden) return; const now = Date.now(); if (now - lastTrackToast < 4000) return; lastTrackToast = now; toast(`🎵 Đang phát: ${t.name}${t.zh ? ` · ${t.zh} ${t.py}` : ''}${t.by ? ` · ${t.by}` : ' · lofi tự soạn'}`); };
+  Snd.onTrack = t => { if (!S.music || S.muted || document.hidden) return; const now = Date.now(); if (now - lastTrackToast < 4000) return; lastTrackToast = now; toast(`🎵 Đang phát: ${t.name}${t.zh ? ` · ${t.zh} ${t.py}` : ''}${t.by ? ` · ${t.by}` : ` · lofi tự soạn${t.ins ? ' · ' + t.ins : ''}`}`); };
   $('musicBtn').onclick = () => { Snd.unlock(); Snd.setMusic(!S.music); save(); musicUi(); if (!S.music) toast('Đã tắt nhạc nền'); }; musicUi();
   const pm = $('placeMenu');
   const placeClose = () => { pm.hidden = true; $('placeBtn').setAttribute('aria-expanded', 'false'); };
