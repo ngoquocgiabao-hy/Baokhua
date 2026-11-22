@@ -425,21 +425,28 @@ phrase('suona', A3 + 4 * BAR, A4, g=1.0, bars_only=(0, 1))
 phrase('dizi', A3 + 4 * BAR, A4, g=1.0, octave=0, bars_only=(2, 3))
 zheng_arp(A3, A4, g=0.3, dense=True)
 put('fx', M.whoosh(0.5), A4 - 0.48, 0.7)
-# Phần 4 – game: nửa đầu nhẹ (đàn tranh + sáo, nhường giọng), 1 ô dồn, DROP 2 đúng cảnh 消消乐
+# Phần 4 – nửa đầu nhẹ (đàn tranh + sáo, nhường giọng), 1 ô dồn, DROP 2 đúng mốc drop2 (vd cảnh 消消乐).
+#           Phần 4 ngắn (dưới 10 ô nhịp) mà drop2 không nằm giữa phần → drop luôn từ đầu phần 4.
 hit(A4, 0.8)
-pre = D2 if A4 + 3 * BAR <= D2 <= A5 - 2 * BAR else A4 + 8 * BAR
-drums(A4, pre, cut_last=True, fills=False, wood=True)
-bassline(A4, pre, g=0.8, cut_last=True)
-pads(A4, pre, g=0.2, cutoff=1800)
-zheng_arp(A4, pre - BAR, g=0.42)
-phrase('dizi', A4, pre - BAR, g=0.75, octave=0, bars_only=(0, 1))
-for a, b2 in zip(LINES, LINES[1:]):
-    gap = b2['t0'] - a['t1']
-    if A4 <= a['t1'] < pre - BAR and gap >= 0.45:
-        lick(a['t1'] + 0.04, gap, 0.7, A4)
-snroll(pre - BAR, BAR - B, 0.1, 0.7)
-put('fx', M.riser(BAR, top=10000), pre - BAR, 0.7)
-zheng_gliss(pre - B * 1.1, PENTA[3:14], B * 0.95, 0.8, -0.2)
+if A4 + 3 * BAR <= D2 <= A5 - 2 * BAR:
+    pre = D2
+elif A5 - A4 >= 10 * BAR:
+    pre = A4 + 8 * BAR
+else:
+    pre = A4
+if pre > A4:
+    drums(A4, pre, cut_last=True, fills=False, wood=True)
+    bassline(A4, pre, g=0.8, cut_last=True)
+    pads(A4, pre, g=0.2, cutoff=1800)
+    zheng_arp(A4, pre - BAR, g=0.42)
+    phrase('dizi', A4, pre - BAR, g=0.75, octave=0, bars_only=(0, 1))
+    for a, b2 in zip(LINES, LINES[1:]):
+        gap = b2['t0'] - a['t1']
+        if A4 <= a['t1'] < pre - BAR and gap >= 0.45:
+            lick(a['t1'] + 0.04, gap, 0.7, A4)
+    snroll(pre - BAR, BAR - B, 0.1, 0.7)
+    put('fx', M.riser(BAR, top=10000), pre - BAR, 0.7)
+    zheng_gliss(pre - B * 1.1, PENTA[3:14], B * 0.95, 0.8, -0.2)
 hit(pre, 1.0, gong_g=0.6)
 drums(pre, A5, cut_last=True)
 bassline(pre, A5, cut_last=True)
@@ -467,7 +474,8 @@ zheng_gliss(END - tail + B, PENTA[13:3:-1], B * 1.2, 0.6)
 for bus in ('kick', 'sc'):
     sweep(bus, A1, A2, 260, 7000, 'lp', 1.1)          # phần 1 mở dần
     sweep(bus, A3 - build, A3, 30, 800, 'hp', 0.75)    # dồn: mỏng dần
-    sweep(bus, pre - BAR, pre, 30, 600, 'hp', 0.75)
+    if pre > A4:
+        sweep(bus, pre - BAR, pre, 30, 600, 'hp', 0.75)
 
 # ---------- trộn ----------
 pump = np.ones(N)
