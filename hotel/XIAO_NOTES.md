@@ -82,3 +82,20 @@ Vật cản trên bàn:
 - `node tools/test/xiao-core.js`: luật ghép, đòn ghép, vật cản, rơi bù; bàn đầu không tự nổ và luôn có nước đi; bot qua đủ 20 phòng; bộ từ khớp game Khách sạn.
 - `node tools/test/xiao.js tools/test/out 390 844` (và `360 640`): chạy đầu-cuối cả 2 đường (trong khung và chơi riêng), hết giờ → câu hỏi → thắng → xu và Sổ ôn về khách sạn. Yêu cầu 0 lỗi console, 0 gọi máy chủ ngoài, không tràn ngang.
 - Móc kiểm thử: `window.__xiao` (`move()`, `answer(ok)`, `setTime(s)`, `speed(k)`, `start(id)`, `go()`), `__hotel.Xiao`.
+
+## v8.4 (22/11) · sướng mắt hơn theo tầng, sôi sục, phòng VIP, khu trò chơi
+
+- **Hiệu ứng theo tầng** (`tier` = tầng 1–4, phòng VIP +1):
+  - nền sống sau bàn (`#amb`): đốm sáng mọi tầng, đèn lồng đỏ bay lên từ tầng 2, sao lấp lánh từ tầng 3, pháo hoa nền ở tầng 4;
+  - số hạt bắn ×1 / ×1,25 / ×1,55 / ×1,9 (`PMUL`);
+  - viên rơi chạm đáy thì nảy, viên đặc biệt lấp lánh;
+  - sóng xung kích khi dây chuyền ≥ 3 (từ tầng 2) hoặc khi nổ;
+  - viền bàn sáng sau dây chuyền lớn;
+  - đếm liên hoàn "×N 连击 liánjī";
+  - băng rôn cắt ngang màn hình khi dây chuyền dài (tầng 3–4 từ ×4, tầng 1–2 từ ×5), khi có Ngọc 宝, khi Vô địch 无敌;
+  - "+giây" bay về thanh giờ.
+- **沸腾 fèiténg · sôi sục:** mỗi viên xoá nạp thanh (dây chuyền nạp nhanh hơn). Thanh càng ngắn ở tầng cao (70 → 52). Đầy thanh thì 7 + tầng giây điểm ×2, đồng hồ đứng, bong bóng suối nổi lên, viền bàn cầu vồng.
+- **Phòng VIP hôm nay** (`?vip=1`, nút trên bản đồ và trong khu trò chơi):
+  - bàn chơi lấy hạt giống theo ngày, nên mọi người (cùng loại thẻ) chơi cùng một bàn;
+  - thắng lần đầu trong ngày được xu ×2 và +3 điểm sao.
+- **Khu trò chơi Suối nóng** (`arcade.html`): mở 消消乐 bằng `?from=arcade`, chơi xong nút "♨️ Khu trò chơi" đưa về khu trò chơi. Thắng phòng và mỗi câu trả lời đúng đều cộng vào nhiệm vụ suối nóng (`bk_arcade_v1`).

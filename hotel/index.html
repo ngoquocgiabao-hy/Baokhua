@@ -365,6 +365,19 @@ body.embed{overscroll-behavior-y:auto}
 #challengeBtn{background:linear-gradient(180deg,#ffd0b8,#ff8a5c)}
 .evt-banner{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border-radius:14px;border:2px dashed #FFD91F;background:rgba(255,217,31,.14);color:#fff;font:inherit;font-size:13px;text-align:left;cursor:pointer;animation:evtPulse 1.6s ease-in-out infinite}
 .evt-banner[hidden]{display:none}
+/* v8.4 · nút Khu trò chơi Suối nóng (温泉电玩城 wēnquán diànwánchéng) */
+.spa-chip{position:fixed;left:8px;top:calc(118px + env(safe-area-inset-top));z-index:28;display:flex;align-items:center;gap:7px;padding:7px 12px 7px 8px;border-radius:16px;border:2px solid #FFD91F;background:linear-gradient(135deg,#ff6fb0,#7b4fd8);color:#fff;font:inherit;cursor:pointer;box-shadow:0 4px 0 rgba(40,10,70,.45),0 0 0 0 rgba(255,111,176,.6);animation:spaGlow 2.2s ease-in-out infinite}
+.spa-chip .sc-i{font-size:24px;line-height:1}
+.spa-chip .sc-t{display:grid;text-align:left;line-height:1.15}
+.spa-chip b{font-size:13.5px;font-weight:900}
+.spa-chip small{font-size:11px;font-weight:700;color:#FFE97A}
+.spa-chip em{position:absolute;top:-9px;right:-8px;font-style:normal;font-size:10px;font-weight:900;background:#FFD91F;color:#3a2600;border-radius:999px;padding:3px 6px;animation:spaBounce 1.4s ease-in-out infinite}
+.spa-chip em[hidden]{display:none}
+.spa-chip:active{transform:scale(.96)}
+@keyframes spaGlow{50%{box-shadow:0 4px 0 rgba(40,10,70,.45),0 0 0 7px rgba(255,111,176,0)}}
+@keyframes spaBounce{50%{transform:translateY(-3px)}}
+body.in-on .spa-chip,body.onb-on .spa-chip,body.st-on .spa-chip,body.ev-on .spa-chip,body.embed-small .spa-chip{display:none}
+@media (prefers-reduced-motion:reduce){.spa-chip,.spa-chip em{animation:none}}
 .evt-banner .ic{font-size:22px}.evt-banner .t{flex:1;line-height:1.3}.evt-banner .go{font-weight:900;color:#FFD91F;white-space:nowrap}.evt-banner .x{padding:2px 6px;opacity:.75}
 @keyframes evtPulse{50%{border-color:#fff3b0;background:rgba(255,217,31,.24)}}
 .inside{position:fixed;inset:0;z-index:40;background:#cfeaf7;display:flex;flex-direction:column}
@@ -612,6 +625,7 @@ body.st-on .dock,body.st-on .jcard,body.onb-on .dock,body.onb-on .hud,body.onb-o
  <div class="place-menu" id="placeMenu" hidden role="menu" aria-label="Đi tới"></div>
  <div class="zoom-pad"><button class="sbtn" id="zinBtn" type="button" aria-label="Phóng to">＋</button><button class="sbtn" id="zoutBtn" type="button" aria-label="Thu nhỏ">－</button></div>
  <button type="button" class="evt-banner" id="evtBanner" hidden></button>
+ <button type="button" class="spa-chip" id="spaChip" aria-label="Khu trò chơi Suối nóng 温泉电玩城: 消消乐, Ngâm chill, Đánh Boss"><span class="sc-i" aria-hidden="true">♨️</span><span class="sc-t"><b>Khu trò chơi</b><small><span lang="zh-CN">温泉电玩城</span></small></span><em id="spaNew">MỚI</em></button>
  <nav class="dock" aria-label="Điều khiển chính">
   <button type="button" class="dk-btn" id="insideBtn"><span class="di">🛋️</span><b>Vào trong</b><small id="insideSub">Sảnh 3D</small></button>
   <button type="button" class="dk-btn" data-tab="build"><span class="di">🛒</span><b>Mua đồ</b></button>
@@ -1433,7 +1447,7 @@ function bootDone() { const b = document.getElementById('boot'); if (!b || b.cla
 /* v8.3 · màn chờ: thanh tiến độ theo từng bước dựng phố, mỗi bước 1 từ tiếng Trung để học trong lúc chờ.
    Quá 6 giây chưa xong (mạng hoặc máy chậm): hiện nút chơi 消消乐 trong lúc chờ hoặc vào game luôn (phố 3D dựng tiếp phía sau). */
 const BOOT_STEP = { terrain: ['vịnh và đảo đá', '岛', 'dǎo', 'đảo'], city: ['phố Bãi Cháy', '街', 'jiē', 'phố'], landmarks: ['cầu Bãi Cháy', '大桥', 'dàqiáo', 'cầu lớn'], wheel: ['vòng quay Mặt Trời', '摩天轮', 'mótiānlún', 'vòng quay'],
-  life: ['người dân, xe cộ', '人', 'rén', 'người'], bake: ['đèn phố', '路灯', 'lùdēng', 'đèn đường'], lobby: ['sảnh khách sạn', '大堂', 'dàtáng', 'sảnh'], compile: ['sắp xong', '快好了', 'kuài hǎo le', 'sắp xong rồi'] };
+  spa: ['suối nước nóng', '温泉', 'wēnquán', 'suối nước nóng'], life: ['người dân, xe cộ', '人', 'rén', 'người'], bake: ['đèn phố', '路灯', 'lùdēng', 'đèn đường'], lobby: ['sảnh khách sạn', '大堂', 'dàtáng', 'sảnh'], compile: ['sắp xong', '快好了', 'kuài hǎo le', 'sắp xong rồi'] };
 function bootStep(k, f) {
   window.__bootFrac = f; const b = document.getElementById('boot'); if (!b || b.classList.contains('done')) return;
   const bar = document.querySelector('#bootBar i'); if (bar) { bar.classList.add('det'); bar.style.width = Math.max(6, Math.round(f * 100)) + '%'; }
@@ -1580,6 +1594,7 @@ const Scene = (() => {
         onWord: (k, x, y) => wordAt(k, x, y),
         onHotel: () => { Snd.unlock(); if (!hotelOpen()) { toast('🔒 Nhà nghỉ của bà còn đóng cửa · đi hết Chặng 1 trên bản đồ Hành trình để mở cửa'); return; } Snd.play('ui'); Inside.show(); },
         onFurn: id => Inside.tapWord(id),
+        onSpa: () => { Snd.unlock(); Snd.play('ui'); Xiao.arcade(); },
         onMode: m => { document.body.dataset.mode = m; Inside.sync(m); Journey.onMode(m); },
         onCoin: () => { S.coins += 1; save(); renderHud(); },
         onBoom: () => Snd.boom(),
@@ -2965,11 +2980,17 @@ const Xiao = (() => {
   let open = false, task = '', got = { coins: 0, learn: 0, rooms: 0 }, starTo = 0;
   const pub = () => ({ coins: S.coins, star: star(), card: S.card || null, cards: S.cards, muted: !!S.muted, pts: S.pts });
   function send() { try { const w = $('evtFrame').contentWindow; if (w) w.postMessage({ type: 'bk-xiao-state', hs: pub() }, location.origin); } catch (e) {} }
-  function show(q, t) {
-    if (open) return; Learn.exportCat(); open = true; task = t || ''; got = { coins: 0, learn: 0, rooms: 0 };
-    $('evtTitle').innerHTML = '✨ Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ'; $('evt').hidden = false; document.body.classList.add('ev-on');
+  function show(q, t, page) {
+    if (open) return; Learn.exportCat(); open = true; task = t || ''; got = { coins: 0, learn: 0, rooms: 0, games: 0 };
+    $('evtTitle').innerHTML = page === 'arcade.html' ? '♨️ <span lang="zh-CN">温泉电玩城</span> · Khu trò chơi Suối nóng' : '✨ Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ'; $('evt').hidden = false; document.body.classList.add('ev-on');
     Scene.setActive(false); if (Inside.open) Inside.send({ bk: 'pause' }); Snd.suspend(); Voice.stop(); hideTipNow();
-    $('evtFrame').src = 'xiao.html?in=1' + (q || '');
+    $('evtFrame').src = (page || 'xiao.html') + '?in=1' + (q || '');
+  }
+  /** Khu trò chơi Suối nóng: bay máy quay tới toà 温泉电玩城 rồi mở trang khu trò chơi */
+  function arcade() {
+    if (open) return; S.spaSeen = 1; save(); const n = $('spaNew'); if (n) n.hidden = true;
+    const W = Scene.W; if (Inside.open) Inside.close();
+    if (W && W.goPlace && !REDUCED) { W.goPlace('spa'); setTimeout(() => show('', '', 'arcade.html'), 1100); } else show('', '', 'arcade.html');
   }
   function close() {
     if (!open) return; open = false; $('evt').hidden = true; $('evtFrame').src = 'about:blank'; document.body.classList.remove('ev-on');
@@ -2980,12 +3001,13 @@ const Xiao = (() => {
   function report(g) {
     if (!g.coins && !g.learn) return;
     if (g.coins) { Snd.coin(Math.min(6, 2 + g.rooms)); const r = rectOf($('serveBtn')); if (r) burstAt(r.left + r.width / 2, r.top, 30, 160); }
-    toast(`✨ 消消乐 xiāoxiāolè: ${g.rooms ? `dọn ${g.rooms} phòng · +${g.coins} 🪙` : 'chưa dọn xong phòng'}${g.learn ? ` · ôn ${g.learn} thẻ` : ''}`);
+    toast(g.games ? `♨️ 温泉电玩城 wēnquán diànwánchéng: +${g.coins} 🪙${g.rooms ? ` · dọn ${g.rooms} phòng 消消乐` : ''}${g.learn ? ` · ôn ${g.learn} thẻ` : ''}`
+      : `✨ 消消乐 xiāoxiāolè: ${g.rooms ? `dọn ${g.rooms} phòng · +${g.coins} 🪙` : 'chưa dọn xong phòng'}${g.learn ? ` · ôn ${g.learn} thẻ` : ''}`);
   }
   function learn(id, ok) { if (!Learn.has(id)) return; Learn.met(id, !!ok); got.learn++; }
-  function room(coins, pts) {
+  function room(coins, pts, tag) {
     const c = Math.max(0, Math.min(COIN_CAP, coins | 0)), p = Math.max(0, Math.min(PTS_CAP, pts | 0));
-    S.coins += c; S.pts += p; got.coins += c; got.rooms++;
+    S.coins += c; S.pts += p; got.coins += c; if (typeof tag === 'number' || /^\d+$/.test(String(tag))) got.rooms++; else got.games++;
     S.xiao = S.xiao || { rooms: 0, coins: 0 }; S.xiao.rooms++; S.xiao.coins += c;
     if (task === 'clean') { S.sat = Math.min(100, S.sat + 4); task = ''; }
     const after = star(), before = S.star || 1; S.star = after; save(); renderHud(); renderBuild();
@@ -2997,14 +3019,14 @@ const Xiao = (() => {
     const d = e.data;
     if (d.kind === 'ready') send();
     else if (d.kind === 'learn') { learn(d.id, d.ok); save(); }
-    else if (d.kind === 'done') { room(d.coins, d.pts); send(); }
+    else if (d.kind === 'done') { room(d.coins, d.pts, d.room); send(); }
     else if (d.kind === 'close') close();
   });
   /** chơi riêng ở xiao.html rồi quay về: nhận hộp thư (giới hạn xu theo số phòng để tránh số lạ) */
   function pickup() {
     let b = null; try { b = JSON.parse(localStorage.getItem(INBOX) || 'null'); localStorage.removeItem(INBOX); } catch (e) { b = null; }
     if (!b || typeof b !== 'object') return;
-    const rooms = Math.max(0, Math.min(50, b.rooms | 0)), g = { coins: 0, learn: 0, rooms };
+    const rooms = Math.max(0, Math.min(50, b.rooms | 0)), g = { coins: 0, learn: 0, rooms, games: b.last && !/^\d+$/.test(String(b.last.room)) ? 1 : 0 };
     g.coins = Math.max(0, Math.min(rooms * COIN_CAP, b.coins | 0)); const pts = Math.max(0, Math.min(rooms * PTS_CAP, b.pts | 0));
     (Array.isArray(b.learn) ? b.learn.slice(-400) : []).forEach(x => { if (Array.isArray(x) && Learn.has(x[0])) { Learn.met(x[0], !!x[1]); g.learn++; } });
     if (g.coins || pts) { S.coins += g.coins; S.pts += pts; S.xiao = S.xiao || { rooms: 0, coins: 0 }; S.xiao.rooms += rooms; S.xiao.coins += g.coins; const after = star(), before = S.star || 1; S.star = after; if (after > before) afterBoot(() => setTimeout(() => starUp(after), 1500)); }
@@ -3013,7 +3035,7 @@ const Xiao = (() => {
   }
   /** đợi màn chờ dựng phố xong mới báo (để người chơi thấy "+X 🪙" thay vì báo dưới màn chờ hay bị lời nhắc ôn đè) */
   function afterBoot(f, n = 0) { const b = document.getElementById('boot'); if (!b || b.classList.contains('done') || n > 120) setTimeout(f, Math.max(700, 3300 - performance.now())); else setTimeout(() => afterBoot(f, n + 1), 300); }   // sau lời nhắc ôn (2,5 giây) để không bị đè
-  return { show, close, pickup, get open() { return open; } };
+  return { show, close, pickup, arcade, get open() { return open; } };
 })();
 /* --- nhắc ôn: thông báo (sw.js), lịch .ics, cài app --- */
 let installEvt = null, swReg = null;
@@ -3205,9 +3227,10 @@ function init() {
     if (!pm.hidden) return placeClose();
     // Mini-game Thanh điệu 10 giây (tone10s.html) luôn ở đầu menu, kể cả khi máy không mở được hình 3D
     const tone = !TONE10S ? '' : `<a class="pm-wide" role="menuitem" href="../tone10s.html"${EMBED ? ' target="_top"' : ''}><span class="pi">🎵</span><span class="pn">Thanh điệu 10 giây<small><span lang="zh-CN">声调 shēngdiào</span> · thanh điệu</small></span></a>`;
-    const xiao = `<button type="button" class="pm-wide" role="menuitem" id="pmXiao"><span class="pi">✨</span><span class="pn">Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ<small><span lang="zh-CN">xiāoxiāolè</span> · dọn phòng, kiếm xu</small></span></button>`;
+    const xiao = `<button type="button" class="pm-wide" role="menuitem" id="pmSpa"><span class="pi">♨️</span><span class="pn">Khu trò chơi Suối nóng<small><span lang="zh-CN">温泉电玩城 wēnquán diànwánchéng</span> · 消消乐, Ngâm chill, Đánh Boss</small></span></button><button type="button" class="pm-wide" role="menuitem" id="pmXiao"><span class="pi">✨</span><span class="pn">Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ<small><span lang="zh-CN">xiāoxiāolè</span> · dọn phòng, kiếm xu</small></span></button>`;
     pm.innerHTML = '<b>📍 Đi tới</b>' + xiao + tone + (has3d ? W.places.map(p => `<button type="button" role="menuitem" data-pl="${p.id}"><span class="pi">${p.ico}</span><span class="pn">${esc(p.name)}<small lang="zh-CN">${p.zh} ${p.py}</small></span></button>`).join('') : '<small class="pm-note">Máy chưa mở được hình 3D</small>');
     $('pmXiao').onclick = () => { placeClose(); Snd.play('ui'); if (Inside.open) Inside.close(); Xiao.show('&lv=next'); };
+    $('pmSpa').onclick = () => { placeClose(); Snd.play('ui'); Xiao.arcade(); };
     pm.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const p = W.places.find(x => x.id === b.dataset.pl); placeClose(); Snd.play('ui'); if (Inside.open) Inside.close(); W.goPlace(p.id); speak(p.zh); toast(`${p.ico} ${p.name} · ${p.zh} ${p.py}`); hideTipNow(); });
     pm.hidden = false; $('placeBtn').setAttribute('aria-expanded', 'true');
   };
@@ -3215,6 +3238,7 @@ function init() {
   $('zinBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(.7); };
   $('zoutBtn').onclick = () => { Snd.play('ui'); const W = Scene.W; if (W && W.zoomBy) W.zoomBy(1.42); };
   $('insideBtn').onclick = () => { Snd.unlock(); Snd.play('ui'); if (Inside.open) Inside.close(); else Inside.show(); };
+  $('spaChip').onclick = () => { Snd.unlock(); Snd.play('ui'); Xiao.arcade(); }; if (S.spaSeen) $('spaNew').hidden = true;
   $('bootSkip').hidden = false; $('bootSkip').onclick = () => { Snd.unlock(); bootDone(); };
   $('bootXiao').onclick = e => { e.preventDefault(); Snd.unlock(); bootDone(); Xiao.show('&lv=next'); };
   $('evtClose').onclick = () => { if (Xiao.open) return Xiao.close(); if (S.ev.pend && S.ev.pend.fid && FURNI[S.ev.pend.fid]) { S.coins += FURNI[S.ev.pend.fid].price; toast(`Đã quay về · hoàn ${FURNI[S.ev.pend.fid].price} 🪙`); } S.ev.pend = null; save(); Ev.close(); };
@@ -3269,6 +3293,7 @@ function arrive(p) {
     n++; const busy = ovOpen || document.querySelector('.onb:not([hidden])') || Journey.open || Tut.active;
     if (H === 'the') { if (S.lv != null && !busy) { clearInterval(t); Gate.code(); } }
     else if (H === 'xiao') { if (S.lv != null && !busy) { clearInterval(t); Xiao.show('&lv=next'); } }
+    else if (H === 'arcade' || H === 'spa') { if (S.lv != null && !busy) { clearInterval(t); Xiao.arcade(); } }
     else { const W = Scene.W; if (W && W.places && !busy) { clearInterval(t); const p = W.places.find(q => q.id === H); if (p) { W.goPlace(H); arrive(p); } } }
     if (n > 240) clearInterval(t);
   }, 700);
