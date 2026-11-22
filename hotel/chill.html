@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Ngâm chill 泡温泉 · Khu trò chơi Suối nóng · Khách sạn Vịnh Ā Bǎo</title>
+<meta name="description" content="Ngâm chill ở suối nước nóng Bãi Cháy: bong bóng chữ Hán nổi lên, chạm đúng chữ có nghĩa được hỏi. Không đồng hồ, không thua, nhạc thư giãn.">
+<meta name="theme-color" content="#14123a">
+<link rel="icon" href="icon-192.png">
+<style>
+@view-transition{navigation:auto}
+:root{--gold:#FFD91F;--ink:#1D1640;--UIF:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --ZHF:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei","WenQuanYi Zen Hei",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#14123a;color:#fff;font-family:var(--UIF);-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+[lang^="zh"]{font-family:var(--ZHF)}
+#cv{position:fixed;inset:0;width:100%;height:100%;touch-action:manipulation}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 0;display:flex;gap:8px;align-items:center;z-index:2;pointer-events:none}
+.top>*{pointer-events:auto}
+.ib{width:42px;height:42px;border-radius:13px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:19px;display:grid;place-items:center;cursor:pointer;flex:none}
+.ttl{flex:1;min-width:0;font:900 15px/1.15 var(--UIF)}
+.ttl small{display:block;font-weight:700;font-size:11.5px;color:#d8d2ff}
+.cnt{font:900 14px/1 var(--UIF);color:var(--gold);background:rgba(0,0,0,.25);border-radius:999px;padding:8px 11px;white-space:nowrap}
+.ask{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top));transform:translateX(-50%);z-index:2;text-align:center;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);border-radius:20px;padding:10px 18px;min-width:min(330px,calc(100vw - 32px));backdrop-filter:none}
+.ask small{display:block;font:700 12px/1.3 var(--UIF);color:#d8d2ff}
+.ask b{display:block;font:900 24px/1.25 var(--UIF);color:#fff;margin-top:2px}
+.ask .hint{font:700 12px/1.3 var(--UIF);color:#ffe97a;min-height:16px;margin-top:3px}
+.ask.ok{animation:okp .5s}
+@keyframes okp{40%{transform:translateX(-50%) scale(1.06);background:rgba(61,190,106,.35)}}
+.done{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(14,10,40,.7)}
+.done[hidden]{display:none}
+.box{width:100%;max-width:380px;background:#FFF8EF;color:var(--ink);border-radius:22px;padding:18px;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.box h2{margin:0 0 4px;font:900 20px/1.25 var(--UIF)}
+.box p{margin:6px 0;font:600 14px/1.45 var(--UIF)}
+.words{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+.words button{background:#E3F6FF;border:0;border-radius:12px;padding:5px 9px;font:700 12px/1.25 var(--UIF);color:var(--ink);cursor:pointer}
+.words b{display:block;font:900 17px/1.1 var(--ZHF)}
+.row{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;border:0;border-radius:15px;padding:12px;font:900 15px/1.2 var(--UIF);background:var(--gold);color:var(--ink);box-shadow:0 4px 0 #c99a00;cursor:pointer;text-decoration:none;text-align:center}
+.btn.alt{background:#E3F6FF;box-shadow:0 4px 0 #b6dff2}
+.start{position:fixed;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(14,10,40,.55)}
+.start[hidden]{display:none}
+</style>
+</head>
+<body>
+<canvas id="cv" aria-label="Suối nước nóng: bong bóng chữ Hán nổi lên, chạm vào chữ đúng nghĩa"></canvas>
+<div class="top">
+  <button type="button" class="ib" id="back" aria-label="Về khu trò chơi">◀</button>
+  <div class="ttl">Ngâm chill <span lang="zh-CN">泡温泉</span><small><span lang="zh-CN">pào wēnquán</span> · ngâm suối nóng, không đồng hồ</small></div>
+  <span class="cnt" id="cnt">🫧 0/12</span>
+  <button type="button" class="ib" id="mute" aria-label="Tắt/bật âm thanh">🔊</button>
+</div>
+<div class="ask" id="ask" aria-live="polite"><small>Chạm bong bóng có nghĩa là</small><b id="askVi">…</b><div class="hint" id="hint"></div></div>
+<div class="start" id="start"><div class="box"><h2>Ngâm chill <span lang="zh-CN">泡温泉</span></h2><p class="sub"><span lang="zh-CN">pào wēnquán</span> · ngâm suối nước nóng</p>
+  <p>Bong bóng chữ Hán nổi lên từ suối. Chạm vào bong bóng có <b>nghĩa</b> được hỏi ở trên. Không đồng hồ, không thua: chạm nhầm thì bong bóng cho bạn xem nghĩa của nó.</p>
+  <p>Chạm đúng 12 bong bóng là xong một lượt ngâm, mỗi bong bóng đúng +1 🪙 mang về khách sạn.</p>
+  <div class="row"><button type="button" class="btn" id="go">Bắt đầu ngâm ▶</button></div></div></div>
+<div class="done" id="done" hidden><div class="box" id="doneBox"></div></div>
+
+<script src="bk-audio.js"></script>
+<script src="xiao-words.js"></script>
+<script src="mini.js"></script>
+<script>
+(() => {
+'use strict';
+const { Store, Bridge, Words, Voice, Tasks, IN_FRAME, QS, esc, vib } = window.BKMini;
+const GOAL = 12, BUBBLES = 5, SAVE = 'bk_chill_v1';
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+const SV = Object.assign({ total: 0, plays: 0, mute: false }, Store.get(SAVE, {}));
+const save = () => Store.set(SAVE, SV);
+Voice.mute = SV.mute;
+const cv = $('cv'), g = cv.getContext('2d'), ZHF = getComputedStyle(document.documentElement).getPropertyValue('--ZHF').trim();
+let W = 0, H = 0, DPR = 1, water = 0;
+function resize() { DPR = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; water = H * .5; }
+addEventListener('resize', resize); resize();
+
+/* ---------- nhạc thư giãn tự tổng hợp (bộ nhạc cụ chung bk-audio.js) ----------
+   v8.5: lofi không trống – đàn bầu, tiêu 箫 xiāo, đàn tranh, sáo trúc trên piano điện ấm, chuông gió thoảng; chạm đúng = gảy đàn tranh + chuông. */
+const Sfx = (() => {
+  let ac = null, E = null, M = null, on = false;
+  function ctx() {
+    if (SV.mute || !window.BKAudio) return null;
+    if (!ac) { try { const A = window.AudioContext || window.webkitAudioContext; ac = new A(); const m = ac.createGain(); m.gain.value = .9; m.connect(ac.destination); E = BKAudio.engine(ac, m); M = E.music({ vol: .55, drums: false, mood: () => 'eve', ids: ['trang', 'dem', 'song'] }); } catch (e) { ac = null; E = null; return null; } }
+    if (ac.state === 'suspended') ac.resume().catch(() => {});
+    return ac;
+  }
+  const go = f => { if (ctx()) try { f(E, ac.currentTime + .005, E.sfx); } catch (e) {} };
+  return {
+    get musicOn() { return !!(M && M.on); }, get state() { return ac ? ac.state : 'none'; },
+    start() { on = true; if (ctx() && !M.on) M.start(); },
+    mute(m) { if (m) { if (M) M.stop(); } else if (on) this.start(); },
+    pause(p) { if (!ac) return; try { const pr = p ? ac.suspend() : SV.mute ? null : ac.resume(); if (pr && pr.catch) pr.catch(() => {}); } catch (e) {} },
+    tick() {},   // nhạc tự chạy theo đồng hồ âm thanh; giữ hàm cho vòng vẽ
+    drip() { go((E, t, o) => E.blip(o, 900 + Math.random() * 500, 1900 + Math.random() * 600, t, .06, .022)); },
+    pop(k) { go((E, t, o) => { const m = E.PENT[2 + (k % 5)]; E.tranh(o, m, t, .1, .7); E.chime(o, m + 12, t + .03, .035, 1.2); }); },
+    soft() { go((E, t, o) => E.bau(o, 64, t, .45, .06, { from: 67, uon: false })); },
+    fin() { go((E, t, o) => { E.gliss(o, [72, 74, 76, 79, 81, 84], t, .08, .09, 1.6); E.chime(o, 91, t + .6, .045, 2.4); E.sao(o, 84, t + .7, 1.4, .07); }); },
+  };
+})();
+document.addEventListener('visibilitychange', () => Sfx.pause(document.hidden));
+
+/* ---------- bong bóng ---------- */
+let target = null, bubbles = [], parts = [], ripples = [], found = 0, wrongs = 0, learned = [], state = 'start', t0 = performance.now();
+function newRound() {
+  target = Words.pick(1); wrongs = 0;
+  $('askVi').textContent = target.vi; $('hint').textContent = '';
+  const others = Words.others(target, BUBBLES - 1);
+  const words = [target, ...others].sort(() => Math.random() - .5);
+  bubbles = bubbles.filter(b => b.pop); // giữ bóng đang vỡ
+  const slots = [...Array(BUBBLES).keys()].sort(() => Math.random() - .5);   // cột ngang xáo trộn, hàng dọc rải đều → không xếp thành đường chéo
+  words.forEach((w, i) => spawn(w, i, slots[i]));
+}
+function spawn(w, i, col) {
+  const r = Math.max(42, Math.min(58, W / 8.5));
+  // nổi ngay trong mặt suối (thấy được liền), rải đều theo chiều cao để không chồng lên nhau
+  const span = Math.max(r, H - water - 2 * r), y = water + r + span * ((i + .5) / BUBBLES) + (Math.random() - .5) * r * .6;
+  bubbles.push({ w, r, x: r + (((col == null ? i : col) + .5) / BUBBLES + (Math.random() - .5) * .08) * (W - 2 * r), y, vy: -(20 + Math.random() * 14), ph: Math.random() * 6, wob: 0, pop: 0, show: 0 });
+}
+function tap(x, y) {
+  if (state !== 'play') return;
+  for (const b of bubbles) {
+    if (b.pop || Math.hypot(x - (b.cx || b.x), y - b.y) > b.r * 1.15) continue;
+    if (b.w === target) {
+      b.pop = 1; found++; SV.total++; save(); Tasks.bump('chill'); Tasks.bump('ok');
+      Sfx.pop(found); vib(18); Voice.say(target.zh); burst(b.x, b.y, 26); ripples.push({ x: b.x, y: water + 6, r: 4, a: 1 });
+      Bridge.learn(target.id, wrongs === 0); learned.push({ c: target, ok: wrongs === 0 });
+      $('ask').classList.remove('ok'); void $('ask').offsetWidth; $('ask').classList.add('ok');
+      $('hint').innerHTML = `<span lang="zh-CN">${esc(target.zh)}</span> ${esc(target.py)} · ${esc(target.vi)}`;
+      $('cnt').textContent = `🫧 ${found}/${GOAL}`;
+      if (found >= GOAL) { setTimeout(finish, 700); state = 'fin'; }
+      else setTimeout(() => { bubbles.forEach(o => { if (!o.pop) o.pop = .001; }); setTimeout(newRound, 380); }, 650);
+    } else {
+      b.wob = 1; b.show = 2.2; wrongs++; Sfx.soft(); vib(8);
+      $('hint').innerHTML = `Bóng này là <span lang="zh-CN">${esc(b.w.zh)}</span> ${esc(b.w.py)} · ${esc(b.w.vi)}`;
+    }
+    return;
+  }
+}
+cv.addEventListener('pointerdown', e => { Sfx.start(); tap(e.clientX, e.clientY); });
+function burst(x, y, n) { for (let i = 0; i < (REDUCE ? 8 : n); i++) { const a = Math.random() * Math.PI * 2, v = 60 + Math.random() * 140; parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 40, life: .7 + Math.random() * .4, t: 0, c: ['#ffffff', '#bff3ff', '#ffe97a', '#ffc2dd'][i % 4] }); } }
+function finish() {
+  state = 'done'; SV.plays++; save(); Sfx.fin();
+  const coins = found; Bridge.reward(coins, 0, 'chill');
+  const seen = new Set(), ws = learned.filter(w => !seen.has(w.c.id) && seen.add(w.c.id));
+  $('doneBox').innerHTML = `<h2>Ngâm xong, thư thái quá! <span lang="zh-CN">好舒服!</span></h2><p class="sub"><span lang="zh-CN">hǎo shūfu</span> · dễ chịu quá</p>
+    <p>+${coins} 🪙 gửi về khách sạn · ${ws.length} từ vừa ôn (chạm để nghe)</p><div class="words">${ws.map((w, i) => `<button type="button" data-w="${i}"><b lang="zh-CN">${esc(w.c.zh)}</b>${esc(w.c.py)} · ${esc(w.c.vi)}</button>`).join('')}</div>
+    <div class="row"><button type="button" class="btn alt" id="toArc">♨️ Khu trò chơi</button><button type="button" class="btn" id="again">Ngâm tiếp ↻</button></div>`;
+  $('done').hidden = false;
+  document.querySelectorAll('.words [data-w]').forEach(b => b.onclick = () => Voice.say(ws[+b.dataset.w].c.zh));
+  $('toArc').onclick = back; $('again').onclick = () => { $('done').hidden = true; found = 0; learned = []; $('cnt').textContent = `🫧 0/${GOAL}`; state = 'play'; newRound(); };
+}
+function back() { if (QS.get('from') === 'arcade') location.href = 'arcade.html' + (IN_FRAME ? '?in=1' : ''); else Bridge.close(); }
+$('back').onclick = back;
+$('mute').onclick = () => { SV.mute = !SV.mute; Voice.mute = SV.mute; save(); Sfx.mute(SV.mute); $('mute').textContent = SV.mute ? '🔇' : '🔊'; };
+$('mute').textContent = SV.mute ? '🔇' : '🔊';
+$('go').onclick = () => { Sfx.start(); $('start').hidden = true; state = 'play'; newRound(); };
+
+/* ---------- vẽ: trời chiều tím, núi đá vôi, mặt suối, hơi nước, đèn lồng ---------- */
+const stars = Array.from({ length: 60 }, () => ({ x: Math.random(), y: Math.random() * .45, s: Math.random() * 1.6 + .4, p: Math.random() * 6 }));
+const steam = Array.from({ length: 14 }, (_, i) => ({ x: Math.random(), t: i / 14 * 5 }));
+let last = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(.05, (now - last) / 1000); last = now; const t = (now - t0) / 1000;
+  Sfx.tick(t); if (!REDUCE && Math.random() < dt * .6) Sfx.drip();
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const sky = g.createLinearGradient(0, 0, 0, water); sky.addColorStop(0, '#1b1450'); sky.addColorStop(.6, '#5a3a8f'); sky.addColorStop(1, '#ff9fb8'); g.fillStyle = sky; g.fillRect(0, 0, W, water + 2);
+  for (const s of stars) { g.globalAlpha = .4 + .6 * Math.abs(Math.sin(t * .8 + s.p)); g.fillStyle = '#fff'; g.fillRect(s.x * W, s.y * water, s.s, s.s); } g.globalAlpha = 1;
+  g.fillStyle = 'rgba(255,240,210,.9)'; g.beginPath(); g.arc(W * .78, water * .28, Math.min(W, H) * .05, 0, 7); g.fill();
+  g.fillStyle = '#3a2a6e'; for (const [x, w, h] of [[.08, .16, .32], [.24, .1, .22], [.62, .14, .28], [.86, .18, .36]]) { g.beginPath(); g.moveTo((x - w / 2) * W, water); g.quadraticCurveTo((x - w * .4) * W, water - h * water * 1.1, x * W, water - h * water); g.quadraticCurveTo((x + w * .4) * W, water - h * water * 1.1, (x + w / 2) * W, water); g.fill(); }
+  const wg = g.createLinearGradient(0, water, 0, H); wg.addColorStop(0, '#5fd6dc'); wg.addColorStop(1, '#1d6f8f'); g.fillStyle = wg; g.fillRect(0, water, W, H - water);
+  g.strokeStyle = 'rgba(255,255,255,.25)'; g.lineWidth = 2; for (let k = 0; k < 6; k++) { const y = water + 14 + k * (H - water) / 6; g.beginPath(); for (let x = 0; x <= W; x += 12) g.lineTo(x, y + Math.sin(x / 40 + t * 1.2 + k) * 3); g.stroke(); }
+  for (const r of ripples) { r.r += dt * 60; r.a -= dt * .8; g.strokeStyle = `rgba(255,255,255,${Math.max(0, r.a)})`; g.beginPath(); g.ellipse(r.x, r.y, r.r, r.r * .3, 0, 0, 7); g.stroke(); } ripples = ripples.filter(r => r.a > 0);
+  for (const s of steam) { s.t += dt; const k = (s.t % 5) / 5; const x = s.x * W + Math.sin(t * .7 + s.x * 9) * 14, y = water + 10 - k * water * .55; g.globalAlpha = Math.sin(k * Math.PI) * .22; g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 18 + k * 40, 0, 7); g.fill(); } g.globalAlpha = 1;
+  for (const [x, ph] of [[.1, 0], [.9, 1.3]]) { const lx = x * W, ly = water * .62 + Math.sin(t * 1.4 + ph) * 3; g.strokeStyle = '#3a2c3f'; g.beginPath(); g.moveTo(lx, 0); g.lineTo(lx, ly - 18); g.stroke(); const lg = g.createRadialGradient(lx, ly, 2, lx, ly, 46); lg.addColorStop(0, 'rgba(255,120,90,.55)'); lg.addColorStop(1, 'rgba(255,120,90,0)'); g.fillStyle = lg; g.beginPath(); g.arc(lx, ly, 46, 0, 7); g.fill(); g.fillStyle = '#e8343a'; g.beginPath(); g.ellipse(lx, ly, 14, 18, 0, 0, 7); g.fill(); }
+  /* bong bóng */
+  for (const b of bubbles) {
+    if (b.pop) { b.pop += dt * 3.2; continue; }
+    b.y += b.vy * dt * (state === 'play' ? 1 : .4); b.ph += dt; b.wob = Math.max(0, b.wob - dt * 2.2); b.show = Math.max(0, b.show - dt);
+    if (b.y < -b.r) { b.y = H + b.r; b.x = b.r + Math.random() * (W - 2 * b.r); }   // bay khỏi màn thì nổi lại từ đáy
+    const x = b.cx = b.x + Math.sin(b.ph * 1.3) * 10 + Math.sin(b.wob * 30) * 8 * b.wob, y = b.y, r = b.r * (1 + Math.sin(b.ph * 2) * .03);
+    const bg = g.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r); bg.addColorStop(0, 'rgba(255,255,255,.55)'); bg.addColorStop(.7, 'rgba(190,240,255,.18)'); bg.addColorStop(1, 'rgba(160,230,255,.45)');
+    g.fillStyle = bg; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineWidth = 2; g.stroke();
+    g.fillStyle = 'rgba(255,255,255,.75)'; g.beginPath(); g.ellipse(x - r * .4, y - r * .45, r * .22, r * .12, -.6, 0, 7); g.fill();
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#ffffff'; g.shadowColor = 'rgba(20,10,60,.7)'; g.shadowBlur = 6;
+    const zh = b.w.zh, fs = zh.length > 3 ? r * .42 : zh.length > 2 ? r * .5 : r * .62;
+    g.font = `900 ${fs}px ${ZHF}`; g.fillText(zh, x, y - r * .08);
+    g.font = `700 ${Math.max(10, r * .24)}px system-ui,sans-serif`; g.fillText(b.w.py, x, y + r * .42, r * 1.8); g.shadowBlur = 0;
+    if (b.show > 0) { g.globalAlpha = Math.min(1, b.show); g.fillStyle = 'rgba(20,14,48,.9)'; const tw = Math.min(W - 20, g.measureText(b.w.vi).width + 24); g.beginPath(); g.roundRect(x - tw / 2, y - r - 30, tw, 24, 10); g.fill(); g.fillStyle = '#ffe97a'; g.font = '800 13px system-ui,sans-serif'; g.fillText(b.w.vi, x, y - r - 18); g.globalAlpha = 1; }
+  }
+  bubbles = bubbles.filter(b => !b.pop || b.pop < 1.2);
+  for (const b of bubbles) if (b.pop) { const k = b.pop; g.strokeStyle = `rgba(255,255,255,${Math.max(0, 1 - k)})`; g.lineWidth = 3; g.beginPath(); g.arc(b.x, b.y, b.r * (1 + k * .8), 0, 7); g.stroke(); }
+  for (const p of parts) { p.t += dt; p.vy += 220 * dt; p.x += p.vx * dt; p.y += p.vy * dt; g.globalAlpha = Math.max(0, 1 - p.t / p.life); g.fillStyle = p.c; g.beginPath(); g.arc(p.x, p.y, 3, 0, 7); g.fill(); } g.globalAlpha = 1; parts = parts.filter(p => p.t < p.life);
+  // bóng đúng luôn còn trên màn: nếu đang nằm quá sâu dưới đáy thì kéo lên gần
+  if (state === 'play' && target && !bubbles.some(b => b.w === target && !b.pop && b.y < H + b.r)) { const b = bubbles.find(b => b.w === target && !b.pop); if (b) b.y = H + b.r * .5; else spawn(target, 0); }
+}
+requestAnimationFrame(frame);
+if (IN_FRAME) Bridge.post({ kind: 'ready' });
+window.__chill = { Sfx, get state() { return state; }, get found() { return found; }, hitRight() { const b = bubbles.find(b => b.w === target && !b.pop && b.y < H); if (b) tap(b.cx || b.x, b.y); return !!b; }, hitWrong() { const b = bubbles.find(b => b.w !== target && !b.pop && b.y < H); if (b) tap(b.cx || b.x, b.y); return !!b; } };
+})();
+</script>
+</body>
+</html>

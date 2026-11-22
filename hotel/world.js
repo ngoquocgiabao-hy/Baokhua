@@ -12,6 +12,7 @@ import { REDUCED, V3, clamp, lerp, sstep, easeIO, rng, ZH, UI, INK, toon, ownToo
   canvasTex, signTex, stripeTex, TX, fxRoot, sprite, puff, sparkles, confetti, burst, stepFx, setCoinHook, chibi, pose, walk, faceTo, tickClock, bake, grad } from './w-kit.js';
 import { buildLobby, ROOM, DESK_SPOT, GUEST_SPOT, DOOR_IN, DOOR_OUT, LIFT } from './w-lobby.js';
 import { buildLife, roadY, roadSlope, BR, LANE, ROUTE, mini, lifePose, LOOK, vcMerge } from './w-life.js';
+import { buildSpa, SPA } from './w-spa.js';
 
 const LOBBY_H = 3.8, FLOOR_H = 3.0, DOOR_X = 9.25;
 const SLOT = i => new V3(DOOR_X + .15 + i * 1.05, 0, 9.85 + (i % 2) * .32);
@@ -259,6 +260,8 @@ function buildLandmarks(g) {
     const x = -150 + ir() * 470, z = 40 + ir() * 300; if (x - z > 170 || z - x > 230) continue; if (avoid.some(([ax, az, r]) => Math.hypot(x - ax, z - az) < r)) continue;
     if (spots.some(s => Math.hypot(s[0] - x, s[1] - z) < 13)) continue; spots.push([x, z, 3 + ir() * 6, 7 + ir() * 18, ir() * 6.28]);
   }
+  // v8.4: bỏ hòn đảo che bể suối nóng (toà 温泉电玩城 cuối bãi biển), các đảo khác giữ nguyên chỗ cũ
+  for (let i = spots.length - 1; i >= 0; i--) if (Math.hypot(spots[i][0] - 67.6, spots[i][1] - 43.9) < 3) spots.splice(i, 1);
   for (let k = 0; k < 4; k++) {
     const list = spots.filter((_, i) => i % 4 === k), im = new THREE.InstancedMesh(KARST[k], karstMat, list.length), om = new THREE.InstancedMesh(KARST[k], OUTL, list.length), mm = new THREE.Matrix4(), q = new THREE.Quaternion();
     list.forEach((s, i) => { q.setFromEuler(new THREE.Euler(0, s[4], 0)); mm.compose(new V3(s[0], -.6, s[1]), q, new V3(s[2], s[3] / 2, s[2] * .9)); im.setMatrixAt(i, mm); mm.compose(new V3(s[0], -.6, s[1]), q, new V3(s[2] * 1.045, s[3] / 2 * 1.02, s[2] * .9 * 1.045)); om.setMatrixAt(i, mm); });
@@ -681,7 +684,8 @@ const PLACES = [
   { id: 'bridge', ico: '🌉', name: 'Cầu Bãi Cháy', zh: '大桥', py: 'dàqiáo', x: 102, z: 13, S: 34 },
   { id: 'hgmarket', ico: '🐟', name: 'Chợ Hạ Long', zh: '市场', py: 'shìchǎng', x: 158, z: 2, S: 15 },
   { id: 'museum', ico: '🏛️', name: 'Bảo tàng', zh: '博物馆', py: 'bówùguǎn', x: 201, z: 0, S: 17 },
-  { id: 'square', ico: '⛲', name: 'Quảng trường', zh: '广场', py: 'guǎngchǎng', x: 229, z: -1, S: 17 }
+  { id: 'square', ico: '⛲', name: 'Quảng trường', zh: '广场', py: 'guǎngchǎng', x: 229, z: -1, S: 17 },
+  { id: 'spa', ico: '♨️', name: 'Suối nóng & quán game', zh: '温泉', py: 'wēnquán', x: SPA.x, z: SPA.z, S: 15 }
 ];
 function setModeFromS() { const m = modeOf(view.S); if (m !== mode) { mode = m; if (hooks.onMode) hooks.onMode(m); } }
 /** khung bản đồ: mọi ghim chương nằm gọn trên thẻ Hành trình (màn dọc lẫn ngang) */
@@ -777,6 +781,7 @@ function onTap(cx, cy) {
   }
   if (!best) return;
   if (best.key === '__hotel') { hooks.onHotel && hooks.onHotel(); return; }
+  if (best.key === 'spa') { hooks.onSpa && hooks.onSpa(); return; }
   hooks.onWord && hooks.onWord(best.key, cx, cy);
 }
 
@@ -860,7 +865,7 @@ function overlayTick(dt) {
 /* =====================================================================
    VÒNG CẬP NHẬT
    ===================================================================== */
-let life = null, seeded = false;
+let life = null, seeded = false, spa = null;
 /* nắng lấp lánh trên mặt biển ban ngày (vài đốm sáng nhấp nháy quanh máy quay) */
 const glint = [];
 function glints(dt, S) {
@@ -929,6 +934,7 @@ function update(dt, now) {
     c.g.position.y = roadY(x); c.g.rotation.z = c.dir * Math.atan(roadSlope(x));
     if (x < ROUTE.x0 - 2 || x > ROUTE.x1 + 2 || Math.abs(x - view.at.x) > 120) { dyn.remove(c.g); cars.splice(i, 1); dropTap(c); } }
   if (life) life.update(dt, T, view, dark, cam);
+  if (spa) spa.update(dt, T, dark);
   if (near && !seeded) { seeded = true; for (let i = 0; i < (low ? 2 : 4); i++) { spawnPed(true); spawnCar(true); } }
   for (let i = boats.length - 1; i >= 0; i--) { const b = boats[i]; b.g.position.x += b.dir * b.sp * dt; b.g.position.y = -.22 + Math.sin(T * 1.4 + b.ph) * .08; b.g.rotation.z = Math.sin(T * 1.1 + b.ph) * .03; if (b.g.position.x < -95 || b.g.position.x > 105) { dyn.remove(b.g); boats.splice(i, 1); dropTap(b); } }
   gulls.forEach(g => { g.ph += dt * g.sp; g.s.position.set(g.cx + Math.cos(g.ph) * g.r, g.y + Math.sin(g.ph * 2) * .6, g.cz + Math.sin(g.ph) * g.r * .6); g.s.visible = S < 50 && dark < .6; });
@@ -967,6 +973,7 @@ const World = {
     yield ['city', .22]; buildCity(tmp);
     yield ['landmarks', .38]; buildLandmarks(tmp);
     yield ['wheel', .48]; buildWheel(tmp);
+    yield ['spa', .52]; spa = buildSpa({ tapBox }); world.add(spa.root);
     yield ['life', .56];
     life = buildLife({ world: dyn, tapBox, lamp: lampPost, winA, winB, glassMat, nightMats, owned: id => !!ST.own[id], hour: () => hour });
     tmp.add(life.static); setSeg(old);

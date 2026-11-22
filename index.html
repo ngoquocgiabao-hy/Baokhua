@@ -1043,9 +1043,9 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
         <a class="btn btn--ghost" href="game.html">⚔️ Chế độ Đánh Boss</a>
         <a class="btn btn--ghost" href="hotel/#the" data-warm>🎫 Có mã thẻ? Nhập tại đây</a>
       </div>
-      <a class="xcard reveal" style="--i:5" href="hotel/xiao.html" data-warm>
-        <img src="v4/home/xiao-card.webp" alt="Bàn ghép 3 Ā Bǎo 消消乐: viên ngọc mang chữ Hán 茶 trà, 灯 đèn, 贝 vỏ sò, 星 ngôi sao" width="264" height="264" loading="lazy" decoding="async">
-        <span><em>Mới · chơi nhanh 1 phút</em><b>Ā Bǎo <span lang="zh-CN">消消乐</span></b><small><span lang="zh-CN">xiāoxiāolè</span> · ghép 3 ôn từ. Đồng hồ chạy rất nhanh: hết giờ thì trả lời đúng 1 câu tiếng Trung để chơi tiếp. Xu kiếm được mang về khách sạn của bạn.</small><i>⚡ Chơi ngay, tải tức thì →</i></span>
+      <a class="xcard reveal" style="--i:5" href="hotel/arcade.html" data-warm>
+        <img src="v4/home/spa-card.webp" alt="Toà suối nước nóng và quán game 温泉电玩城 cuối bãi biển Bãi Cháy trong game 3D, biển neon sáng ban đêm" width="264" height="264" loading="lazy" decoding="async">
+        <span><em>Mới · khu trò chơi suối nóng</em><b>Khu trò chơi <span lang="zh-CN">温泉电玩城</span></b><small><span lang="zh-CN">wēnquán diànwánchéng</span> · suối nóng &amp; quán game cuối bãi biển Bãi Cháy. 3 trò chơi nhanh: Ā Bǎo <span lang="zh-CN">消消乐</span> ghép 3 ôn từ, Ngâm chill bong bóng chữ Hán, Đánh Boss. Nhiệm vụ mỗi ngày, xu mang về khách sạn.</small><i>⚡ Vào chơi ngay, tải tức thì →</i></span>
       </a>
     </div>
     <div class="phone-wrap reveal" style="--i:2">
@@ -1241,7 +1241,7 @@ body.menu-open .nav .brand__seal{background:var(--sun);color:var(--ink)}
       <p>Tiếng Trung để đi làm, dạy từ Hạ Long. Bài mới mỗi tuần trong nhóm Zalo, game 3D luyện mỗi ngày.</p>
     </div>
     <nav class="foot__col" aria-label="Học cùng Bảo"><b>Học cùng Bảo</b><a data-link="zaloGroup" href="#lien-he">Nhóm Zalo</a><a href="#cau">Học thử 4 câu</a><a href="#hsk">Lộ trình HSK0 → HSK4</a><a href="membership.html">Thẻ tự học</a></nav>
-    <nav class="foot__col" aria-label="Game"><b>Game</b><a href="hotel/">Khách sạn Vịnh Ā Bǎo 3D</a><a href="hotel/#market">Chợ đêm Bãi Cháy</a><a href="hotel/#bridge">Cầu Bãi Cháy</a><a href="hotel/xiao.html">Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ</a><a href="hotel/#the">Nhập mã thẻ</a><a href="game.html">Game Đánh Boss</a></nav>
+    <nav class="foot__col" aria-label="Game"><b>Game</b><a href="hotel/">Khách sạn Vịnh Ā Bǎo 3D</a><a href="hotel/#market">Chợ đêm Bãi Cháy</a><a href="hotel/#bridge">Cầu Bãi Cháy</a><a href="hotel/arcade.html">Khu trò chơi Suối nóng <span lang="zh-CN">温泉电玩城</span></a><a href="hotel/xiao.html">Ā Bǎo <span lang="zh-CN">消消乐</span> · ghép 3 ôn từ</a><a href="hotel/#the">Nhập mã thẻ</a><a href="game.html">Game Đánh Boss</a></nav>
     <nav class="foot__col" aria-label="Kết nối"><b>Kết nối</b><a data-link="zaloGroup" href="#lien-he">Zalo</a><a data-link="tiktok" href="#lien-he">TikTok @baokhua</a><a href="#doanh-nghiep">Cho doanh nghiệp</a><span>Hạ Long, Quảng Ninh</span></nav>
   </div>
   <div class="wrap foot__bar"><span>© 2026 Bảo Khựa <span class="han">阿宝</span> · China-ready · baokhua.com</span><a href="#top">Lên đầu trang ↑</a></div>
@@ -1448,7 +1448,7 @@ const CONFIG = {
 
   /* ---- bấm sang game: tải trước thư viện 3D khi người dùng rê chuột / chạm vào nút game (mở game nhanh hơn) ---- */
   let warmed = false;
-  const warm = () => { if (warmed) return; warmed = true; ['hotel/', 'hotel/lib/three.module.min.js', 'hotel/world.js', 'hotel/w-kit.js', 'hotel/w-life.js', 'hotel/w-lobby.js', 'hotel/xiao.html', 'hotel/xiao-core.js', 'hotel/xiao-words.js'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
+  const warm = () => { if (warmed) return; warmed = true; ['hotel/', 'hotel/lib/three.module.min.js', 'hotel/world.js', 'hotel/w-kit.js', 'hotel/w-life.js', 'hotel/w-lobby.js', 'hotel/xiao.html', 'hotel/xiao-core.js', 'hotel/xiao-words.js', 'hotel/arcade.html', 'hotel/mini.js', 'hotel/bk-audio.js'].forEach(h => { const l = document.createElement('link'); l.rel = 'prefetch'; l.href = h; document.head.appendChild(l); }); };
   // 18/11: tải trước game khi trang đã rảnh (không đợi người dùng chạm nút), trừ máy bật tiết kiệm dữ liệu hoặc mạng 2G
   const cn = navigator.connection, thrifty = !!(cn && (cn.saveData || /2g/.test(cn.effectiveType || '')));
   if (!thrifty) { const idle = () => (window.requestIdleCallback || (f => setTimeout(f, 200)))(warm, { timeout: 5000 }); if (document.readyState === 'complete') setTimeout(idle, 2500); else addEventListener('load', () => setTimeout(idle, 2500), { once: true }); }

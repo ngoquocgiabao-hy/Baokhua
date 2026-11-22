@@ -151,6 +151,31 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .how{font:600 12.5px/1.45 var(--UIF);color:#5A4A7A}
 .how b{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.door.cur,.tbar.low,.boost button.armed{animation:none}}
+/* v8.4 · hiệu ứng theo tầng: nền sống, đếm liên hoàn, băng rôn cắt ngang, chế độ 沸腾 fèiténg (sôi sục) */
+#amb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#cv{position:relative;z-index:1}
+.combo{position:absolute;right:12px;top:4px;z-index:4;text-align:right;pointer-events:none;opacity:0;transition:opacity .25s}
+.combo.on{opacity:1}
+.combo b{display:block;font:900 34px/1 var(--UIF);color:#fff;-webkit-text-stroke:1.5px #9A63FF;text-shadow:0 3px 0 #5B2DBF}
+.combo small{font:900 12px/1 var(--UIF);color:var(--gold)}
+.combo.pop b{animation:cpop .35s cubic-bezier(.2,1.8,.4,1)}
+@keyframes cpop{0%{transform:scale(1.7)}100%{transform:scale(1)}}
+.cutin{position:fixed;left:0;right:0;top:36%;z-index:7;pointer-events:none;height:80px;display:flex;align-items:center;justify-content:center;gap:10px;transform:translateX(-120%) skewY(-6deg);background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 18px,rgba(255,255,255,.2) 18px 22px),linear-gradient(90deg,#ff3d7f,#9a63ff,#3df2ff);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.cutin.go{animation:cut 1.3s cubic-bezier(.2,.9,.2,1) forwards}
+.cutin b{font:900 36px/1 var(--ZHF);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35)}
+.cutin span{font:900 14.5px/1.25 var(--UIF);color:#fff;max-width:60%}
+@keyframes cut{0%{transform:translateX(-120%) skewY(-6deg)}16%{transform:translateX(0) skewY(-6deg)}80%{transform:translateX(0) skewY(-6deg)}100%{transform:translateX(120%) skewY(-6deg)}}
+.fever{position:relative;height:10px;border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden}
+.fever i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,#ff9f43,#ff3d7f,#ffd91f);transition:transform .25s}
+.fever b{position:absolute;right:6px;top:0;font:900 9px/10px var(--UIF);color:#fff;letter-spacing:.3px;text-shadow:0 1px 1px rgba(0,0,0,.5)}
+.fever.on i{background:linear-gradient(90deg,#ff3d7f,#ffd91f,#3df2ff,#9a63ff,#ff3d7f);background-size:200% 100%;animation:fev 1s linear infinite}
+@keyframes fev{to{background-position:200% 0}}
+.tfly{position:fixed;z-index:8;pointer-events:none;font:900 16px/1 var(--UIF);color:#7CF29A;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.vipbtn{display:flex;align-items:center;gap:8px;margin:0 12px 8px;padding:10px 12px;border-radius:16px;background:linear-gradient(90deg,rgba(255,217,31,.28),rgba(255,111,176,.22));border:1px dashed rgba(255,217,31,.7);color:#fff;font:800 13.5px/1.35 var(--UIF);text-align:left;width:calc(100% - 24px)}
+.vipbtn small{display:block;font-weight:700;font-size:11.5px;color:#FFE3F0}
+.vipbtn i{font-style:normal;margin-left:auto;color:var(--gold);font-weight:900;white-space:nowrap}
+.vipbtn.used{opacity:.6}
+@media (prefers-reduced-motion:reduce){.cutin.go,.combo.pop b,.fever.on i{animation:none}}
 /* điện thoại xoay ngang / màn thấp: 2 cột (bảng điều khiển trái, bàn chơi phải) để bàn không đè lên thanh giờ */
 @media (orientation:landscape) and (max-height:560px){
   #play:not([hidden]){display:grid;grid-template-columns:minmax(230px,42%) 1fr;grid-template-rows:auto auto 1fr;grid-template-areas:"hud stage" "legend stage" "boost stage";align-items:start;column-gap:6px}
@@ -174,6 +199,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
   </div>
   <div class="wallet" id="wallet"></div>
   <p class="note" id="mapNote"></p>
+  <button type="button" class="vipbtn" id="vipBtn"></button>
   <div class="tower" id="tower"></div>
   <div class="mfoot"><a class="big alt" id="homeBtn" href="./">🏨 Về khách sạn</a><button type="button" class="big" id="goBtn">▶ Chơi tiếp</button></div>
 </section>
@@ -190,8 +216,9 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
     <div class="goals" id="goals"></div>
     <div class="bars"><div class="tbar" id="tbar"><i id="tfill"></i><b id="ttxt"></b></div><div class="score" id="score">0</div></div>
     <div class="sbar" id="sbar"><i id="sfill"></i></div>
+    <div class="fever" id="fever" title="沸腾 fèiténg · sôi sục: đầy thanh thì 8 giây điểm ×2, đồng hồ đứng"><i id="ffill"></i><b><span lang="zh-CN">沸腾</span> fèiténg</b></div>
   </div>
-  <div class="stage" id="stage"><canvas id="cv" aria-label="Bàn ghép 3: kéo 1 viên sang ô bên cạnh"></canvas><div class="praise" id="praise" aria-live="polite"></div></div>
+  <div class="stage" id="stage"><canvas id="amb" aria-hidden="true"></canvas><div class="combo" id="combo" aria-hidden="true"></div><canvas id="cv" aria-label="Bàn ghép 3: kéo 1 viên sang ô bên cạnh"></canvas><div class="praise" id="praise" aria-live="polite"></div></div>
   <div class="legend" id="legend"></div>
   <div class="boost">
     <button type="button" id="bBomb" data-b="bomb"><span class="bi">💣</span>Bom<small lang="zh-CN">炸弹 zhàdàn</small><span class="n">0</span></button>
@@ -202,8 +229,10 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 
 <div class="modal" id="mod" hidden><div class="box" id="modBox" role="dialog" aria-modal="true"></div></div>
 <div class="flash" id="flash"></div>
+<div class="cutin" id="cutin" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status"></div>
 
+<script src="bk-audio.js"></script>
 <script src="xiao-core.js"></script>
 <script src="xiao-words.js"></script>
 <script>
@@ -247,6 +276,9 @@ const zh = (z, p, v) => `<span lang="zh-CN">${esc(z)}</span>${p ? ' ' + esc(p) :
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const IN_FRAME = (() => { try { return window.parent !== window && new URLSearchParams(location.search).has('in'); } catch (e) { return true; } })();
 const QS = new URLSearchParams(location.search);
+const FROM_ARC = QS.get('from') === 'arcade';
+/** nhiệm vụ suối nóng mỗi ngày (cùng dữ liệu với mini.js · Khu trò chơi) */
+function arcadeBump(k) { try { const d = new Date(), day = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); let a = JSON.parse(localStorage.getItem('bk_arcade_v1') || 'null'); if (!a || a.day !== day) a = { day, got: {}, claimed: false }; a.got[k] = (a.got[k] || 0) + 1; localStorage.setItem('bk_arcade_v1', JSON.stringify(a)); } catch (e) {} }
 const vib = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const wait = ms => new Promise(r => setTimeout(r, ms / SPEED));
@@ -278,7 +310,7 @@ const Bridge = {
   reward(coins, pts, room, stars) { this.pend.coins += coins; this.pend.pts += pts; if (IN_FRAME) this.post({ kind: 'done', coins, pts, room, stars }); else this.inbox(b => { b.coins += coins; b.pts += pts; b.rooms++; b.last = { room, stars, coins }; }); },
   pendingInbox() { const b = Store.get(INBOX_KEY, null); return b ? b.coins || 0 : 0; },
   coins() { return (HS ? HS.coins || 0 : 0) + (IN_FRAME ? 0 : this.pendingInbox()); },
-  close() { if (IN_FRAME) this.post({ kind: 'close' }); else { location.href = './'; } },
+  close() { if (FROM_ARC) { location.href = 'arcade.html' + (IN_FRAME ? '?in=1' : ''); return; } if (IN_FRAME) this.post({ kind: 'close' }); else { location.href = './'; } },
 };
 addEventListener('message', e => { if (e.origin !== location.origin || !e.data || e.data.type !== 'bk-xiao-state') return; HS = Object.assign(HS || {}, e.data.hs || {}); renderWallet(); });
 
@@ -324,52 +356,55 @@ const Words = (() => {
   return { load, make, result, reset, dueIds, get size() { return CAT.length; } };
 })();
 
-/* ===== ÂM THANH (tự tổng hợp, không tải tệp) ===== */
+/* ===== ÂM THANH (tự tổng hợp, không tải tệp) · bộ nhạc cụ chung bk-audio.js =====
+   v8.5: hết sóng vuông/răng cưa; ghép viên = gảy đàn tranh theo ngũ cung (dây chuyền càng dài nốt càng cao) + chuông nhỏ;
+   đồng hồ sắp hết = mõ gỗ; nổ = tiếng trầm êm + gió lướt; sai = đàn bầu trượt xuống. Nhạc lofi rất nhỏ dưới nền (đàn tranh, sáo, đàn nhị).
+   Trước v8.5 hai hàm cùng tên "unlock" đè nhau nên mỗi lần chạm bàn đều kêu "bíp" sóng vuông – đã tách: wake() mở âm thanh, unlock() tiếng mở khoá. */
 const Sfx = (() => {
-  let ac = null, master = null;
-  const NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98, 1760, 2093];   // thang ngũ cung: dây chuyền càng dài nốt càng cao
+  let ac = null, E = null, M = null, ducked = false;
+  const NOTES = [72, 74, 76, 79, 81, 84, 86, 88, 91, 93, 96];   // thang ngũ cung C D E G A: dây chuyền càng dài nốt càng cao
   function ctx() {
-    if (SV.mute) return null;
-    if (!ac) { try { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ac = new A(); master = ac.createGain(); master.gain.value = .55; master.connect(ac.destination); } catch (e) { return null; } }
+    if (SV.mute || !window.BKAudio) return null;
+    if (!ac) {
+      try {
+        const A = window.AudioContext || window.webkitAudioContext; if (!A) return null;
+        ac = new A(); const m = ac.createGain(); m.gain.value = .9; m.connect(ac.destination);
+        E = BKAudio.engine(ac, m); M = E.music({ vol: .26, ids: ['chieu', 'tra', 'song'] });
+      } catch (e) { ac = null; E = null; return null; }
+    }
     if (ac.state === 'suspended') ac.resume().catch(() => {});
     return ac;
   }
-  function tone(f, d, type, vol, at, to) {
-    const a = ctx(); if (!a) return; const t = a.currentTime + (at || 0), o = a.createOscillator(), g = a.createGain();
-    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t); if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol || .12, t + .008); g.gain.exponentialRampToValueAtTime(.0005, t + d);
-    o.connect(g); g.connect(master); o.start(t); o.stop(t + d + .02);
-  }
-  function noise(d, f0, f1, vol, at, q) {
-    const a = ctx(); if (!a) return; const t = a.currentTime + (at || 0), n = Math.floor(a.sampleRate * d), b = a.createBuffer(1, n, a.sampleRate), ch = b.getChannelData(0);
-    for (let i = 0; i < n; i++) ch[i] = Math.random() * 2 - 1;
-    const s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain(); s.buffer = b; fl.type = 'bandpass'; fl.Q.value = q || 1.2;
-    fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(f1, t + d);
-    g.gain.setValueAtTime(vol || .2, t); g.gain.exponentialRampToValueAtTime(.001, t + d);
-    s.connect(fl); fl.connect(g); g.connect(master); s.start(t); s.stop(t + d);
-  }
+  const go = f => { if (ctx()) try { f(E, ac.currentTime + .005, E.sfx); } catch (e) {} };
+  function boom() { go((E, t, o) => { E.thump(o, t, .22, 120, 38, .5); E.whoosh(o, t, .42, .09, 1000, 130, .7); }); }
+  function pearl() { go((E, t, o) => { E.gliss(o, [76, 79, 81, 84, 86, 88, 91, 93], t, .07, .045, .9); [96, 100].forEach((m, k) => E.chime(o, m, t + .38 + k * .1, .035, 1.4)); }); }
   return {
-    unlock() { ctx(); },
-    swap() { tone(620, .07, 'sine', .07); tone(930, .06, 'sine', .05, .03); },
-    bad() { tone(240, .1, 'triangle', .08); tone(180, .12, 'triangle', .07, .08); },
-    match(chain, big) { const i = Math.min(NOTES.length - 1, chain - 1 + (big ? 1 : 0)), f = NOTES[i]; tone(f, .18, 'triangle', .13); tone(f * 1.5, .14, 'sine', .06, .02); tone(f * 2, .1, 'sine', .04, .05); },
-    made() { [0, 4, 7, 12].forEach((s, k) => tone(784 * Math.pow(2, s / 12), .16, 'sine', .07, k * .04)); },
-    beam() { noise(.32, 600, 4000, .16, 0, 2); tone(900, .25, 'sawtooth', .025, 0, 2400); },
-    boom() { noise(.4, 900, 120, .32, 0, .8); tone(110, .35, 'sine', .22, 0, 40); },
-    pearl() { for (let k = 0; k < 8; k++) tone(NOTES[k + 2], .16, 'sine', .06, k * .045); noise(.5, 3000, 9000, .05, 0, 3); },
-    nova() { this.boom(); this.pearl(); tone(65, .7, 'sine', .25, 0, 30); },
-    sand() { noise(.12, 2500, 1200, .06, 0, 1); },
-    crate() { noise(.15, 500, 200, .14, 0, 2); tone(160, .08, 'square', .04); },
-    unlock() { tone(1400, .05, 'square', .04); tone(1900, .07, 'square', .04, .05); },
-    lug() { tone(784, .18, 'sine', .1); tone(988, .18, 'sine', .1, .12); tone(1319, .3, 'sine', .1, .24); },
-    tick(n) { tone(n <= 3 ? 1500 : 1100, .05, 'square', .035); },
-    timeup() { tone(880, .15, 'square', .06); tone(660, .15, 'square', .06, .16); tone(440, .3, 'square', .06, .32); },
-    ok() { tone(880, .12, 'sine', .12); tone(1320, .2, 'sine', .12, .09); tone(1760, .25, 'sine', .06, .18); },
-    no() { tone(220, .18, 'square', .06); tone(170, .25, 'square', .06, .14); },
-    coin() { tone(1568, .08, 'square', .045); tone(2093, .14, 'square', .045, .07); },
-    win() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, k) => tone(f, k > 4 ? .5 : .16, 'triangle', .11, k * .12)); },
-    lose() { [523, 494, 466, 440].forEach((f, k) => tone(f, .28, 'triangle', .08, k * .2)); },
-    ui() { tone(700, .05, 'sine', .06); },
+    get musicOn() { return !!(M && M.on); }, get state() { return ac ? ac.state : 'none'; },
+    wake() { if (ctx() && !M.on && !(HS && HS.music === false)) { M.start(); if (ducked) M.duck(true); } },   // tắt nhạc nền trong game Khách sạn thì ở đây cũng không phát nhạc
+    mute(m) { if (m) { if (M) M.stop(); } else this.wake(); },
+    duck(d) { ducked = d; if (M) M.duck(d); },
+    pause(p) { if (!ac) return; try { const pr = p ? ac.suspend() : SV.mute ? null : ac.resume(); if (pr && pr.catch) pr.catch(() => {}); } catch (e) {} },
+    swap() { go((E, t, o) => E.blip(o, 660, 990, t, .08, .045)); },
+    bad() { go((E, t, o) => E.bau(o, 62, t, .3, .07, { from: 65, uon: false })); },
+    match(chain, big) { go((E, t, o) => { const m = NOTES[Math.min(NOTES.length - 1, chain - 1 + (big ? 1 : 0))]; E.tranh(o, m, t, .1, .45); E.chime(o, m + 12, t + .015, .03, .6); }); },
+    made() { go((E, t, o) => [79, 84, 88, 91].forEach((m, k) => E.chime(o, m, t + k * .04, .04, .8))); },
+    beam() { go((E, t, o) => { E.whoosh(o, t, .34, .09, 500, 3800, 1.4); E.chime(o, 91, t + .05, .035, .5); }); },
+    boom, pearl,
+    nova() { boom(); pearl(); go((E, t, o) => E.thump(o, t, .2, 70, 30, .8)); },
+    sand() { go((E, t, o) => E.whoosh(o, t, .14, .045, 2200, 1100, 1)); },
+    crate() { go((E, t, o) => { E.mo(o, t, .09, 480); E.mo(o, t + .05, .05, 620); }); },
+    unlock() { go((E, t, o) => { E.chime(o, 88, t, .05, .5); E.chime(o, 93, t + .06, .05, .7); }); },
+    lug() { go((E, t, o) => [79, 84, 88].forEach((m, k) => E.tranh(o, m, t + k * .12, .09, .6))); },
+    tick(n) { go((E, t, o) => E.mo(o, t, n <= 3 ? .09 : .065, n <= 3 ? 1500 : 1100)); },
+    timeup() { go((E, t, o) => [76, 72, 69].forEach((m, k) => E.bau(o, m, t + k * .17, .22, .08, { uon: false }))); },
+    ok() { go((E, t, o) => { E.tranh(o, 81, t, .1, .5); E.tranh(o, 88, t + .09, .1, .6); E.chime(o, 93, t + .18, .035, 1); }); },
+    no() { go((E, t, o) => E.bau(o, 57, t, .45, .09, { from: 60, uon: false })); },
+    coin() { go((E, t, o) => { E.chime(o, 91, t, .05, .5); E.chime(o, 96, t + .07, .045, .8); }); },
+    win() { go((E, t, o) => { [72, 76, 79, 84, 79, 84, 88].forEach((m, k) => E.tranh(o, m, t + k * .12, .09, k > 4 ? 1.2 : .5)); E.chime(o, 96, t + .85, .04, 1.8); }); },
+    lose() { go((E, t, o) => [72, 69, 67, 64].forEach((m, k) => E.tieu(o, m, t + k * .22, .26, .09))); },
+    ui() { go((E, t, o) => E.mo(o, t, .04, 1500)); },
+    fever() { go((E, t, o) => { E.gliss(o, [72, 74, 76, 79, 81, 84, 86, 88, 91], t, .08, .05, 1); E.whoosh(o, t, .6, .05, 400, 5000, 1.2); [96, 100].forEach((m, k) => E.chime(o, m, t + .5 + k * .1, .04, 1.4)); }); },
+    cut() { go((E, t, o) => { E.whoosh(o, t, .35, .07, 300, 4200, 1.1); E.mo(o, t + .02, .06, 900); E.mo(o, t + .1, .06, 1300); }); },
   };
 })();
 /* giọng đọc tiếng Trung có sẵn trên máy (không gọi máy chủ ngoài) */
@@ -385,7 +420,8 @@ const Voice = (() => {
 
 /* ===== VẼ ===== */
 const cv = $('cv'), g2 = cv.getContext('2d');
-let DPR = 1, CELL = 40, BW = 0, BH = 0, SPR = {}, G = null;
+let DPR = 1, CELL = 40, BW = 0, BH = 0, SPR = {}, G = null, tier = 1;
+const PMUL = [1, 1, 1.25, 1.55, 1.9];   // tầng càng cao hạt càng nhiều
 const CSSV = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim(), ZHF = CSSV('--ZHF'), UIF = CSSV('--UIF');
 function shapePath(c, sh, r) {
   c.beginPath();
@@ -443,12 +479,49 @@ function icons() { ICON = {}; for (let i = 0; i < 6; i++) { const c = document.c
 /* hiệu ứng: hạt, chữ bay, tia sóng, vòng nổ, sét ngọc */
 let parts = [], floats = [], fxs = [], dying = [], shake = 0, sel = null, hintAt = 0, hintMv = null, armed = null, lastT = 0;
 function burst(r, c, col, n) {
+  n = Math.round(n * PMUL[tier]);
   const k = REDUCE ? Math.ceil(n / 3) : n, color = col >= 0 ? TILE[col].col : '#FFFFFF', lite = col >= 0 ? TILE[col].lite : '#FFE97A';
   for (let i = 0; i < k; i++) { const a = Math.random() * Math.PI * 2, v = 2 + Math.random() * 5; parts.push({ x: c + .5, y: r + .5, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: .5 + Math.random() * .4, t: 0, s: .06 + Math.random() * .08, col: Math.random() < .5 ? color : lite, star: Math.random() < .25 }); }
 }
 function floatText(r, c, txt, col, big) { floats.push({ x: c + .5, y: r + .5, txt, col: col || '#fff', t: 0, big }); }
+const amb = $('amb'), ga = amb.getContext('2d'); let AW = 0, AH = 0, AD = 1, AMB = null, glowT = 0, feverOn = 0, feverDur = 8, fever = 0, lastCut = 0;
+const FMAX = () => [0, 70, 64, 58, 52][tier];
+function ambInit() {
+  const R = n => Array.from({ length: n }, () => Math.random());
+  AMB = {
+    bokeh: Array.from({ length: 6 + tier * 5 }, () => ({ x: Math.random(), y: Math.random(), r: 8 + Math.random() * 26, v: .01 + Math.random() * .02, h: [330, 40, 200, 280][(Math.random() * 4) | 0] })),
+    lant: tier >= 2 ? Array.from({ length: 4 + tier }, () => ({ x: Math.random(), y: 1 + Math.random(), v: .018 + Math.random() * .02, p: Math.random() * 6 })) : [],
+    stars: tier >= 3 ? R(40).map(() => ({ x: Math.random(), y: Math.random() * .5, p: Math.random() * 6, s: .6 + Math.random() * 1.6 })) : [],
+    fw: [], bub: [], nextFw: 2,
+  };
+}
+function fwBurst(x, y) { if (REDUCE || !AMB) return; const h = Math.random() * 360; for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2, v = 60 + Math.random() * 70; AMB.fw.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, life: 1 + Math.random() * .5, h: h + Math.random() * 40 }); } }
+function drawAmb(dt, t) {
+  if (!AMB || !AW) return; const c = ga; c.setTransform(AD, 0, 0, AD, 0, 0); c.clearRect(0, 0, AW, AH);
+  for (const s of AMB.stars) { c.globalAlpha = .35 + .65 * Math.abs(Math.sin(t * 1.2 + s.p)); c.fillStyle = '#fff'; c.fillRect(s.x * AW, s.y * AH, s.s, s.s); }
+  c.globalAlpha = 1;
+  for (const b of AMB.bokeh) { b.y -= b.v * dt; if (b.y < -.1) { b.y = 1.1; b.x = Math.random(); } const x = b.x * AW + Math.sin(t * .5 + b.r) * 12, y = b.y * AH; const gr = c.createRadialGradient(x, y, 0, x, y, b.r); gr.addColorStop(0, `hsla(${b.h},90%,75%,${.16 + (feverOn ? .12 : 0)})`); gr.addColorStop(1, `hsla(${b.h},90%,75%,0)`); c.fillStyle = gr; c.beginPath(); c.arc(x, y, b.r, 0, 7); c.fill(); }
+  for (const l of AMB.lant) { l.y -= l.v * dt; if (l.y < -.15) { l.y = 1.15; l.x = Math.random(); } const x = l.x * AW + Math.sin(t * .8 + l.p) * 10, y = l.y * AH; const gr = c.createRadialGradient(x, y, 2, x, y, 22); gr.addColorStop(0, 'rgba(255,150,90,.5)'); gr.addColorStop(1, 'rgba(255,150,90,0)'); c.fillStyle = gr; c.beginPath(); c.arc(x, y, 22, 0, 7); c.fill(); c.fillStyle = 'rgba(232,52,58,.85)'; c.beginPath(); c.ellipse(x, y, 6, 8, 0, 0, 7); c.fill(); c.fillStyle = 'rgba(255,233,122,.9)'; c.fillRect(x - 3, y + 7, 6, 2); }
+  if (tier >= 4 && !REDUCE) { AMB.nextFw -= dt; if (AMB.nextFw <= 0) { AMB.nextFw = 2.2 + Math.random() * 2; fwBurst(AW * (.15 + Math.random() * .7), AH * (.1 + Math.random() * .25)); } }
+  c.globalCompositeOperation = 'lighter';
+  for (const p of AMB.fw) { p.t += dt; p.vy += 50 * dt; p.x += p.vx * dt; p.y += p.vy * dt; c.globalAlpha = Math.max(0, 1 - p.t / p.life); c.fillStyle = `hsl(${p.h},95%,65%)`; c.beginPath(); c.arc(p.x, p.y, 2.2, 0, 7); c.fill(); }
+  AMB.fw = AMB.fw.filter(p => p.t < p.life);
+  if (feverOn && !REDUCE) { if (Math.random() < dt * 22) AMB.bub.push({ x: Math.random() * AW, y: AH + 10, r: 4 + Math.random() * 10, v: 60 + Math.random() * 80, p: Math.random() * 6 }); }
+  for (const b of AMB.bub) { b.y -= b.v * dt; c.globalAlpha = .55; c.strokeStyle = '#fff'; c.lineWidth = 1.5; c.beginPath(); c.arc(b.x + Math.sin(t * 3 + b.p) * 6, b.y, b.r, 0, 7); c.stroke(); }
+  AMB.bub = AMB.bub.filter(b => b.y > -20);
+  c.globalAlpha = 1;
+  /* viền bàn phát sáng: sau dây chuyền lớn, hoặc cầu vồng khi sôi sục */
+  glowT = Math.max(0, glowT - dt * 1.4);
+  const br = cv.getBoundingClientRect(), ar = amb.getBoundingClientRect();
+  if ((glowT > 0 || feverOn) && br.width) {
+    const x = br.left - ar.left, y = br.top - ar.top; c.lineWidth = 6; c.shadowBlur = 24;
+    const hue = feverOn ? (t * 240) % 360 : 45; c.strokeStyle = c.shadowColor = `hsla(${hue},95%,62%,${feverOn ? .9 : glowT})`; c.strokeRect(x - 3, y - 3, br.width + 6, br.height + 6); c.shadowBlur = 0;
+  }
+  c.globalCompositeOperation = 'source-over';
+}
 function resize() {
   const st = $('stage').getBoundingClientRect();
+  AD = Math.min(1.5, window.devicePixelRatio || 1); AW = st.width; AH = st.height; amb.width = Math.round(AW * AD); amb.height = Math.round(AH * AD);
   if (!G) return;
   const pad = 8, cw = (st.width - pad * 2) / G.C, ch = (st.height - pad) / G.R;
   CELL = Math.max(26, Math.floor(Math.min(cw, ch, 64)));
@@ -462,6 +535,7 @@ function draw(now) {
   const dt = Math.min(.05, (now - (lastT || now)) / 1000) * SPEED; lastT = now;
   tickTime(dt);
   if (!G || $('play').hidden) return;
+  drawAmb(dt, now / 1000);
   const c = g2, S = CELL * DPR;
   c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cv.width, cv.height);
   let sx = 0, sy = 0; if (shake > 0 && !REDUCE) { sx = (Math.random() - .5) * shake * S * .25; sy = (Math.random() - .5) * shake * S * .25; shake = Math.max(0, shake - dt * 3); }
@@ -490,7 +564,9 @@ function draw(now) {
     const sp = sprOf(t); if (!sp) continue; const w = S * sc, px = (t.vx + .5 + ox) * S - w / 2, py = (t.vy + .5 + oy) * S - w / 2;
     if (t.k === 'p' && !REDUCE) { c.save(); c.translate((t.vx + .5) * S, (t.vy + .5) * S); c.rotate(Math.sin(t1 * 2) * .15); c.drawImage(sp, -w / 2, -w / 2, w, w); c.restore(); }
     else if (t.k === 'f' && !REDUCE) { const k = 1 + Math.sin(t1 * 6 + t.id) * .04; c.drawImage(sp, px - w * (k - 1) / 2, py - w * (k - 1) / 2, w * k, w * k); }
+    else if (t.sq > 0 && !REDUCE) { t.sq = Math.max(0, t.sq - dt * 4.5); const k = Math.sin(t.sq * Math.PI) * .16, ww = w * (1 + k), hh = w * (1 - k); c.drawImage(sp, px - (ww - w) / 2, py + (w - hh), ww, hh); }   // chạm đáy: nảy nhẹ
     else c.drawImage(sp, px, py, w, w);
+    if (t.k !== 'n' && t.k !== 'l' && !REDUCE) { const a = Math.pow(Math.max(0, Math.sin(t1 * 2.2 + t.id * 1.7)), 12); if (a > .02) { c.globalAlpha = a; c.fillStyle = '#fff'; const gx = px + w * .8, gy = py + w * .18, gs = w * .2; c.beginPath(); c.moveTo(gx, gy - gs); c.lineTo(gx + gs * .22, gy - gs * .22); c.lineTo(gx + gs, gy); c.lineTo(gx + gs * .22, gy + gs * .22); c.lineTo(gx, gy + gs); c.lineTo(gx - gs * .22, gy + gs * .22); c.lineTo(gx - gs, gy); c.lineTo(gx - gs * .22, gy - gs * .22); c.fill(); c.globalAlpha = 1; } }   // viên đặc biệt lấp lánh
     if (x.lock) drawLock(c, q * S, r * S, S);
   }
   for (const d of dying) { d.time += dt; const k = d.time / .22, sc = k < .35 ? 1 + k * .5 : Math.max(0, 1.17 * (1 - (k - .35) / .65)); if (sc <= 0) continue; const w = S * sc; c.globalAlpha = Math.max(0, 1 - k * .6); c.drawImage(sprOf(d.tile), (d.c + .5) * S - w / 2, (d.r + .5) * S - w / 2, w, w); c.globalAlpha = 1; }
@@ -514,6 +590,7 @@ function draw(now) {
       for (const [r, q] of f.targets) { c.beginPath(); c.moveTo((f.c + .5) * S, (f.r + .5) * S); const mx = ((f.c + q) / 2 + .5 + (Math.random() - .5) * .6) * S, my = ((f.r + r) / 2 + .5 + (Math.random() - .5) * .6) * S; c.lineTo(mx, my); c.lineTo((q + .5) * S, (r + .5) * S); c.stroke(); }
       c.globalAlpha = 1;
     } else if (f.type === 'nova') { c.globalAlpha = a * .8; c.fillStyle = '#fff'; c.fillRect(0, 0, BW * DPR, BH * DPR); c.globalAlpha = 1; }
+    else if (f.type === 'shock') { c.save(); c.globalCompositeOperation = 'lighter'; const R = Math.max(BW, BH) * DPR * (.15 + k * .95); c.globalAlpha = a * .8; c.lineWidth = S * .35 * a; c.strokeStyle = f.col >= 0 ? TILE[f.col].lite : '#FFE97A'; c.beginPath(); c.arc((f.c + .5) * S, (f.r + .5) * S, R, 0, Math.PI * 2); c.stroke(); c.globalAlpha = a * .35; c.lineWidth = S * .9 * a; c.stroke(); c.restore(); }
     else if (f.type === 'ring') { c.globalAlpha = a; c.strokeStyle = '#fff'; c.lineWidth = S * .1 * a; c.beginPath(); c.arc((f.c + .5) * S, (f.r + .5) * S, S * (.4 + k * .5), 0, Math.PI * 2); c.stroke(); c.globalAlpha = 1; }
   }
   fxs = fxs.filter(f => f.t < f.d);
@@ -556,7 +633,7 @@ function step(t, dt, r, q) {
       const [ty, tx] = t.q[0], dx = tx - t.vx, dy = ty - t.vy, d = Math.hypot(dx, dy);
       if (d <= move) { t.vx = tx; t.vy = ty; t.q.shift(); move -= d; } else { t.vx += dx / d * move; t.vy += dy / d * move; move = 0; }
     }
-    if (!t.q.length) { t.sp = 0; t.land = 1; }
+    if (!t.q.length) { t.sp = 0; t.land = 1; t.sq = 1; }
     return;
   }
   t.vx = q; t.vy = r;
@@ -573,14 +650,24 @@ let L = null, busy = false, state = 'map', timeLeft = 0, phao = PHAO, rescues = 
 function tickTime(dt) {
   if (state !== 'play' || paused || busy && timeLeft <= 0) return;
   if (document.hidden) return;
-  timeLeft = Math.max(0, timeLeft - dt);
+  if (feverOn > 0) { feverOn = Math.max(0, feverOn - dt); fever = FMAX() * feverOn / feverDur; renderFever(); if (!feverOn) endFever(); }
+  else timeLeft = Math.max(0, timeLeft - dt);
   const s = Math.ceil(timeLeft);
   if (s !== lastTick) { lastTick = s; if (s <= 5 && s > 0) { Sfx.tick(s); vib(8); } renderTime(); }
   if (!busy && !hintMv && performance.now() - idleAt > 6000 / SPEED) hintMv = G.hint();
   if (timeLeft <= 0 && !busy) timeUp();
 }
 function renderTime() { const k = L ? Math.min(1, timeLeft / Math.max(L.time, 1)) : 0; $('tfill').style.transform = `scaleX(${k})`; $('ttxt').textContent = `⏱ ${Math.ceil(timeLeft)} giây`; $('tbar').classList.toggle('low', timeLeft <= 5); }
-function addTime(s, why) { timeLeft += s; renderTime(); toast(`⏱ +${s} giây${why ? ' · ' + why : ''}`, 1200); }
+function addTime(s, why, quiet) {
+  timeLeft += s; renderTime(); if (!quiet) toast(`⏱ +${s} giây${why ? ' · ' + why : ''}`, 1200);
+  if (REDUCE) return; const b = cv.getBoundingClientRect(), tb = $('tbar').getBoundingClientRect(), el = document.createElement('div'); el.className = 'tfly'; el.textContent = `+${s}s`; document.body.appendChild(el);
+  const x0 = b.left + b.width / 2, y0 = b.top + b.height / 2, x1 = tb.left + tb.width / 2, y1 = tb.top;
+  el.animate([{ transform: `translate(${x0}px,${y0}px) scale(.6)`, opacity: 0 }, { transform: `translate(${x0}px,${y0 - 30}px) scale(1.4)`, opacity: 1, offset: .25 }, { transform: `translate(${x1}px,${y1}px) scale(.8)`, opacity: .9 }], { duration: 800, easing: 'cubic-bezier(.5,0,.2,1)' }).onfinish = () => el.remove();
+}
+function renderFever() { $('ffill').style.transform = `scaleX(${Math.min(1, fever / FMAX())})`; $('fever').classList.toggle('on', feverOn > 0); }
+function cutIn(z, t) { if (REDUCE) return; const now = performance.now(); if (now - lastCut < 1400) return; lastCut = now; const el = $('cutin'); el.innerHTML = `<b lang="zh-CN">${esc(z)}</b><span>${t}</span>`; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); Sfx.cut(); }
+function startFever() { feverDur = 7 + tier; feverOn = feverDur; fever = FMAX(); renderFever(); Sfx.fever(); vib([20, 30, 20, 30, 40]); praise(['沸腾了!', 'fèiténg le', 'Sôi sục rồi!']); lastCut = 0; cutIn('沸腾', `fèiténg · Sôi sục! ${feverDur} giây điểm ×2, đồng hồ đứng`); flash(.25); if (AMB) for (let i = 0; i < 3; i++) setTimeout(() => fwBurst(AW * (.2 + Math.random() * .6), AH * (.15 + Math.random() * .3)), i * 250); }
+function endFever() { fever = 0; renderFever(); toast('沸腾 fèiténg kết thúc · gom lại để sôi sục lần nữa', 1400); }
 function renderHud() {
   const gs = G.goals();
   $('goals').innerHTML = gs.map(g => { const ic = g.k === 'col' ? `<img src="${ICON[g.c]}" alt="${TILE[g.c].vi}">` : `<span class="gi">${GOAL_ICO[g.k]}</span>`; return `<span class="goal${g.done ? ' done' : ''}">${ic}${g.k === 'score' ? g.have.toLocaleString('vi') + '/' + g.need.toLocaleString('vi') : g.have + '/' + g.need}</span>`; }).join('');
@@ -590,9 +677,14 @@ function renderHud() {
   $('phao').innerHTML = Array.from({ length: PHAO }, (_, i) => `<span class="${i < phao ? '' : 'x'}">🛟</span>`).join('');
   for (const b of ['bomb', 'hammer', 'mix']) { const el = $({ bomb: 'bBomb', hammer: 'bHammer', mix: 'bMix' }[b]); el.querySelector('.n').textContent = SV.boost[b] || 0; el.disabled = !(SV.boost[b] > 0) || (Boost.cool > performance.now()); el.classList.toggle('armed', armed === b); }
 }
-function startLevel(id) {
-  L = LEVELS.find(x => x.id === id) || LEVELS[0];
-  G = new X.Game(L, (Date.now() ^ (Math.random() * 1e9)) >>> 0);
+/** phòng VIP hôm nay: mọi người (cùng loại thẻ) chơi cùng một bàn trong ngày, lần thắng đầu tiên trong ngày thưởng ×2 */
+const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+function vipBase() { const d = new Date(), seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(), n = hasCard() ? LEVELS.length : FREE_ROOMS; return { base: LEVELS[seed % n], seed }; }
+function startLevel(id, opt) {
+  opt = opt || {};
+  if (opt.vip) { const v = vipBase(); L = Object.assign({}, v.base, { vip: true, name: '👑 Phòng VIP hôm nay', time: v.base.time + 5, tip: 'Cả nhà chơi cùng một bàn hôm nay. Thắng lần đầu trong ngày: xu ×2.' }); G = new X.Game(L, v.seed); }
+  else { L = LEVELS.find(x => x.id === id) || LEVELS[0]; G = new X.Game(L, (Date.now() ^ (Math.random() * 1e9)) >>> 0); }
+  tier = Math.min(4, Math.ceil(L.id / 5) + (L.vip ? 1 : 0)); feverOn = 0; fever = 0; glowT = 0; ambInit(); renderFever(); $('combo').classList.remove('on');
   for (const row of G.cells) for (const x of row) if (x.t) { x.t.vx = null; }
   // viên ban đầu rơi từ trên xuống cho vui mắt
   for (let r = 0; r < G.R; r++) for (let q = 0; q < G.C; q++) { const t = G.cells[r][q].t; if (t && !G.cells[r][q].lock) { t.vx = q; t.vy = r - G.R - 1 + (G.R - r) * .15; t.q = [[r, q]]; t.sp = 2; } }
@@ -614,14 +706,14 @@ function intro() {
   modal(`<h2>${esc(L.name)} cần dọn!</h2><p class="sub">⏱ ${L.time} giây · đồng hồ chạy nhanh lắm đó</p><div class="gl">${gl}</div>${L.tip ? `<p class="tip">💡 ${L.tip.replace(/([一-鿿]+)/g, '<span lang="zh-CN">$1</span>')}</p>` : ''}
     <p class="how"><b>Hết giờ?</b> Trả lời đúng 1 câu tiếng Trung để được <b>+${RESCUE_SEC} giây</b>. Sai thì mất 1 phao 🛟 (có ${PHAO} phao). Bom, búa, xáo bàn cũng phải trả lời đúng 1 câu mới dùng được.</p>
     <div class="row"><button type="button" class="big" id="goPlay">Bắt đầu ▶</button></div>`);
-  $('goPlay').onclick = () => { Sfx.unlock(); Sfx.ui(); closeModal(); paused = false; idleAt = performance.now(); startAt = Date.now(); renderTime(); };
+  $('goPlay').onclick = () => { Sfx.wake(); Sfx.ui(); closeModal(); paused = false; idleAt = performance.now(); startAt = Date.now(); renderTime(); };
 }
 
 /* đổi chỗ bằng kéo hoặc chạm 2 ô */
 let down = null;
 function cellAt(e) { const b = cv.getBoundingClientRect(), q = Math.floor((e.clientX - b.left) / CELL), r = Math.floor((e.clientY - b.top) / CELL); return r >= 0 && q >= 0 && r < G.R && q < G.C ? [r, q] : null; }
 cv.addEventListener('pointerdown', e => {
-  if (state !== 'play' || paused || busy) return; Sfx.unlock(); const p = cellAt(e); if (!p) return; idleAt = performance.now(); hintMv = null;
+  if (state !== 'play' || paused || busy) return; Sfx.wake(); const p = cellAt(e); if (!p) return; idleAt = performance.now(); hintMv = null;
   if (armed) { useArmed(p); return; }
   down = { p, x: e.clientX, y: e.clientY, moved: false }; try { cv.setPointerCapture(e.pointerId); } catch (er) {}
 });
@@ -665,7 +757,7 @@ async function cascade(o, combo) {
     if (G.won()) break;
   }
   if (!G.won() && !G.hasMoves()) { toast(`Hết nước đi · ${zh('洗牌', 'xǐpái', 'xáo bàn')}`); G.shuffle(); reposition(); await until(settled); }
-  busy = false; renderHud(); idleAt = performance.now();
+  busy = false; renderHud(); idleAt = performance.now(); $('combo').classList.remove('on');
   if (G.won()) return win();
   if (timeLeft <= 0) timeUp();
 }
@@ -689,10 +781,22 @@ function show(ev) {
   if (ev.pts) floatText(cy, cx, '+' + ev.pts, ev.chain > 2 ? '#FFE97A' : '#fff', ev.chain > 2);
   if (ev.chain >= 2 && !ev.made.some(m => m.k === 'p')) { const p = PRAISE[Math.min(6, ev.chain)]; praise(p); if (ev.chain >= 4) { Voice.say(p[0].replace('!', '')); addTime(1, 'dây chuyền ' + ev.chain); } }
   if (ev.chain >= 3) vib(10 * ev.chain);
+  /* v8.4 · sướng mắt hơn theo tầng */
+  const col0 = ev.removed.length ? ev.removed[0].t.c : -1;
+  if ((ev.chain >= 3 && tier >= 2) || ev.fx.some(f => f.type === 'boom' || f.type === 'pearl' || f.type === 'nova')) fxs.push({ type: 'shock', r: cy, c: cx, col: col0, t: 0, d: .7 });
+  if (ev.chain >= 3) glowT = Math.min(1, .45 + ev.chain * .12);
+  if (ev.chain >= 4 && tier >= 2 && AMB) fwBurst(AW * (.2 + Math.random() * .6), AH * (.12 + Math.random() * .25));
+  if (ev.chain >= 2) { const el = $('combo'); el.innerHTML = `<b>×${ev.chain}</b><small><span lang="zh-CN">连击</span> liánjī</small>`; el.classList.add('on'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+  if (ev.chain >= (tier >= 3 ? 4 : 5)) cutIn('连击', `liánjī · Liên hoàn ×${ev.chain}!`);
+  else if (ev.made.some(m => m.k === 'p')) cutIn('宝', 'bǎo · Ngọc báu xuất hiện!');
+  if (ev.fx.some(f => f.type === 'nova')) { lastCut = 0; cutIn('无敌', 'wúdí · Vô địch! Xoá cả bàn'); }
+  if (feverOn > 0) { G.score += ev.pts; floatText(cy - .6, cx, '×2', '#FF7FB6', true); }
+  else { fever += ev.removed.length * (1 + .15 * (ev.chain - 1)); if (fever >= FMAX()) startFever(); else renderFever(); }
 }
 
 /* ===== HẾT GIỜ → CÂU HỎI · QUYỀN TRỢ GIÚP → CÂU HỎI ===== */
 function ask(why, hsk) {
+  Sfx.duck(true);
   return new Promise(done => {
     const q = Words.make(hsk), c = q.c; let left = ASK_SEC, fin = false; const t0 = performance.now();
     const head = q.fmt === 'zh2vi'
@@ -711,7 +815,7 @@ function ask(why, hsk) {
       $('qFb').innerHTML = (ok ? (fast ? '⚡ Nhanh quá! ' : '✓ Đúng rồi! ') : k < 0 ? '⏰ Hết 10 giây. ' : '✗ Chưa đúng. ') + `<span class="zh" lang="zh-CN">${esc(c.zh)}</span> ${esc(c.py)} · ${esc(c.vi)}`;
       if (ok) { Sfx.ok(); vib(20); } else { Sfx.no(); vib([40, 30, 40]); }
       Voice.say(c.zh);
-      Words.result(c, ok); Bridge.learn(c.id, ok);
+      Words.result(c, ok); Bridge.learn(c.id, ok); if (ok) arcadeBump('ok');
       askedWords.push({ c, ok });
       setTimeout(() => { closeModal(); done({ ok, fast, c }); }, (ok ? 1100 : 1900) / SPEED);
     }
@@ -763,20 +867,22 @@ async function win() {
   const left = Math.min(20, Math.ceil(timeLeft));
   for (let i = 0; i < left; i++) { const r = Math.floor(Math.random() * G.R), q = Math.floor(Math.random() * G.C); burst(r, q, Math.floor(Math.random() * 6), 18); fxs.push({ type: 'boom', r, c: q, rad: .5, col: 3, t: 0, d: .45 }); G.score += 50; timeLeft = Math.max(0, timeLeft - 1); renderTime(); renderHud(); if (i % 2 === 0) Sfx.coin(); await wait(110); }
   await wait(500);
-  const stars = G.stars(), prev = SV.best[L.id] || { stars: 0, score: 0 }, first = !prev.stars;
-  const coins = 10 + stars * 5 + Math.min(20, Math.floor(G.score / 1500)) + (first ? 20 : 0), pts = (first ? 5 : 0) + (stars === 3 && prev.stars < 3 ? 5 : 0);
-  const gifts = [];
+  const stars = G.stars(), prev = L.vip ? { stars: 9, score: 0 } : SV.best[L.id] || { stars: 0, score: 0 }, first = !prev.stars, vipFirst = L.vip && SV.vipDay !== dayKey();
+  let coins = 10 + stars * 5 + Math.min(20, Math.floor(G.score / 1500)) + (first ? 20 : 0), pts = (first ? 5 : 0) + (stars === 3 && prev.stars < 3 ? 5 : 0);
+  if (vipFirst) { coins *= 2; pts += 3; SV.vipDay = dayKey(); }
+  arcadeBump('xiao');
+  const gifts = vipFirst ? ['👑 VIP ×2'] : [];
   if (stars === 3 && prev.stars < 3) { SV.boost.bomb = Math.min(BOOST_MAX, (SV.boost.bomb || 0) + 1); gifts.push('💣 +1'); }
   if (first && L.id % 5 === 0) { ['bomb', 'hammer', 'mix'].forEach(k => { SV.boost[k] = Math.min(BOOST_MAX, (SV.boost[k] || 0) + 1); }); gifts.push('Xong cả tầng: 💣🔨🔀 +1'); }
-  SV.best[L.id] = { stars: Math.max(stars, prev.stars), score: Math.max(G.score, prev.score) }; SV.plays++; save();
-  Bridge.reward(coins, pts, L.id, stars);
-  const next = LEVELS.find(x => x.id === L.id + 1), canNext = next && roomOpen(next.id);
+  if (!L.vip) SV.best[L.id] = { stars: Math.max(stars, prev.stars), score: Math.max(G.score, prev.score) }; SV.plays++; save();
+  Bridge.reward(coins, pts, L.vip ? 'vip' : L.id, stars);
+  const next = L.vip ? null : LEVELS.find(x => x.id === L.id + 1), canNext = next && roomOpen(next.id);
   modal(`<h2>${esc(L.name)} sạch bong! <span lang="zh-CN">干净了!</span></h2><p class="sub">gānjìng le · sạch rồi</p>
     <div class="stars" id="stars"><span>⭐</span><span>⭐</span><span>⭐</span></div>
     <p class="sub">${G.score.toLocaleString('vi')} điểm</p>
     <div class="gain"><span class="chip">🪙 +${coins} gửi về khách sạn</span>${pts ? `<span class="chip">✨ +${pts} điểm sao khách sạn</span>` : ''}${gifts.map(g => `<span class="chip">${g}</span>`).join('')}</div>
     ${wordsHtml()}
-    <div class="row"><button type="button" class="big alt" id="toHotel">🏨 ${IN_FRAME ? 'Về khách sạn' : 'Mang xu về khách sạn'}</button>${canNext ? `<button type="button" class="big" id="toNext">${esc(next.name)} ▶</button>` : `<button type="button" class="big" id="toMap">Bản đồ ▶</button>`}</div>`);
+    <div class="row"><button type="button" class="big alt" id="toHotel">${FROM_ARC ? '♨️ Khu trò chơi' : `🏨 ${IN_FRAME ? 'Về khách sạn' : 'Mang xu về khách sạn'}`}</button>${canNext ? `<button type="button" class="big" id="toNext">${esc(next.name)} ▶</button>` : `<button type="button" class="big" id="toMap">Bản đồ ▶</button>`}</div>`);
   $('stars').querySelectorAll('span').forEach((s, i) => setTimeout(() => { if (i < stars) { s.classList.add('on'); Sfx.coin(); } }, 250 + i * 320));
   bindWords();
   $('toHotel').onclick = () => { Sfx.ui(); Bridge.close(); };
@@ -790,14 +896,14 @@ function lose() {
     ${wordsHtml()}<p class="sub">Từ trả lời sai đã vào Sổ ôn của khách sạn. Ôn xong chơi lại dễ hơn!</p>
     <div class="row"><button type="button" class="big alt" id="toMap">Bản đồ</button><button type="button" class="big" id="again">Chơi lại ↻</button></div>`);
   bindWords();
-  $('toMap').onclick = () => { closeModal(); showMap(); }; $('again').onclick = () => { closeModal(); startLevel(L.id); };
+  $('toMap').onclick = () => { closeModal(); showMap(); }; $('again').onclick = () => { closeModal(); startLevel(L.id, { vip: L.vip }); };
 }
 function wordsHtml() { if (!askedWords.length) return ''; const seen = new Set(), ws = askedWords.filter(w => !seen.has(w.c.id) && seen.add(w.c.id)); return `<p class="sub" style="margin-top:10px">Từ vừa ôn (chạm để nghe)</p><div class="words">${ws.map((w, i) => `<button type="button" class="${w.ok ? '' : 'bad'}" data-w="${i}"><b lang="zh-CN">${esc(w.c.zh)}</b>${esc(w.c.py)} · ${esc(w.c.vi)}</button>`).join('')}</div>`; }
 function bindWords() { const seen = new Set(), ws = askedWords.filter(w => !seen.has(w.c.id) && seen.add(w.c.id)); document.querySelectorAll('.words [data-w]').forEach(b => b.onclick = () => Voice.say(ws[+b.dataset.w].c.zh)); }
 
 /* ===== HỘP THOẠI ===== */
 function modal(html, keep) { $('modBox').innerHTML = html; $('mod').hidden = false; $('mod').dataset.keep = keep ? '1' : ''; }
-function closeModal() { $('mod').hidden = true; $('modBox').innerHTML = ''; }
+function closeModal() { $('mod').hidden = true; $('modBox').innerHTML = ''; Sfx.duck(false); }
 $('backBtn').onclick = () => {
   if (state !== 'play' || busy) { if (state === 'end') showMap(); return; }
   const was = paused; paused = true; Sfx.ui();
@@ -822,34 +928,39 @@ function showMap() {
       const b = SV.best[id], open = roomOpen(id), st = b ? b.stars : 0;
       return `<button type="button" class="door${id === cur && open ? ' cur' : ''}${open ? '' : ' lock'}" data-room="${id}" aria-label="Phòng ${LEVELS[id - 1].name}">${open ? LEVELS[id - 1].name.replace('Phòng ', '') : '🔒'}<i class="${st ? '' : 'e'}">${'★'.repeat(st)}${'☆'.repeat(3 - st)}</i></button>`; }).join('')}</div>
       ${locked ? `<p class="lockmsg">Tầng ${f.n} (${f.hsk}) dùng thẻ tự học · 3 tháng ${MEMBER_3M} · 1 năm ${MEMBER_PRICE}. <a href="${CARD_URL}" target="_top">🎫 Xem thẻ tự học</a></p>` : ''}</div>`; }).join('');
-  $('tower').querySelectorAll('[data-room]').forEach(b => b.onclick = () => { const id = +b.dataset.room; Sfx.unlock(); if (!roomOpen(id)) { Sfx.bad(); toast(id > FREE_ROOMS && !hasCard() ? 'Tầng 3–4 dùng thẻ tự học 🎫' : 'Dọn xong phòng trước để mở phòng này'); return; } Sfx.ui(); startLevel(id); });
+  $('tower').querySelectorAll('[data-room]').forEach(b => b.onclick = () => { const id = +b.dataset.room; Sfx.wake(); if (!roomOpen(id)) { Sfx.bad(); toast(id > FREE_ROOMS && !hasCard() ? 'Tầng 3–4 dùng thẻ tự học 🎫' : 'Dọn xong phòng trước để mở phòng này'); return; } Sfx.ui(); startLevel(id); });
   $('goBtn').textContent = SV.best[1] ? '▶ Chơi tiếp' : '▶ Chơi ngay';
+  const vb = $('vipBtn'), used = SV.vipDay === dayKey(); vb.classList.toggle('used', used);
+  vb.innerHTML = `👑<span>Phòng VIP hôm nay<small>Cả nhà chơi cùng một bàn · thắng lần đầu trong ngày: xu ×2</small></span><i>${used ? 'Đã nhận ×2 ✓' : 'Vào ▶'}</i>`;
   const fl = $('fl' + Math.ceil(cur / 5)); if (fl) fl.scrollIntoView({ block: 'center' });
 }
-$('goBtn').onclick = () => { Sfx.unlock(); Sfx.ui(); const c = curRoom(); startLevel(roomOpen(c) ? c : Math.min(c, FREE_ROOMS)); };
+$('vipBtn').onclick = () => { Sfx.wake(); Sfx.ui(); startLevel(0, { vip: true }); };
+$('goBtn').onclick = () => { Sfx.wake(); Sfx.ui(); const c = curRoom(); startLevel(roomOpen(c) ? c : Math.min(c, FREE_ROOMS)); };
 $('homeBtn').onclick = e => { e.preventDefault(); Sfx.ui(); Bridge.close(); };
 function syncMute() { $('muteM').textContent = $('muteP').textContent = SV.mute ? '🔇' : '🔊'; }
-$('muteM').onclick = $('muteP').onclick = () => { SV.mute = !SV.mute; save(); syncMute(); if (!SV.mute) Sfx.ui(); };
+$('muteM').onclick = $('muteP').onclick = () => { SV.mute = !SV.mute; save(); syncMute(); Sfx.mute(SV.mute); if (!SV.mute) Sfx.ui(); };
 syncMute();
 
 addEventListener('resize', () => { if (state === 'play' || state === 'end') { resize(); } });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { idleAt = performance.now(); } });
+document.addEventListener('visibilitychange', () => { Sfx.pause(document.hidden); if (!document.hidden) { idleAt = performance.now(); } });
 addEventListener('storage', e => { if (e.key === HOTEL_KEY || e.key === WORDS_KEY) { HS = hotel(); Words.load(); if (state === 'map') renderWallet(); } });
 
 /* ===== KHỞI ĐỘNG ===== */
 icons();
 requestAnimationFrame(draw);
 const want = +QS.get('lv');
-if (want && roomOpen(want)) startLevel(want); else if (QS.get('lv') === 'next') { const c = curRoom(); startLevel(roomOpen(c) ? c : 1); } else showMap();
+if (QS.get('vip')) startLevel(0, { vip: true }); else if (want && roomOpen(want)) startLevel(want); else if (QS.get('lv') === 'next') { const c = curRoom(); startLevel(roomOpen(c) ? c : 1); } else showMap();
 if (IN_FRAME) { $('homeBtn').innerHTML = '🏨 Về khách sạn'; Bridge.post({ kind: 'ready' }); }
+if (FROM_ARC) $('homeBtn').innerHTML = '♨️ Khu trò chơi';
 
 /* móc kiểm thử (tools/test/xiao.js) */
 window.__xiao = {
-  get G() { return G; }, get state() { return state; }, get busy() { return busy; }, get paused() { return paused; }, get time() { return timeLeft; }, get phao() { return phao; },
+  Sfx, get G() { return G; }, get state() { return state; }, get busy() { return busy; }, get paused() { return paused; }, get time() { return timeLeft; }, get phao() { return phao; },
   speed(k) { SPEED = k; }, setTime(s) { timeLeft = s; renderTime(); },
   async move() { const m = G.bestMove(); if (m) await trySwap(m.a, m.b); return !!m; },
   answer(ok) { const q = window.__xiaoQ; if (!q) return false; const k = ok ? q.answer : (q.answer + 1) % q.opts.length; const b = document.querySelector(`.opt[data-k="${k}"]`); if (b) b.click(); return !!b; },
-  start(id) { startLevel(id); }, go() { const b = $('goPlay'); if (b) b.click(); },
+  start(id, o) { startLevel(id, o); }, go() { const b = $('goPlay'); if (b) b.click(); },
+  get tier() { return tier; }, get fever() { return { v: fever, on: feverOn, max: FMAX() }; }, feverNow() { startFever(); },
 };
 })();
 </script>

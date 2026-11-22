@@ -43,6 +43,7 @@ Bản này làm thành phố sống động hơn, sửa cầu, nâng mặt tiề
 
 ## 6. Nhạc nền
 - 3 bài lofi tự soạn, giai điệu riêng theo ngũ cung kiểu Việt: "Sóng Bãi Cháy" 海浪 (72 BPM, đàn tranh), "Chiều Hòn Gai" 黄昏 (80 BPM, sáo trúc), "Đêm Tuần Châu" 夜晚 (64 BPM). Mỗi bài 4 vòng rồi chuyển bài; có tiếng sóng và tiếng đĩa than rất nhỏ.
+- **v8.5 (22/11):** thay bằng bộ âm thanh chung `hotel/bk-audio.js`: 5 bài (thêm "Trăng Hạ Long" 月光 yuèguāng · ánh trăng và "Trà chiều phố biển" 茶馆 cháguǎn · quán trà), nhạc cụ Việt + Trung Hoa, bỏ tiếng đĩa than và sóng vuông/răng cưa. Xem `hotel/AUDIO_NOTES.md`.
 - To rõ hơn bản cũ, báo tên bài khi phát, nút ⏭️ đổi bài trong "Của tôi".
 - Bài có giấy phép: đặt tệp vào `hotel/music/` và khai báo trong `MUSIC_FILES` (index.html), game sẽ phát các tệp đó thay cho nhạc tự soạn.
 

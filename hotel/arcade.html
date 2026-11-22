@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>温泉电玩城 · Khu trò chơi Suối nóng · Khách sạn Vịnh Ā Bǎo</title>
+<meta name="description" content="Khu trò chơi Suối nóng ở phố Bãi Cháy trong game Khách sạn Vịnh Ā Bǎo: Ā Bǎo 消消乐 ghép 3 ôn từ, Ngâm chill bong bóng chữ Hán, Đánh Boss. Chơi là ôn tiếng Trung, xu mang về khách sạn.">
+<meta name="theme-color" content="#1b1140">
+<link rel="icon" href="icon-192.png">
+<style>
+@view-transition{navigation:auto}
+:root{--ink:#1D1640;--gold:#FFD91F;--pink:#FF6FB0;--cyan:#3DF2FF;--UIF:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --ZHF:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei","WenQuanYi Zen Hei",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#1b1140;color:#fff;font-family:var(--UIF)}
+body{background:radial-gradient(120% 60% at 50% 0%,#3b2490 0%,#1b1140 55%,#120a2e 100%) fixed;padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(16px + env(safe-area-inset-bottom)) env(safe-area-inset-left)}
+[lang^="zh"]{font-family:var(--ZHF)}
+a{color:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+/* ---------- đầu trang: biển neon + hơi nước ---------- */
+.hero{position:relative;padding:18px 0 10px;text-align:center;overflow:hidden}
+.steam{position:absolute;inset:0;pointer-events:none}
+.steam i{position:absolute;bottom:-20px;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.28),rgba(255,255,255,0) 70%);animation:rise 6s linear infinite}
+@keyframes rise{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:1}100%{transform:translateY(-190px) scale(1.8);opacity:0}}
+.neon{display:inline-block;position:relative;padding:10px 20px 8px;border-radius:20px;border:3px solid var(--pink);box-shadow:0 0 18px rgba(255,111,176,.65),inset 0 0 18px rgba(255,111,176,.35);background:rgba(30,12,60,.55);animation:flick 4s infinite}
+.neon b{display:block;font:900 40px/1.1 var(--ZHF);color:#fff4fb;text-shadow:0 0 8px var(--cyan),0 0 22px var(--cyan),0 0 40px rgba(61,242,255,.6);letter-spacing:2px}
+.neon small{display:block;font:800 13px/1.3 var(--UIF);color:var(--gold);margin-top:3px}
+@keyframes flick{0%,92%,100%{opacity:1}93%{opacity:.55}95%{opacity:1}96%{opacity:.7}}
+.sub{font:700 14px/1.45 var(--UIF);color:#e7dcff;margin:10px auto 0;max-width:420px}
+.chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 11px;font:800 12.5px/1.2 var(--UIF)}
+.chip.gold{color:var(--gold)}
+/* ---------- nhiệm vụ suối nóng ---------- */
+.tasks{margin:14px 0 4px;padding:12px;border-radius:18px;background:linear-gradient(135deg,rgba(61,242,255,.12),rgba(255,111,176,.14));border:1px solid rgba(255,255,255,.16)}
+.tasks h2{margin:0 0 8px;font:900 15px/1.3 var(--UIF)}
+.tasks h2 small{display:block;font-weight:700;color:#ffe97a;font-size:12px;margin-top:2px}
+.task{display:flex;align-items:center;gap:8px;font:700 13px/1.35 var(--UIF);padding:4px 0}
+.task .ck{width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.12);display:grid;place-items:center;flex:none;font-size:13px}
+.task.done .ck{background:#3dbe6a}
+.task .n{margin-left:auto;color:var(--gold);font-weight:900}
+.claim{margin-top:8px;width:100%;border:0;border-radius:14px;padding:11px;font:900 14.5px/1.2 var(--UIF);background:var(--gold);color:var(--ink);box-shadow:0 4px 0 #c99a00;cursor:pointer}
+.claim[disabled]{background:rgba(255,255,255,.14);color:#cbbff0;box-shadow:none;cursor:default}
+/* ---------- thẻ trò chơi ---------- */
+.games{display:grid;gap:12px;margin:14px 0}
+.game{position:relative;display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center;padding:12px;border-radius:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);text-decoration:none;color:#fff;overflow:hidden;transition:transform .2s cubic-bezier(.2,1.4,.4,1)}
+.game:active{transform:scale(.98)}
+.game::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.18) 50%,transparent 60%);transform:translateX(-120%);animation:shine 5.5s ease-in-out infinite;animation-delay:var(--d,0s);pointer-events:none}
+@keyframes shine{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.ico{width:96px;height:96px;border-radius:20px;display:grid;place-items:center;font-size:46px;position:relative;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.ico b{position:absolute;bottom:6px;left:0;right:0;text-align:center;font:900 15px/1 var(--ZHF);color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.4)}
+.g-x .ico{background:linear-gradient(135deg,#ff6fb0,#9a63ff)}
+.g-c .ico{background:linear-gradient(135deg,#3df2ff,#2e9bff)}
+.g-b .ico{background:linear-gradient(135deg,#ffb938,#ef4a43)}
+.g-t .ico{background:linear-gradient(135deg,#7cf29a,#2fbf6a)}
+.game h3{margin:0;font:900 18px/1.2 var(--UIF)}
+.game h3 span{color:var(--gold)}
+.game .zh{font:700 12.5px/1.3 var(--UIF);color:#e7dcff;margin-top:2px}
+.game p{margin:5px 0 0;font:600 13px/1.4 var(--UIF);color:#f1eaff}
+.game .row{display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap}
+.tag{font:900 10.5px/1 var(--UIF);letter-spacing:.4px;text-transform:uppercase;padding:4px 7px;border-radius:999px;background:var(--gold);color:var(--ink)}
+.tag.new{background:var(--cyan)}
+.tag.act{background:#ff8f6b}
+.prog{font:800 12px/1.2 var(--UIF);color:#ffe97a}
+.play{margin-left:auto;font:900 13px/1 var(--UIF);background:#fff;color:var(--ink);border-radius:999px;padding:8px 12px}
+.vip{display:flex;align-items:center;gap:8px;margin:-4px 0 0;padding:10px 12px;border-radius:16px;background:linear-gradient(90deg,rgba(255,217,31,.25),rgba(255,111,176,.2));border:1px dashed rgba(255,217,31,.6);text-decoration:none;font:800 13.5px/1.35 var(--UIF)}
+.vip small{display:block;font-weight:700;color:#e7dcff;font-size:12px}
+.vip i{font-style:normal;margin-left:auto;font-weight:900;color:var(--gold);white-space:nowrap}
+.vip.used{opacity:.55}
+.foot{display:flex;gap:8px;margin-top:6px}
+.btn{flex:1;text-align:center;text-decoration:none;border-radius:16px;padding:13px;font:900 15px/1.2 var(--UIF);background:rgba(255,255,255,.14);color:#fff;border:0;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.note{font:600 12px/1.45 var(--UIF);color:#cbbff0;text-align:center;margin:10px 0 0}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:rgba(20,14,48,.94);border:1.5px solid var(--gold);border-radius:14px;padding:9px 14px;font:800 13px/1.35 var(--UIF);opacity:0;transition:.25s;z-index:20;max-width:calc(100vw - 32px);text-align:center;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.steam i,.game::after,.neon{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="steam" aria-hidden="true"><i style="left:8%;animation-delay:-1s"></i><i style="left:30%;animation-delay:-3s"></i><i style="left:55%;animation-delay:-2s"></i><i style="left:78%;animation-delay:-4.5s"></i><i style="left:90%;animation-delay:-.5s"></i></div>
+    <div class="neon"><b lang="zh-CN">温泉电玩城</b><small><span lang="zh-CN">wēnquán diànwánchéng</span> · Khu trò chơi Suối nóng</small></div>
+    <p class="sub">Toà suối nước nóng cuối bãi biển Bãi Cháy. Ngâm suối, chơi game, ôn tiếng Trung. Xu kiếm được mang về khách sạn của bạn.</p>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <section class="tasks" aria-labelledby="tkH">
+    <h2 id="tkH">♨️ Nhiệm vụ suối nóng hôm nay <small>xong cả 3: +30 🪙</small></h2>
+    <div id="tasks"></div>
+    <button type="button" class="claim" id="claim" disabled>Nhận thưởng</button>
+  </section>
+
+  <div class="games" id="games"></div>
+
+  <div class="foot"><a class="btn" id="back" href="./">🏨 Về khách sạn</a></div>
+  <p class="note">Xu, sao chỉ dùng trong game. Câu hỏi lấy từ Sổ ôn của game Khách sạn: thẻ đến hạn hỏi trước. Luyện tập theo khung HSK, không phải đề thi chính thức.</p>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="xiao-words.js"></script>
+<script src="mini.js"></script>
+<script>
+(() => {
+'use strict';
+const { Store, Bridge, Words, Tasks, IN_FRAME, esc } = window.BKMini;
+const TONE10S = false;   // Thanh điệu 10 giây (../tone10s.html): bật khi Bảo "duyệt đăng" (Gemini đã soát 17/17 ngày 22/11)
+const $ = id => document.getElementById(id);
+const Q = IN_FRAME ? '?in=1&from=arcade' : '?from=arcade';
+function toast(m) { const t = $('toast'); t.innerHTML = m; t.classList.add('on'); clearTimeout(toast.k); toast.k = setTimeout(() => t.classList.remove('on'), 2400); }
+
+function render() {
+  const HS = window.BKMini.hotel(), xs = Store.get('bk_xiao_v1', {}) || {}, best = xs.best || {};
+  const rooms = Object.keys(best).filter(k => best[k] && best[k].stars && /^\d+$/.test(k)).length, stars = Object.values(best).reduce((s, b) => s + (b && b.stars || 0), 0);
+  const cs = Store.get('bk_chill_v1', {}) || {};
+  const due = Words.dueIds().length;
+  $('chips').innerHTML = `<span class="chip gold">🪙 ${Bridge.coins().toLocaleString('vi')} xu khách sạn</span>${HS ? `<span class="chip">🏨 ${Math.max(1, HS.star || 1)}★</span>` : ''}<span class="chip">🧠 ${due} thẻ cần ôn</span>`;
+  const d = new Date(), today = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), vipUsed = xs.vipDay === today;
+  const G = [
+    { c: 'g-x', ico: '💎', zh: '消消乐', name: 'Ā Bǎo <span lang="zh-CN">消消乐</span>', sub: '<span lang="zh-CN">xiāoxiāolè</span> · ghép 3 ôn từ', p: 'Ghép 3 viên cùng màu, nổ dây chuyền. Đồng hồ chạy rất nhanh: hết giờ trả lời đúng 1 câu tiếng Trung để chơi tiếp.', tag: '<span class="tag">Hot</span>', prog: rooms ? `Phòng ${rooms}/20 · ★ ${stars}` : '20 phòng · 4 tầng', href: 'xiao.html' + Q },
+    { c: 'g-c', ico: '🫧', zh: '泡温泉', name: 'Ngâm chill', sub: '<span lang="zh-CN">泡温泉 pào wēnquán</span> · ngâm suối nóng', p: 'Bong bóng chữ Hán nổi lên từ suối, chạm đúng chữ có nghĩa được hỏi. Không đồng hồ, không thua, nhạc thư giãn.', tag: '<span class="tag new">Mới</span>', prog: cs.total ? `Đã chạm đúng ${cs.total} bong bóng` : 'Thư giãn 3 phút', href: 'chill.html' + Q },
+    { c: 'g-b', ico: '⚔️', zh: '打怪', name: 'Đánh Boss', sub: '<span lang="zh-CN">打怪 dǎguài</span> · đánh quái', p: 'Game hành động 5 trạm HSK0 → HSK4: né đòn, chém, đỡ chữ. Mở trang riêng, toàn màn hình.', tag: '<span class="tag act">Hành động</span>', prog: '5 trạm', href: '../game.html', top: true },
+  ];
+  if (TONE10S) G.push({ c: 'g-t', ico: '🎵', zh: '声调', name: 'Thanh điệu 10 giây', sub: '<span lang="zh-CN">声调 shēngdiào</span> · thanh điệu', p: '3 bộ × 4 chữ, mỗi chữ 10 giây: nghe và chọn đúng thanh.', tag: '<span class="tag new">Mới</span>', prog: '12 chữ', href: '../tone10s.html', top: true });
+  $('games').innerHTML = G.map((g, i) => `<a class="game ${g.c}" style="--d:${i * .8}s" href="${g.href}"${g.top ? ' target="_top"' : ''}><span class="ico" aria-hidden="true">${g.ico}<b lang="zh-CN">${g.zh}</b></span>
+      <span><h3>${g.name}</h3><div class="zh">${g.sub}</div><p>${g.p}</p><span class="row">${g.tag}<span class="prog">${g.prog}</span><span class="play">Chơi ▶</span></span></span></a>`
+    + (i === 0 ? `<a class="vip${vipUsed ? ' used' : ''}" href="xiao.html${Q}&vip=1">👑<span>Phòng VIP hôm nay<small>Mỗi ngày 1 bàn mới, cả nhà chơi cùng một bàn · thưởng ×2 lần đầu</small></span><i>${vipUsed ? 'Đã chơi ✓' : 'Vào ▶'}</i></a>` : '')).join('');
+  const t = Tasks.state();
+  $('tasks').innerHTML = t.items.map(x => `<div class="task${x.done ? ' done' : ''}"><span class="ck">${x.done ? '✓' : ''}</span><span>${x.t.replace(/([一-鿿]+)/g, '<span lang="zh-CN">$1</span>')}</span><span class="n">${x.have}/${x.n}</span></div>`).join('');
+  const c = $('claim'); c.disabled = !t.all || t.claimed; c.textContent = t.claimed ? 'Đã nhận thưởng hôm nay ✓' : t.all ? `Nhận +${t.reward} 🪙` : `Xong ${t.items.filter(x => x.done).length}/3 nhiệm vụ`;
+}
+$('claim').onclick = () => { const n = Tasks.claim(); if (!n) return; Bridge.reward(n, 2, 'arcade'); toast(`♨️ Xong nhiệm vụ suối nóng: +${n} 🪙 gửi về khách sạn`); render(); };
+$('back').onclick = e => { e.preventDefault(); Bridge.close(); };
+window.onHotelState = render;
+addEventListener('pageshow', render); document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+render();
+if (IN_FRAME) Bridge.post({ kind: 'ready' });
+window.__arcade = { render };
+})();
+</script>
+</body>
+</html>
