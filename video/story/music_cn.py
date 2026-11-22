@@ -15,6 +15,7 @@ import music as M   # fft_filter, reverb, riser, impact, whoosh, clap, snare, no
 
 mk = json.load(open(sys.argv[1]))
 OUT = sys.argv[2]
+HEAVY = len(sys.argv) > 3 and sys.argv[3] == 'heavy'   # 'heavy': bass nặng kiểu DJ Thái Hoàng (bass nhảy, sub dày, kick nhiều thân)
 SR = M.SR
 BPM = mk['bpm']; B = 60 / BPM; BAR = 4 * B; S16 = B / 4
 DUR = mk['dur']; N = int(SR * DUR)
@@ -182,8 +183,8 @@ def muyu(f=1100):
 
 def kick():
     t = t_(0.42)
-    f = 50 + 200 * np.exp(-t * 30)
-    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 5.8)
+    f = (47 + 230 * np.exp(-t * 34)) if HEAVY else (50 + 200 * np.exp(-t * 30))
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * (4.6 if HEAVY else 5.8))
     click = ff(rng.standard_normal(len(t)), lo=1800, hi=9000) * np.exp(-t * 350) * 0.5
     return fade_edges(np.tanh((body * 1.2 + click) * 2.6) * 0.85, 0.0005, 0.03)
 
@@ -191,12 +192,29 @@ def kick():
 def bass(nt, L):
     t = t_(L)
     f = note(nt)
+    if HEAVY:   # bass nhảy: đầu nốt vút từ quãng 8 trên rơi xuống (tiếng "tưng"), sub dày, bão hoà cho loa điện thoại vẫn nghe ra
+        fr = f * (1 + 1.0 * np.exp(-t / 0.011))
+        ph = np.cumsum(fr) / SR
+        s = sum(saw_ph(ph * r + k * .31) for k, r in enumerate((0.994, 1.0, 1.006))) / 3
+        sub = np.sin(2 * np.pi * ph / 2)
+        bright = ff(s, hi=2000) * np.exp(-t * 20)
+        dark = ff(s, hi=520)
+        e = np.exp(-t * 1.6)
+        return fade_edges(np.tanh((bright * 0.6 + dark * 1.15 + sub * 0.95) * e * 3.3) * 0.64, 0.0015, 0.012)
     s = sum(saw_ph(f * r * t + k * .31) for k, r in enumerate((0.996, 1.0, 1.005))) / 3
     sub = np.sin(2 * np.pi * f / 2 * t)
     bright = ff(s, hi=2400) * np.exp(-t * 24)
     dark = ff(s, hi=650)
     e = np.exp(-t * 2.5)
     return fade_edges(np.tanh((bright * 0.6 + dark * 0.75 + sub * 0.9) * e * 2.0) * 0.6, 0.002, 0.012)
+
+
+def subline(t0, t1, g=0.5):                          # sub-bass giữ nền giữa các kick (bị kick ép xuống → "bơm")
+    for k, bt in bars(t0, t1):
+        t = t_(BAR)
+        f = note(ROOT[k % 4] - 12)
+        s = np.tanh(np.sin(2 * np.pi * f * t) * 1.6) * 0.6
+        put('sc', fade_edges(s, 0.01, 0.02), bt, g)
 
 
 def supersaw(notes, L, cutoff=3200, att=0.004, dec=None):
@@ -313,8 +331,16 @@ def bassline(t0, t1, g=1.0, cut_last=False):
                 continue
             tb = bt + b * B
             up = 12 if (k % 2 == 1 and b == 3) else 0
-            put('sc', bass(r + up, S16 * 1.7), tb + 2 * S16, 0.95 * g)
-            put('sc', bass(r + up, S16 * 0.85), tb + 3 * S16, 0.5 * g)
+            if HEAVY:
+                put('sc', bass(r + up, S16 * 2.0), tb + 2 * S16, 1.05 * g)
+                put('sc', bass(r + up, S16 * 0.9), tb + 3 * S16, 0.6 * g)
+                if b in (1, 3) and k % 2 == 0:              # thêm nốt "ba" móc kép cho dồn
+                    put('sc', bass(r + 12, S16 * 0.7), tb + S16, 0.4 * g)
+            else:
+                put('sc', bass(r + up, S16 * 1.7), tb + 2 * S16, 0.95 * g)
+                put('sc', bass(r + up, S16 * 0.85), tb + 3 * S16, 0.5 * g)
+    if HEAVY and g >= 0.9:
+        subline(t0, t1, 0.28 * g)
 
 
 def pads(t0, t1, g=0.25, cutoff=2000):
@@ -449,7 +475,7 @@ for k in KICKS:
     i = int(k * SR); L = min(N - i, int(B * SR))
     if L > 0:
         tt = np.arange(L) / SR
-        pump[i:i + L] = np.minimum(pump[i:i + L], 1 - 0.78 * np.exp(-tt / 0.09))
+        pump[i:i + L] = np.minimum(pump[i:i + L], 1 - (0.88 if HEAVY else 0.78) * np.exp(-tt / (0.11 if HEAVY else 0.09)))
 pump = lfilter([0.2], [1, -0.8], pump, zi=[0.8])[0]     # mượt, không gãy
 lead = BUS['lead'].copy()
 for c in range(2):
@@ -463,6 +489,10 @@ for k_, v_ in BUS.items():
 mix = BUS['kick'] * 0.8 + BUS['sc'] * pump[:, None] * 0.9 + lead * (0.7 + 0.3 * pump[:, None]) * 1.35 + BUS['fx'] * 0.75 + air * 0.8
 for c in range(2):
     mix[:, c] = M.reverb(mix[:, c], 0.9, 0.05)
+if HEAVY:                                                # nâng dải 70–180 Hz (tiếng bass "đập" mà loa điện thoại vẫn phát được)
+    for c in range(2):
+        band = lfilter(*biquad(180, 0.7, 'lp'), lfilter(*biquad(70, 0.7, 'hp'), mix[:, c]))
+        mix[:, c] += 0.55 * band
 mix -= mix.mean(0)                                      # bỏ lệch DC
 tt = np.arange(N) / SR
 sec = np.interp(tt, [0, A2 - 0.01, A2, A3 - build, A3 - 0.01, A3, A4, pre - 0.01, pre, A5, END],
