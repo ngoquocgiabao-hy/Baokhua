@@ -1,6 +1,6 @@
 # Âm thanh v8.5 · trong trẻo, không sạn, âm sắc Việt + Trung Hoa, vẫn lofi chill
 
-Làm 22/11/2026 theo yêu cầu của Bảo: "làm cho trong trẻo hơn, bỏ sạn sạn đi, thêm nhiều âm sắc Việt như sáo hoặc cả Trung Hoa nhưng vẫn phải lofi chill". Chỉ ở nhánh `game-dev`, chờ "duyệt đăng".
+Làm 22/11/2026 theo yêu cầu của Bảo: "làm cho trong trẻo hơn, bỏ sạn sạn đi, thêm nhiều âm sắc Việt như sáo hoặc cả Trung Hoa nhưng vẫn phải lofi chill". Bảo "duyệt đăng" 22/11, đã lên baokhua.com.
 
 ## Một bộ âm thanh chung: `hotel/bk-audio.js`
 
